@@ -1,0 +1,110 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorAccent">@color/underline_color</item>
+        <item name="colorPrimaryDark">@color/accent_color</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+
+    </style>
+
+
+    <array name="spinner">
+        <item>@style/LightSpinner</item>
+        <item>@style/DarkSpinner</item>
+    </array>
+
+    <style name="LightSpinner" parent="Material.Widget.Spinner.Light">
+        <item name="rd_style">@style/Material.Drawable.Ripple.Wave.Light</item>
+        <item name="spn_labelEnable">true</item>
+        <item name="spn_arrowSwitchMode">true</item>
+        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="spn_arrowColor">@color/colorControlNormal</item>
+        <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
+    </style>
+
+    <style name="DarkSpinner" parent="Material.Widget.Spinner">
+        <item name="rd_style">@style/Material.Drawable.Ripple.Wave</item>
+        <item name="spn_labelEnable">true</item>
+        <item name="spn_arrowSwitchMode">true</item>
+        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="spn_arrowColor">@color/primary_color</item>
+        <item name="android:popupBackground">@drawable/popup_background_dark</item>
+    </style>
+
+
+    <style name="Evendate.TimePicker" parent="Material.App.Dialog.Light">
+        <item name="tp_backgroundColor">#28999999</item>
+        <item name="tp_selectionColor">?attr/colorPrimary</item>
+        <item name="tp_selectionRadius">16dp</item>
+        <item name="tp_tickSize">1dp</item>
+        <item name="tp_textSize">@dimen/abc_text_size_caption_material</item>
+        <item name="tp_textStyle">normal</item>
+        <item name="tp_textColor">@color/abc_primary_text_material_light</item>
+        <item name="tp_textHighlightColor">#FFFFFFFF</item>
+        <item name="tp_animDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="tp_inInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="tp_outInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="tp_mode">hour</item>
+        <item name="tp_headerHeight">120dp</item>
+        <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
+        <item name="tp_textTimeColor">#90FFFFFF</item>
+        <item name="tp_leadingZero">false</item>
+        <item name="di_positiveActionTextColor">#fc290a</item>
+        <item name="di_negativeActionTextColor">#454546</item>
+
+    </style>
+
+    <style name="Evendate.DatePicker" parent="Material.App.Dialog.Light">
+        <item name="dp_yearTextSize">@dimen/abc_text_size_title_material</item>
+        <item name="dp_yearItemHeight">48dp</item>
+        <item name="dp_textColor">@color/abc_primary_text_material_light</item>
+        <item name="dp_textHighlightColor">#FFFFFFFF</item>
+        <item name="dp_selectionColor">?attr/colorPrimary</item>
+        <item name="dp_animDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="dp_inInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="dp_outInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="dp_textStyle">normal</item>
+        <item name="dp_dayTextSize">@dimen/abc_text_size_caption_material</item>
+        <item name="dp_textLabelColor">@color/abc_secondary_text_material_light</item>
+        <item name="dp_textDisableColor">@color/abc_secondary_text_material_light</item>
+        <item name="dp_headerPrimaryHeight">144dp</item>
+        <item name="dp_headerSecondaryHeight">32dp</item>
+        <item name="dp_headerPrimaryColor">?attr/colorPrimary</item>
+        <item name="dp_headerSecondaryColor">?attr/colorPrimaryDark</item>
+        <item name="dp_headerPrimaryTextSize">@dimen/abc_text_size_display_2_material</item>
+        <item name="dp_headerSecondaryTextSize">@dimen/abc_text_size_headline_material</item>
+        <item name="dp_textHeaderColor">#90FFFFFF</item>
+        <item name="di_positiveActionTextColor">#fc290a</item>
+        <item name="di_negativeActionTextColor">#454546</item>
+    </style>
+
+
+    <style name="SimpleDialogLight" parent="Material.App.Dialog.Simple.Light">
+        <item name="di_inAnimation">@anim/anim_scale_in</item>
+        <item name="di_outAnimation">@anim/anim_scale_out</item>
+        <item name="di_positiveActionTextColor">#FC2969</item>
+        <item name="di_negativeActionTextColor">#FC2969</item>
+        <item name="di_checkBoxStyle">@style/Material.Drawable.CheckBox</item>
+        <item name="cbd_strokeColor">#6B89C6</item>
+        <item name="cbd_tickColor">#ffffff</item>
+        <item name="di_messageTextColor">@color/text_color_black</item>
+    </style>
+
+    <style name="Evendate.Switch.On" parent="Material.Widget.Switch">
+        <item name="sw_trackColor">#f791b0</item>
+        <item name="sw_thumbColor">#fc2969</item>
+
+    </style>
+
+    <style name="Evendate.Switch.Off" parent="Material.Widget.Switch">
+        <item name="sw_trackColor">#c6c5c5</item>
+        <item name="sw_thumbColor">#f1f1f1</item>
+
+    </style>
+
+</resources>
