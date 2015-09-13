@@ -58,16 +58,20 @@ public class MergeProperties extends MergeStrategy {
         String propListToAdd = "";
         // Add new items
         for (DataEntry e : cloudMap.values()) {
-            Log.i(LOG_TAG, "Scheduling insert: entry_id=" + e.getEntryId());
+            Log.i(LOG_TAG, "Scheduling insert prop: entry_id=" + e.getEntryId());
             if(propListToAdd.isEmpty())
                 propListToAdd += (Integer.toString(e.getEntryId()));
             else
                 propListToAdd += "," + (Integer.toString(e.getEntryId()));
         }
-        Log.i(LOG_TAG, "Scheduling delete");
-        batch.add(ContentProviderOperation.newDelete(Uri.parse(ContentUri.toString() + "?" + KeyToDelete + propListToDelete)).build());
-        Log.i(LOG_TAG, "Scheduling insert");
-        batch.add(ContentProviderOperation.newInsert(Uri.parse(ContentUri.toString() + "?" + keyToAdd + propListToAdd)).build());
+        if(!propListToDelete.isEmpty()){
+            Log.i(LOG_TAG, "Scheduling delete props");
+            batch.add(ContentProviderOperation.newDelete(Uri.parse(ContentUri.toString() + "?" + KeyToDelete + "=" + propListToDelete)).build());
+        }
+        if(!propListToAdd.isEmpty()){
+            Log.i(LOG_TAG, "Scheduling insert props");
+            batch.add(ContentProviderOperation.newInsert(Uri.parse(ContentUri.toString() + "?" + keyToAdd + "=" + propListToAdd)).build());
+        }
         Log.i(LOG_TAG, "Merge solution ready. Applying batch update");
         try {
             mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);

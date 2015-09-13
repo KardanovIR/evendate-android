@@ -119,8 +119,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             localList = localDataFetcher.getEventDataFromDB();
             merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, localList);
             for(DataEntry e: localList){
-                ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getEntryId()));
-                ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getEntryId()));
+                ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getId()));
+                ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getId()));
             }
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
             mergerEventProps.mergeData(null, cloudList, localList);

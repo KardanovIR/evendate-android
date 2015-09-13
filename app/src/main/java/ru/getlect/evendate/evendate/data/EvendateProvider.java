@@ -219,12 +219,13 @@ public class EvendateProvider extends ContentProvider {
                                 " ON " + EvendateContract.EventEntry.TABLE_NAME +
                                 "." + EvendateContract.EventEntry._ID +
                                 " = " + EvendateContract.EventTagEntry.TABLE_NAME +
-                                "." + EvendateContract.EventTagEntry._ID + " INNER JOIN " +
+                                "." + EvendateContract.EventTagEntry.COLUMN_EVENT_ID +
+                                " INNER JOIN " +
                                 EvendateContract.TagEntry.TABLE_NAME +
                                 " ON " + EvendateContract.TagEntry.TABLE_NAME +
                                 "." + EvendateContract.TagEntry._ID +
                                 " = " + EvendateContract.EventTagEntry.TABLE_NAME +
-                                "." + EvendateContract.EventTagEntry._ID
+                                "." + EvendateContract.EventTagEntry.COLUMN_TAG_ID
                 );
 
                 //events/1/tags
@@ -232,7 +233,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = sTagsByEventsQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
                         projection,
-                        EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry._ID + "=?",
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
                         null,
@@ -244,31 +245,32 @@ public class EvendateProvider extends ContentProvider {
             }
             case EVENT_FRIENDS: {
 
-                final SQLiteQueryBuilder sTagsByEventsQueryBuilder
+                final SQLiteQueryBuilder sFriendsByEventsQueryBuilder
                         = new SQLiteQueryBuilder();
 
                 //This is an inner join which looks like
                 //weather INNER JOIN location ON weather.location_id = location._id
-                sTagsByEventsQueryBuilder.setTables(
+                sFriendsByEventsQueryBuilder.setTables(
                         EvendateContract.EventEntry.TABLE_NAME + " INNER JOIN " +
                                 EvendateContract.UserEventEntry.TABLE_NAME +
                                 " ON " + EvendateContract.EventEntry.TABLE_NAME +
                                 "." + EvendateContract.EventEntry._ID +
                                 " = " + EvendateContract.UserEventEntry.TABLE_NAME +
-                                "." + EvendateContract.UserEventEntry._ID + " INNER JOIN " +
+                                "." + EvendateContract.UserEventEntry.COLUMN_EVENT_ID +
+                                " INNER JOIN " +
                                 EvendateContract.UserEntry.TABLE_NAME +
                                 " ON " + EvendateContract.UserEntry.TABLE_NAME +
                                 "." + EvendateContract.UserEntry._ID +
                                 " = " + EvendateContract.UserEventEntry.TABLE_NAME +
-                                "." + EvendateContract.UserEventEntry._ID
+                                "." + EvendateContract.UserEventEntry.COLUMN_USER_ID
                 );
 
                 //events/1/friends
                 String[] args = {uri.getPathSegments().get(1)};
-                final Cursor cursor = sTagsByEventsQueryBuilder.query(
+                final Cursor cursor = sFriendsByEventsQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
                         projection,
-                        EvendateContract.UserEntry._ID + "=?",
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
                         null,
@@ -433,7 +435,7 @@ public class EvendateProvider extends ContentProvider {
                     String[] eventsTagsArgs = {event_id, tagId};
                     rowsDeleted += db.delete(
                             EvendateContract.EventTagEntry.TABLE_NAME,
-                            EvendateContract.EventTagEntry.COLUMN_EVENT_ID + "=?" +
+                            EvendateContract.EventTagEntry.COLUMN_EVENT_ID + "=?" + " AND " +
                             EvendateContract.EventTagEntry.COLUMN_TAG_ID + "=?", eventsTagsArgs
                     );
                 }
@@ -448,7 +450,7 @@ public class EvendateProvider extends ContentProvider {
                     String[] eventsTagsArgs = {event_id, friendId};
                     rowsDeleted += db.delete(
                             EvendateContract.UserEventEntry.TABLE_NAME,
-                            EvendateContract.UserEventEntry.COLUMN_EVENT_ID + "=?" +
+                            EvendateContract.UserEventEntry.COLUMN_EVENT_ID + "=?" + " AND " +
                             EvendateContract.UserEventEntry.COLUMN_USER_ID + "=?", eventsTagsArgs
                     );
                 }

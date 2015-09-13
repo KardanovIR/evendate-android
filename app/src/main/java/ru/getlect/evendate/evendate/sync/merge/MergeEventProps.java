@@ -30,6 +30,8 @@ public class MergeEventProps extends MergeStrategy {
         mMergerTags = new MergeProperties(mContentResolver, tagKeyToAdd, tagKeyToRemove);
     }
 
+    //ContentUri = null always
+    //да, это говнокод
     @Override
     public void mergeData(Uri ContentUri, ArrayList<DataEntry> cloudList, ArrayList<DataEntry> localList){
 
@@ -40,7 +42,7 @@ public class MergeEventProps extends MergeStrategy {
         }
 
         // Get list of all items
-        Log.i(LOG_TAG, "update for " + ContentUri.toString());
+//        Log.i(LOG_TAG, "update for " + ContentUri.toString());
         Log.i(LOG_TAG, "Fetching local entries for merge");
         Log.i(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
@@ -50,9 +52,9 @@ public class MergeEventProps extends MergeStrategy {
 
                     Log.i(LOG_TAG, "Scheduling update: ");
                 Uri contentUriTags = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath("/" + e.getId() + "/" + EvendateContract.PATH_TAGS).build();
+                        .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_TAGS).build();
                 Uri contentUriFriends = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath("/" + e.getId() + "/" + EvendateContract.PATH_USERS).build();
+                        .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_USERS).build();
                 mMergerTags.mergeData(contentUriTags,
                         ((EventEntry)match).getTagList(), ((EventEntry) e).getTagList());
                 mMergerFriends.mergeData(contentUriFriends,
