@@ -1,24 +1,21 @@
 package ru.getlect.evendate.evendate;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.EntypoModule;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.IoniconsModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
-import com.joanzapata.iconify.fonts.MeteoconsModule;
-import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
-import com.joanzapata.iconify.fonts.TypiconsModule;
-import com.joanzapata.iconify.fonts.WeathericonsModule;
+import com.edmodo.cropper.CropImageView;
+import com.joanzapata.iconify.widget.IconTextView;
 import com.rey.material.app.DatePickerDialog;
 import com.rey.material.app.Dialog;
 import com.rey.material.app.DialogFragment;
@@ -36,7 +33,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
     LinearLayout ll_location;
     LinearLayout ll_photo;
-    LinearLayout notifications_ll;
+    LinearLayout ll_notifications;
     LinearLayout ll_start_date;
     LinearLayout ll_end_date;
     LinearLayout ll_description;
@@ -46,8 +43,16 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
     TextView event_end_time;
     TextView tv_notifications;
     TextView tv_description;
+    TextView tv_imageAdded;
     EditText et_desc_input;
     Switch switch_all_day;
+    IconTextView itv_all_day;
+    IconTextView itv_place;
+    IconTextView itv_notifications;
+    IconTextView itv_description;
+    IconTextView itv_image;
+    ImageView ivChoosed;
+    CropImageView cropImageView;
 
     public static DialogsFragment newInstance() {
         DialogsFragment fragment = new DialogsFragment();
@@ -56,21 +61,14 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
     private AddEventActivity mActivity;
 
+    private static int RESULT_LOAD_IMAGE = 1;
+    private static final int PICK_FROM_GALLERY = 2;
+    Bitmap thumbnail = null;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.add_event, container, false);
-
-        Iconify
-                .with(new FontAwesomeModule())
-                .with(new EntypoModule())
-                .with(new TypiconsModule())
-                .with(new MaterialModule())
-                .with(new MeteoconsModule())
-                .with(new WeathericonsModule())
-                .with(new SimpleLineIconsModule())
-                .with(new IoniconsModule());
-
 
 
         ll_location = (LinearLayout) v.findViewById(R.id.ll_location);
@@ -79,8 +77,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
         ll_photo = (LinearLayout)v.findViewById(R.id.ll_photo);
         ll_photo.setOnClickListener(this);
 
-        notifications_ll = (LinearLayout)v.findViewById(R.id.notifications_ll);
-        notifications_ll.setOnClickListener(this);
+        ll_notifications = (LinearLayout)v.findViewById(R.id.notifications_ll);
+        ll_notifications.setOnClickListener(this);
 
         event_start_date = (TextView)v.findViewById(R.id.event_start_date);
         event_start_time = (TextView)v.findViewById(R.id.event_start_time);
@@ -109,10 +107,26 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
         switch_all_day = (Switch)v.findViewById(R.id.switch_all_day);
         switch_all_day.setOnCheckedChangeListener(this);
 
+        itv_all_day = (IconTextView)v.findViewById(R.id.itv_all_day);
+        itv_all_day.setText("{md-access-time}");
+
+        itv_place = (IconTextView)v.findViewById(R.id.itv_place);
+        itv_place.setText("{md-place}");
+
+        itv_notifications = (IconTextView)v.findViewById(R.id.itv_notifications);
+        itv_notifications.setText("{md-notifications}");
+
+        itv_description = (IconTextView)v.findViewById(R.id.itv_description);
+        itv_description.setText("{md-description}");
+
+        itv_image = (IconTextView)v.findViewById(R.id.itv_image);
+        itv_image.setText("{md-image}");
+
+        ivChoosed = (ImageView)v.findViewById(R.id.ivChoosed);
+
+        tv_imageAdded = (TextView)v.findViewById(R.id.tv_imageAdded);
 
         mActivity = (AddEventActivity)getActivity();
-
-
 
         return v;
     }
@@ -123,6 +137,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
     @Override
     public void onClick(View v){
         Dialog.Builder builder = null;
+        boolean dfNeeded = true;
 
         switch (v.getId()) {
 
@@ -144,6 +159,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
                 builder.positiveAction("Ок")
                         .negativeAction("Отмена");
+                dfNeeded = true;
 
                 break;
 
@@ -166,6 +182,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
                 builder.positiveAction("Ок")
                         .negativeAction("Отмена");
+                dfNeeded = true;
 
                 break;
 
@@ -187,6 +204,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
                 builder.positiveAction("Ок")
                         .negativeAction("Отмена");
+                dfNeeded = true;
 
                 break;
 
@@ -209,6 +227,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
                 builder.positiveAction("Ок")
                         .negativeAction("Отмена");
+                dfNeeded = true;
 
                 break;
 
@@ -230,9 +249,10 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
                 ((SimpleDialog.Builder)builder).multiChoiceItems(
                         new String[]{"За 2 часа", "За день", "За три дня", "За неделю"} )
                         .title("Выберите напоминания")
-                       // .contentView(R.layout.layout_event_notifications)
                         .positiveAction("Ок")
                         .negativeAction("Отмена");
+                tv_notifications.setText("Напоминания выбраны");
+                dfNeeded = true;
 
                 break;
 
@@ -265,33 +285,64 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
                         .negativeAction("Отмена")
                         .contentView(R.layout.layout_event_description);
 
-
+                dfNeeded = true;
 
                 break;
 
             case R.id.ll_location:
                 Intent intent_map_fragment = new Intent(getActivity(), MapsActivity.class);
                 startActivity(intent_map_fragment);
+                dfNeeded = false;
                 break;
 
             case R.id.ll_photo:
-                Intent intent = new Intent();
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Complete action using"), 1);
+                startActivityForResult(intent,0);
+                dfNeeded =false;
+
                 break;
-
-
-
-
         }
 
-        DialogFragment fragment = DialogFragment.newInstance(builder);
-        fragment.show(getFragmentManager(),null);
+        if(dfNeeded ==true){
+            DialogFragment fragment = DialogFragment.newInstance(builder);
+            fragment.show(getFragmentManager(),null); }
 
 
 
     }
+
+
+    @Override
+    public void onActivityResult(int reqCode, int resCode, Intent data){
+        super.onActivityResult(reqCode, resCode, data);
+
+        if(resCode == Activity.RESULT_OK && data != null){
+            String realPath;
+            // SDK < API11
+            if (Build.VERSION.SDK_INT < 11)
+                realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(getActivity(), data.getData());
+
+                // SDK >= 11 && SDK < 19
+            else if (Build.VERSION.SDK_INT < 19)
+                realPath = RealPathUtil.getRealPathFromURI_API11to18(getActivity(), data.getData());
+
+                // SDK > 19 (Android 4.4)
+            else
+                realPath = RealPathUtil.getRealPathFromURI_API19(getActivity(), data.getData());
+
+
+            tv_imageAdded.setText(realPath);
+
+        }
+
+        Intent intent = new Intent(getActivity(),CroppActivity.class);
+        startActivity(intent);
+
+
+    }
+
+
 
 
     @Override

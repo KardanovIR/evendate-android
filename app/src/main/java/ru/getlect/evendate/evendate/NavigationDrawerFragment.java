@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ru.getlect.evendate.evendate.Authorization.AccountChooser;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 /**
@@ -28,7 +29,7 @@ import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends Fragment implements View.OnClickListener {
 
     /**
      * Remember the position of the selected item.
@@ -58,7 +59,8 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    Button btn_VK;
+    Button btn_authorization;
+    Button btn_add_event;
     Button btn_sync;
 
     public NavigationDrawerFragment() {
@@ -103,24 +105,39 @@ public class NavigationDrawerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
         btn_sync = (Button)rootView.findViewById(R.id.btn_sync);
-        btn_sync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btn_sync.setOnClickListener(this);
 
-                switch (v.getId()) {
-                    case R.id.btn_sync:
-                        Log.w("BUTTON_SYNC", "clicked");
-                        EvendateSyncAdapter.syncImmediately(getActivity());
-                        break;
-                }
-            }
-        });
+        btn_authorization = (Button)rootView.findViewById(R.id.btn_authorization);
+        btn_authorization.setOnClickListener(this);
+
+        btn_add_event = (Button)rootView.findViewById(R.id.btn_add_event);
+        btn_add_event.setOnClickListener(this);
+
 
         return rootView;
     }
 
 
 
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.btn_sync:
+                Log.w("BUTTON_SYNC", "clicked");
+                EvendateSyncAdapter.syncImmediately(getActivity());
+                break;
+            case R.id.btn_authorization:
+                Intent intentAuth = new Intent(getActivity(),AccountChooser.class);
+                startActivity(intentAuth);
+                break;
+            case R.id.btn_add_event:
+                Intent intentEvent = new Intent(getActivity(),AddEventActivity.class);
+                startActivity(intentEvent);
+                break;
+
+        }
+
+    }
 
 
     public boolean isDrawerOpen() {

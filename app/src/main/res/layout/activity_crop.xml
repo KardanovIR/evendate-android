@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color">
+
+    <com.edmodo.cropper.CropImageView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cropImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        custom:imageResource="@drawable/butterfly" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp"
+        android:gravity="center_vertical|center_horizontal">
+
+
+        <com.rey.material.widget.Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BUTTON"
+            android:id="@+id/btn_crop"
+            app:rd_enable="true"
+            android:background="@color/background_color_all"
+            android:textColor = "@color/primary_color"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            >
+
+
+        </com.rey.material.widget.Button>
+
+
+        <com.rey.material.widget.Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ОК"
+            app:rd_enable="true"
+            android:background="@color/background_color_all"
+            android:textColor = "@color/primary_color"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:visibility = "gone"
+            android:id="@+id/btn_crop_ok"
+            android:layout_marginLeft="20dp">
+
+
+        </com.rey.material.widget.Button>
+
+
+
+    </LinearLayout>
+
+
+
+
+    <ImageView
+        android:id="@+id/croppedImageView"
+        style="@style/RoboTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|top"
+        android:contentDescription="Обрезанная версия" />
+
+
+
+</LinearLayout>

@@ -4,7 +4,7 @@
     <color name="arrow_color">#ff737373</color>
     <color name="selected_day_color">#ff819ac1</color>
 
-    <color name="primary_color">#ff819ac1</color>
+    <color name="primary_color">#6B89C6</color>
     <color name="accent_color">#ff697b97</color>
 
 
@@ -23,6 +23,11 @@
     <color name="colorPrimaryHalf">#9003A9F4</color>
 
     <color name="icons_color">#717171</color>
+
+    //Colors for icons
+    <color name="vk_color">#4d7aa3</color>
+    <color name="fb_color">#415fa8</color>
+    <color name="gplus_color">#d95333</color>
 
 
 
