@@ -6,12 +6,12 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -113,6 +113,8 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         btn_add_event = (Button)rootView.findViewById(R.id.btn_add_event);
         btn_add_event.setOnClickListener(this);
 
+        Button btn_reel = (Button)rootView.findViewById(R.id.btn_reel);
+        btn_reel.setOnClickListener(this);
 
         return rootView;
     }
@@ -127,14 +129,17 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
                 EvendateSyncAdapter.syncImmediately(getActivity());
                 break;
             case R.id.btn_authorization:
-                Intent intentAuth = new Intent(getActivity(),AccountChooser.class);
+                Intent intentAuth = new Intent(getActivity(), AccountChooser.class);
                 startActivity(intentAuth);
                 break;
             case R.id.btn_add_event:
-                Intent intentEvent = new Intent(getActivity(),AddEventActivity.class);
+                Intent intentEvent = new Intent(getActivity(), AddEventActivity.class);
                 startActivity(intentEvent);
                 break;
-
+            case R.id.btn_reel:
+                Intent intentReel = new Intent(getActivity(), ReelActivity.class);
+                startActivity(intentReel);
+                break;
         }
 
     }
@@ -167,7 +172,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
+                //R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -294,7 +299,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
 
@@ -302,7 +307,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */

@@ -31,10 +31,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".Authorization.WebAuthActivity" />
-        <activity android:name=".AddEventActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CroppActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".AddEventActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CroppActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -45,43 +48,53 @@
 
         <activity
             android:name=".MapsActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_maps" >
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".Authorization.AccountChooser"
+            android:screenOrientation="portrait" >
         </activity>
 
-        <activity android:name=".Authorization.AccountChooser"
-            android:screenOrientation="portrait">
-        </activity>
-        
         <provider
-            android:authorities="ru.getlect.evendate.evendate"
             android:name=".data.EvendateProvider"
+            android:authorities="ru.getlect.evendate.evendate"
             android:exported="false"
-            android:syncable="true">
+            android:syncable="true" >
         </provider>
+
         <service
             android:name=".sync.EvendateAuthenticatorService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/evendate_authenticator" />
         </service>
         <service
             android:name=".sync.EvendateSyncService"
-            android:exported="false"
-            >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/evendate_sync_adapter" />
         </service>
 
-
+        <activity
+            android:name=".ReelActivity"
+            android:label="@string/title_activity_reel" >
+        </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".ReelActivity">
+        </activity>
     </application>
 
 </manifest>

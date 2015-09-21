@@ -28,6 +28,10 @@
     <string name="content_authority">ru.getlect.evendate.evendate</string>
     <string name="account">example.com</string>
     <string name="account_type">evendate.ru</string>
+    <string name="title_activity_reel">ReelActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_detail">Event</string>
 
 
 

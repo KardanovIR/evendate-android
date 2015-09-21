@@ -304,9 +304,10 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
                 break;
         }
 
-        if(dfNeeded ==true){
+        if(dfNeeded){
             DialogFragment fragment = DialogFragment.newInstance(builder);
-            fragment.show(getFragmentManager(),null); }
+            fragment.show(getFragmentManager(), null);
+        }
 
 
 
@@ -336,7 +337,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
         }
 
-        Intent intent = new Intent(getActivity(),CroppActivity.class);
+        Intent intent = new Intent(getActivity(), CroppActivity.class);
         startActivity(intent);
 
 
@@ -347,12 +348,12 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
     @Override
     public void onCheckedChanged(Switch aSwitch, boolean b) {
-        if(b==true){
+        if(b){
             switch_all_day.applyStyle(R.style.Evendate_Switch_On);
             event_start_time.setVisibility(View.GONE);
             event_end_time.setVisibility(View.GONE);
         }
-        if(b==false) {
+        else {
             switch_all_day.applyStyle(R.style.Evendate_Switch_Off);
             event_start_time.setVisibility(View.VISIBLE);
             event_end_time.setVisibility(View.VISIBLE);
