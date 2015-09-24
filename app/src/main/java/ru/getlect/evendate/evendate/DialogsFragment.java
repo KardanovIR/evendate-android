@@ -2,7 +2,6 @@ package ru.getlect.evendate.evendate;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.EntypoModule;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
+import com.joanzapata.iconify.fonts.IoniconsModule;
+import com.joanzapata.iconify.fonts.MaterialModule;
+import com.joanzapata.iconify.fonts.MeteoconsModule;
+import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
+import com.joanzapata.iconify.fonts.TypiconsModule;
+import com.joanzapata.iconify.fonts.WeathericonsModule;
 import com.joanzapata.iconify.widget.IconTextView;
 import com.rey.material.app.DatePickerDialog;
 import com.rey.material.app.Dialog;
@@ -53,6 +61,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
     IconTextView itv_image;
     ImageView ivChoosed;
     CropImageView cropImageView;
+    public static String sEncodedImage;
 
     public static DialogsFragment newInstance() {
         DialogsFragment fragment = new DialogsFragment();
@@ -61,14 +70,21 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
     private AddEventActivity mActivity;
 
-    private static int RESULT_LOAD_IMAGE = 1;
-    private static final int PICK_FROM_GALLERY = 2;
-    Bitmap thumbnail = null;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.add_event, container, false);
+
+        Iconify
+                .with(new FontAwesomeModule())
+                .with(new EntypoModule())
+                .with(new TypiconsModule())
+                .with(new MaterialModule())
+                .with(new MeteoconsModule())
+                .with(new WeathericonsModule())
+                .with(new SimpleLineIconsModule())
+                .with(new IoniconsModule());
+
 
 
         ll_location = (LinearLayout) v.findViewById(R.id.ll_location);
@@ -127,6 +143,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
         tv_imageAdded = (TextView)v.findViewById(R.id.tv_imageAdded);
 
         mActivity = (AddEventActivity)getActivity();
+
+
 
         return v;
     }
@@ -314,11 +332,11 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
 
     @Override
-    public void onActivityResult(int reqCode, int resCode, Intent data){
+    public void onActivityResult(int reqCode, int resCode, Intent data) {
         super.onActivityResult(reqCode, resCode, data);
+        String realPath = null;
+        if (resCode == Activity.RESULT_OK && data != null) {
 
-        if(resCode == Activity.RESULT_OK && data != null){
-            String realPath;
             // SDK < API11
             if (Build.VERSION.SDK_INT < 11)
                 realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(getActivity(), data.getData());
@@ -336,10 +354,16 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
         }
 
-        Intent intent = new Intent(getActivity(),CroppActivity.class);
-        startActivity(intent);
+        if (realPath != null)
+            if (!realPath.isEmpty()) {
+                {
+                    Intent intent = new Intent(getActivity(), CroppActivity.class);
+                    intent.putExtra("imagePath", realPath);
+                    startActivity(intent);
+                }
 
 
+            }
     }
 
 
