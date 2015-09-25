@@ -32,6 +32,7 @@
                 android:textColor="@color/background_color_all"
                 android:text="Новое"/>
 
+
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>

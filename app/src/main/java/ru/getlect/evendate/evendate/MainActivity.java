@@ -1,7 +1,6 @@
 package ru.getlect.evendate.evendate;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,7 +8,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,17 +21,6 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
@@ -93,8 +80,7 @@ public class MainActivity extends ActionBarActivity
 
         // инициализация синхронизации, создание аккаунта
         EvendateSyncAdapter.initializeSyncAdapter(this);
-        //FetchEventsTask fetchEventsTask = new FetchEventsTask();
-        //fetchEventsTask.execute();
+
 
 
     }
@@ -236,142 +222,6 @@ public class MainActivity extends ActionBarActivity
 
         return super.onOptionsItemSelected(item);
     }
-
-
-    public class FetchEventsTask extends AsyncTask<Void,Void,String> {
-        private final String LOG_TAG = FetchEventsTask.class.getSimpleName();
-
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-
-        @Override
-        protected String doInBackground(Void...params){
-            try {
-                URL url = new URL("http://evendate.ru/all.json");
-
-                // Create the request and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                //Read the input stream inso String eventsJsonStr
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-
-                eventsJsonStr = buffer.toString();
-
-            }
-
-            catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            return eventsJsonStr;
-
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String eventsJsonStr){
-        super.onPostExecute(eventsJsonStr);
-
-
-
-            JSONObject eventsJSONObject = null;
-
-            //for parsing
-            final String DATA = "data";
-            final String ID = "id";
-            final String TITLE = "title";
-            final String DESCRIPTION = "description";
-            final String EVENT_START = "event_start_date";
-            final String EVENT_END = "event_end_date";
-
-            //for saving
-            Integer data_id = null;
-            String data_title = "";
-            String data_description ="";
-            String data_event_start = "";
-            String data_event_end = "";
-
-
-            try {
-                eventsJSONObject = new JSONObject(eventsJsonStr);
-                JSONArray eventsArray = eventsJSONObject.getJSONArray(DATA);
-
-                JSONObject first_event = eventsArray.getJSONObject(0);
-                data_id = first_event.getInt(ID);
-                data_title = first_event.getString(TITLE);
-                data_description = first_event.getString(DESCRIPTION);
-                data_event_start = first_event.getString(EVENT_START);
-                data_event_end = first_event.getString(EVENT_END);
-
-
-
-                Log.e(LOG_TAG, "FIRST ID: " + data_id);
-                Log.e(LOG_TAG, "FIRST TITLE: " + data_title);
-                Log.e(LOG_TAG, "FIRST DESCRIPTION: " + data_description);
-                Log.e(LOG_TAG, "FIRST EVENT START: " + data_event_start);
-                Log.e(LOG_TAG, "FIRST EVENT END: " + data_event_end);
-
-
-
-
-
-
-
-//                for(int i=0; i<4; i++){
-//
-//
-//                }
-
-
-            }
-
-            catch (JSONException e){
-                e.printStackTrace();
-            }
-
-            catch (NullPointerException e){
-                e.printStackTrace();
-            }
-
-
-        }
-
-
-
-    }
-
-
 
 
     /**
