@@ -1,8 +1,5 @@
 package ru.getlect.evendate.evendate;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,14 +9,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-
-import ru.getlect.evendate.evendate.data.EvendateContract;
 
 public class ReelActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks{
@@ -162,66 +151,5 @@ public class ReelActivity extends AppCompatActivity
     //                getArguments().getInt(ARG_SECTION_NUMBER));
     //    }
     //}
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class ReelFragment extends Fragment {
-        private ListView mListView;
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static ReelFragment newInstance(int sectionNumber) {
-            ReelFragment fragment = new ReelFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public ReelFragment() {
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
-            mListView = (ListView)rootView.findViewById(R.id.listView);
-
-            final String[] PROJECTION = new String[] {
-                    EvendateContract.EventEntry._ID,
-                    EvendateContract.EventEntry.COLUMN_TITLE,
-                    EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-            };
-            final Uri uri = EvendateContract.EventEntry.CONTENT_URI;
-            Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
-            String[] from = new String[] { EvendateContract.EventEntry.COLUMN_TITLE,
-                    EvendateContract.EventEntry.COLUMN_DESCRIPTION };
-            int[] to = new int[] { R.id.item_title, R.id.item_subtitle };
-            SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(
-                    getActivity(), R.layout.reel_list_item, c, from, to);
-            mListView.setAdapter(cursorAdapter);
-            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                    detailIntent.setData(uri.buildUpon().appendPath(Long.toString(id)).build());
-                    startActivity(detailIntent);
-                }
-            });
-            return rootView;
-        }
-    }
 
 }

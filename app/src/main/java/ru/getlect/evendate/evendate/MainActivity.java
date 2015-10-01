@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity
         widget.addDecorator(new DisableAllDaysDecorator());
 //        widget.addDecorator(new EnableOneToTenDecorator());
 
-        // инициализация синхронизации, создание аккаунта
-        EvendateSyncAdapter.initializeSyncAdapter(this);
 
 
     }

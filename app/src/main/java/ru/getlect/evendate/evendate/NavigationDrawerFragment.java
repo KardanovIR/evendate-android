@@ -1,9 +1,16 @@
 package ru.getlect.evendate.evendate;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.CharArrayBuffer;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.database.DataSetObserver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,9 +26,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import ru.getlect.evendate.evendate.Authorization.AccountChooser;
+import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 /**
@@ -115,6 +127,33 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
 
         Button btn_reel = (Button)rootView.findViewById(R.id.btn_reel);
         btn_reel.setOnClickListener(this);
+        final String[] PROJECTION = new String[] {
+                EvendateContract.TagEntry._ID,
+                EvendateContract.OrganizationEntry.COLUMN_NAME,
+        };
+        // Constants representing column positions from PROJECTION.
+        final int COLUMN_ID = 0;
+        final int COLUMN_TAG_ID = 1;
+        final int COLUMN_NAME = 2;
+
+        Uri uri = EvendateContract.OrganizationEntry.CONTENT_URI;
+        Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
+
+        String[] from = new String[] { EvendateContract.OrganizationEntry.COLUMN_NAME };
+        int[] to = new int[] { R.id.item_title };
+        CursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(),
+                R.layout.nav_drawer_org_item, c, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        ListView listView = (ListView)rootView.findViewById(R.id.listView);
+        listView.setAdapter(cursorAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent detailIntent = new Intent(getActivity(), OrganizationActivity.class);
+                detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
+                        .buildUpon().appendPath(Long.toString(id)).build());
+                startActivity(detailIntent);
+            }
+        });
 
         return rootView;
     }
