@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,14 +32,13 @@ import com.rey.material.app.DialogFragment;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.app.TimePickerDialog;
 import com.rey.material.widget.EditText;
-import com.rey.material.widget.Switch;
 
 import java.text.SimpleDateFormat;
 
 /**
  * Created by fj on 17.08.2015.
  */
-public class DialogsFragment extends Fragment implements View.OnClickListener, Switch.OnCheckedChangeListener {
+public class DialogsFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     LinearLayout ll_location;
     LinearLayout ll_photo;
@@ -53,7 +54,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
     TextView tv_description;
     TextView tv_imageAdded;
     EditText et_desc_input;
-    Switch switch_all_day;
+    SwitchCompat switch_all_day;
     IconTextView itv_all_day;
     IconTextView itv_place;
     IconTextView itv_notifications;
@@ -120,7 +121,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
         tv_notifications = (TextView)v.findViewById(R.id.tv_notifications);
         tv_description = (TextView)v.findViewById(R.id.tv_description);
 
-        switch_all_day = (Switch)v.findViewById(R.id.switch_all_day);
+        switch_all_day = (SwitchCompat)v.findViewById(R.id.switch_all_day);
         switch_all_day.setOnCheckedChangeListener(this);
 
         itv_all_day = (IconTextView)v.findViewById(R.id.itv_all_day);
@@ -370,14 +371,12 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, S
 
 
     @Override
-    public void onCheckedChanged(Switch aSwitch, boolean b) {
-        if(b==true){
-            switch_all_day.applyStyle(R.style.Evendate_Switch_On);
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(isChecked==true){
             event_start_time.setVisibility(View.GONE);
             event_end_time.setVisibility(View.GONE);
         }
-        if(b==false) {
-            switch_all_day.applyStyle(R.style.Evendate_Switch_Off);
+        if(isChecked==false){
             event_start_time.setVisibility(View.VISIBLE);
             event_end_time.setVisibility(View.VISIBLE);
         }
