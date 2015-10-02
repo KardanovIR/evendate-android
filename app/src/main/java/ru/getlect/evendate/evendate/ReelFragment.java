@@ -5,17 +5,20 @@ package ru.getlect.evendate.evendate;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -23,14 +26,19 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ReelFragment extends Fragment {
+public class ReelFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private android.support.v7.widget.RecyclerView mRecyclerView;
+
+    private final static int EVENT_INFO_LOADER_ID = 0;
+    private RVAdapter mAdapter;
+
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -57,100 +65,176 @@ public class ReelFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        final String[] PROJECTION = new String[] {
-                EvendateContract.EventEntry._ID,
-                EvendateContract.EventEntry.COLUMN_TITLE,
-                EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-        };
-        final Uri uri = EvendateContract.EventEntry.CONTENT_URI;
-        Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
-        String[] from = new String[] { EvendateContract.EventEntry.COLUMN_TITLE,
-                EvendateContract.EventEntry.COLUMN_DESCRIPTION };
-        int[] to = new int[] { R.id.item_title, R.id.item_subtitle };
-        RVAdapter adapter = new RVAdapter(c, getActivity());
-        mRecyclerView.setAdapter(adapter);
+        mAdapter = new RVAdapter(getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //mRecyclerView.
         return rootView;
     }
 
-    public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> implements ReelCardClickListener{
+    @Override
+    public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
+        //Log.d(TAG, "onCreateLoader: " + id);
+//
+        switch (id) {
+            case EVENT_INFO_LOADER_ID:
+                return new CursorLoader(
+                        getActivity(),
+                        mUri,
+                        new String[] {
+                                EvendateContract.EventEntry._ID,
+                                EvendateContract.EventEntry.COLUMN_TITLE,
+                                EvendateContract.EventEntry.COLUMN_DESCRIPTION,
+                        },
+                        null,
+                        null,
+                        null
+                );
+//
+        //    case CAPITALS_LOADER_ID:
+        //        return new CursorLoader(
+        //                mActivity,
+        //                CitiesContract.Cities.CAPITALS_CONTENT_URI,
+        //                new String[]{
+        //                        CitiesContract.Cities._ID,
+        //                        CitiesContract.Cities.NAME
+        //                },
+        //                null,
+        //                null,
+        //                CitiesContract.Cities.NAME + " ASC"
+        //        );
+//
+        //    case SELECTED_CITY_LOADER_ID:
+        //        return new CursorLoader(
+        //                mActivity,
+        //                ContentUris.withAppendedId(CitiesContract.Cities.CONTENT_URI, args.getLong(CITY_ID_KEY)),
+        //                null,
+        //                null,
+        //                null,
+        //                null
+        //        );
+//
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(final Loader<Cursor> loader, final Cursor cursor) {
+        //Log.d(TAG, "onLoadFinished: " + loader.getId());
+//
+        switch (loader.getId()) {
+            case EVENT_INFO_LOADER_ID:
+                mAdapter.setCursor(cursor);
+                break;
+//
+        //    case CAPITALS_LOADER_ID:
+        //        mCapitalsAdapter.setCursor(cursor);
+        //        break;
+//
+        //    case SELECTED_CITY_LOADER_ID:
+        //        if (cursor != null) {
+        //            mEditingCityId = cursor.getLong(cursor.getColumnIndex(CitiesContract.Cities._ID));
+        //            mCityIdTextView.setText(getString(R.string.city_id_placeholder, mEditingCityId));
+        //            mCityNameEditText.setText(cursor.getString(cursor.getColumnIndex(CitiesContract.Cities.NAME)));
+        //            mCapitalCheckbox.setChecked(cursor.getInt(cursor.getColumnIndex(CitiesContract.Cities.CAPITAL)) == 1);
+        //        } else {
+        //            resetCityEditingForm();
+        //        }
+        //        break;
+//
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(final Loader<Cursor> loader) {
+        //Log.d(TAG, "onLoaderReset: " + loader.getId());
+//
+        switch (loader.getId()) {
+            case EVENT_INFO_LOADER_ID:
+                mAdapter.setCursor(null);
+                break;
+//
+        //    case CAPITALS_LOADER_ID:
+        //        mCapitalsAdapter.setCursor(null);
+        //        break;
+//
+        //    case SELECTED_CITY_LOADER_ID:
+        //        resetCityEditingForm();
+        //        break;
+//
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
+    public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
 
         Context mContext;
         Cursor mCursor;
-        CursorAdapter mCursorAdapter;
 
-        public RVAdapter(Cursor c, Context context){
-            this.mCursor = c;
+        public RVAdapter(Context context){
             this.mContext = context;
-            mCursorAdapter = new CursorAdapter(mContext, mCursor, 0) {
-                @Override
-                public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                    return LayoutInflater.from(parent.getContext()).inflate(R.layout.reel_list_item, parent, false);
-                }
+        }
 
-                @Override
-                public void bindView(View view, Context context, Cursor cursor) {
-                    TextView title = (TextView)view.findViewById(R.id.item_title);
-                    TextView subTitle = (TextView)view.findViewById(R.id.item_subtitle);
-
-                    title.setText(cursor.getString(cursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
-                    subTitle.setText(cursor.getString(cursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_DESCRIPTION)));
-                }
-
-            };
+        public void setCursor(Cursor cursor) {
+            this.mCursor = cursor;
+            notifyDataSetChanged();
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
-            return new ViewHolder(v, this);
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.reel_list_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            mCursorAdapter.getCursor().moveToPosition(position);
-            mCursorAdapter.bindView(holder.cardView, mContext, mCursorAdapter.getCursor());
+            if (mCursor != null) {
+                mCursor.moveToPosition(position);
+                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry._ID));
+                holder.mTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
+                holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_DESCRIPTION)));
+            }
         }
 
         @Override
         public int getItemCount() {
-            return mCursorAdapter.getCount();
+            if (mCursor == null) {
+                return 0;
+            } else {
+                return mCursor.getCount();
+            }
         }
 
-        @Override
-        public void onItem(CardView cardView) {
-//            cardView.getId();
-//            int itemPosition = get.getChildPosition(v);
-//            Intent intent = new Intent(getContext(), DetailActivity.class);
-//            intent.setData();
-        }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             public android.support.v7.widget.CardView cardView;
             public TextView mTitle;
             public TextView mSubTitle;
-            private ReelCardClickListener mReelCardClickListener;
-            public final int id;
-            public ViewHolder(View itemView, ReelCardClickListener reelCardClickListener){
+            public long id;
+
+            public ViewHolder(View itemView){
                 super(itemView);
-                mReelCardClickListener = reelCardClickListener;
                 mSubTitle = (TextView)itemView.findViewById(R.id.item_subtitle);
                 cardView = (android.support.v7.widget.CardView)itemView;
                 mTitle = (TextView)itemView.findViewById(R.id.item_title);
                 this.id = (int)this.getItemId();
+                itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
-                if(v instanceof CardView)
-                    mReelCardClickListener.onItem((CardView)v);
+                if(v instanceof CardView){
+                    Intent intent = new Intent(getContext(), DetailActivity.class);
+                    intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
+                    getActivity().startActivity(intent);
+                }
             }
 
         }
-    }
-
-    public interface ReelCardClickListener {
-        public void onItem(android.support.v7.widget.CardView cardView);
     }
 }
