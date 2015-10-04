@@ -1,48 +1,34 @@
 package ru.getlect.evendate.evendate;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.Menu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.DayViewDecorator;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
 
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnDateChangedListener {
+public class MainActivity extends AppCompatActivity {
 
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-    private TextView tv_bottom;
-    private CharSequence mTitle;
-    private android.support.v7.app.ActionBarDrawerToggle toggle;
+//    private NavigationDrawerFragment mNavigationDrawerFragment;
+//    private TextView tv_bottom;
+//    private CharSequence mTitle;
+    private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
+    DrawerLayout drawerLayout;
 
-    public int[] arrayID = new int[100];
-    public String[] arrayTitle = new String[20];
-    public String[] arrayDescription = new String[20];
-    public String[] arrayEventStartDate = new String[20];
-    public String[] arrayEventEndDate = new String[20];
-    public String[] arrayOrganizationName = new String[20];
 
-    // Will contain the raw JSON response as a string.
-    public String eventsJsonStr = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,31 +38,57 @@ public class MainActivity extends ActionBarActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Временная кнопка
+        final Button btn_magicButton = (Button)findViewById(R.id.btn_magicButton);
+        btn_magicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.btn_magicButton:
+                        Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
+                        startActivity(intentEvent);
+                        break;
+                }
+            }
+        });
 
-        DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        toggle = new android.support.v7.app.ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
-        toggle.setDrawerIndicatorEnabled(true);
-        drawerLayout.setDrawerListener(toggle);
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.accent_color));
+
+        mDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
+        drawerLayout.setDrawerListener(mDrawerToggle);
+
+
+//
+//        toggle = new android.support.v7.app.ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
+//        toggle.setDrawerIndicatorEnabled(true);
+//        drawerLayout.setDrawerListener(toggle);
 
 
 
-        tv_bottom = (TextView)findViewById(R.id.tv_bottom);
+//        tv_bottom = (TextView)findViewById(R.id.tv_bottom);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+//        mNavigationDrawerFragment = (NavigationDrawerFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+//        mTitle = getTitle();
+//
+////         Set up the drawer.
+//        mNavigationDrawerFragment.setUp(
+//                R.id.navigation_drawer,
+//                (DrawerLayout) findViewById(R.id.drawer_layout));
 
-//         Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+
+        }
 
 
         MaterialCalendarView widget = (MaterialCalendarView) findViewById(R.id.calendarView);
-        widget.setOnDateChangedListener(this);
-
-        widget.addDecorator(new DisableAllDaysDecorator());
-//        widget.addDecorator(new EnableOneToTenDecorator());
+//        widget.setOnDateChangedListener(this);
+//
+//        widget.addDecorator(new DisableAllDaysDecorator());
+////        widget.addDecorator(new EnableOneToTenDecorator());
 
         // инициализация синхронизации, создание аккаунта
         EvendateSyncAdapter.initializeSyncAdapter(this);
@@ -86,25 +98,54 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onDateChanged(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
-        String stringDay = String.valueOf(calendarDay);
-        Toast.makeText(this, stringDay, Toast.LENGTH_SHORT).show();
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-    private static class DisableAllDaysDecorator implements DayViewDecorator {
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return day.getDay() <=31;
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(Gravity.LEFT)){
+            drawerLayout.closeDrawers();
+            return;
         }
+        super.onBackPressed();
+    }
 
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.setDaysDisabled(true);
-        }
+//    @Override
+//    public void onDateChanged(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
+//        String stringDay = String.valueOf(calendarDay);
+//        Toast.makeText(this, stringDay, Toast.LENGTH_SHORT).show();
+
+//    }
+
+
+
+//    private static class DisableAllDaysDecorator implements DayViewDecorator {
+//
+//        @Override
+//        public boolean shouldDecorate(CalendarDay day) {
+//            return day.getDay() <=31;
+//        }
+//
+//        @Override
+//        public void decorate(DayViewFacade view) {
+//            view.setDaysDisabled(true);
+//        }
 
 //        private static boolean[] PRIME_TABLE = {
 //                false,  // 0?
@@ -143,7 +184,7 @@ public class MainActivity extends ActionBarActivity
 //                false,
 //                false, //PADDING
 //        };
-    }
+//    }
 
 //    private static class EnableOneToTenDecorator implements DayViewDecorator {
 //
@@ -158,110 +199,92 @@ public class MainActivity extends ActionBarActivity
 //        }
 //    }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        toggle.syncState();
-    }
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        toggle.syncState();
+//    }
+//
+//    @Override
+//    public void onNavigationDrawerItemSelected(int position) {
+//        // update the main content by replacing fragments
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+//                .commit();
+//    }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                
-                break;
-            case 2:
-
-                break;
-            case 3:
-
-                break;
-        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    public void onSectionAttached(int number) {
+//        switch (number) {
+//            case 1:
+//
+//                break;
+//            case 2:
+//
+//                break;
+//            case 3:
+//
+//                break;
+//        }
+//    }
+//
+//    public void restoreActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//        actionBar.setDisplayShowTitleEnabled(true);
+//        actionBar.setTitle(mTitle);
+//    }
 
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+//            // Only show items in the action bar relevant to this screen
+//            // if the drawer is not showing. Otherwise, let the drawer
+//            // decide what to show in the action bar.
+//            getMenuInflater().inflate(R.menu.main, menu);
+//            restoreActionBar();
+//            return true;
+//        }
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
+//    public static class PlaceholderFragment extends Fragment {
+//        /**
+//         * The fragment argument representing the section number for this
+//         * fragment.
+//         */
+//        private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//        /**
+//         * Returns a new instance of this fragment for the given section
+//         * number.
+//         */
+//        public static PlaceholderFragment newInstance(int sectionNumber) {
+//            PlaceholderFragment fragment = new PlaceholderFragment();
+//            Bundle args = new Bundle();
+//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+//
+//        public PlaceholderFragment() {
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+//            return rootView;
+//        }
+//
+//        @Override
+//        public void onAttach(Activity activity) {
+//            super.onAttach(activity);
+//            ((MainActivity) activity).onSectionAttached(
+//                    getArguments().getInt(ARG_SECTION_NUMBER));
+//        }
+//    }
 
 }
