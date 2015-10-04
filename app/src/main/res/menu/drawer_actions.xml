@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/idD1"
+            android:title="Title1"/>
+        <item
+            android:id="@+id/idD2"
+            android:title="Title2"/>
+        <item
+            android:id="@+id/idD3"
+            android:title="Title3"/>
+        <item
+            android:id="@+id/idD4"
+            android:title="Title4"/>
+    </group>
+
+    <item android:title="TitlePart2">
+        <menu>
+            <item
+                android:id="@+id/idD11"
+                android:title="Title11"
+                />
+            <item
+                android:id="@+id/idD12"
+                android:title="Title12"
+                />
+        </menu>
+    </item>
+</menu>

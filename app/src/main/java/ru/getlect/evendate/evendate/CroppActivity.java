@@ -2,12 +2,20 @@ package ru.getlect.evendate.evendate;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.edmodo.cropper.CropImageView;
 import com.rey.material.widget.Button;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Created by fj on 14.09.2015.
@@ -17,7 +25,11 @@ public class CroppActivity extends Activity {
 
     private int mAspectRatioX = 10;
     private int mAspectRatioY = 7;
-    Bitmap croppedImage;
+    CropImageView cropImageView;
+    Bitmap bmImg;
+    public static Bitmap croppedImage;
+//    public static String sEncodedImage;
+    
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
@@ -39,9 +51,24 @@ public class CroppActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
 
+        cropImageView = (CropImageView)findViewById(R.id.cropImageView);
+        cropImageView.setAspectRatio(mAspectRatioX,mAspectRatioY);
+        cropImageView.setFixedAspectRatio(true);
         final CropImageView cropImageView = (CropImageView) findViewById(R.id.cropImageView);
 
-        cropImageView.setAspectRatio(mAspectRatioX, mAspectRatioY);
+
+        String path = getIntent().getExtras().getString("imagePath");
+
+
+        Uri uriFromPath = Uri.fromFile(new File(path));
+
+        try {
+            bmImg = BitmapFactory.decodeStream(getContentResolver().openInputStream(uriFromPath));
+            cropImageView.setImageBitmap(bmImg);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
         final Button cropOkButton = (com.rey.material.widget.Button)findViewById(R.id.btn_crop_ok);
 
@@ -53,12 +80,36 @@ public class CroppActivity extends Activity {
                 croppedImage = cropImageView.getCroppedImage();
                 ImageView croppedImageView = (ImageView) findViewById(R.id.croppedImageView);
                 croppedImageView.setImageBitmap(croppedImage);
-                cropOkButton.setVisibility(View.VISIBLE);
+                cropOkButton.setEnabled(true);
+            }
+        });
+
+        cropOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FetchCropTask fetchCropTask = new FetchCropTask();
+                fetchCropTask.execute();
+                finish();
+
             }
         });
 
 
 
+
+
+    }
+
+    public class FetchCropTask extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            croppedImage.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            DialogsFragment.sEncodedImage = Base64.encodeToString(byteArray,Base64.DEFAULT);
+            return null;
+        }
 
     }
 
