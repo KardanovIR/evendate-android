@@ -144,9 +144,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, C
         tv_imageAdded = (TextView)v.findViewById(R.id.tv_imageAdded);
 
         mActivity = (AddEventActivity)getActivity();
-
-
-
+        
         return v;
     }
 
@@ -323,9 +321,10 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, C
                 break;
         }
 
-        if(dfNeeded ==true){
+        if(dfNeeded){
             DialogFragment fragment = DialogFragment.newInstance(builder);
-            fragment.show(getFragmentManager(),null); }
+            fragment.show(getFragmentManager(), null);
+        }
 
 
 
@@ -372,11 +371,11 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, C
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if(isChecked==true){
+        if(isChecked){
             event_start_time.setVisibility(View.GONE);
             event_end_time.setVisibility(View.GONE);
         }
-        if(isChecked==false){
+        if(!isChecked){
             event_start_time.setVisibility(View.VISIBLE);
             event_end_time.setVisibility(View.VISIBLE);
         }

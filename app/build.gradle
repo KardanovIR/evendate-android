@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "ru.getlect.evendate.evendate"
@@ -29,6 +29,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'
     compile 'com.android.support:cardview-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.sothree.slidinguppanel:library:3.1.1'
     compile 'com.prolificinteractive:material-calendarview:0.7.0'
     compile 'com.github.rey5137:material:1.2.1'
