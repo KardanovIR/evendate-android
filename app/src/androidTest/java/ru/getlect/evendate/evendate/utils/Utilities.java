@@ -18,6 +18,7 @@ public class Utilities extends AndroidTestCase {
         // Create a new map of values, where column names are the keys
         ContentValues testValues = new ContentValues();
         testValues.put(EvendateContract.EventEntry.COLUMN_TITLE, "пришли посидеть");
+        testValues.put(EvendateContract.EventEntry.COLUMN_EVENT_ID, 1);
         testValues.put(EvendateContract.EventEntry
                 .COLUMN_DESCRIPTION, "образовательные занятия на 4 академических часа");
         testValues.put(EvendateContract.EventEntry.COLUMN_LOCATION_TEXT, "bnlalbla");
@@ -25,8 +26,8 @@ public class Utilities extends AndroidTestCase {
         testValues.put(EvendateContract.EventEntry.COLUMN_START_DATE, "2015-09-03");
         testValues.put(EvendateContract.EventEntry.COLUMN_NOTIFICATIONS, 1);
         testValues.put(EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID, organization_id);
-        testValues.put(EvendateContract.EventEntry.COLUMN_LATITUDE, 55);
-        testValues.put(EvendateContract.EventEntry.COLUMN_LONGITUDE, 65);
+        testValues.put(EvendateContract.EventEntry.COLUMN_LATITUDE, 55.451);
+        testValues.put(EvendateContract.EventEntry.COLUMN_LONGITUDE, 65.154);
         testValues.put(EvendateContract.EventEntry.COLUMN_END_DATE, "2015-09-06");
         testValues.put(EvendateContract.EventEntry.COLUMN_IMAGE_VERTICAL_URL, "link_vertical");
         testValues.put(EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL, "link_detail");
@@ -34,6 +35,9 @@ public class Utilities extends AndroidTestCase {
         testValues.put(EvendateContract.EventEntry.COLUMN_END_TIME, "23:44:44");
         testValues.put(EvendateContract.EventEntry.COLUMN_IMAGE_HORIZONTAL_URL, "link_horizontal");
         testValues.put(EvendateContract.EventEntry.COLUMN_LOCATION_JSON, "blalblalblalblalblablala");
+        testValues.put(EvendateContract.EventEntry.COLUMN_CAN_EDIT, 0);
+        testValues.put(EvendateContract.EventEntry.COLUMN_CAN_EDIT, "activity");
+        testValues.put(EvendateContract.EventEntry.COLUMN_IS_FAVORITE, 0);
 
         return testValues;
     }

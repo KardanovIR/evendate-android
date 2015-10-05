@@ -11,7 +11,7 @@ import ru.getlect.evendate.evendate.utils.Utilities;
  * Created by Dmitry on 04.09.2015.
  */
 public class TestProvider extends AndroidTestCase {
-    public void testBasicWeatherQuery() {
+    public void testEventQuery() {
         EvendateDBHelper dbHelper = new EvendateDBHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -34,6 +34,6 @@ public class TestProvider extends AndroidTestCase {
         );
 
         // Make sure we get the correct cursor out of the database
-        Utilities.validateCursor("testBasicWeatherQuery", eventsCursor, eventValues);
+        Utilities.validateCursor("testEventQuery", eventsCursor, eventValues);
     }
 }

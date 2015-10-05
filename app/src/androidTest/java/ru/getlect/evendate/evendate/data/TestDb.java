@@ -30,11 +30,10 @@ public class TestDb extends AndroidTestCase {
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(EvendateContract.EventEntry.TABLE_NAME);
         tableNameHashSet.add(EvendateContract.EventTagEntry.TABLE_NAME);
-        tableNameHashSet.add(EvendateContract.FavoriteEventEntry.TABLE_NAME);
         tableNameHashSet.add(EvendateContract.OrganizationEntry.TABLE_NAME);
-        tableNameHashSet.add(EvendateContract.SubscriptionEntry.TABLE_NAME);
         tableNameHashSet.add(EvendateContract.TagEntry.TABLE_NAME);
         tableNameHashSet.add(EvendateContract.UserEntry.TABLE_NAME);
+        tableNameHashSet.add(EvendateContract.UserEventEntry.TABLE_NAME);
 
         mContext.deleteDatabase(EvendateDBHelper.DATABASE_NAME);
         SQLiteDatabase db = new EvendateDBHelper(this.mContext)
@@ -100,12 +99,10 @@ public class TestDb extends AndroidTestCase {
         ContentValues testValues = new ContentValues();
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_NAME, "Государственный Университет Управления");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, "www.guushechka1.ru");
-        testValues.put(EvendateContract.OrganizationEntry.COLUMN_IMG, "");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, "ГУУ");
-        testValues.put(EvendateContract.OrganizationEntry.COLUMN_BACKGROUND_IMG_URL, "www.guushechka2.ru");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, "так и живем");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, "образовач");
-        testValues.put(EvendateContract.OrganizationEntry.COLUMN_TYPE_ID, 1);
+        testValues.put(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED, 1);
 
         return testValues;
     }
