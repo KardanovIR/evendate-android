@@ -1,4 +1,4 @@
-package ru.getlect.evendate.evendate.Authorization;
+package ru.getlect.evendate.evendate.authorization;
 
 import android.app.Activity;
 import android.content.Intent;
