@@ -21,8 +21,8 @@ public class EventEntry extends DataEntry {
     String event_start_date;
     String notifications_schema_json;
     int organization_id;
-    long latitude;
-    long longitude;
+    double latitude;
+    double longitude;
     String event_end_date;
     String detail_info_url;
     String begin_time;
@@ -37,7 +37,7 @@ public class EventEntry extends DataEntry {
 
     public EventEntry(int event_id, String title, String description, String location,
                       String location_uri, String event_start_date, String notifications_schema_json,
-                      int organization_id, long latitude, long longitude, String event_end_date,
+                      int organization_id, double latitude, double longitude, String event_end_date,
                       String detail_info_url, String begin_time, String end_time, String location_object,
                       boolean can_edit, String event_type_latin_name, int is_favorite,
                       String image_horizontal_url, String image_vertical_url){
