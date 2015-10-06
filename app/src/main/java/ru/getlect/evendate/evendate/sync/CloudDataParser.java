@@ -147,8 +147,8 @@ public class CloudDataParser {
                 String event_start_date = jsonEvent.getString(START_DATE);
                 String notifications_schema_json = jsonEvent.getString(NOTIFICATIONS);
                 int organization_id = jsonEvent.getInt(ORGANIZATION_ID);
-                long latitude = jsonEvent.getLong(LATITUDE);
-                long longitude = jsonEvent.getLong(LONGITUDE);
+                double latitude = jsonEvent.getDouble(LATITUDE);
+                double longitude = jsonEvent.getDouble(LONGITUDE);
                 String event_end_date = jsonEvent.getString(END_DATE);
                 String detail_info_url = jsonEvent.getString(DETAIL_INFO_URL);
                 String begin_time = jsonEvent.getString(BEGIN_TIME);

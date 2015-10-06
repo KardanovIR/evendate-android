@@ -37,6 +37,7 @@ public class LocalDataFetcher {
                 EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
                 EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
                 EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME,
+                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT,
                 EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED
         };
         // Constants representing column positions from PROJECTION.

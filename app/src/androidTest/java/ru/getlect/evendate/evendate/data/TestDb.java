@@ -102,7 +102,8 @@ public class TestDb extends AndroidTestCase {
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, "ГУУ");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, "так и живем");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, "образовач");
-        testValues.put(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED, 1);
+        testValues.put(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, 1);
+        testValues.put(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, 17);
 
         return testValues;
     }
