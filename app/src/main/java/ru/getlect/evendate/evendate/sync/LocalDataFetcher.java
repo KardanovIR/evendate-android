@@ -37,7 +37,7 @@ public class LocalDataFetcher {
                 EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
                 EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
                 EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME,
-                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED
+                EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED
         };
         // Constants representing column positions from PROJECTION.
         final int COLUMN_ID = 0;
@@ -48,6 +48,7 @@ public class LocalDataFetcher {
         final int COLUMN_DESCRIPTION = 5;
         final int COLUMN_TYPE_NAME = 6;
         final int COLUMN_SUBSCRIBED_COUNT = 7;
+        final int COLUMN_IS_SUBSCRIBED = 8;
 
         Uri uri = EvendateContract.OrganizationEntry.CONTENT_URI; // Get all entries
         Cursor c = mContentResolver.query(uri, ORGANIZATION_PROJECTION, null, null, null);
@@ -60,7 +61,8 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_SHORT_NAME),
                     c.getString(COLUMN_DESCRIPTION),
                     c.getString(COLUMN_TYPE_NAME),
-                    c.getInt(COLUMN_SUBSCRIBED_COUNT)
+                    c.getInt(COLUMN_SUBSCRIBED_COUNT),
+                    c.getInt(COLUMN_IS_SUBSCRIBED) != 0
             );
             entry.setId(c.getInt(COLUMN_ID));
             resList.add(entry);
@@ -212,7 +214,7 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_BEGIN_TIME),
                     c.getString(COLUMN_END_TIME),
                     c.getString(COLUMN_LOCATION_JSON),
-                    c.getInt(COLUMN_CAN_EDIT),
+                    c.getInt(COLUMN_CAN_EDIT) != 0,
                     c.getString(COLUMN_EVENT_TYPE),
                     c.getInt(COLUMN_IS_FAVORITE),
                     c.getString(COLUMN_IMAGE_HORIZONTAL_URL),

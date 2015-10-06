@@ -68,7 +68,8 @@ public class EvendateContract {
         public static final String COLUMN_SHORT_NAME = "short_name";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_TYPE_NAME = "type_name";
-        public static final String COLUMN_SUBSCRIBED = "subscribed";
+        public static final String COLUMN_IS_SUBSCRIBED = "is_subscribed";
+        public static final String COLUMN_SUBSCRIBED_COUNT = "subscribed_count";
     }
     public static final class TagEntry implements BaseColumns{
         public static final Uri CONTENT_URI =
