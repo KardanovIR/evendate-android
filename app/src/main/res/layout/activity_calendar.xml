@@ -24,20 +24,7 @@
             android:layout_width="match_parent"
             android:id="@+id/toolbar"
             android:minHeight="?attr/actionBarSize"
-            android:background="@color/primary_color"
-            >
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="MagicButton"
-                android:id="@+id/btn_magicButton"
-                />
-
-        </android.support.v7.widget.Toolbar>
-
-
-
+            android:background="@color/primary_color" />
 
 
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
@@ -68,14 +55,6 @@
             android:layout_height="match_parent"
             android:textSize="16sp" />
 
-
-
-
     </LinearLayout>
-
-
-
-
-
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
