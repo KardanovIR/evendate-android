@@ -86,7 +86,8 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/evendate_sync_adapter" />
         </service>
-
+        <!--exported временно добавлено, чтобы запускать активити через Android studio,
+        так как через календарть туда не попасть-->
         <activity
             android:exported="true"
             android:name=".ReelActivity"

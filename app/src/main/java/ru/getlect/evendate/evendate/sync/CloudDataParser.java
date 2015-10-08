@@ -36,6 +36,7 @@ public class CloudDataParser {
         final String SHORT_NAME = "short_name";
         final String TYPE_NAME = "type_name";
         final String SUBSCRIBED_COUNT = "subscribed_count";
+        final String IS_SUBSCRIBED = "is_subscribed";
 
         try {
             JSONObject organizationsJson = new JSONObject(JsonStr);
@@ -52,8 +53,9 @@ public class CloudDataParser {
                 String type_name = organizationJson.getString(TYPE_NAME);
                 String short_name = organizationJson.getString(SHORT_NAME);
                 int subscribed_count = organizationJson.getInt(SUBSCRIBED_COUNT);
+                boolean is_subscribed = organizationJson.getBoolean(IS_SUBSCRIBED);
                 OrganizationEntry organizationEntry = new OrganizationEntry(
-                    organization_id, name, img_url, short_name, description, type_name, subscribed_count
+                    organization_id, name, img_url, short_name, description, type_name, subscribed_count, is_subscribed
                 );
                 cVList.add(organizationEntry);
             }
@@ -145,14 +147,14 @@ public class CloudDataParser {
                 String event_start_date = jsonEvent.getString(START_DATE);
                 String notifications_schema_json = jsonEvent.getString(NOTIFICATIONS);
                 int organization_id = jsonEvent.getInt(ORGANIZATION_ID);
-                long latitude = jsonEvent.getLong(LATITUDE);
-                long longitude = jsonEvent.getLong(LONGITUDE);
+                double latitude = jsonEvent.getDouble(LATITUDE);
+                double longitude = jsonEvent.getDouble(LONGITUDE);
                 String event_end_date = jsonEvent.getString(END_DATE);
                 String detail_info_url = jsonEvent.getString(DETAIL_INFO_URL);
                 String begin_time = jsonEvent.getString(BEGIN_TIME);
                 String end_time = jsonEvent.getString(END_TIME);
                 String location_object = jsonEvent.getString(LOCATION_JSON);
-                int can_edit = jsonEvent.getInt(CAN_EDIT);
+                boolean can_edit = jsonEvent.getBoolean(CAN_EDIT);
                 String event_type_latin_name = jsonEvent.getString(EVENT_TYPE);
                 int is_favorite = jsonEvent.getBoolean(IS_FAVORITE) ? 1 : 0;
                 String image_horizontal_url = jsonEvent.getString(IMAGE_HORIZONTAL_URL);

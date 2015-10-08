@@ -14,7 +14,7 @@ import ru.getlect.evendate.evendate.data.EvendateContract.UserEventEntry;
  * Created by Dmitry on 02.09.2015.
  */
 public class EvendateDBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "evendate.db";
     public EvendateDBHelper(Context context) {
@@ -71,7 +71,8 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
                 OrganizationEntry.COLUMN_SHORT_NAME + " TEXT, " +
                 OrganizationEntry.COLUMN_DESCRIPTION + " TEXT, " +
                 OrganizationEntry.COLUMN_TYPE_NAME + " TEXT, " +
-                OrganizationEntry.COLUMN_SUBSCRIBED + " INTEGER," +
+                OrganizationEntry.COLUMN_IS_SUBSCRIBED + " INTEGER," +
+                OrganizationEntry.COLUMN_SUBSCRIBED_COUNT + " INTEGER," +
                 " UNIQUE (" + OrganizationEntry.COLUMN_ORGANIZATION_ID +
                 ") ON CONFLICT REPLACE);";
         final String SQL_CREATE_TAGS_TABLE = "CREATE TABLE " + TagEntry.TABLE_NAME + " (" +

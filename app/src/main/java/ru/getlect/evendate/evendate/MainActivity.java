@@ -1,33 +1,44 @@
 package ru.getlect.evendate.evendate;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
+import android.view.SubMenu;
 
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-
+import ru.getlect.evendate.evendate.authorization.AccountChooser;
+import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,
+        LoaderManager.LoaderCallbacks<Cursor>{
 
-
-//    private NavigationDrawerFragment mNavigationDrawerFragment;
-//    private TextView tv_bottom;
-//    private CharSequence mTitle;
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
+    private NavigationView mNavigationView;
 
+    private SubMenu mOrganizationMenu;
+    private Cursor mSubscriptionCursor;
 
+    /** Loader id that get subs data */
+    public static final int NAV_DRAWER_SUBCRIPTIONS_ID = 0;
 
 
     @Override
@@ -38,71 +49,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Временная кнопка
-        final Button btn_magicButton = (Button)findViewById(R.id.btn_magicButton);
-        btn_magicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.btn_magicButton:
-                        Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
-                        startActivity(intentEvent);
-                        break;
-                }
-            }
-        });
-
-
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.accent_color));
 
-        mDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.app_name,R.string.app_name);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.app_name, R.string.app_name);
         drawerLayout.setDrawerListener(mDrawerToggle);
 
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
-//
-//        toggle = new android.support.v7.app.ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
-//        toggle.setDrawerIndicatorEnabled(true);
-//        drawerLayout.setDrawerListener(toggle);
-
-
-
-//        tv_bottom = (TextView)findViewById(R.id.tv_bottom);
-
-//        mNavigationDrawerFragment = (NavigationDrawerFragment)
-//                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-//        mTitle = getTitle();
-//
-////         Set up the drawer.
-//        mNavigationDrawerFragment.setUp(
-//                R.id.navigation_drawer,
-//                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-
-        }
-
-
-        MaterialCalendarView widget = (MaterialCalendarView) findViewById(R.id.calendarView);
-//        widget.setOnDateChangedListener(this);
-//
-//        widget.addDecorator(new DisableAllDaysDecorator());
-////        widget.addDecorator(new EnableOneToTenDecorator());
-
-        // инициализация синхронизации, создание аккаунта
+        //sync initialization and account creation if there is no account in app
         EvendateSyncAdapter.initializeSyncAdapter(this);
-
-
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        getSupportLoaderManager().initLoader(NAV_DRAWER_SUBCRIPTIONS_ID, null,
+                (LoaderManager.LoaderCallbacks)this);
     }
 
     @Override
@@ -126,165 +86,140 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-//    @Override
-//    public void onDateChanged(MaterialCalendarView materialCalendarView, CalendarDay calendarDay) {
-//        String stringDay = String.valueOf(calendarDay);
-//        Toast.makeText(this, stringDay, Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        menuItem.setChecked(true);
+        switch (menuItem.getItemId()) {
+            //TODO fragments controlling
+            case R.id.calendar:
+                //viewPager.setCurrentItem(0);
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.reel:
+                //viewPager.setCurrentItem(1);
+                //временно открывает окно
+                Intent intent = new Intent(getApplicationContext(), ReelActivity.class);
+                startActivity(intent);
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.settings:
+                //viewPager.setCurrentItem(2);
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.feedback:
 
-//    }
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.help:
 
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.organizations:
 
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.add_event:
+                Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
+                startActivity(intentEvent);
+                return true;
+            case R.id.sync:
+                Log.w("BUTTON_SYNC", "clicked");
+                EvendateSyncAdapter.syncImmediately(this);
+                return true;
+            case R.id.authorization:
+                Intent intentAuth = new Intent(this, AccountChooser.class);
+                startActivity(intentAuth);
+                drawerLayout.closeDrawers();
+                return true;
+            default:
+                Intent detailIntent = new Intent(this, OrganizationActivity.class);
+                detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
+                        .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
+                startActivity(detailIntent);
+                return true;
+        }
+    }
 
-//    private static class DisableAllDaysDecorator implements DayViewDecorator {
-//
-//        @Override
-//        public boolean shouldDecorate(CalendarDay day) {
-//            return day.getDay() <=31;
-//        }
-//
-//        @Override
-//        public void decorate(DayViewFacade view) {
-//            view.setDaysDisabled(true);
-//        }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id){
+            case NAV_DRAWER_SUBCRIPTIONS_ID:
+                return new CursorLoader(
+                        this,
+                        EvendateContract.OrganizationEntry.CONTENT_URI,
+                        new String[] {
+                                EvendateContract.OrganizationEntry._ID,
+                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                        },
+                        EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED + " = 1",
+                        null,
+                        null
+                );
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + id);
+        }
+    }
 
-//        private static boolean[] PRIME_TABLE = {
-//                false,  // 0?
-//                true,
-//                false,// 2
-//                false,// 3
-//                false,
-//                false,// 5
-//                false,
-//                false,// 7
-//                false,
-//                false,
-//                false,
-//                false,// 11
-//                false,
-//                false,// 13
-//                false,
-//                false,
-//                false,
-//                false,// 17
-//                false,
-//                false,// 19
-//                false,
-//                false,
-//                false,
-//                true,// 23
-//                true,
-//                true,
-//                true,
-//                true,
-//                true,
-//                true,// 29
-//                false,
-//                false,// 31
-//                false,
-//                false,
-//                false, //PADDING
-//        };
-//    }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        switch (loader.getId()){
+            case NAV_DRAWER_SUBCRIPTIONS_ID:
+                mSubscriptionCursor = data;
+                mSubscriptionCursor.registerContentObserver(new SubscriptionObserver(this));
+                updateSubscriptionMenu();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
 
-//    private static class EnableOneToTenDecorator implements DayViewDecorator {
-//
-//        @Override
-//        public boolean shouldDecorate(CalendarDay day) {
-//            return day.getDay() <= 10;
-//        }
-//
-//        @Override
-//        public void decorate(DayViewFacade view) {
-//            view.setDaysDisabled(false);
-//        }
-//    }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case NAV_DRAWER_SUBCRIPTIONS_ID:
+                mSubscriptionCursor.close();
+                mSubscriptionCursor = null;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
 
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        toggle.syncState();
-//    }
-//
-//    @Override
-//    public void onNavigationDrawerItemSelected(int position) {
-//        // update the main content by replacing fragments
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-//                .commit();
-//    }
+    /**
+     * observe updates of organizations and call menu updater
+     */
+    class SubscriptionObserver extends ContentObserver{
+        Activity mActivity;
+        public SubscriptionObserver(Activity activity){
+            super(new Handler());
+            mActivity = activity;
+        }
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            getSupportLoaderManager().restartLoader(MainActivity.NAV_DRAWER_SUBCRIPTIONS_ID,
+                    null, (LoaderManager.LoaderCallbacks)mActivity);
+        }
+    }
 
-//    public void onSectionAttached(int number) {
-//        switch (number) {
-//            case 1:
-//
-//                break;
-//            case 2:
-//
-//                break;
-//            case 3:
-//
-//                break;
-//        }
-//    }
-//
-//    public void restoreActionBar() {
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-//        actionBar.setDisplayShowTitleEnabled(true);
-//        actionBar.setTitle(mTitle);
-//    }
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-//            // Only show items in the action bar relevant to this screen
-//            // if the drawer is not showing. Otherwise, let the drawer
-//            // decide what to show in the action bar.
-//            getMenuInflater().inflate(R.menu.main, menu);
-//            restoreActionBar();
-//            return true;
-//        }
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
-
-//    public static class PlaceholderFragment extends Fragment {
-//        /**
-//         * The fragment argument representing the section number for this
-//         * fragment.
-//         */
-//        private static final String ARG_SECTION_NUMBER = "section_number";
-//
-//        /**
-//         * Returns a new instance of this fragment for the given section
-//         * number.
-//         */
-//        public static PlaceholderFragment newInstance(int sectionNumber) {
-//            PlaceholderFragment fragment = new PlaceholderFragment();
-//            Bundle args = new Bundle();
-//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
-//
-//        public PlaceholderFragment() {
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-//            return rootView;
-//        }
-//
-//        @Override
-//        public void onAttach(Activity activity) {
-//            super.onAttach(activity);
-//            ((MainActivity) activity).onSectionAttached(
-//                    getArguments().getInt(ARG_SECTION_NUMBER));
-//        }
-//    }
-
+    /**
+     * update menu with subs and clear it if it's already existed
+     */
+    private void updateSubscriptionMenu(){
+        Menu navigationDrawerMenu = mNavigationView.getMenu();
+        if(mOrganizationMenu != null){
+            mOrganizationMenu.clear();
+        }
+        mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
+        if(mSubscriptionCursor != null){
+            while(mSubscriptionCursor.moveToNext()){
+                //TODO set icon
+                mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
+                                .getColumnIndex(EvendateContract.OrganizationEntry._ID)), 0,
+                        mSubscriptionCursor.getString(mSubscriptionCursor
+                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)))
+                        .setIcon(R.drawable.place);
+            }
+        }
+    }
 }
