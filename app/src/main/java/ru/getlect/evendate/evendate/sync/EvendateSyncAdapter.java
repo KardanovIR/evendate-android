@@ -85,7 +85,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         //token here
-        String basicAuth = "34549490b807613f7582d368c130e8284d7f8a4480e2abd14744df58de5ef15fb2bd15ef7998062b70905d5de9cbd33c77bf6b9RSSWvgvJtUm333qfFyMqH4swP1szyvV6dPtqt4Z0vGNa3ChWAXcQuN05CRAAEdD8";
+        String basicAuth = "70755ea672924e14c9d5c6e747c93e59c4d89c1cf2d592e8f58542149d0521b3dd3a09abacb20c179d0ca26aeba83c37ea612228NEUIhzj3aD855zX3UwAVO1VhkSiftUXPCV0LwmEugquLKZlqgS3B8l6MiUuljv3";
 
         String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
         String urlTags = "http://evendate.ru/api/tags";
