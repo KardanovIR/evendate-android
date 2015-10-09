@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
     public static final int NAV_DRAWER_SUBSCRIPTIONS_ID = 0;
 
     private ViewPager mViewPager;
-    private MainPagerAgapter mMainPagerAgapter;
+    private MainPagerAdapter mMainPagerAdapter;
 
 
     @Override
@@ -72,9 +72,9 @@ public class MainActivity extends AppCompatActivity
         getSupportLoaderManager().initLoader(NAV_DRAWER_SUBSCRIPTIONS_ID, null,
                 (LoaderManager.LoaderCallbacks) this);
 
-        mMainPagerAgapter = new MainPagerAgapter(getSupportFragmentManager(), this);
+        mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), this);
         mViewPager = (ViewPager)findViewById(R.id.pager);
-        mViewPager.setAdapter(mMainPagerAgapter);
+        mViewPager.setAdapter(mMainPagerAdapter);
 
         /**
          * listener to change selected menu item in navigation drawer when current page changed by pager
@@ -282,10 +282,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class MainPagerAgapter extends FragmentStatePagerAdapter{
+    class MainPagerAdapter extends FragmentStatePagerAdapter{
         private Context mContext;
 
-        public MainPagerAgapter(FragmentManager fragmentManager, Context context){
+        public MainPagerAdapter(FragmentManager fragmentManager, Context context){
             super(fragmentManager);
             mContext = context;
         }
