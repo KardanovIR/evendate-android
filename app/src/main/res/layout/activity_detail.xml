@@ -1,15 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:orientation="vertical">
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/primary_color"/>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment"/>
-</LinearLayout>
+    android:layout_height="match_parent"
+    android:id="@+id/fragment" />

@@ -3,7 +3,9 @@ package ru.getlect.evendate.evendate;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,24 +25,42 @@ public class DetailActivityFragment extends Fragment {
         mDetailActivity = (DetailActivity)getActivity();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        TextView textView = (TextView)rootView.findViewById(R.id.text_view);
+
+        mDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        mDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        CollapsingToolbarLayout collapsingToolbarLayout;
+        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle("test");
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+
+
+        TextView textView = (TextView)rootView.findViewById(R.id.event_description);
+        Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbar2);
         final String[] PROJECTION = new String[] {
                 EvendateContract.EventEntry._ID,
                 EvendateContract.EventEntry.COLUMN_TITLE,
                 EvendateContract.EventEntry.COLUMN_DESCRIPTION,
+                EvendateContract.EventEntry.COLUMN_END_DATE
         };
 
         final int COLUMN_ID = 0;
         final int COLUMN_TITLE = 1;
         final int COLUMN_DESCRIPTION = 2;
+        final int COLUMN_END_DATE = 3;
         final Uri uri = mDetailActivity.mUri;
         Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
         c.moveToFirst();
-        textView.setText(c.getString(COLUMN_TITLE));
+        textView.setText(c.getString(COLUMN_DESCRIPTION));
+        collapsingToolbarLayout.setTitle(c.getString(COLUMN_TITLE));
+        toolbar.setTitle(c.getString(COLUMN_END_DATE));
+
         c.close();
         return rootView;
     }
