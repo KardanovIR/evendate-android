@@ -37,7 +37,7 @@ public class DetailActivityFragment extends Fragment {
 
         CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle("test");
+        //collapsingToolbarLayout.setTitle("test");
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
 
@@ -58,7 +58,9 @@ public class DetailActivityFragment extends Fragment {
         Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
         c.moveToFirst();
         textView.setText(c.getString(COLUMN_DESCRIPTION));
-        collapsingToolbarLayout.setTitle(c.getString(COLUMN_TITLE));
+        //collapsingToolbarLayout.setTitle(c.getString(COLUMN_TITLE));
+        TextView textView1 = (TextView)rootView.findViewById(R.id.event_name);
+        textView1.setText(c.getString(COLUMN_TITLE));
         toolbar.setTitle(c.getString(COLUMN_END_DATE));
 
         c.close();
