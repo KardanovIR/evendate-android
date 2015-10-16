@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity
 
     private ViewPager mViewPager;
     private MainPagerAdapter mMainPagerAdapter;
+
+    private TabLayout mTabLayout;
 
 
     @Override
@@ -106,6 +109,8 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+        mTabLayout = (TabLayout)findViewById(R.id.tabs);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
