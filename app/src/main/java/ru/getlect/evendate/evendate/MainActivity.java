@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -26,6 +29,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import ru.getlect.evendate.evendate.authorization.AccountChooser;
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -175,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.help:
-
+                saveImageOnSD();
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.organizations:
@@ -336,5 +344,41 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+    }
+    public void saveImageOnSD(){
+        Bitmap bitmap;
+        OutputStream output;
+
+        // Retrieve the image from the res folder
+        bitmap = BitmapFactory.decodeResource(getResources(),
+                R.drawable.butterfly);
+
+        // Find the SD Card path
+        File filepath = Environment.getExternalStorageDirectory();
+
+        // Create a new folder in SD Card
+        File dir = new File(filepath.getAbsolutePath()
+                + "/Evendate/");
+        dir.mkdirs();
+
+        // Create a name for the saved image
+        File file = new File(dir, "test.png");
+
+        try {
+
+            output = new FileOutputStream(file);
+
+            // Compress into png format image from 0% - 100%
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+            output.flush();
+            output.close();
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Show a toast message on successful save
+        Toast.makeText(MainActivity.this, "Image Saved to SD Card",
+                Toast.LENGTH_SHORT).show();
     }
 }

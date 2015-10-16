@@ -1,15 +1,24 @@
 package ru.getlect.evendate.evendate;
 
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
@@ -64,6 +73,16 @@ public class DetailActivityFragment extends Fragment {
         toolbar.setTitle(c.getString(COLUMN_END_DATE));
 
         c.close();
+        ImageView imageView = (ImageView)rootView.findViewById(R.id.event_image);
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        try {
+            final ParcelFileDescriptor fileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("image_test").build(), "r");
+
+            imageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+            fileDescriptor.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         return rootView;
     }
 
