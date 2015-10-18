@@ -3,8 +3,12 @@ package ru.getlect.evendate.evendate.sync;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
@@ -304,5 +308,32 @@ public class LocalDataFetcher {
         }
         c.close();
         return resList;
+    }
+
+    public HashMap<Double, File> getEventImages() {
+        File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_EVENT_IMAGES);
+        File[] pictures = file.listFiles();
+
+        HashMap<Double, File> files = new HashMap<>();
+
+        for (int i = 0; i <= pictures.length; i++) {
+
+            files.put(Double.parseDouble(pictures[i].getName()), pictures[i]);
+            Log.e("FILE:", pictures[i].getAbsolutePath());
+        }
+        return files;
+    }
+    public HashMap<Double, File> getOrganizationsImages() {
+        File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_ORGANIZATION_IMAGES);
+        File[] pictures = file.listFiles();
+
+        HashMap<Double, File> files = new HashMap<>();
+
+        for (int i = 0; i <= pictures.length; i++) {
+
+            files.put(Double.parseDouble(pictures[i].getName()), pictures[i]);
+            Log.e("FILE:", pictures[i].getAbsolutePath());
+        }
+        return files;
     }
 }
