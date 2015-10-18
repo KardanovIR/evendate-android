@@ -1,6 +1,7 @@
 package ru.getlect.evendate.evendate;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -8,9 +9,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +44,12 @@ public class MainActivity extends AppCompatActivity
     private Cursor mSubscriptionCursor;
 
     /** Loader id that get subs data */
-    public static final int NAV_DRAWER_SUBCRIPTIONS_ID = 0;
+    public static final int NAV_DRAWER_SUBSCRIPTIONS_ID = 0;
+
+    private ViewPager mViewPager;
+    private MainPagerAdapter mMainPagerAdapter;
+
+    private TabLayout mTabLayout;
 
 
     @Override
@@ -61,14 +72,67 @@ public class MainActivity extends AppCompatActivity
 
         //sync initialization and account creation if there is no account in app
         EvendateSyncAdapter.initializeSyncAdapter(this);
-        getSupportLoaderManager().initLoader(NAV_DRAWER_SUBCRIPTIONS_ID, null,
-                (LoaderManager.LoaderCallbacks)this);
+        getSupportLoaderManager().initLoader(NAV_DRAWER_SUBSCRIPTIONS_ID, null,
+                (LoaderManager.LoaderCallbacks) this);
+
+        mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), this);
+        mViewPager = (ViewPager)findViewById(R.id.pager);
+        mViewPager.setAdapter(mMainPagerAdapter);
+
+        /**
+         * listener to change selected menu item in navigation drawer when current page changed by pager
+         */
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0 : {
+                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.calendar);
+                        menuItem.setChecked(true);
+                        break;
+                    }
+                    case 1 : {
+                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.reel);
+                        menuItem.setChecked(true);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        mTabLayout = (TabLayout)findViewById(R.id.tabs);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /**
+         * solution for issue with view pager from support library
+         * http://stackoverflow.com/questions/32323570/viewpager-title-doesnt-appear-until-i-swipe-it
+         */
+        mViewPager.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewPager.setCurrentItem(1);
+            }
+        }, 100);
     }
 
     @Override
@@ -92,14 +156,14 @@ public class MainActivity extends AppCompatActivity
         switch (menuItem.getItemId()) {
             //TODO fragments controlling
             case R.id.calendar:
-                //viewPager.setCurrentItem(0);
+                mViewPager.setCurrentItem(0);
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.reel:
-                //viewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(1);
                 //временно открывает окно
-                Intent intent = new Intent(getApplicationContext(), ReelActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(getApplicationContext(), ReelActivity.class);
+                //startActivity(intent);
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.settings:
@@ -143,7 +207,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id){
-            case NAV_DRAWER_SUBCRIPTIONS_ID:
+            case NAV_DRAWER_SUBSCRIPTIONS_ID:
                 return new CursorLoader(
                         this,
                         EvendateContract.OrganizationEntry.CONTENT_URI,
@@ -163,7 +227,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()){
-            case NAV_DRAWER_SUBCRIPTIONS_ID:
+            case NAV_DRAWER_SUBSCRIPTIONS_ID:
                 mSubscriptionCursor = data;
                 mSubscriptionCursor.registerContentObserver(new SubscriptionObserver(this));
                 updateSubscriptionMenu();
@@ -176,7 +240,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case NAV_DRAWER_SUBCRIPTIONS_ID:
+            case NAV_DRAWER_SUBSCRIPTIONS_ID:
                 mSubscriptionCursor.close();
                 mSubscriptionCursor = null;
                 break;
@@ -197,7 +261,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            getSupportLoaderManager().restartLoader(MainActivity.NAV_DRAWER_SUBCRIPTIONS_ID,
+            getSupportLoaderManager().restartLoader(MainActivity.NAV_DRAWER_SUBSCRIPTIONS_ID,
                     null, (LoaderManager.LoaderCallbacks)mActivity);
         }
     }
@@ -221,5 +285,56 @@ public class MainActivity extends AppCompatActivity
                         .setIcon(R.drawable.place);
             }
         }
+    }
+
+    class MainPagerAdapter extends FragmentStatePagerAdapter{
+        private Context mContext;
+
+        public MainPagerAdapter(FragmentManager fragmentManager, Context context){
+            super(fragmentManager);
+            mContext = context;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case 0: {
+                    return new CalendarFragment();
+                }
+                case 1: {
+                    return new ReelFragment();
+                }
+                case 2: {
+                    // we need only favorite events in this fragment
+                    Fragment fragment = new ReelFragment();
+                    Bundle args = new Bundle();
+                    args.putBoolean(ReelFragment.FEED, true);
+                    fragment.setArguments(args);
+                    return fragment;
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position){
+                case 0:
+                    return getString(R.string.calendar);
+                case 1:
+                    return getString(R.string.reel);
+                case 2:
+                    return getString(R.string.feed);
+                default:
+                    return null;
+            }
+        }
+
     }
 }

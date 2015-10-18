@@ -19,14 +19,6 @@
         android:text="Main Content"
         android:textSize="16sp">
 
-        <android.support.v7.widget.Toolbar
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:id="@+id/toolbar"
-            android:minHeight="?attr/actionBarSize"
-            android:background="@color/primary_color" />
-
-
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"

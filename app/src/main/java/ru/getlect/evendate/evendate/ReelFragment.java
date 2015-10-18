@@ -38,6 +38,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    /**
+     * argument represent that fragment should get only favorite events
+     */
+    public static final String FEED = "feed";
+
+    private static boolean is_feed;
+
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
     /**
      * Returns a new instance of this fragment for the given section
@@ -68,6 +75,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         mAdapter = new RVAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
+        Bundle args = getArguments();
+        if(args != null) {
+            is_feed = args.getBoolean(FEED, false);
+        }
+
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
 
@@ -89,7 +101,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                                 EvendateContract.EventEntry.COLUMN_TITLE,
                                 EvendateContract.EventEntry.COLUMN_DESCRIPTION,
                         },
-                        null,
+                        is_feed ? EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1" : null,
                         null,
                         null
                 );
