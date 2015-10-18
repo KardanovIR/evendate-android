@@ -3,17 +3,27 @@ package ru.getlect.evendate.evendate.sync.dataTypes;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 
+import com.google.gson.annotations.SerializedName;
+
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
 /**
  * Created by Dmitry on 11.09.2015.
  */
 public class OrganizationEntry extends DataEntry {
+    @SerializedName("id")
     public final int organization_id;
-    public final String name;
-    public final String img_url;
-    public final String short_name;
     public final String description;
+    public final String name;
+    public int type_id;
+    public final String img_url;
+    public String img_medium_url;
+    public String img_small_url;
+    public String background_img_url;
+    public String background_medium_img_url;
+    public String background_small_img_url;
+    public boolean status;
+    public final String short_name;
     public final String type_name;
     public final int subscribed_count;
     public final boolean is_subscribed;

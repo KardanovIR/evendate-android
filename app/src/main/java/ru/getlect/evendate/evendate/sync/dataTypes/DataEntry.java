@@ -7,12 +7,12 @@ import android.net.Uri;
  * Created by Dmitry on 10.09.2015.
  */
 public abstract class DataEntry {
-    private int id;
+    private int _id;
     public int getId(){
-        return this.id;
+        return this._id;
     }
     public void setId(int id){
-        this.id = id;
+        this._id = id;
     }
     public abstract int getEntryId();
     public abstract boolean equals(Object obj);

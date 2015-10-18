@@ -22,6 +22,7 @@ import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
 public class CloudDataParser {
     static String LOG_TAG = CloudDataParser.class.getSimpleName();
 
+    @Deprecated
     public static ArrayList<DataEntry> getOrganizationDataFromJson(String JsonStr)
             throws JSONException, IOException {
 

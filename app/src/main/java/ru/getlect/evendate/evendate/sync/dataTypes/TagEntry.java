@@ -3,14 +3,20 @@ package ru.getlect.evendate.evendate.sync.dataTypes;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 
+import com.google.gson.annotations.SerializedName;
+
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
 /**
  * Created by Dmitry on 11.09.2015.
  */
 public class TagEntry extends DataEntry {
+    @SerializedName("id")
     public final int tag_id;
     public final String name;
+    public String created_at;
+    public String updated_at;
+    public String status;
 
     public TagEntry(int tag_id, String name) {
         this.tag_id = tag_id;

@@ -3,6 +3,8 @@ package ru.getlect.evendate.evendate.sync.dataTypes;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -11,8 +13,11 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
  * Created by Dmitry on 13.09.2015.
  */
 public class EventEntry extends DataEntry {
+    @SerializedName("tags")
     ArrayList<DataEntry> mTagList;
+    @SerializedName("favorite_friends")
     ArrayList<DataEntry> mFriendList;
+    @SerializedName("id")
     int event_id;
     String title;
     String description;

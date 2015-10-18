@@ -47,4 +47,7 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-ionicons:2.0.9' // (v2.0.1)
 
     compile 'com.edmodo:cropper:1.0.1'
+
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
 }
