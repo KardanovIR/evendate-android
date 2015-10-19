@@ -14,11 +14,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -84,6 +86,14 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
+        //создание папочки для картиночек
+        File dir = new File(Environment.getExternalStorageDirectory()
+                + "/" + EvendateContract.PATH_ORGANIZATION_IMAGES);
+        dir.mkdirs();
+        dir = new File(Environment.getExternalStorageDirectory()
+                + "/" + EvendateContract.PATH_EVENT_IMAGES);
+        dir.mkdirs();
+
         //token here
         String basicAuth = "0ddb916680f9eb4e53138e2e276321c116a3b48f705570ebe23e3efc5a2ba803c6c65be4c582360688bc9f920c56a0b3447de7ea67sOyZlty3ruNhH4muJMqDq8IvsKAegwsRycTnb49eRiU1elPPk5b6EUm546lhW";
 
@@ -116,17 +126,17 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList, localFriendList);
             }
 
-            localList = localDataFetcher.getEventDataFromDB();
+            ArrayList<DataEntry> eventServerList = localDataFetcher.getEventDataFromDB();
             merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, localList);
-            for(DataEntry e: localList){
+            for(DataEntry e: eventServerList){
                 ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getId()));
                 ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getId()));
             }
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
-            mergerEventProps.mergeData(null, cloudList, localList);
+            mergerEventProps.mergeData(null, eventServerList, localList);
 
             ImageManager imageManager = new ImageManager(localDataFetcher);
-            imageManager.updateEventImages(localList);
+            imageManager.updateEventImages(eventServerList);
 
         }catch (JSONException|IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

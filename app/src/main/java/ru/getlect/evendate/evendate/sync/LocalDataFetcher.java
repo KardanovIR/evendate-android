@@ -318,10 +318,10 @@ public class LocalDataFetcher {
             return null;
         HashMap<Integer, File> files = new HashMap<>();
 
-        for (int i = 0; i <= pictures.length; i++) {
+        for (int i = 0; i < pictures.length; i++) {
 
-            files.put(Integer.getInteger(pictures[i].getName()), pictures[i]);
-            Log.e("FILE:", pictures[i].getAbsolutePath());
+            files.put(Integer.parseInt(getFileNameWithoutExtension(pictures[i].getName())), pictures[i]);
+            Log.i("FILE:", pictures[i].getAbsolutePath());
         }
         return files;
     }
@@ -332,11 +332,19 @@ public class LocalDataFetcher {
             return null;
         HashMap<Integer, File> files = new HashMap<>();
 
-        for (int i = 0; i <= pictures.length; i++) {
+        for (int i = 0; i < pictures.length; i++) {
 
-            files.put(Integer.getInteger(pictures[i].getName()), pictures[i]);
+            files.put(Integer.parseInt(pictures[i].getName()), pictures[i]);
             Log.e("FILE:", pictures[i].getAbsolutePath());
         }
         return files;
+    }
+
+    public String getFileNameWithoutExtension(String fileName){
+        int pos = fileName.lastIndexOf(".");
+        if (pos > 0) {
+            fileName = fileName.substring(0, pos);
+        }
+        return fileName;
     }
 }

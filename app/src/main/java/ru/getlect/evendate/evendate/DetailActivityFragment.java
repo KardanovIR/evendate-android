@@ -1,6 +1,5 @@
 package ru.getlect.evendate.evendate;
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -16,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -56,13 +53,15 @@ public class DetailActivityFragment extends Fragment {
                 EvendateContract.EventEntry._ID,
                 EvendateContract.EventEntry.COLUMN_TITLE,
                 EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-                EvendateContract.EventEntry.COLUMN_END_DATE
+                EvendateContract.EventEntry.COLUMN_END_DATE,
+                EvendateContract.EventEntry.COLUMN_EVENT_ID,
         };
 
         final int COLUMN_ID = 0;
         final int COLUMN_TITLE = 1;
         final int COLUMN_DESCRIPTION = 2;
         final int COLUMN_END_DATE = 3;
+        final int COLUMN_EVENT_ID = 4;
         final Uri uri = mDetailActivity.mUri;
         Cursor c = getActivity().getContentResolver().query(uri, PROJECTION, null, null, null);
         c.moveToFirst();
@@ -72,17 +71,17 @@ public class DetailActivityFragment extends Fragment {
         textView1.setText(c.getString(COLUMN_TITLE));
         toolbar.setTitle(c.getString(COLUMN_END_DATE));
 
-        c.close();
         ImageView imageView = (ImageView)rootView.findViewById(R.id.event_image);
         ContentResolver contentResolver = getActivity().getContentResolver();
         try {
-            final ParcelFileDescriptor fileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("image_test").build(), "r");
+            final ParcelFileDescriptor fileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("images").appendPath("events").appendPath(c.getString(COLUMN_EVENT_ID)).build(), "r");
 
             imageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
             fileDescriptor.close();
         }catch (IOException e){
             e.printStackTrace();
         }
+        c.close();
         return rootView;
     }
 

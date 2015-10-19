@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -34,6 +33,7 @@ public class EvendateProvider extends ContentProvider {
     private static final int USERS = 400;
     private static final int USER_ID = 401;
     private static final int IMAGE = 500;
+    private static final int EVENT_IMAGE = 501;
 
     private static final String IMAGE_FILENAME = "test.png";
 
@@ -67,6 +67,8 @@ public class EvendateProvider extends ContentProvider {
                 EvendateContract.PATH_USERS + "/#", USER_ID);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 "image_test", IMAGE);
+        mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
+                "images/events" + "/#", EVENT_IMAGE);
         return true;
     }
 
@@ -490,17 +492,25 @@ public class EvendateProvider extends ContentProvider {
     public ParcelFileDescriptor openFile (final Uri uri, final String mode) throws FileNotFoundException {
         Log.d(LOG_TAG, "openFile: " + uri);
 
-        if (mUriMatcher.match(uri) != IMAGE) {
-            throw new FileNotFoundException(uri.toString());
-        }
+        final int match = mUriMatcher.match(uri);
 
-        try {
-            File sdcard = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Evendate/");
-            //Get the text file
-            File file = new File(sdcard, IMAGE_FILENAME);
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        switch (match) {
+            case IMAGE: {
+                try {
+                    File sdcard = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Evendate/");
+                    //Get the text file
+                    File file = new File(sdcard, IMAGE_FILENAME);
+                    return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+                } catch (final IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case EVENT_IMAGE: {
+                String event_id = uri.getPathSegments().get(2);
+                File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
         }
+        return null;
     }
 }
