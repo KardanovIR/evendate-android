@@ -127,6 +127,7 @@ public class CloudDataParser {
         final String CAN_EDIT = "can_edit";
         final String EVENT_TYPE = "event_type_latin_name";
         final String IS_FAVORITE = "is_favorite";
+        final String UPDATED_AT = "timestamp_updated_at";
 
         final String FAVORITE_FRIENDS = "favorite_friends";
         final String TAGS = "tags";
@@ -159,6 +160,7 @@ public class CloudDataParser {
                 int is_favorite = jsonEvent.getBoolean(IS_FAVORITE) ? 1 : 0;
                 String image_horizontal_url = jsonEvent.getString(IMAGE_HORIZONTAL_URL);
                 String image_vertical_url = jsonEvent.getString(IMAGE_VERTICAL_URL);
+                int timestamp_updated_at = jsonEvent.getInt(UPDATED_AT);
 
                 JSONArray friendList = jsonEvent.getJSONArray(FAVORITE_FRIENDS);
                 JSONArray tagList = jsonEvent.getJSONArray(TAGS);
@@ -167,7 +169,7 @@ public class CloudDataParser {
                         location_uri, event_start_date, notifications_schema_json, organization_id,
                         latitude, longitude, event_end_date, detail_info_url, begin_time, end_time,
                         location_object, can_edit, event_type_latin_name, is_favorite,
-                        image_horizontal_url, image_vertical_url);
+                        image_horizontal_url, image_vertical_url, timestamp_updated_at);
                 eventEntry.setFriendList(getFriendDataFromJson(friendList));
                 eventEntry.setTagList(getEventTagDataFromJson(tagList, event_id));
                 cVList.add(eventEntry);

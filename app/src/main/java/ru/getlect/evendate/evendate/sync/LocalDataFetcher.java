@@ -223,7 +223,8 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_EVENT_TYPE),
                     c.getInt(COLUMN_IS_FAVORITE),
                     c.getString(COLUMN_IMAGE_HORIZONTAL_URL),
-                    c.getString(COLUMN_IMAGE_VERTICAL_URL)
+                    c.getString(COLUMN_IMAGE_VERTICAL_URL),
+                    0
             );
             entry.setId(c.getInt(COLUMN_ID));
             resList.add(entry);
@@ -310,28 +311,30 @@ public class LocalDataFetcher {
         return resList;
     }
 
-    public HashMap<Double, File> getEventImages() {
+    public HashMap<Integer, File> getEventImages() {
         File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_EVENT_IMAGES);
         File[] pictures = file.listFiles();
-
-        HashMap<Double, File> files = new HashMap<>();
+        if(pictures == null)
+            return null;
+        HashMap<Integer, File> files = new HashMap<>();
 
         for (int i = 0; i <= pictures.length; i++) {
 
-            files.put(Double.parseDouble(pictures[i].getName()), pictures[i]);
+            files.put(Integer.getInteger(pictures[i].getName()), pictures[i]);
             Log.e("FILE:", pictures[i].getAbsolutePath());
         }
         return files;
     }
-    public HashMap<Double, File> getOrganizationsImages() {
+    public HashMap<Integer, File> getOrganizationsImages() {
         File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_ORGANIZATION_IMAGES);
         File[] pictures = file.listFiles();
-
-        HashMap<Double, File> files = new HashMap<>();
+        if(pictures == null)
+            return null;
+        HashMap<Integer, File> files = new HashMap<>();
 
         for (int i = 0; i <= pictures.length; i++) {
 
-            files.put(Double.parseDouble(pictures[i].getName()), pictures[i]);
+            files.put(Integer.getInteger(pictures[i].getName()), pictures[i]);
             Log.e("FILE:", pictures[i].getAbsolutePath());
         }
         return files;

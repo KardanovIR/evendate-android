@@ -85,7 +85,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         //token here
-        String basicAuth = "f54fe38e510f52ceebe2530f0eb6ec71980c53b7cf7040ccf3ff8dc06b63f425addb93d72a8fd2c09eaf3f2080032338887e8fcKWIaJb9Thhdy21Pv0nEd8LBv5Pp3F8ewPBKVb7WS3LOaOvxe9W8YkKxPgHYnqGgw";
+        String basicAuth = "0ddb916680f9eb4e53138e2e276321c116a3b48f705570ebe23e3efc5a2ba803c6c65be4c582360688bc9f920c56a0b3447de7ea67sOyZlty3ruNhH4muJMqDq8IvsKAegwsRycTnb49eRiU1elPPk5b6EUm546lhW";
 
         String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
         String urlTags = "http://evendate.ru/api/tags";
@@ -124,6 +124,9 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
             mergerEventProps.mergeData(null, cloudList, localList);
+
+            ImageManager imageManager = new ImageManager(localDataFetcher);
+            imageManager.updateEventImages(localList);
 
         }catch (JSONException|IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
