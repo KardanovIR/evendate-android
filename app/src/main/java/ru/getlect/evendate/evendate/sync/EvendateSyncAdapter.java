@@ -14,13 +14,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -106,7 +104,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
-            imageManager.updateOrganizationsImages(cloudList);
+            //imageManager.updateOrganizationsImages(cloudList);
             imageManager.updateOrganizationsLogos(cloudList);
 
             cloudList = CloudDataParser.getTagsDataFromJson(jsonTags);

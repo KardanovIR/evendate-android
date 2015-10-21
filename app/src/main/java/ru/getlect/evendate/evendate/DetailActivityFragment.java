@@ -75,9 +75,13 @@ public class DetailActivityFragment extends Fragment {
         ContentResolver contentResolver = getActivity().getContentResolver();
         try {
             final ParcelFileDescriptor fileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("images").appendPath("events").appendPath(c.getString(COLUMN_EVENT_ID)).build(), "r");
-
-            imageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-            fileDescriptor.close();
+            if(fileDescriptor == null)
+                //заглушка на случай отсутствия картинки
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+            else {
+                imageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                fileDescriptor.close();
+            }
         }catch (IOException e){
             e.printStackTrace();
         }

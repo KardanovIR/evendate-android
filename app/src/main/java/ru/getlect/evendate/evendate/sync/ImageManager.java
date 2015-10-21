@@ -1,21 +1,12 @@
 package ru.getlect.evendate.evendate.sync;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
-import android.webkit.URLUtil;
 
-import com.google.android.gms.plus.model.people.Person;
-
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -62,9 +53,8 @@ public class ImageManager {
             Log.e(LOG_TAG, "error parsing image url");
             throw e;
         }
-        for (int i = 0; i < eventImagesMap.size(); i++) {
+        for (File file : eventImagesMap.values()) {
             Log.i(LOG_TAG, "delete image");
-            File file = eventImagesMap.get(i);
             file.delete();
         }
         Log.i(LOG_TAG, "images sync ended");
@@ -93,9 +83,8 @@ public class ImageManager {
             Log.e(LOG_TAG, "error parsing image url");
             throw e;
         }
-        for (int i = 0; i < organizationImagesMap.size(); i++) {
+        for (File file : organizationImagesMap.values()) {
             Log.i(LOG_TAG, "delete image");
-            File file = organizationImagesMap.get(i);
             file.delete();
         }
         Log.i(LOG_TAG, "images sync ended");
@@ -114,7 +103,7 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
-                String format = Utils.getFileExtension(organizationEntry.getBackgroundImgUrl());
+                String format = Utils.getFileExtension(organizationEntry.getLogoUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
                 URL url = new URL(organizationEntry.getLogoUrl());
@@ -124,9 +113,8 @@ public class ImageManager {
             Log.e(LOG_TAG, "error parsing image url");
             throw e;
         }
-        for (int i = 0; i < organizationLogosMap.size(); i++) {
+        for (File file : organizationLogosMap.values()) {
             Log.i(LOG_TAG, "delete image");
-            File file = organizationLogosMap.get(i);
             file.delete();
         }
         Log.i(LOG_TAG, "images sync ended");

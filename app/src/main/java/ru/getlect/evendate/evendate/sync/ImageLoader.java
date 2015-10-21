@@ -40,17 +40,22 @@ public class ImageLoader {
     public static void loadImage(String filepath, URL fileUrl, Bitmap.CompressFormat compressFormat) throws IOException{
         File image = new File(BASE_PATH + "/" + filepath);
         Log.i(LOG_TAG, "save new image");
-        image.createNewFile();
         try{
+            boolean res = image.createNewFile();
+            if(!res)
+                throw new IOException("can't create file " + image);
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) fileUrl.getContent());
-            if(bitmap == null)
-                throw new IOException("now image at url" + fileUrl);
+            if(bitmap == null) {
+                Log.e(LOG_TAG, "now image at url " + fileUrl);
+                return;
+            }
             BufferedOutputStream buf = new BufferedOutputStream(new FileOutputStream(image));
             bitmap.compress(compressFormat, 100, buf);
             buf.flush();
             buf.close();
         }catch (IOException e){
             Log.e(LOG_TAG, "bitmap save error");
+            image.delete();
             throw e;
         }
     }

@@ -14,7 +14,6 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by Dmitry on 03.09.2015.
@@ -497,17 +496,23 @@ public class EvendateProvider extends ContentProvider {
         switch (match) {
             case EVENT_IMAGE: {
                 String event_id = uri.getPathSegments().get(2);
-                File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
+                if(!file.exists())
+                    return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_IMAGE: {
                 String event_id = uri.getPathSegments().get(2);
-                File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + event_id + ".jpg");
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + event_id + ".jpg");
+                if(!file.exists())
+                    return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_LOGO: {
                 String event_id = uri.getPathSegments().get(3);
-                File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + event_id + ".png");
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + event_id + ".png");
+                if(!file.exists())
+                    return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
         }
