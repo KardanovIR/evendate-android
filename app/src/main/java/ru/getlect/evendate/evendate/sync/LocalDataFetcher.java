@@ -18,6 +18,7 @@ import ru.getlect.evendate.evendate.sync.dataTypes.EventTagEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.FriendEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * Created by Dmitry on 11.09.2015.
@@ -67,7 +68,9 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_DESCRIPTION),
                     c.getString(COLUMN_TYPE_NAME),
                     c.getInt(COLUMN_SUBSCRIBED_COUNT),
-                    c.getInt(COLUMN_IS_SUBSCRIBED) != 0
+                    c.getInt(COLUMN_IS_SUBSCRIBED) != 0,
+                    null,
+                    0
             );
             entry.setId(c.getInt(COLUMN_ID));
             resList.add(entry);
@@ -311,40 +314,17 @@ public class LocalDataFetcher {
         return resList;
     }
 
-    public HashMap<Integer, File> getEventImages() {
-        File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_EVENT_IMAGES);
-        File[] pictures = file.listFiles();
-        if(pictures == null)
-            return null;
+    public HashMap<Integer, File> getImages(String path) {
+        File dir = new File(Environment.getExternalStorageDirectory(), "/Evendate/" + path);
+        File[] pictures = dir.listFiles();
         HashMap<Integer, File> files = new HashMap<>();
+        if(pictures == null)
+            return files;
 
-        for (int i = 0; i < pictures.length; i++) {
-
-            files.put(Integer.parseInt(getFileNameWithoutExtension(pictures[i].getName())), pictures[i]);
-            Log.i("FILE:", pictures[i].getAbsolutePath());
+        for (File file : pictures) {
+            files.put(Integer.parseInt(Utils.getFileNameWithoutExtension(file.getName())), file);
+            Log.i("FILE:", file.getAbsolutePath());
         }
         return files;
-    }
-    public HashMap<Integer, File> getOrganizationsImages() {
-        File file = new File(Environment.getExternalStorageDirectory(), EvendateContract.PATH_ORGANIZATION_IMAGES);
-        File[] pictures = file.listFiles();
-        if(pictures == null)
-            return null;
-        HashMap<Integer, File> files = new HashMap<>();
-
-        for (int i = 0; i < pictures.length; i++) {
-
-            files.put(Integer.parseInt(pictures[i].getName()), pictures[i]);
-            Log.e("FILE:", pictures[i].getAbsolutePath());
-        }
-        return files;
-    }
-
-    public String getFileNameWithoutExtension(String fileName){
-        int pos = fileName.lastIndexOf(".");
-        if (pos > 0) {
-            fileName = fileName.substring(0, pos);
-        }
-        return fileName;
     }
 }

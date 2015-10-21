@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.help:
-                saveImageOnSD();
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.organizations:
@@ -343,42 +342,5 @@ public class MainActivity extends AppCompatActivity
                     return null;
             }
         }
-
-    }
-    public void saveImageOnSD(){
-        Bitmap bitmap;
-        OutputStream output;
-
-        // Retrieve the image from the res folder
-        bitmap = BitmapFactory.decodeResource(getResources(),
-                R.drawable.butterfly);
-
-        // Find the SD Card path
-        File filepath = Environment.getExternalStorageDirectory();
-
-        // Create a new folder in SD Card
-        File dir = new File(filepath.getAbsolutePath()
-                + "/Evendate/");
-        dir.mkdirs();
-
-        // Create a name for the saved image
-        File file = new File(dir, "test.png");
-
-        try {
-
-            output = new FileOutputStream(file);
-
-            // Compress into png format image from 0% - 100%
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-            output.flush();
-            output.close();
-        }
-        catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // Show a toast message on successful save
-        Toast.makeText(MainActivity.this, "Image Saved to SD Card",
-                Toast.LENGTH_SHORT).show();
     }
 }
