@@ -55,7 +55,7 @@ public class CloudDataParser {
                 int subscribed_count = organizationJson.getInt(SUBSCRIBED_COUNT);
                 boolean is_subscribed = organizationJson.getBoolean(IS_SUBSCRIBED);
                 OrganizationEntry organizationEntry = new OrganizationEntry(
-                    organization_id, name, img_url, short_name, description, type_name, subscribed_count, is_subscribed
+                    organization_id, name, img_url, short_name, description, type_name, subscribed_count, is_subscribed, null, 0
                 );
                 cVList.add(organizationEntry);
             }
