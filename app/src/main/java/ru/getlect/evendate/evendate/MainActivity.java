@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity
                                 .getColumnIndex(EvendateContract.OrganizationEntry._ID)), 0,
                         mSubscriptionCursor.getString(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)));
+                mNavigationView.setItemIconTintList(null);
                 try {
                     final ParcelFileDescriptor fileDescriptor = getContentResolver()
                             .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
