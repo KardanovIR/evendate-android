@@ -37,6 +37,8 @@ public class CloudDataParser {
         final String TYPE_NAME = "type_name";
         final String SUBSCRIBED_COUNT = "subscribed_count";
         final String IS_SUBSCRIBED = "is_subscribed";
+        final String BACKGROUND = "background_img_url";
+        final String UPDATED_AT = "timestamp_updated_at";
 
         try {
             JSONObject organizationsJson = new JSONObject(JsonStr);
@@ -54,8 +56,11 @@ public class CloudDataParser {
                 String short_name = organizationJson.getString(SHORT_NAME);
                 int subscribed_count = organizationJson.getInt(SUBSCRIBED_COUNT);
                 boolean is_subscribed = organizationJson.getBoolean(IS_SUBSCRIBED);
+                String background_img_url = organizationJson.getString(BACKGROUND);
+                int timestamp_updated_at = organizationJson.getInt(UPDATED_AT);
                 OrganizationEntry organizationEntry = new OrganizationEntry(
-                    organization_id, name, img_url, short_name, description, type_name, subscribed_count, is_subscribed, null, 0
+                    organization_id, name, img_url, short_name, description, type_name,
+                        subscribed_count, is_subscribed, background_img_url, timestamp_updated_at
                 );
                 cVList.add(organizationEntry);
             }
