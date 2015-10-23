@@ -104,7 +104,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
-            //imageManager.updateOrganizationsImages(cloudList);
+            imageManager.updateOrganizationsImages(cloudList);
             imageManager.updateOrganizationsLogos(cloudList);
 
             cloudList = CloudDataParser.getTagsDataFromJson(jsonTags);

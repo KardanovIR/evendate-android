@@ -502,15 +502,15 @@ public class EvendateProvider extends ContentProvider {
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_IMAGE: {
-                String event_id = uri.getPathSegments().get(2);
-                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + event_id + ".jpg");
+                String organization_id = uri.getPathSegments().get(2);
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + organization_id + ".jpg");
                 if(!file.exists())
                     return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_LOGO: {
-                String event_id = uri.getPathSegments().get(3);
-                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + event_id + ".png");
+                String organization_id = uri.getPathSegments().get(3);
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + organization_id + ".png");
                 if(!file.exists())
                     return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);

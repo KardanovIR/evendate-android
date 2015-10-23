@@ -322,6 +322,8 @@ public class LocalDataFetcher {
             return files;
 
         for (File file : pictures) {
+            if(!file.isFile())
+                continue;
             files.put(Integer.parseInt(Utils.getFileNameWithoutExtension(file.getName())), file);
             Log.i("FILE:", file.getAbsolutePath());
         }
