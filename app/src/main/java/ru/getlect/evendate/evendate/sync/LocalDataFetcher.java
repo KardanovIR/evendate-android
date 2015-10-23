@@ -3,8 +3,12 @@ package ru.getlect.evendate.evendate.sync;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
@@ -14,6 +18,7 @@ import ru.getlect.evendate.evendate.sync.dataTypes.EventTagEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.FriendEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * Created by Dmitry on 11.09.2015.
@@ -63,7 +68,9 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_DESCRIPTION),
                     c.getString(COLUMN_TYPE_NAME),
                     c.getInt(COLUMN_SUBSCRIBED_COUNT),
-                    c.getInt(COLUMN_IS_SUBSCRIBED) != 0
+                    c.getInt(COLUMN_IS_SUBSCRIBED) != 0,
+                    null,
+                    0
             );
             entry.setId(c.getInt(COLUMN_ID));
             resList.add(entry);
@@ -219,7 +226,8 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_EVENT_TYPE),
                     c.getInt(COLUMN_IS_FAVORITE),
                     c.getString(COLUMN_IMAGE_HORIZONTAL_URL),
-                    c.getString(COLUMN_IMAGE_VERTICAL_URL)
+                    c.getString(COLUMN_IMAGE_VERTICAL_URL),
+                    0
             );
             entry.setId(c.getInt(COLUMN_ID));
             resList.add(entry);
@@ -304,5 +312,21 @@ public class LocalDataFetcher {
         }
         c.close();
         return resList;
+    }
+
+    public HashMap<Integer, File> getImages(String path) {
+        File dir = new File(Environment.getExternalStorageDirectory(), "/Evendate/" + path);
+        File[] pictures = dir.listFiles();
+        HashMap<Integer, File> files = new HashMap<>();
+        if(pictures == null)
+            return files;
+
+        for (File file : pictures) {
+            if(!file.isFile())
+                continue;
+            files.put(Integer.parseInt(Utils.getFileNameWithoutExtension(file.getName())), file);
+            Log.i("FILE:", file.getAbsolutePath());
+        }
+        return files;
     }
 }

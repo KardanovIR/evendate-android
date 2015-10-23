@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 public class DetailActivity extends AppCompatActivity {
     public Uri mUri;
@@ -25,10 +24,6 @@ public class DetailActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_detail);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 }

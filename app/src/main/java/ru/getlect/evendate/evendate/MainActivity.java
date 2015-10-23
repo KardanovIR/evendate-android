@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -26,6 +29,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+
+import java.io.IOException;
 
 import ru.getlect.evendate.evendate.authorization.AccountChooser;
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -175,7 +180,6 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.help:
-
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.organizations:
@@ -214,6 +218,7 @@ public class MainActivity extends AppCompatActivity
                         new String[] {
                                 EvendateContract.OrganizationEntry._ID,
                                 EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID
                         },
                         EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED + " = 1",
                         null,
@@ -277,12 +282,27 @@ public class MainActivity extends AppCompatActivity
         mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
         if(mSubscriptionCursor != null){
             while(mSubscriptionCursor.moveToNext()){
-                //TODO set icon
-                mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
+                MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry._ID)), 0,
                         mSubscriptionCursor.getString(mSubscriptionCursor
-                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)))
-                        .setIcon(R.drawable.place);
+                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)));
+                mNavigationView.setItemIconTintList(null);
+                try {
+                    final ParcelFileDescriptor fileDescriptor = getContentResolver()
+                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                    .appendPath("images").appendPath("organizations").appendPath("logos")
+                                    .appendPath(mSubscriptionCursor.getString(mSubscriptionCursor
+                                            .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID))).build(), "r");
+                    if(fileDescriptor == null)
+                        //заглушка на случай отсутствия картинки
+                        menuItem.setIcon(R.drawable.place);
+                    else {
+                        menuItem.setIcon(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
+                        fileDescriptor.close();
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -335,6 +355,5 @@ public class MainActivity extends AppCompatActivity
                     return null;
             }
         }
-
     }
 }

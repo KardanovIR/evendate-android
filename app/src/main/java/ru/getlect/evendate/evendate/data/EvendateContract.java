@@ -16,6 +16,10 @@ public class EvendateContract {
     public static final String PATH_TAGS = "tags";
     public static final String PATH_USERS = "users";
 
+    public static final String PATH_EVENT_IMAGES = "images/events";
+    public static final String PATH_ORGANIZATION_IMAGES = "images/organizations";
+    public static final String PATH_ORGANIZATION_LOGOS = "images/organizations/logos";
+
     public static final class EventEntry implements BaseColumns{
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTS).build();

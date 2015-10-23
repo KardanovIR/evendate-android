@@ -85,7 +85,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         //token here
-        String basicAuth = "70755ea672924e14c9d5c6e747c93e59c4d89c1cf2d592e8f58542149d0521b3dd3a09abacb20c179d0ca26aeba83c37ea612228NEUIhzj3aD855zX3UwAVO1VhkSiftUXPCV0LwmEugquLKZlqgS3B8l6MiUuljv3";
+        String basicAuth = "0ddb916680f9eb4e53138e2e276321c116a3b48f705570ebe23e3efc5a2ba803c6c65be4c582360688bc9f920c56a0b3447de7ea67sOyZlty3ruNhH4muJMqDq8IvsKAegwsRycTnb49eRiU1elPPk5b6EUm546lhW";
 
         String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
         String urlTags = "http://evendate.ru/api/tags";
@@ -95,6 +95,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver);
         MergeStrategy merger = new MergeSimple(mContentResolver);
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
+        ImageManager imageManager = new ImageManager(localDataFetcher);
         try {
             String jsonOrganizations = getJsonFromServer(urlOrganization, basicAuth);
             String jsonTags = getJsonFromServer(urlTags, basicAuth);
@@ -103,6 +104,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
+            imageManager.updateOrganizationsImages(cloudList);
+            imageManager.updateOrganizationsLogos(cloudList);
 
             cloudList = CloudDataParser.getTagsDataFromJson(jsonTags);
             localList = localDataFetcher.getTagsDataFromDB();
@@ -116,14 +119,16 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList, localFriendList);
             }
 
-            localList = localDataFetcher.getEventDataFromDB();
-            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, localList);
-            for(DataEntry e: localList){
+            ArrayList<DataEntry> eventList = localDataFetcher.getEventDataFromDB();
+            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, eventList);
+            for(DataEntry e: eventList){
                 ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getId()));
                 ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getId()));
             }
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
-            mergerEventProps.mergeData(null, cloudList, localList);
+            mergerEventProps.mergeData(null, cloudList, eventList);
+
+            imageManager.updateEventImages(cloudList);
 
         }catch (JSONException|IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
