@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:elevation="0dp"
+        >
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
@@ -20,42 +22,35 @@
             app:titleEnabled="false"
             android:fitsSystemWindows="true"
             app:toolbarId="@id/toolbar">
-            <!--
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                -->
             <ImageView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/event_image"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="300dp"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 android:focusable="false"
-                android:cropToPadding="false" />
-                <!--
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="?attr/colorPrimary"
-                    android:text="YEAR"/>
-                    -->
-            <!--
-            </LinearLayout>
-                    -->
+                android:cropToPadding="false"
+                android:layout_marginBottom="?attr/actionBarSize"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:titleTextColor="#fff"
+                android:orientation="horizontal"
                 android:layout_gravity="bottom">
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:src="@drawable/clock"/>
                 <TextView
                     android:id="@+id/event_name"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="6"
+                    android:textColor="#fff"/>
             </LinearLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -67,34 +62,7 @@
                 />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar2"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    android:background="?attr/colorPrimary"
-                    />
-                        <TextView
-                            android:id="@+id/event_description"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginRight="20dp"
-                            android:layout_marginTop="20dp"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
-
-            </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
+        <include layout="@layout/fragment_detail_content"/>
     <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

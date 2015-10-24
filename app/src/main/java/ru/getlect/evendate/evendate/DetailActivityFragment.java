@@ -48,7 +48,7 @@ public class DetailActivityFragment extends Fragment {
 
 
         TextView textView = (TextView)rootView.findViewById(R.id.event_description);
-        Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbar2);
+        //Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbar2);
         final String[] PROJECTION = new String[] {
                 EvendateContract.EventEntry._ID,
                 EvendateContract.EventEntry.COLUMN_TITLE,
@@ -69,7 +69,7 @@ public class DetailActivityFragment extends Fragment {
         //collapsingToolbarLayout.setTitle(c.getString(COLUMN_TITLE));
         TextView textView1 = (TextView)rootView.findViewById(R.id.event_name);
         textView1.setText(c.getString(COLUMN_TITLE));
-        toolbar.setTitle(c.getString(COLUMN_END_DATE));
+        //toolbar.setTitle(c.getString(COLUMN_END_DATE));
 
         ImageView imageView = (ImageView)rootView.findViewById(R.id.event_image);
         ContentResolver contentResolver = getActivity().getContentResolver();
