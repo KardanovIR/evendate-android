@@ -7,11 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_scrolling">
+    tools:showIn="@layout/activity_scrolling"
+    android:fitsSystemWindows="true">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="68dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
@@ -71,6 +72,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_below="@id/toolbar2"
+        android:clipToPadding="false"
         >
         <TextView
             android:id="@+id/event_description"

@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +42,12 @@ public class DetailActivityFragment extends Fragment {
         mDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
         mDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //make status bar transparent
+        if (Build.VERSION.SDK_INT >= 21) {
+            // Set the status bar to dark-semi-transparentish
+            mDetailActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
 
         CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
