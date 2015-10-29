@@ -9,6 +9,7 @@
     <string name="close">Close</string>
     <string name="open">Open</string>
 
+    <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
      <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
         AIzaSyDHLxUykPATBZ8M5oG_teq0rd7Ryu7rqCQ
     </string>
@@ -16,8 +17,10 @@
 
     <!-- strings for sync -->
     <string name="content_authority">ru.getlect.evendate.evendate</string>
-    <string name="account">example.com</string>
-    <string name="account_type">evendate.ru</string>
+    <string name="account_type">ru.getlect.evendate.evendate.accounts</string>
+
+
+
     <string name="title_activity_reel">ReelActivity</string>
 
     <string name="hello_world">Hello world!</string>
@@ -84,4 +87,11 @@
     <string name="organizations">Organization catalog</string>
     <string name="subscriptions">Subscriptions</string>
     <string name="feed">Feed</string>
+
+
+    <!-- strings for sign in -->
+    <string name="sing_in_vk">Sing in by Vkontakte</string>
+    <string name="sing_in_fb">Sing in by Facebook</string>
+    <string name="sing_in_google">Sing in by Google+</string>
+    <string name="account_already_exists">Evendate account already exist</string>
 </resources>

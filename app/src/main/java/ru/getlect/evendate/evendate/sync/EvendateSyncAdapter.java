@@ -8,10 +8,13 @@ package ru.getlect.evendate.evendate.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +30,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.R;
+import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
@@ -40,6 +44,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     // Global variables
 
     ContentResolver mContentResolver;
+    Context mContext;
 
     /**
      * Set up the sync adapter
@@ -50,6 +55,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
          * If your app uses a content resolver, get an instance of it
          * from the incoming Context
          */
+        mContext = context;
         mContentResolver = context.getContentResolver();
     }
 
@@ -67,6 +73,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
          * If your app uses a content resolver, get an instance of it
          * from the incoming Context
          */
+        mContext = context;
         mContentResolver = context.getContentResolver();
 
     }
@@ -83,10 +90,9 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             String authority,
             ContentProviderClient provider,
             SyncResult syncResult) {
-
         //token here
-        String basicAuth = "0ddb916680f9eb4e53138e2e276321c116a3b48f705570ebe23e3efc5a2ba803c6c65be4c582360688bc9f920c56a0b3447de7ea67sOyZlty3ruNhH4muJMqDq8IvsKAegwsRycTnb49eRiU1elPPk5b6EUm546lhW";
 
+        AccountManager accountManager = AccountManager.get(mContext);
         String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
         String urlTags = "http://evendate.ru/api/tags";
         String urlEvents = "http://evendate.ru/api/events/my"; // + теги + друзьяшки + тока будущее
@@ -97,9 +103,11 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
         ImageManager imageManager = new ImageManager(localDataFetcher);
         try {
-            String jsonOrganizations = getJsonFromServer(urlOrganization, basicAuth);
-            String jsonTags = getJsonFromServer(urlTags, basicAuth);
-            String jsonEvents = getJsonFromServer(urlEvents, basicAuth);
+            String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
+
+            String jsonOrganizations = getJsonFromServer(urlOrganization, token);
+            String jsonTags = getJsonFromServer(urlTags, token);
+            String jsonEvents = getJsonFromServer(urlEvents, token);
 
             cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
             localList = localDataFetcher.getOrganizationDataFromDB();
@@ -133,6 +141,10 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         }catch (JSONException|IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+        }catch (OperationCanceledException|AuthenticatorException e){
+            Log.e(LOG_TAG, "problem with getting token");
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         }
     }
 
@@ -156,31 +168,42 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         // Get an instance of the Android account manager
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+//
+        //// Create the account type and default account
+        ////Account newAccount = new Account(
+        ////        context.getString(R.string.app_name), context.getString(R.string.account_type));
+//
+        //// If the password doesn't exist, the account doesn't exist
+        //if ( null == accountManager.getPassword(newAccount) ) {
+//
+        ///*
+        // * Add the account and account type, no password or user data
+        // * If successful, return the Account object, otherwise report an error.
+        // */
+        //    if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
+        //        return null;
+        //    }
+        //    /*
+        //     * If you don't set android:syncable="true" in
+        //     * in your <provider> element in the manifest,
+        //     * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
+        //     * here.
+        //     */
+//
+        //    onAccountCreated(newAccount, context);
+        //}
 
-        // Create the account type and default account
-        Account newAccount = new Account(
-                context.getString(R.string.app_name), context.getString(R.string.account_type));
-
-        // If the password doesn't exist, the account doesn't exist
-        if ( null == accountManager.getPassword(newAccount) ) {
-
-        /*
-         * Add the account and account type, no password or user data
-         * If successful, return the Account object, otherwise report an error.
-         */
-            if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
-                return null;
-            }
-            /*
-             * If you don't set android:syncable="true" in
-             * in your <provider> element in the manifest,
-             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
-             * here.
-             */
-
-            onAccountCreated(newAccount, context);
+        Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
+        if (accounts.length == 0) {
+            Log.e("SYNC", "No Accounts");
+            Intent dialogIntent = new Intent(context, AuthActivity.class);
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(dialogIntent);
+            return null;
         }
-        return newAccount;
+        Account account = accounts[0];
+        //onAccountCreated(account, context);
+        return account;
     }
     private static void onAccountCreated(Account newAccount, Context context) {
         /*
