@@ -3,7 +3,6 @@ package ru.getlect.evendate.evendate;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -148,6 +147,7 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
                 holder.mTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME)));
                 //holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION)));
                 ContentResolver contentResolver = getActivity().getContentResolver();
+                holder.mImageView.setImageBitmap(null);
                 try {
                     final ParcelFileDescriptor fileDescriptor = contentResolver
                             .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
@@ -161,8 +161,8 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
                         //заглушка на случай отсутствия картинки
                         holder.mImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
                     else {
-                        holder.mImageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                        fileDescriptor.close();
+                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mImageView);
+                        imageLoadingTask.execute(fileDescriptor);
                     }
                 }catch (IOException e){
                     e.printStackTrace();
