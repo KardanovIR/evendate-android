@@ -43,7 +43,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     public static final String FEED = "feed";
 
-    private static boolean is_feed;
+    private boolean is_feed;
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
     /**
@@ -105,30 +105,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                         null,
                         null
                 );
-//
-        //    case CAPITALS_LOADER_ID:
-        //        return new CursorLoader(
-        //                mActivity,
-        //                CitiesContract.Cities.CAPITALS_CONTENT_URI,
-        //                new String[]{
-        //                        CitiesContract.Cities._ID,
-        //                        CitiesContract.Cities.NAME
-        //                },
-        //                null,
-        //                null,
-        //                CitiesContract.Cities.NAME + " ASC"
-        //        );
-//
-        //    case SELECTED_CITY_LOADER_ID:
-        //        return new CursorLoader(
-        //                mActivity,
-        //                ContentUris.withAppendedId(CitiesContract.Cities.CONTENT_URI, args.getLong(CITY_ID_KEY)),
-        //                null,
-        //                null,
-        //                null,
-        //                null
-        //        );
-//
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + id);
         }
@@ -142,22 +118,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             case EVENT_INFO_LOADER_ID:
                 mAdapter.setCursor(cursor);
                 break;
-//
-        //    case CAPITALS_LOADER_ID:
-        //        mCapitalsAdapter.setCursor(cursor);
-        //        break;
-//
-        //    case SELECTED_CITY_LOADER_ID:
-        //        if (cursor != null) {
-        //            mEditingCityId = cursor.getLong(cursor.getColumnIndex(CitiesContract.Cities._ID));
-        //            mCityIdTextView.setText(getString(R.string.city_id_placeholder, mEditingCityId));
-        //            mCityNameEditText.setText(cursor.getString(cursor.getColumnIndex(CitiesContract.Cities.NAME)));
-        //            mCapitalCheckbox.setChecked(cursor.getInt(cursor.getColumnIndex(CitiesContract.Cities.CAPITAL)) == 1);
-        //        } else {
-        //            resetCityEditingForm();
-        //        }
-        //        break;
-//
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
         }
@@ -171,15 +131,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             case EVENT_INFO_LOADER_ID:
                 mAdapter.setCursor(null);
                 break;
-//
-        //    case CAPITALS_LOADER_ID:
-        //        mCapitalsAdapter.setCursor(null);
-        //        break;
-//
-        //    case SELECTED_CITY_LOADER_ID:
-        //        resetCityEditingForm();
-        //        break;
-//
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
         }

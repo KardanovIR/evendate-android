@@ -1,7 +1,11 @@
 package ru.getlect.evendate.evendate;
 
+import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -9,6 +13,7 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +29,13 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Bitmap>{
     private DetailActivity mDetailActivity;
+    /** Loader id that get images */
+    public static final int EVENT_IMAGE_ID = 0;
+
+    private ImageView mImageView;
+    private ParcelFileDescriptor mParcelFileDescriptor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,16 +89,16 @@ public class DetailActivityFragment extends Fragment {
         textView1.setText(c.getString(COLUMN_TITLE));
         //toolbar.setTitle(c.getString(COLUMN_END_DATE));
 
-        ImageView imageView = (ImageView)rootView.findViewById(R.id.event_image);
+        mImageView = (ImageView)rootView.findViewById(R.id.event_image);
         ContentResolver contentResolver = getActivity().getContentResolver();
         try {
-            final ParcelFileDescriptor fileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("images").appendPath("events").appendPath(c.getString(COLUMN_EVENT_ID)).build(), "r");
-            if(fileDescriptor == null)
+            mParcelFileDescriptor = contentResolver.openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon().appendPath("images").appendPath("events").appendPath(c.getString(COLUMN_EVENT_ID)).build(), "r");
+            if(mParcelFileDescriptor == null)
                 //заглушка на случай отсутствия картинки
-                imageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                mImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
             else {
-                imageView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                fileDescriptor.close();
+                mDetailActivity.getLoaderManager().initLoader(EVENT_IMAGE_ID, null,
+                        (LoaderManager.LoaderCallbacks) this);
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -97,7 +107,35 @@ public class DetailActivityFragment extends Fragment {
         return rootView;
     }
 
-    public DetailActivityFragment() {
-        super();
+    @Override
+    public Loader<Bitmap> onCreateLoader(int id, Bundle args) {
+        switch (id){
+            case EVENT_IMAGE_ID:
+                return new ImageLoader(mDetailActivity, mParcelFileDescriptor.getFileDescriptor());
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + id);
+        }
     }
+
+    @Override
+    public void onLoadFinished(Loader<Bitmap> loader, Bitmap data) {
+        switch (loader.getId()){
+            case EVENT_IMAGE_ID:
+                mImageView.setImageBitmap(data);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Bitmap> loader) {
+        switch (loader.getId()) {
+            case EVENT_IMAGE_ID:
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
+
 }
