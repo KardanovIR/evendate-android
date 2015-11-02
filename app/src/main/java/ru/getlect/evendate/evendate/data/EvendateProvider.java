@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
@@ -160,11 +159,20 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case EVENT_ID: {
+                //TODo нужно нормальное решение!
                 String[] args = {uri.getLastPathSegment()};
-                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
-                        EvendateContract.EventEntry.TABLE_NAME,
+                final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
+                        = new SQLiteQueryBuilder();
+                sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
+                        + " INNER JOIN " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        " ON " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        "." + EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID +
+                        " = " + EvendateContract.EventEntry.TABLE_NAME +
+                        "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
+                final Cursor cursor = sOrganizationWithEventQueryBuilder.query(
+                        mEvendateDBHelper.getReadableDatabase(),
                         projection,
-                        EvendateContract.EventEntry._ID + "=?",
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
                         null,
