@@ -38,6 +38,7 @@ public class EventEntry extends DataEntry {
     int is_favorite;
     String image_horizontal_url;
     String image_vertical_url;
+    int timestamp_updated_at;
 
 
     public EventEntry(int event_id, String title, String description, String location,
@@ -45,7 +46,7 @@ public class EventEntry extends DataEntry {
                       int organization_id, double latitude, double longitude, String event_end_date,
                       String detail_info_url, String begin_time, String end_time, String location_object,
                       boolean can_edit, String event_type_latin_name, int is_favorite,
-                      String image_horizontal_url, String image_vertical_url){
+                      String image_horizontal_url, String image_vertical_url, int timestamp_updated_at){
         this.event_id = event_id;
         this.title = title;
         this.description = description;
@@ -66,6 +67,15 @@ public class EventEntry extends DataEntry {
         this.is_favorite = is_favorite;
         this.image_horizontal_url = image_horizontal_url;
         this.image_vertical_url = image_vertical_url;
+        this.timestamp_updated_at = timestamp_updated_at;
+    }
+
+    public String getImageHorizontalUrl() {
+        return image_horizontal_url;
+    }
+
+    public int getUpdatedAt() {
+        return timestamp_updated_at;
     }
 
     public ArrayList<DataEntry> getTagList() {

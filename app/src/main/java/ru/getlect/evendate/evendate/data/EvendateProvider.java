@@ -8,14 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by Dmitry on 03.09.2015.
@@ -33,9 +31,9 @@ public class EvendateProvider extends ContentProvider {
     private static final int EVENT_FRIENDS = 305;
     private static final int USERS = 400;
     private static final int USER_ID = 401;
-    private static final int IMAGE = 500;
-
-    private static final String IMAGE_FILENAME = "test.png";
+    private static final int EVENT_IMAGE = 501;
+    private static final int ORGANIZATION_IMAGE = 502;
+    private static final int ORGANIZATION_LOGO = 503;
 
     private EvendateDBHelper mEvendateDBHelper;
     private final UriMatcher mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -43,8 +41,6 @@ public class EvendateProvider extends ContentProvider {
     @Override
     public boolean onCreate(){
         mEvendateDBHelper = new EvendateDBHelper(getContext());
-        //mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
-        //      EvendateContract.PATH_EVENTS, EVENTS);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_ORGANIZATIONS + "/#", ORGANIZATION_ID);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
@@ -66,7 +62,11 @@ public class EvendateProvider extends ContentProvider {
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_USERS + "/#", USER_ID);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
-                "image_test", IMAGE);
+                EvendateContract.PATH_EVENT_IMAGES + "/#", EVENT_IMAGE);
+        mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
+                EvendateContract.PATH_ORGANIZATION_IMAGES + "/#", ORGANIZATION_IMAGE);
+        mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
+                EvendateContract.PATH_ORGANIZATION_LOGOS + "/#", ORGANIZATION_LOGO);
         return true;
     }
 
@@ -490,17 +490,32 @@ public class EvendateProvider extends ContentProvider {
     public ParcelFileDescriptor openFile (final Uri uri, final String mode) throws FileNotFoundException {
         Log.d(LOG_TAG, "openFile: " + uri);
 
-        if (mUriMatcher.match(uri) != IMAGE) {
-            throw new FileNotFoundException(uri.toString());
-        }
+        final int match = mUriMatcher.match(uri);
 
-        try {
-            File sdcard = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Evendate/");
-            //Get the text file
-            File file = new File(sdcard, IMAGE_FILENAME);
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        //TODO EXTENSION!!!
+        switch (match) {
+            case EVENT_IMAGE: {
+                String event_id = uri.getPathSegments().get(2);
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
+                if(!file.exists())
+                    return null;
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
+            case ORGANIZATION_IMAGE: {
+                String organization_id = uri.getPathSegments().get(2);
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + organization_id + ".jpg");
+                if(!file.exists())
+                    return null;
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
+            case ORGANIZATION_LOGO: {
+                String organization_id = uri.getPathSegments().get(3);
+                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + organization_id + ".png");
+                if(!file.exists())
+                    return null;
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
         }
+        return null;
     }
 }

@@ -97,14 +97,18 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
 
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ImageManager imageManager = new ImageManager(localDataFetcher);
         try {
-            //String jsonOrganizations = getJsonFromServer(urlOrganization, basicAuth);
+            String jsonOrganizations = getJsonFromServer(urlOrganization, basicAuth);
             String jsonTags = getJsonFromServer(urlTags, basicAuth);
             String jsonEvents = getJsonFromServer(urlEvents, basicAuth);
 
-            cloudList = ServerDataFetcher.getOrganizationData(evendateService);
+            //cloudList = ServerDataFetcher.getOrganizationData(evendateService);
+            cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
+            imageManager.updateOrganizationsImages(cloudList);
+            imageManager.updateOrganizationsLogos(cloudList);
 
             cloudList = CloudDataParser.getTagsDataFromJson(jsonTags);
             localList = localDataFetcher.getTagsDataFromDB();
@@ -118,14 +122,16 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList, localFriendList);
             }
 
-            localList = localDataFetcher.getEventDataFromDB();
-            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, localList);
-            for(DataEntry e: localList){
+            ArrayList<DataEntry> eventList = localDataFetcher.getEventDataFromDB();
+            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, eventList);
+            for(DataEntry e: eventList){
                 ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getId()));
                 ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getId()));
             }
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
-            mergerEventProps.mergeData(null, cloudList, localList);
+            mergerEventProps.mergeData(null, cloudList, eventList);
+
+            imageManager.updateEventImages(cloudList);
 
         }catch (JSONException|IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

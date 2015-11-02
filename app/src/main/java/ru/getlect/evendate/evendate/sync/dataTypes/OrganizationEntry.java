@@ -13,23 +13,25 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
 public class OrganizationEntry extends DataEntry {
     @SerializedName("id")
     public final int organization_id;
-    public final String description;
     public final String name;
-    public int type_id;
-    public final String img_url;
+    public final String img_url; //logo
     public String img_medium_url;
     public String img_small_url;
+    public final String short_name;
+    public final String description;
+    public final String type_name;
     public String background_img_url;
     public String background_medium_img_url;
     public String background_small_img_url;
     public boolean status;
-    public final String short_name;
-    public final String type_name;
+    public int type_id;
     public final int subscribed_count;
     public final boolean is_subscribed;
+    public int timestamp_updated_at;
 
     public OrganizationEntry(int organization_id, String name, String img_url, String short_name,
-                      String description, String type_name, int subscribed_count, boolean is_subscribed) {
+                      String description, String type_name, int subscribed_count,
+                             boolean is_subscribed, String background_img_url, int updated_at) {
         this.organization_id = organization_id;
         this.name = name;
         this.img_url = img_url;
@@ -38,6 +40,20 @@ public class OrganizationEntry extends DataEntry {
         this.type_name = type_name;
         this.subscribed_count = subscribed_count;
         this.is_subscribed = is_subscribed;
+        this.timestamp_updated_at = updated_at;
+        this.background_img_url = background_img_url;
+    }
+
+    public String getLogoUrl() {
+        return img_url;
+    }
+
+    public String getBackgroundImgUrl() {
+        return background_img_url;
+    }
+
+    public int updatedAt() {
+        return timestamp_updated_at;
     }
 
     @Override
