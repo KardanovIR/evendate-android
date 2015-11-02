@@ -13,7 +13,11 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- permissions for sync -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
         android:allowBackup="true"
@@ -31,7 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authorization.WebAuthActivity" />
         <activity
             android:name=".AddEventActivity"
             android:parentActivityName=".MainActivity"
@@ -53,9 +56,11 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".authorization.AccountChooser"
+            android:name=".authorization.AuthActivity"
             android:screenOrientation="portrait" >
         </activity>
+
+
 
         <provider
             android:name=".data.EvendateProvider"
