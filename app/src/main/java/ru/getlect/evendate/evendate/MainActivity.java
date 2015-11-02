@@ -1,5 +1,7 @@
 package ru.getlect.evendate.evendate;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +34,7 @@ import android.view.SubMenu;
 
 import java.io.IOException;
 
-import ru.getlect.evendate.evendate.authorization.AccountChooser;
+import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
@@ -75,8 +77,14 @@ public class MainActivity extends AppCompatActivity
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
 
+
+        //debug
+
+        AccountManager accountManager = AccountManager.get(this);
+        Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
+
         //sync initialization and account creation if there is no account in app
-        EvendateSyncAdapter.initializeSyncAdapter(this);
+        //EvendateSyncAdapter.initializeSyncAdapter(this);
         getSupportLoaderManager().initLoader(NAV_DRAWER_SUBSCRIPTIONS_ID, null,
                 (LoaderManager.LoaderCallbacks) this);
 
@@ -183,8 +191,8 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.organizations:
-
-                drawerLayout.closeDrawers();
+                Intent intentCatalog = new Intent(MainActivity.this, OrganizationCatalogActivity.class);
+                startActivity(intentCatalog);
                 return true;
             case R.id.add_event:
                 Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                 EvendateSyncAdapter.syncImmediately(this);
                 return true;
             case R.id.authorization:
-                Intent intentAuth = new Intent(this, AccountChooser.class);
+                Intent intentAuth = new Intent(this, AuthActivity.class);
                 startActivity(intentAuth);
                 drawerLayout.closeDrawers();
                 return true;
@@ -293,6 +301,7 @@ public class MainActivity extends AppCompatActivity
                                     .appendPath("images").appendPath("organizations").appendPath("logos")
                                     .appendPath(mSubscriptionCursor.getString(mSubscriptionCursor
                                             .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID))).build(), "r");
+                    //TODo перенести в xml
                     if(fileDescriptor == null)
                         //заглушка на случай отсутствия картинки
                         menuItem.setIcon(R.drawable.place);
