@@ -6,7 +6,7 @@ import android.net.Uri;
 /**
  * Created by Dmitry on 10.09.2015.
  */
-public abstract class DataEntry {
+public abstract class DataEntry extends ResponseData {
     private int _id;
     public int getId(){
         return this._id;

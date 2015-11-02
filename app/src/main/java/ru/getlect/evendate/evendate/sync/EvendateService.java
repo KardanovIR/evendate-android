@@ -4,6 +4,7 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -11,12 +12,16 @@ import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 public interface EvendateService {
 
     @GET("/api/organizations?with_subscriptions=true")
-    Call<EvendateServiceResponse<OrganizationEntry>> organizationData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseArray<OrganizationEntry>> organizationData(@Header("Authorization") String authorization);
 
     @GET("/api/tags")
-    Call<EvendateServiceResponse<TagList>> tagData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<TagResponse>> tagData(@Header("Authorization") String authorization);
 
-    //@GET("/api/tags")
+    //@GET("/api/events/my")
+    //Call<EvendateServiceResponse<TagEntry>> eventData(@Header("Authorization") String authorization);
+//viceResponse<TagList>> tagData(@Header("Authorization") String authorization);
+
+    //@GET("/api/users/friends")
     //Call<EvendateServiceResponse<TagEntry>> eventData(@Header("Authorization") String authorization);
 
 }

@@ -107,18 +107,15 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
 
-            String jsonOrganizations = getJsonFromServer(urlOrganization, token);
-            String jsonTags = getJsonFromServer(urlTags, token);
             String jsonEvents = getJsonFromServer(urlEvents, token);
 
-            //cloudList = ServerDataFetcher.getOrganizationData(evendateService);
-            cloudList = CloudDataParser.getOrganizationDataFromJson(jsonOrganizations);
+            cloudList = ServerDataFetcher.getOrganizationData(evendateService);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
             imageManager.updateOrganizationsImages(cloudList);
             imageManager.updateOrganizationsLogos(cloudList);
 
-            cloudList = CloudDataParser.getTagsDataFromJson(jsonTags);
+            cloudList = ServerDataFetcher.getTagData(evendateService);
             localList = localDataFetcher.getTagsDataFromDB();
             merger.mergeData(EvendateContract.TagEntry.CONTENT_URI, cloudList, localList);
 
