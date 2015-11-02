@@ -183,8 +183,8 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.organizations:
-
-                drawerLayout.closeDrawers();
+                Intent intentCatalog = new Intent(MainActivity.this, OrganizationCatalogActivity.class);
+                startActivity(intentCatalog);
                 return true;
             case R.id.add_event:
                 Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
@@ -293,6 +293,7 @@ public class MainActivity extends AppCompatActivity
                                     .appendPath("images").appendPath("organizations").appendPath("logos")
                                     .appendPath(mSubscriptionCursor.getString(mSubscriptionCursor
                                             .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID))).build(), "r");
+                    //TODo перенести в xml
                     if(fileDescriptor == null)
                         //заглушка на случай отсутствия картинки
                         menuItem.setIcon(R.drawable.place);
