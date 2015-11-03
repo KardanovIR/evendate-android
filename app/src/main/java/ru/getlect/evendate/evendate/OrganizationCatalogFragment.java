@@ -1,12 +1,7 @@
 package ru.getlect.evendate.evendate;
 
-/**
- * Created by Dmitry on 23.09.2015.
- */
-
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,41 +24,31 @@ import java.io.IOException;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
 /**
- * A placeholder fragment containing a simple view.
+ * A fragment representing a list of Items.
+ * <p/>
+ * <p/>
+ * interface.
  */
-public class ReelFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class OrganizationCatalogFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private String LOG_TAG = OrganizationCatalogFragment.class.getSimpleName();
     private android.support.v7.widget.RecyclerView mRecyclerView;
+    private final static int ORGANIZATION_INFO_LOADER_ID = 0;
+    private OrganizationCatalogAdapter mAdapter;
+    private Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
-    private final static int EVENT_INFO_LOADER_ID = 0;
-    private RVAdapter mAdapter;
+    // TODO: Rename and change types of parameters
+    //public static OrganizationCatalogFragment newInstance() {
+    //    OrganizationCatalogFragment fragment = new OrganizationCatalogFragment();
+    //    Bundle args = new Bundle();
+    //    fragment.setArguments(args);
+    //    return fragment;
+    //}
 
     /**
-     * The fragment argument representing the section number for this
-     * fragment.
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
-    /**
-     * argument represent that fragment should get only favorite events
-     */
-    public static final String FEED = "feed";
-
-    private boolean is_feed;
-
-    private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static ReelFragment newInstance(int sectionNumber) {
-        ReelFragment fragment = new ReelFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public ReelFragment() {
+    public OrganizationCatalogFragment() {
     }
 
     @Override
@@ -72,22 +57,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_organization_catalog, container, false);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        mAdapter = new RVAdapter(getActivity());
+        mAdapter = new OrganizationCatalogAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
-        Bundle args = getArguments();
-        if(args != null) {
-            is_feed = args.getBoolean(FEED, false);
-        }
-
         LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
-
+        loaderManager.initLoader(ORGANIZATION_INFO_LOADER_ID, null, this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return rootView;
     }
@@ -97,18 +75,18 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         //Log.d(TAG, "onCreateLoader: " + id);
 //
         switch (id) {
-            case EVENT_INFO_LOADER_ID:
+            case ORGANIZATION_INFO_LOADER_ID:
                 return new CursorLoader(
                         getActivity(),
                         mUri,
                         new String[] {
-                                EvendateContract.EventEntry._ID,
-                                EvendateContract.EventEntry.COLUMN_EVENT_ID,
-                                EvendateContract.EventEntry.COLUMN_TITLE,
-                                EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-                                EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
+                                EvendateContract.OrganizationEntry._ID,
+                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
+                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID
                         },
-                        is_feed ? EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1" : null,
+                        null,
                         null,
                         null
                 );
@@ -119,10 +97,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(final Loader<Cursor> loader, final Cursor cursor) {
-        //Log.d(TAG, "onLoadFinished: " + loader.getId());
-//
+        Log.d(LOG_TAG, "onLoadFinished: " + loader.getId());
+
         switch (loader.getId()) {
-            case EVENT_INFO_LOADER_ID:
+            case ORGANIZATION_INFO_LOADER_ID:
                 mAdapter.setCursor(cursor);
                 break;
             default:
@@ -135,19 +113,19 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         //Log.d(TAG, "onLoaderReset: " + loader.getId());
 //
         switch (loader.getId()) {
-            case EVENT_INFO_LOADER_ID:
+            case ORGANIZATION_INFO_LOADER_ID:
                 mAdapter.setCursor(null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
         }
     }
-    public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
+    public class OrganizationCatalogAdapter extends RecyclerView.Adapter<OrganizationCatalogAdapter.ViewHolder>{
 
         Context mContext;
         Cursor mCursor;
 
-        public RVAdapter(Context context){
+        public OrganizationCatalogAdapter(Context context){
             this.mContext = context;
         }
 
@@ -158,32 +136,32 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.reel_list_item, parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.organization_catalog_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             if (mCursor != null) {
                 mCursor.moveToPosition(position);
-                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry._ID));
-
-                holder.mTitleTextView.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
+                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.OrganizationEntry._ID));
+                holder.mTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME)));
+                //holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION)));
                 ContentResolver contentResolver = getActivity().getContentResolver();
-                holder.mEventImageView.setImageBitmap(null);
+                holder.mImageView.setImageBitmap(null);
                 try {
                     final ParcelFileDescriptor fileDescriptor = contentResolver
                             .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                            .appendPath("images").appendPath("events")
+                                            .appendPath("images").appendPath("organizations")
                                             .appendPath(mCursor.getString(
-                                                            mCursor.getColumnIndex(EvendateContract.EventEntry
-                                                                    .COLUMN_EVENT_ID))
+                                                            mCursor.getColumnIndex(EvendateContract.OrganizationEntry
+                                                                    .COLUMN_ORGANIZATION_ID))
                                             ).build(), "r"
                             );
                     if(fileDescriptor == null)
                         //заглушка на случай отсутствия картинки
-                        holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                        holder.mImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
                     else {
-                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
+                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mImageView);
                         imageLoadingTask.execute(fileDescriptor);
                     }
                 }catch (IOException e){
@@ -204,33 +182,28 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             public android.support.v7.widget.CardView cardView;
-            public ImageView mEventImageView;
-            public TextView mTitleTextView;
-            public TextView mDateTextView;
-            public TextView mOrganizationTextView;
-            public View mFavoriteIndicator;
+            public TextView mTitle;
+            public TextView mSubTitle;
+            public ImageView mImageView;
             public long id;
 
             public ViewHolder(View itemView){
                 super(itemView);
+                mSubTitle = (TextView)itemView.findViewById(R.id.item_subtitle);
                 cardView = (android.support.v7.widget.CardView)itemView;
-                mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
-                mTitleTextView = (TextView)itemView.findViewById(R.id.event_item_title);
-                mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
-                mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
-                mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-
+                mTitle = (TextView)itemView.findViewById(R.id.item_title);
+                mImageView = (ImageView)itemView.findViewById(R.id.item_background);
                 this.id = (int)this.getItemId();
                 itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
-                if(v instanceof CardView){
-                    Intent intent = new Intent(getContext(), DetailActivity.class);
-                    intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                    getActivity().startActivity(intent);
-                }
+                //if(v instanceof CardView){
+                    //Intent intent = new Intent(getContext(), DetailActivity.class);
+                    //intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
+                    //getActivity().startActivity(intent);
+                //}
             }
 
         }

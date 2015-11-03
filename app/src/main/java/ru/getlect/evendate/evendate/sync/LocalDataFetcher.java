@@ -1,6 +1,7 @@
 package ru.getlect.evendate.evendate.sync;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
@@ -25,9 +26,11 @@ import ru.getlect.evendate.evendate.utils.Utils;
  */
 public class LocalDataFetcher {
     ContentResolver mContentResolver;
+    Context mContext;
 
-    public LocalDataFetcher(ContentResolver contentResolver) {
+    public LocalDataFetcher(ContentResolver contentResolver, Context context) {
         mContentResolver = contentResolver;
+        mContext = context;
     }
 
     public ArrayList<DataEntry> getOrganizationDataFromDB(){
@@ -315,7 +318,7 @@ public class LocalDataFetcher {
     }
 
     public HashMap<Integer, File> getImages(String path) {
-        File dir = new File(Environment.getExternalStorageDirectory(), "/Evendate/" + path);
+        File dir = new File(mContext.getExternalCacheDir().toString(), path);
         File[] pictures = dir.listFiles();
         HashMap<Integer, File> files = new HashMap<>();
         if(pictures == null)

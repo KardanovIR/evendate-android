@@ -13,7 +13,11 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- permissions for sync -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
         android:allowBackup="true"
@@ -23,15 +27,14 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/TransparentStatusBar"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/TransparentStatusBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authorization.WebAuthActivity" />
         <activity
             android:name=".AddEventActivity"
             android:parentActivityName=".MainActivity"
@@ -53,9 +56,11 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".authorization.AccountChooser"
+            android:name=".authorization.AuthActivity"
             android:screenOrientation="portrait" >
         </activity>
+
+
 
         <provider
             android:name=".data.EvendateProvider"
@@ -86,11 +91,13 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/evendate_sync_adapter" />
         </service>
-        <!--exported временно добавлено, чтобы запускать активити через Android studio,
-        так как через календарть туда не попасть-->
+        <!--
+        exported временно добавлено, чтобы запускать активити через Android studio,
+        так как через календарть туда не попасть
+        -->
         <activity
-            android:exported="true"
             android:name=".ReelActivity"
+            android:exported="true"
             android:label="@string/title_activity_reel" >
         </activity>
         <activity
@@ -105,6 +112,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.getlect.evendate.evendate.MainActivity" />
+        </activity>
+        <activity android:name=".OrganizationCatalogActivity"
+            android:parentActivityName=".MainActivity" >
         </activity>
     </application>
 

@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
@@ -160,11 +159,20 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case EVENT_ID: {
+                //TODo нужно нормальное решение!
                 String[] args = {uri.getLastPathSegment()};
-                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
-                        EvendateContract.EventEntry.TABLE_NAME,
+                final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
+                        = new SQLiteQueryBuilder();
+                sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
+                        + " INNER JOIN " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        " ON " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        "." + EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID +
+                        " = " + EvendateContract.EventEntry.TABLE_NAME +
+                        "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
+                final Cursor cursor = sOrganizationWithEventQueryBuilder.query(
+                        mEvendateDBHelper.getReadableDatabase(),
                         projection,
-                        EvendateContract.EventEntry._ID + "=?",
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
                         null,
@@ -492,25 +500,27 @@ public class EvendateProvider extends ContentProvider {
 
         final int match = mUriMatcher.match(uri);
 
+        final String BASE_PATH = getContext().getExternalCacheDir().toString();
+
         //TODO EXTENSION!!!
         switch (match) {
             case EVENT_IMAGE: {
                 String event_id = uri.getPathSegments().get(2);
-                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
+                File file = new File(BASE_PATH, EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
                 if(!file.exists())
                     return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_IMAGE: {
                 String organization_id = uri.getPathSegments().get(2);
-                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + organization_id + ".jpg");
+                File file = new File(BASE_PATH, EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + organization_id + ".jpg");
                 if(!file.exists())
                     return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
             case ORGANIZATION_LOGO: {
                 String organization_id = uri.getPathSegments().get(3);
-                File file = new File(Environment.getExternalStorageDirectory(), "Evendate/" + EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + organization_id + ".png");
+                File file = new File(BASE_PATH, EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + organization_id + ".png");
                 if(!file.exists())
                     return null;
                 return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);

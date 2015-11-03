@@ -47,7 +47,7 @@ public class ImageManager {
                 String filepath = EvendateContract.PATH_EVENT_IMAGES + "/" + Integer.toString(eventEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
                 URL url = new URL(eventEntry.getImageHorizontalUrl());
-                ImageLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
+                ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){
             Log.e(LOG_TAG, "error parsing image url");
@@ -77,7 +77,7 @@ public class ImageManager {
                 String filepath = EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
                 URL url = new URL(organizationEntry.getBackgroundImgUrl());
-                ImageLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
+                ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){
             Log.e(LOG_TAG, "error parsing image url");
@@ -107,7 +107,7 @@ public class ImageManager {
                 String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
                 URL url = new URL(organizationEntry.getLogoUrl());
-                ImageLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
+                ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){
             Log.e(LOG_TAG, "error parsing image url");

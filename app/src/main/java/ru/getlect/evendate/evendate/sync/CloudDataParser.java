@@ -55,7 +55,7 @@ public class CloudDataParser {
                 String type_name = organizationJson.getString(TYPE_NAME);
                 String short_name = organizationJson.getString(SHORT_NAME);
                 int subscribed_count = organizationJson.getInt(SUBSCRIBED_COUNT);
-                boolean is_subscribed = organizationJson.getString(IS_SUBSCRIBED).equals("1");
+                boolean is_subscribed = organizationJson.getBoolean(IS_SUBSCRIBED);
                 String background_img_url = organizationJson.getString(BACKGROUND);
                 int timestamp_updated_at = organizationJson.getInt(UPDATED_AT);
                 OrganizationEntry organizationEntry = new OrganizationEntry(

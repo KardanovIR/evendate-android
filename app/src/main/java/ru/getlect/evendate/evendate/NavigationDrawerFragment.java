@@ -27,7 +27,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import ru.getlect.evendate.evendate.authorization.AccountChooser;
+import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
@@ -164,7 +164,7 @@ public class NavigationDrawerFragment extends Fragment implements View.OnClickLi
                 EvendateSyncAdapter.syncImmediately(getActivity());
                 break;
             case R.id.btn_authorization:
-                Intent intentAuth = new Intent(getActivity(), AccountChooser.class);
+                Intent intentAuth = new Intent(getActivity(), AuthActivity.class);
                 startActivity(intentAuth);
                 break;
             case R.id.btn_add_event:
