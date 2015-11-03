@@ -36,24 +36,31 @@
                 android:background="@drawable/gradient_top"
                 android:paddingBottom="?attr/actionBarSize"
                 app:layout_collapseMode="none"/>-->
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
-                android:orientation="horizontal"
                 android:layout_gravity="bottom">
                 <ImageView
-                    android:layout_width="0dp"
+                    android:layout_width="72dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:src="@drawable/clock"/>
+                    android:src="@drawable/clock"
+                    android:padding="4dp"
+                    android:id="@+id/event_organization_icon" />
                 <TextView
                     android:id="@+id/event_name"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
-                    android:textColor="#fff"/>
-            </LinearLayout>
+                    android:textColor="#fff"
+                    android:layout_marginLeft="72dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingRight="48dp"
+                    android:text="title"
+                    android:textSize="16dp" />
+            </FrameLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"

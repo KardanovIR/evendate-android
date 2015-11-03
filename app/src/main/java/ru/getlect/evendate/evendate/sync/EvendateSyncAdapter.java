@@ -98,10 +98,11 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         String urlEvents = "http://evendate.ru/api/events/my"; // + теги + друзьяшки + тока будущее
         ArrayList<DataEntry> cloudList;
         ArrayList<DataEntry> localList;
-        LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver);
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver, mContext);
         MergeStrategy merger = new MergeSimple(mContentResolver);
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
         ImageManager imageManager = new ImageManager(localDataFetcher);
+        ImageServerLoader.init(mContext);
         try {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
 

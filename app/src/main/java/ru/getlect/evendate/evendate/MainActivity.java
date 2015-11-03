@@ -288,6 +288,7 @@ public class MainActivity extends AppCompatActivity
             mOrganizationMenu.clear();
         }
         mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
+        mSubscriptionCursor.moveToFirst();
         if(mSubscriptionCursor != null){
             while(mSubscriptionCursor.moveToNext()){
                 MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
