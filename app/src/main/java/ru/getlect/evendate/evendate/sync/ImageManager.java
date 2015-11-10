@@ -43,6 +43,8 @@ public class ImageManager {
                     if (eventEntry.getUpdatedAt() <= match.lastModified())
                         continue;
                 }
+                if(eventEntry.getImageHorizontalUrl() == null)
+                    continue;
                 String format = Utils.getFileExtension(eventEntry.getImageHorizontalUrl());
                 String filepath = EvendateContract.PATH_EVENT_IMAGES + "/" + Integer.toString(eventEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
@@ -73,6 +75,8 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
+                if(organizationEntry.getBackgroundImgUrl() == null)
+                    continue;
                 String format = Utils.getFileExtension(organizationEntry.getBackgroundImgUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
@@ -103,6 +107,8 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
+                if(organizationEntry.getLogoUrl() == null)
+                    continue;
                 String format = Utils.getFileExtension(organizationEntry.getLogoUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
