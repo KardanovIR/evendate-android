@@ -189,8 +189,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
-            mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-            fileDescriptor.close();
+            if(fileDescriptor == null)
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+            else{
+                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                fileDescriptor.close();
+            }
         }catch (IOException e){
             e.printStackTrace();
         }

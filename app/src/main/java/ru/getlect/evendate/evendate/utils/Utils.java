@@ -1,5 +1,7 @@
 package ru.getlect.evendate.evendate.utils;
 
+import org.json.JSONObject;
+
 /**
  * Created by Dmitry on 21.10.2015.
  *
@@ -26,5 +28,14 @@ public class Utils {
         if(format.equals("JPG"))
             format = "JPEG";
         return format;
+    }
+
+    /** Return the value mapped by the given key, or {@code null} if not present or null.
+     *  http://stackoverflow.com/questions/18226288/json-jsonobject-optstring-returns-string-null
+     */
+    public static String optString(JSONObject json, String key)
+    {
+        // http://code.google.com/p/android/issues/detail?id=13830
+        return json.isNull(key) ? null : json.optString(key, null);
     }
 }

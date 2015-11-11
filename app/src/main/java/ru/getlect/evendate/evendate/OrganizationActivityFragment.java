@@ -3,13 +3,14 @@ package ru.getlect.evendate.evendate;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,8 +50,8 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_organization, container, false);
 
-        ((OrganizationActivity)getActivity()).setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
-        ((OrganizationActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle args = getArguments();
         if(args != null){
@@ -155,8 +156,12 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
-            mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-            fileDescriptor.close();
+            if(fileDescriptor == null)
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+            else{
+                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                fileDescriptor.close();
+            }
         }catch (IOException e){
             e.printStackTrace();
         }

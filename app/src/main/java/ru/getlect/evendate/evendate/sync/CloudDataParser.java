@@ -15,6 +15,7 @@ import ru.getlect.evendate.evendate.sync.dataTypes.EventTagEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.FriendEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * Created by Dmitry on 10.09.2015.
@@ -51,12 +52,12 @@ public class CloudDataParser {
                 int organization_id = organizationJson.getInt(ORGANIZATION_ID);
                 String description = organizationJson.getString(DESCRIPTION);
                 String name = organizationJson.getString(NAME);
-                String img_url = organizationJson.getString(IMG_URL);
+                String img_url = Utils.optString(organizationJson, IMG_URL);
                 String type_name = organizationJson.getString(TYPE_NAME);
                 String short_name = organizationJson.getString(SHORT_NAME);
                 int subscribed_count = organizationJson.getInt(SUBSCRIBED_COUNT);
                 boolean is_subscribed = organizationJson.getBoolean(IS_SUBSCRIBED);
-                String background_img_url = organizationJson.getString(BACKGROUND);
+                String background_img_url = Utils.optString(organizationJson, BACKGROUND);
                 int timestamp_updated_at = organizationJson.getInt(UPDATED_AT);
                 OrganizationEntry organizationEntry = new OrganizationEntry(
                     organization_id, name, img_url, short_name, description, type_name,
@@ -163,8 +164,8 @@ public class CloudDataParser {
                 boolean can_edit = jsonEvent.getBoolean(CAN_EDIT);
                 String event_type_latin_name = jsonEvent.getString(EVENT_TYPE);
                 int is_favorite = jsonEvent.getBoolean(IS_FAVORITE) ? 1 : 0;
-                String image_horizontal_url = jsonEvent.getString(IMAGE_HORIZONTAL_URL);
-                String image_vertical_url = jsonEvent.getString(IMAGE_VERTICAL_URL);
+                String image_horizontal_url = Utils.optString(jsonEvent, IMAGE_HORIZONTAL_URL);
+                String image_vertical_url = Utils.optString(jsonEvent, IMAGE_VERTICAL_URL);
                 int timestamp_updated_at = jsonEvent.getInt(UPDATED_AT);
 
                 JSONArray friendList = jsonEvent.getJSONArray(FAVORITE_FRIENDS);
