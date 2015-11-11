@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity
         mSubscriptionCursor.moveToFirst();
         if(mSubscriptionCursor != null){
             if(mIconObserver == null){
+                IconUpdaterHandler.init(this);
                 mIconObserver  = new IconObserver(new IconUpdaterHandler(), getExternalCacheDir().toString() + "/" + EvendateContract.PATH_ORGANIZATION_LOGOS);
                 mIconObserver.startWatching();
             }
@@ -402,12 +403,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    class IconUpdaterHandler extends Handler{
+    static class IconUpdaterHandler extends Handler{
         public static final int UPDATE_ICON = 0;
+        private static MainActivity mainActivity;
+
+        public static void init(MainActivity activity){
+            mainActivity = activity;
+        }
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case UPDATE_ICON:
-                    updateSubscriptionMenu();
+                    if(mainActivity != null)
+                        mainActivity.updateSubscriptionMenu();
                     break;
             }
         }
