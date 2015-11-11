@@ -439,8 +439,8 @@ public class EvendateProvider extends ContentProvider {
                 break;
             case EVENT_ID:
                 rowsDeleted = db.delete(
-                        EvendateContract.TagEntry.TABLE_NAME,
-                        EvendateContract.TagEntry._ID + "=?", args);
+                        EvendateContract.EventEntry.TABLE_NAME,
+                        EvendateContract.EventEntry._ID + "=?", args);
                 break;
             case USER_ID:
                 rowsDeleted = db.delete(
