@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.NavigationView;
@@ -33,10 +34,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     private MainPagerAdapter mMainPagerAdapter;
 
     private TabLayout mTabLayout;
+
+    private IconObserver mIconObserver;
 
 
     @Override
@@ -290,6 +295,10 @@ public class MainActivity extends AppCompatActivity
         mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
         mSubscriptionCursor.moveToFirst();
         if(mSubscriptionCursor != null){
+            if(mIconObserver == null){
+                mIconObserver  = new IconObserver(new IconUpdaterHandler(), getExternalCacheDir().toString() + "/" + EvendateContract.PATH_ORGANIZATION_LOGOS);
+                mIconObserver.startWatching();
+            }
             while(mSubscriptionCursor.moveToNext()){
                 MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry._ID)), 0,
@@ -308,6 +317,8 @@ public class MainActivity extends AppCompatActivity
                         menuItem.setIcon(R.drawable.place);
                     else {
                         menuItem.setIcon(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
+                        //add to monitoring
+                        mIconObserver.addId(mSubscriptionCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
                         fileDescriptor.close();
                     }
                 }catch (IOException e){
@@ -363,6 +374,41 @@ public class MainActivity extends AppCompatActivity
                     return getString(R.string.feed);
                 default:
                     return null;
+            }
+        }
+    }
+    class IconObserver extends FileObserver{
+        Handler mHandler;
+        ArrayList<Integer> ids;
+        public IconObserver(Handler h, String path) {
+            super(path);
+            mHandler = h;
+            ids = new ArrayList<>();
+        }
+
+        public void addId(int id){
+            ids.add(id);
+        }
+        @Override
+        public void onEvent(int event, String path) {
+            switch (event){
+                case CREATE:
+                case MODIFY:{
+                    if(ids.lastIndexOf(Integer.parseInt(Utils.getFileNameWithoutExtension(path))) != -1)
+                        //TODO эта зараза не работает. Почему хрен знает
+                        mHandler.sendEmptyMessageDelayed(IconUpdaterHandler.UPDATE_ICON, 500);
+                }
+            }
+        }
+    }
+
+    class IconUpdaterHandler extends Handler{
+        public static final int UPDATE_ICON = 0;
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case UPDATE_ICON:
+                    updateSubscriptionMenu();
+                    break;
             }
         }
     }

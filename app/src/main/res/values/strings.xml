@@ -43,4 +43,8 @@
     <string name="sing_in_fb">Sing in by Facebook</string>
     <string name="sing_in_google">Sing in by Google+</string>
     <string name="account_already_exists">Evendate account already exist</string>
+
+    <string name="subscription_fail_cause_network">No internet connection</string>
+    <string name="subscription_confirm">Subscription confirmed</string>
+    <string name="subscription_fail_cause_error">Error occurred</string>
 </resources>
