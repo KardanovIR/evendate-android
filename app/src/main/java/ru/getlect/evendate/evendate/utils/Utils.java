@@ -38,4 +38,9 @@ public class Utils {
         // http://code.google.com/p/android/issues/detail?id=13830
         return json.isNull(key) ? null : json.optString(key, null);
     }
+    public static Integer optInt(JSONObject json, String key)
+    {
+        // http://code.google.com/p/android/issues/detail?id=13830
+        return json.isNull(key) ? null : json.optInt(key, 0);
+    }
 }

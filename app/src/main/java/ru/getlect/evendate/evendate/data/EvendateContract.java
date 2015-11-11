@@ -72,6 +72,7 @@ public class EvendateContract {
         public static final String COLUMN_SHORT_NAME = "short_name";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_TYPE_NAME = "type_name";
+        public static final String COLUMN_SUBSCRIPTION_ID = "subscription_id";
         public static final String COLUMN_IS_SUBSCRIBED = "is_subscribed";
         public static final String COLUMN_SUBSCRIBED_COUNT = "subscribed_count";
     }
