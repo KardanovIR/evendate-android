@@ -26,11 +26,12 @@ public class OrganizationEntry extends DataEntry {
     public boolean status;
     public int type_id;
     public final int subscribed_count;
+    public Integer subscription_id;
     public final boolean is_subscribed;
     public int timestamp_updated_at;
 
     public OrganizationEntry(int organization_id, String name, String img_url, String short_name,
-                      String description, String type_name, int subscribed_count,
+                      String description, String type_name, int subscribed_count, Integer subscription_id,
                              boolean is_subscribed, String background_img_url, int updated_at) {
         this.organization_id = organization_id;
         this.name = name;
@@ -39,6 +40,7 @@ public class OrganizationEntry extends DataEntry {
         this.description = description;
         this.type_name = type_name;
         this.subscribed_count = subscribed_count;
+        this.subscription_id = subscription_id;
         this.is_subscribed = is_subscribed;
         this.timestamp_updated_at = updated_at;
         this.background_img_url = background_img_url;
@@ -79,6 +81,7 @@ public class OrganizationEntry extends DataEntry {
                 this.type_name.equals(tmp.type_name) &&
                 this.description.equals(tmp.description) &&
                 this.subscribed_count == tmp.subscribed_count &&
+                this.subscription_id.equals(tmp.subscription_id) &&
                 this.is_subscribed == tmp.is_subscribed
         );
     }
@@ -91,6 +94,7 @@ public class OrganizationEntry extends DataEntry {
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.short_name)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, this.description)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.type_name)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscription_id)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.is_subscribed)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.is_subscribed)
                 .build();
@@ -105,6 +109,7 @@ public class OrganizationEntry extends DataEntry {
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.short_name)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, this.description)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.type_name)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscription_id)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.is_subscribed)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.is_subscribed)
                 .build();
