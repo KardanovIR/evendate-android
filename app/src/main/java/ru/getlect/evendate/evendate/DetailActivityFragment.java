@@ -1,9 +1,12 @@
 package ru.getlect.evendate.evendate;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -13,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +26,16 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.data.EvendateProvider;
+import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
+import ru.getlect.evendate.evendate.sync.EvendateService;
+import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -53,6 +65,8 @@ View.OnClickListener{
 
     private Uri mUri;
     private int organizationId;
+    private int eventId;
+    private EventEntry mEventEntry;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,9 +109,14 @@ View.OnClickListener{
         mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
 
         mUri = mDetailActivity.mUri;
-
-        mDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
-        (LoaderManager.LoaderCallbacks)this);
+        eventId = Integer.parseInt(mUri.getLastPathSegment());
+        if(!mDetailActivity.isLocal)
+            mDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
+            (LoaderManager.LoaderCallbacks)this);
+        else{
+            EventDetailAsyncLoader eventDetailAsyncLoader = new EventDetailAsyncLoader();
+            eventDetailAsyncLoader.execute();
+        }
 
         return rootView;
     }
@@ -216,5 +235,67 @@ View.OnClickListener{
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build());
             startActivity(intent);
         }
+    }
+    private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataEntry> {
+        @Override
+        protected DataEntry doInBackground(Void... params) {
+            AccountManager accountManager = AccountManager.get(getContext());
+            Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
+            if (accounts.length == 0) {
+                Log.e("SYNC", "No Accounts");
+                Intent dialogIntent = new Intent(getContext(), AuthActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(dialogIntent);
+            }
+            Account account = accounts[0];
+            String token = null;
+            try{
+                token = accountManager.blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            EvendateService evendateService = EvendateApiFactory.getEvendateService();
+            return ServerDataFetcher.getEventData(evendateService, token, eventId);
+        }
+
+        @Override
+        protected void onPostExecute(DataEntry dataEntry) {
+            setEvent((EventEntry)dataEntry);
+        }
+    }
+    public void setEvent(EventEntry event){
+        mEventEntry = event;
+
+        //mOrganizationTextView.setText();
+        //mDescriptionTextView.setText(data.getString(COLUMN_DESCRIPTION));
+        mTitleTextView.setText(event.getTitle());
+        //mPlaceTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
+        //mTagsTextView.setText(data.getString(COLUMN_DESCRIPTION));
+        //mLinkTextView.setText(data.getString(COLUMN_DETAIL_INFO_URL));
+
+
+        mEventImageView.setImageBitmap(null);
+        if(event.getImageHorizontalUrl() == null)
+            mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+        else{
+            ImageLoaderTask imageLoader = new ImageLoaderTask(mEventImageView);
+            imageLoader.execute(event.getImageHorizontalUrl());
+        }
+
+        try{
+            final ParcelFileDescriptor fileDescriptor = mDetailActivity.getContentResolver()
+                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                            .appendPath("images").appendPath("organizations").appendPath("logos")
+                            .appendPath(String.valueOf(event.getOrganizationId())).build(), "r");
+            if(fileDescriptor == null)
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+            else{
+                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                fileDescriptor.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        organizationId = event.getOrganizationId();
     }
 }

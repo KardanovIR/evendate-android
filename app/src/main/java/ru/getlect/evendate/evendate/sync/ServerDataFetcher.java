@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import retrofit.Call;
 import retrofit.Response;
 import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
@@ -18,6 +19,7 @@ import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
 public class ServerDataFetcher{
     //TODO нз как сделать без дублирования кода, потому что в интерфейсе явно указывается класс,
     // в который парсится json
+    // ПАРАМЕТРИЗОВАТЬ
     public static ArrayList<DataEntry> getOrganizationData(EvendateService evendateService, String basicAuth) {
         Call<EvendateServiceResponseArray<OrganizationEntry>> call = evendateService.organizationData(basicAuth);
 
@@ -53,6 +55,19 @@ public class ServerDataFetcher{
                 evendateService.organizationWithEventsData(organizationId, basicAuth);
         try{
             Response<EvendateServiceResponseAttr<OrganizationEntryWithEvents>> response = call.execute();
+            if(response.isSuccess()){
+                return response.body().getData();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static DataEntry getEventData(EvendateService evendateService, String basicAuth, int eventId){
+        Call<EvendateServiceResponseAttr<EventEntry>> call =
+                evendateService.eventData(eventId, basicAuth);
+        try{
+            Response<EvendateServiceResponseAttr<EventEntry>> response = call.execute();
             if(response.isSuccess()){
                 return response.body().getData();
             }

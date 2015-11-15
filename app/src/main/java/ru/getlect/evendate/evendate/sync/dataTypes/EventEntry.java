@@ -74,6 +74,10 @@ public class EventEntry extends DataEntry {
         return image_horizontal_url;
     }
 
+    public int getOrganizationId() {
+        return organization_id;
+    }
+
     public int getUpdatedAt() {
         return timestamp_updated_at;
     }

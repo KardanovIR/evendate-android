@@ -4,6 +4,8 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Path;
+import ru.getlect.evendate.evendate.data.EvendateContract;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
@@ -28,4 +30,6 @@ public interface EvendateService {
     //@GET("/api/users/friends")
     //Call<EvendateServiceResponse<TagEntry>> eventData(@Header("Authorization") String authorization);
 
+    @GET("/api/events/{id}")
+    Call<EvendateServiceResponseAttr<EventEntry>> eventData(@Path("id") int eventId, @Header("Authorization") String authorization);
 }
