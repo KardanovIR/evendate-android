@@ -6,6 +6,7 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -45,6 +47,8 @@ import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
  * A placeholder fragment containing a simple view.
  */
 public class ReelFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private String LOG_TAG = ReelFragment.class.getSimpleName();
+
     private android.support.v7.widget.RecyclerView mRecyclerView;
 
     private final static int EVENT_INFO_LOADER_ID = 0;
@@ -206,6 +210,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             notifyDataSetChanged();
         }
 
+        public ArrayList<EventEntry> getEventList() {
+            return mEventList;
+        }
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             int layoutItemId;
@@ -312,6 +320,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 if(v instanceof CardView){
                     Intent intent = new Intent(getContext(), DetailActivity.class);
                     intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
+                    if(type == TypeFormat.organization.nativeInt)
+                        intent.putExtra(DetailActivity.IS_LOCAL, true);
                     getActivity().startActivity(intent);
                 }
             }
@@ -345,5 +355,32 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         protected void onPostExecute(DataEntry dataEntry) {
             mAdapter.setEventList(((OrganizationEntryWithEvents)dataEntry).getEvents());
         }
+    }
+    public void subscribed(){
+        if(mAdapter.getEventList() == null)
+            return;
+        ContentResolver contentResolver = getContext().getContentResolver();
+        Uri ContentUri = mUri;
+        ArrayList<ContentProviderOperation> batch = new ArrayList<>();
+
+
+        for (DataEntry e : mAdapter.getEventList()) {
+            Log.i(LOG_TAG, "Scheduling insert: entry_id=" + e.getEntryId());
+            batch.add(e.getInsert(ContentUri));
+        }
+        try {
+            contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
+        }catch (Exception e){
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return;
+        }
+        contentResolver.notifyChange(
+                ContentUri, // URI where data was modified
+                null,                           // No local observer
+                false);                         // IMPORTANT: Do not sync to network
+        // This sample doesn't support uploads, but if *your* code does, make sure you set
+        // syncToNetwork=false in the line above to prevent duplicate syncs.
+        Log.i(LOG_TAG, "Batch update done");
     }
 }

@@ -274,6 +274,11 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 return false;
             }
+            ReelFragment reelFragment =  (ReelFragment) getChildFragmentManager().findFragmentById(R.id.organization_container);
+
+            //if(reelFragment != null){
+            //    reelFragment.subscribed();
+            //}
 
 
         } catch (MalformedURLException e) {
