@@ -167,7 +167,7 @@ public class CloudDataParser {
                 String location_object = jsonEvent.getString(LOCATION_JSON);
                 boolean can_edit = jsonEvent.getBoolean(CAN_EDIT);
                 String event_type_latin_name = jsonEvent.getString(EVENT_TYPE);
-                int is_favorite = jsonEvent.getBoolean(IS_FAVORITE) ? 1 : 0;
+                boolean is_favorite = jsonEvent.getBoolean(IS_FAVORITE);
                 String image_horizontal_url = Utils.optString(jsonEvent, IMAGE_HORIZONTAL_URL);
                 String image_vertical_url = Utils.optString(jsonEvent, IMAGE_VERTICAL_URL);
                 int timestamp_updated_at = jsonEvent.getInt(UPDATED_AT);
@@ -191,10 +191,10 @@ public class CloudDataParser {
         }
         return cVList;
     }
-    private static ArrayList<DataEntry> getFriendDataFromJson(JSONArray jsonData)
+    private static ArrayList<FriendEntry> getFriendDataFromJson(JSONArray jsonData)
             throws JSONException, IOException {
 
-        ArrayList<DataEntry> cVList = new ArrayList<>();
+        ArrayList<FriendEntry> cVList = new ArrayList<>();
 
         final String USER_ID = "id";
         final String LAST_NAME = "last_name";
@@ -228,10 +228,10 @@ public class CloudDataParser {
         }
         return cVList;
     }
-    private static ArrayList<DataEntry> getEventTagDataFromJson(JSONArray jsonData, int eventId)
+    private static ArrayList<TagEntry> getEventTagDataFromJson(JSONArray jsonData, int eventId)
             throws JSONException, IOException {
 
-        ArrayList<DataEntry> cVList = new ArrayList<>();
+        ArrayList<TagEntry> cVList = new ArrayList<>();
 
         final String TAG_ID = "id";
         final String NAME = "name";

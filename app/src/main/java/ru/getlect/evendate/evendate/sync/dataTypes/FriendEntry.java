@@ -3,6 +3,8 @@ package ru.getlect.evendate.evendate.sync.dataTypes;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 
+import com.google.gson.annotations.SerializedName;
+
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
 /**
@@ -15,7 +17,9 @@ public class FriendEntry extends DataEntry{
     public final String middle_name;
     public final String avatar_url;
     public final String type;
-    public final int friend_uid;
+    //TODO
+    @SerializedName("none")
+    public final long friend_uid;
     public final String link;
 
     public FriendEntry(int user_id, String last_name, String first_name, String middle_name,

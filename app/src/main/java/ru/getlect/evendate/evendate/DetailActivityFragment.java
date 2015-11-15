@@ -1,5 +1,6 @@
 package ru.getlect.evendate.evendate;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -22,11 +23,13 @@ import android.widget.TextView;
 import java.io.IOException;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
+import ru.getlect.evendate.evendate.data.EvendateProvider;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+View.OnClickListener{
     private DetailActivity mDetailActivity;
     /** Loader id that get images */
    // public static final int EVENT_IMAGE_ID = 0;
@@ -49,6 +52,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mParticipantCountTextView;
 
     private Uri mUri;
+    private int organizationId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
         mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
 
+        mOrganizationTextView.setOnClickListener(this);
+
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
+        mOrganizationIconView.setOnClickListener(this);
         mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
 
         mUri = mDetailActivity.mUri;
@@ -198,7 +205,16 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         }catch (IOException e){
             e.printStackTrace();
         }
+        organizationId = data.getInt(COLUMN_ORGANIZATION_ID);
         data.close();
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v == mOrganizationIconView || v == mOrganizationTextView){
+            Intent intent = new Intent(getContext(), OrganizationActivity.class);
+            intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build());
+            startActivity(intent);
+        }
+    }
 }

@@ -145,7 +145,7 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
         public void onBindViewHolder(ViewHolder holder, int position) {
             if (mCursor != null) {
                 mCursor.moveToPosition(position);
-                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.OrganizationEntry._ID));
+                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
                 holder.mTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME)));
                 //holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION)));
                 ContentResolver contentResolver = getActivity().getContentResolver();

@@ -55,10 +55,16 @@ public class MergeEventProps extends MergeStrategy {
                         .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_TAGS).build();
                 Uri contentUriFriends = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_USERS).build();
-                mMergerTags.mergeData(contentUriTags,
-                        ((EventEntry)match).getTagList(), ((EventEntry) e).getTagList());
-                mMergerFriends.mergeData(contentUriFriends,
-                        ((EventEntry)match).getFriendList(), ((EventEntry) e).getFriendList());
+                ArrayList<DataEntry> tagList = new ArrayList<>();
+                ArrayList<DataEntry> tagListMatch = new ArrayList<>();
+                tagList.addAll(((EventEntry) e).getTagList());
+                tagListMatch.addAll(((EventEntry) match).getTagList());
+                mMergerTags.mergeData(contentUriTags, tagListMatch, tagList);
+                ArrayList<DataEntry> friendList = new ArrayList<>();
+                ArrayList<DataEntry> friendListMatch = new ArrayList<>();
+                friendList.addAll(((EventEntry) e).getFriendList());
+                friendListMatch.addAll(((EventEntry) match).getFriendList());
+                mMergerFriends.mergeData(contentUriFriends, friendList, friendListMatch);
                 mContentResolver.notifyChange(contentUriTags, null, false);
                 mContentResolver.notifyChange(contentUriFriends, null, false);
             } else {

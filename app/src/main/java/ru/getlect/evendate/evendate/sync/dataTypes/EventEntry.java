@@ -14,9 +14,9 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
  */
 public class EventEntry extends DataEntry {
     @SerializedName("tags")
-    ArrayList<DataEntry> mTagList;
+    ArrayList<TagEntry> mTagList;
     @SerializedName("favorite_friends")
-    ArrayList<DataEntry> mFriendList;
+    ArrayList<FriendEntry> mFriendList;
     @SerializedName("id")
     int event_id;
     String title;
@@ -35,7 +35,7 @@ public class EventEntry extends DataEntry {
     String location_object;
     boolean can_edit;
     String event_type_latin_name;
-    int is_favorite;
+    boolean is_favorite;
     String image_horizontal_url;
     String image_vertical_url;
     int timestamp_updated_at;
@@ -45,7 +45,7 @@ public class EventEntry extends DataEntry {
                       String location_uri, String event_start_date, String notifications_schema_json,
                       int organization_id, double latitude, double longitude, String event_end_date,
                       String detail_info_url, String begin_time, String end_time, String location_object,
-                      boolean can_edit, String event_type_latin_name, int is_favorite,
+                      boolean can_edit, String event_type_latin_name, boolean is_favorite,
                       String image_horizontal_url, String image_vertical_url, int timestamp_updated_at){
         this.event_id = event_id;
         this.title = title;
@@ -78,19 +78,19 @@ public class EventEntry extends DataEntry {
         return timestamp_updated_at;
     }
 
-    public ArrayList<DataEntry> getTagList() {
+    public ArrayList<TagEntry> getTagList() {
         return mTagList;
     }
 
-    public void setTagList(ArrayList<DataEntry> mTagList) {
-        this.mTagList = mTagList;
+    public void setTagList(ArrayList<TagEntry> tagList) {
+        this.mTagList = tagList;
     }
 
-    public ArrayList<DataEntry> getFriendList() {
+    public ArrayList<FriendEntry> getFriendList() {
         return mFriendList;
     }
 
-    public void setFriendList(ArrayList<DataEntry> mFriendList) {
+    public void setFriendList(ArrayList<FriendEntry> mFriendList) {
         this.mFriendList = mFriendList;
     }
 
@@ -107,6 +107,10 @@ public class EventEntry extends DataEntry {
     @Override
     public int getEntryId() {
         return event_id;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     @Override

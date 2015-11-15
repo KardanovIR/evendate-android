@@ -229,7 +229,7 @@ public class LocalDataFetcher {
                     c.getString(COLUMN_LOCATION_JSON),
                     c.getInt(COLUMN_CAN_EDIT) != 0,
                     c.getString(COLUMN_EVENT_TYPE),
-                    c.getInt(COLUMN_IS_FAVORITE),
+                    c.getInt(COLUMN_IS_FAVORITE) != 0,
                     c.getString(COLUMN_IMAGE_HORIZONTAL_URL),
                     c.getString(COLUMN_IMAGE_VERTICAL_URL),
                     0
@@ -240,8 +240,8 @@ public class LocalDataFetcher {
         c.close();
         return resList;
     }
-    public ArrayList<DataEntry> getEventTagDataFromDB(int eventId){
-        ArrayList<DataEntry> resList = new ArrayList<>();
+    public ArrayList<TagEntry> getEventTagDataFromDB(int eventId){
+        ArrayList<TagEntry> resList = new ArrayList<>();
 
         // Define a variable to contain a content resolver instance
         final String[] PROJECTION = new String[] {
@@ -270,8 +270,8 @@ public class LocalDataFetcher {
         c.close();
         return resList;
     }
-    public ArrayList<DataEntry> getEventFriendDataFromDB(int eventId){
-        ArrayList<DataEntry> resList = new ArrayList<>();
+    public ArrayList<FriendEntry> getEventFriendDataFromDB(int eventId){
+        ArrayList<FriendEntry> resList = new ArrayList<>();
 
         // Define a variable to contain a content resolver instance
         final String[] ORGANIZATION_PROJECTION = new String[] {

@@ -12,55 +12,91 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
  */
 public class OrganizationEntry extends DataEntry {
     @SerializedName("id")
-    public final int organization_id;
+    public final int organizationId;
     public final String name;
-    public final String img_url; //logo
-    public String img_medium_url;
-    public String img_small_url;
-    public final String short_name;
+    @SerializedName("short_name")
+    public final String shortName;
     public final String description;
-    public final String type_name;
-    public String background_img_url;
-    public String background_medium_img_url;
-    public String background_small_img_url;
+    @SerializedName("site_url")
+    public String siteUrl;
+
+    @SerializedName("img_url")
+    public final String logoLargeUrl;
+    @SerializedName("img_medium_url")
+    public String logoMediumUrl;
+    @SerializedName("img_small_url")
+    public String logoSmallUrl;
+
+    @SerializedName("background_img_url")
+    public String backgroundLargeUrl;
+    @SerializedName("background_medium_img_url")
+    public String backgroundMediumUrl;
+    @SerializedName("background_small_img_url")
+    public String backgroundSmallUrl;
+
+    @SerializedName("type_id")
+    public int typeId;
+    @SerializedName("type_name")
+    public final String typeName;
+
+    @SerializedName("subscribed_count")
+    public final int subscribedCount;
+    @SerializedName("subscription_id")
+    public Integer subscriptionId;
+    @SerializedName("is_subscribed")
+    public final boolean isSubscribed;
+
     public boolean status;
-    public int type_id;
-    public final int subscribed_count;
-    public Integer subscription_id;
-    public final boolean is_subscribed;
-    public int timestamp_updated_at;
+    @SerializedName("timestamp_updated_at")
+    public int timestampUpdatedAt;
 
-    public OrganizationEntry(int organization_id, String name, String img_url, String short_name,
-                      String description, String type_name, int subscribed_count, Integer subscription_id,
-                             boolean is_subscribed, String background_img_url, int updated_at) {
-        this.organization_id = organization_id;
+    public OrganizationEntry(int organizationId, String name, String img_url, String short_name,
+                      String description, String typeName, int subscribedCount, Integer subscriptionId,
+                             boolean isSubscribed, String backgroundLargeUrl, int updated_at) {
+        this.organizationId = organizationId;
         this.name = name;
-        this.img_url = img_url;
-        this.short_name = short_name;
+        this.logoLargeUrl = img_url;
+        this.shortName = short_name;
         this.description = description;
-        this.type_name = type_name;
-        this.subscribed_count = subscribed_count;
-        this.subscription_id = subscription_id;
-        this.is_subscribed = is_subscribed;
-        this.timestamp_updated_at = updated_at;
-        this.background_img_url = background_img_url;
+        this.typeName = typeName;
+        this.subscribedCount = subscribedCount;
+        this.subscriptionId = subscriptionId;
+        this.isSubscribed = isSubscribed;
+        this.timestampUpdatedAt = updated_at;
+        this.backgroundLargeUrl = backgroundLargeUrl;
     }
 
-    public String getLogoUrl() {
-        return img_url;
+    public String getLogoLargeUrl() {
+        return logoLargeUrl;
     }
 
-    public String getBackgroundImgUrl() {
-        return background_img_url;
+    public String getLogoMediumUrl() {
+        return logoMediumUrl;
+    }
+
+    public String getLogoSmallUrl() {
+        return logoSmallUrl;
+    }
+
+    public String getBackgroundLargeUrl() {
+        return backgroundLargeUrl;
+    }
+
+    public String getBackgroundMediumUrl() {
+        return backgroundMediumUrl;
+    }
+
+    public String getBackgroundSmallUrl() {
+        return backgroundSmallUrl;
     }
 
     public int updatedAt() {
-        return timestamp_updated_at;
+        return timestampUpdatedAt;
     }
 
     @Override
     public int getEntryId() {
-        return this.organization_id;
+        return this.organizationId;
     }
 
     public boolean equals(Object obj) {
@@ -76,13 +112,13 @@ public class OrganizationEntry extends DataEntry {
             return false;
         OrganizationEntry tmp = (OrganizationEntry) obj;
         return (this.name.equals(tmp.name) &&
-                this.img_url.equals(tmp.img_url) &&
-                this.short_name.equals(tmp.short_name) &&
-                this.type_name.equals(tmp.type_name) &&
+                this.logoLargeUrl.equals(tmp.logoLargeUrl) &&
+                this.shortName.equals(tmp.shortName) &&
+                this.typeName.equals(tmp.typeName) &&
                 this.description.equals(tmp.description) &&
-                this.subscribed_count == tmp.subscribed_count &&
-                this.subscription_id.equals(tmp.subscription_id) &&
-                this.is_subscribed == tmp.is_subscribed
+                this.subscribedCount == tmp.subscribedCount &&
+                this.subscriptionId.equals(tmp.subscriptionId) &&
+                this.isSubscribed == tmp.isSubscribed
         );
     }
 
@@ -90,28 +126,28 @@ public class OrganizationEntry extends DataEntry {
     public ContentProviderOperation getUpdate(final Uri ContentUri) {
         return ContentProviderOperation.newUpdate(ContentUri)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_NAME, this.name)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, this.img_url)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.short_name)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, this.logoLargeUrl)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.shortName)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, this.description)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.type_name)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscription_id)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.is_subscribed)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.is_subscribed)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.typeName)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscriptionId)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.isSubscribed)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.isSubscribed)
                 .build();
     }
 
     @Override
     public ContentProviderOperation getInsert(Uri ContentUri) {
         return ContentProviderOperation.newInsert(ContentUri)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID, this.organization_id)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID, this.organizationId)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_NAME, this.name)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, this.img_url)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.short_name)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, this.logoLargeUrl)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, this.shortName)
                 .withValue(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, this.description)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.type_name)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscription_id)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.is_subscribed)
-                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.is_subscribed)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, this.typeName)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscriptionId)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.isSubscribed)
+                .withValue(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.isSubscribed)
                 .build();
     }
 }

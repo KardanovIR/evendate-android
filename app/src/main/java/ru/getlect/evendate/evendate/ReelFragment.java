@@ -4,11 +4,14 @@ package ru.getlect.evendate.evendate;
  * Created by Dmitry on 23.09.2015.
  */
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
@@ -18,6 +21,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +29,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
+import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
+import ru.getlect.evendate.evendate.sync.EvendateService;
+import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -43,12 +56,29 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    public static final String ORGANIZATION_ID = "organization_id";
+
+    public static final String IS_SUBSCRIBED = "is_subscribed";
+
+    private int organizationId;
     /**
      * argument represent that fragment should get only favorite events
      */
-    public static final String FEED = "feed";
+    public static final String TYPE = "feed";
 
-    private boolean is_feed;
+    private int type = 0;
+    public enum TypeFormat {
+        feed                (0),
+        favorites           (1),
+        organization        (2),
+        organizationSubscribed  (3);
+
+        TypeFormat(int nativeInt) {
+            this.nativeInt = nativeInt;
+        }
+        final int nativeInt;
+    }
+
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
     /**
@@ -77,13 +107,21 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        mAdapter = new RVAdapter(getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-
         Bundle args = getArguments();
         if(args != null) {
-            is_feed = args.getBoolean(FEED, false);
+            type = args.getInt(TYPE);
+            if(type == TypeFormat.organization.nativeInt){
+                organizationId = args.getInt(ORGANIZATION_ID);
+                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader();
+                organizationAsyncLoader.execute();
+            }
+            if(type == TypeFormat.organizationSubscribed.nativeInt){
+                organizationId = args.getInt(ORGANIZATION_ID);
+            }
         }
+
+        mAdapter = new RVAdapter(getActivity());
+        mRecyclerView.setAdapter(mAdapter);
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
@@ -96,6 +134,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         //Log.d(TAG, "onCreateLoader: " + id);
 //
+        String selection = "";
+        if(type == TypeFormat.favorites.nativeInt)
+            selection = EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1";
+        else if(type == TypeFormat.organizationSubscribed.nativeInt){
+            selection = EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
+        }
         switch (id) {
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
@@ -108,7 +152,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                                 EvendateContract.EventEntry.COLUMN_DESCRIPTION,
                                 EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
                         },
-                        is_feed ? EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1" : null,
+                        selection,
                         null,
                         null
                 );
@@ -146,9 +190,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         Context mContext;
         Cursor mCursor;
+        private ArrayList<EventEntry> mEventList;
 
         public RVAdapter(Context context){
             this.mContext = context;
+        }
+
+        public void setEventList(ArrayList<EventEntry> eventList){
+            mEventList = eventList;
+            notifyDataSetChanged();
         }
 
         public void setCursor(Cursor cursor) {
@@ -158,46 +208,79 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.reel_list_item, parent, false));
+            int layoutItemId;
+            if(type == TypeFormat.organization.nativeInt)
+                layoutItemId = R.layout.reel_list_item;
+            else if(type == TypeFormat.favorites.nativeInt){
+                layoutItemId = R.layout.reel_favorite_item;
+            }
+            else{
+                layoutItemId = R.layout.reel_list_item;
+            }
+                return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(layoutItemId, parent, false));
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if (mCursor != null) {
-                mCursor.moveToPosition(position);
-                holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry._ID));
+            if(type != TypeFormat.organization.nativeInt){
+                if (mCursor != null) {
+                    mCursor.moveToPosition(position);
+                    holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_EVENT_ID));
 
-                holder.mTitleTextView.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
-                ContentResolver contentResolver = getActivity().getContentResolver();
-                holder.mEventImageView.setImageBitmap(null);
-                try {
-                    final ParcelFileDescriptor fileDescriptor = contentResolver
-                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                            .appendPath("images").appendPath("events")
-                                            .appendPath(mCursor.getString(
-                                                            mCursor.getColumnIndex(EvendateContract.EventEntry
-                                                                    .COLUMN_EVENT_ID))
-                                            ).build(), "r"
-                            );
-                    if(fileDescriptor == null)
-                        //заглушка на случай отсутствия картинки
-                        holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-                    else {
-                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
-                        imageLoadingTask.execute(fileDescriptor);
+                    holder.mTitleTextView.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
+                    ContentResolver contentResolver = getActivity().getContentResolver();
+                    if(mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1
+                            && type != TypeFormat.favorites.nativeInt){
+                        holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
                     }
-                }catch (IOException e){
-                    e.printStackTrace();
+                    holder.mEventImageView.setImageBitmap(null);
+                    try {
+                        final ParcelFileDescriptor fileDescriptor = contentResolver
+                                .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                                .appendPath("images").appendPath("events")
+                                                .appendPath(mCursor.getString(
+                                                                mCursor.getColumnIndex(EvendateContract.EventEntry
+                                                                        .COLUMN_EVENT_ID))
+                                                ).build(), "r"
+                                );
+                        if(fileDescriptor == null)
+                            //заглушка на случай отсутствия картинки
+                            holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                        else {
+                            ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
+                            imageLoadingTask.execute(fileDescriptor);
+                        }
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else{
+                EventEntry eventEntry = mEventList.get(position);
+                holder.id = eventEntry.getEntryId();
+                holder.mTitleTextView.setText(eventEntry.getTitle());
+                holder.mEventImageView.setImageBitmap(null);
+                if(eventEntry.getImageHorizontalUrl() == null)
+                    holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                else{
+                    ImageLoaderTask imageLoader = new ImageLoaderTask(holder.mEventImageView);
+                    imageLoader.execute(eventEntry.getImageHorizontalUrl());
                 }
             }
         }
 
         @Override
         public int getItemCount() {
-            if (mCursor == null) {
-                return 0;
-            } else {
-                return mCursor.getCount();
+            if(type != TypeFormat.organization.nativeInt){
+                if (mCursor == null) {
+                    return 0;
+                } else {
+                    return mCursor.getCount();
+                }
+            }else {
+                if(mEventList == null)
+                    return 0;
+                return mEventList.size();
             }
         }
 
@@ -233,6 +316,34 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
             }
 
+        }
+    }
+
+    private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataEntry> {
+        @Override
+        protected DataEntry doInBackground(Void... params) {
+            AccountManager accountManager = AccountManager.get(getContext());
+            Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
+            if (accounts.length == 0) {
+                Log.e("SYNC", "No Accounts");
+                Intent dialogIntent = new Intent(getContext(), AuthActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(dialogIntent);
+            }
+            Account account = accounts[0];
+            String token = null;
+            try{
+                token = accountManager.blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            EvendateService evendateService = EvendateApiFactory.getEvendateService();
+            return ServerDataFetcher.getOrganizationWithEventsData(evendateService, token, organizationId);
+        }
+
+        @Override
+        protected void onPostExecute(DataEntry dataEntry) {
+            mAdapter.setEventList(((OrganizationEntryWithEvents)dataEntry).getEvents());
         }
     }
 }

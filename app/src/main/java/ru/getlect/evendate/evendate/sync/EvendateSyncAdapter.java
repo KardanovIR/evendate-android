@@ -34,6 +34,7 @@ import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
 import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.FriendEntry;
 import ru.getlect.evendate.evendate.sync.merge.MergeEventProps;
 import ru.getlect.evendate.evendate.sync.merge.MergeSimple;
 import ru.getlect.evendate.evendate.sync.merge.MergeStrategy;
@@ -110,13 +111,13 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
             String jsonEvents = getJsonFromServer(urlEvents, token);
 
-            cloudList = ServerDataFetcher.getOrganizationData(evendateService);
+            cloudList = ServerDataFetcher.getOrganizationData(evendateService, token);
             localList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
             imageManager.updateOrganizationsImages(cloudList);
             imageManager.updateOrganizationsLogos(cloudList);
 
-            cloudList = ServerDataFetcher.getTagData(evendateService);
+            cloudList = ServerDataFetcher.getTagData(evendateService, token);
             localList = localDataFetcher.getTagsDataFromDB();
             merger.mergeData(EvendateContract.TagEntry.CONTENT_URI, cloudList, localList);
 
@@ -124,8 +125,10 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             cloudList = CloudDataParser.getEventsDataFromJson(jsonEvents);
             ArrayList<DataEntry> localFriendList = localDataFetcher.getUserDataFromDB();
             for(DataEntry e : cloudList){
-                ArrayList<DataEntry> cloudFriendList = ((EventEntry) e).getFriendList();
-                mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList, localFriendList);
+                ArrayList<FriendEntry> cloudFriendList = ((EventEntry) e).getFriendList();
+                ArrayList<DataEntry> cloudFriendList2 = new ArrayList<>();
+                cloudFriendList2.addAll(cloudFriendList);
+                mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);
             }
 
             ArrayList<DataEntry> eventList = localDataFetcher.getEventDataFromDB();

@@ -109,12 +109,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 switch (position) {
+                    //case 0 : {
+                    //    MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.calendar);
+                    //    menuItem.setChecked(true);
+                    //    break;
+                    //}
                     case 0 : {
-                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.calendar);
-                        menuItem.setChecked(true);
-                        break;
-                    }
-                    case 1 : {
                         MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.reel);
                         menuItem.setChecked(true);
                         break;
@@ -145,10 +145,11 @@ public class MainActivity extends AppCompatActivity
          * solution for issue with view pager from support library
          * http://stackoverflow.com/questions/32323570/viewpager-title-doesnt-appear-until-i-swipe-it
          */
+        mViewPager.setCurrentItem(1);
         mViewPager.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(0);
             }
         }, 100);
     }
@@ -173,12 +174,12 @@ public class MainActivity extends AppCompatActivity
         menuItem.setChecked(true);
         switch (menuItem.getItemId()) {
             //TODO fragments controlling
-            case R.id.calendar:
-                mViewPager.setCurrentItem(0);
-                drawerLayout.closeDrawers();
-                return true;
+            //case R.id.calendar:
+            //    mViewPager.setCurrentItem(0);
+            //    drawerLayout.closeDrawers();
+            //    return true;
             case R.id.reel:
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(0);
                 //временно открывает окно
                 //Intent intent = new Intent(getApplicationContext(), ReelActivity.class);
                 //startActivity(intent);
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity
             }
             while(mSubscriptionCursor.moveToNext()){
                 MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
-                                .getColumnIndex(EvendateContract.OrganizationEntry._ID)), 0,
+                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID)), 0,
                         mSubscriptionCursor.getString(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)));
                 mNavigationView.setItemIconTintList(null);
@@ -340,17 +341,17 @@ public class MainActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             switch (position){
+                //case 0: {
+                //    return new CalendarFragment();
+                //}
                 case 0: {
-                    return new CalendarFragment();
-                }
-                case 1: {
                     return new ReelFragment();
                 }
-                case 2: {
+                case 1: {
                     // we need only favorite events in this fragment
                     Fragment fragment = new ReelFragment();
                     Bundle args = new Bundle();
-                    args.putBoolean(ReelFragment.FEED, true);
+                    args.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.favorites.nativeInt);
                     fragment.setArguments(args);
                     return fragment;
                 }
@@ -361,17 +362,17 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position){
+                //case 0:
+                //    return getString(R.string.calendar);
                 case 0:
-                    return getString(R.string.calendar);
-                case 1:
                     return getString(R.string.reel);
-                case 2:
+                case 1:
                     return getString(R.string.feed);
                 default:
                     return null;

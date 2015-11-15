@@ -75,12 +75,12 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
-                if(organizationEntry.getBackgroundImgUrl() == null)
+                if(organizationEntry.getBackgroundMediumUrl() == null)
                     continue;
-                String format = Utils.getFileExtension(organizationEntry.getBackgroundImgUrl());
+                String format = Utils.getFileExtension(organizationEntry.getBackgroundMediumUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
-                URL url = new URL(organizationEntry.getBackgroundImgUrl());
+                URL url = new URL(organizationEntry.getBackgroundMediumUrl());
                 ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){
@@ -107,12 +107,12 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
-                if(organizationEntry.getLogoUrl() == null)
+                if(organizationEntry.getLogoMediumUrl() == null)
                     continue;
-                String format = Utils.getFileExtension(organizationEntry.getLogoUrl());
+                String format = Utils.getFileExtension(organizationEntry.getLogoLargeUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
-                URL url = new URL(organizationEntry.getLogoUrl());
+                URL url = new URL(organizationEntry.getLogoLargeUrl());
                 ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){

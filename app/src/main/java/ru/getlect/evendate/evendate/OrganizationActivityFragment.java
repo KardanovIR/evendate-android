@@ -50,7 +50,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
     private int subscriptionId = -1;
 
     private final int LOADER_ORGANIZATION_ID = 0;
-    private boolean isSubscripted = false;
+    private boolean isSubscribed = false;
 
     public static final String URI = "uri";
     private Uri mUri;
@@ -82,10 +82,8 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
         Bundle args = getArguments();
         if(args != null){
             mUri = Uri.parse(args.getString(URI));
+            organizationId = Integer.parseInt(mUri.getLastPathSegment());
         }
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.organization_container, new ReelFragment());
-        fragmentTransaction.commit();
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
@@ -146,10 +144,23 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
             case LOADER_ORGANIZATION_ID:
                 setOrganizationInfo(data);
                 organizationId = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
-                isSubscripted = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED)) == 1;
+                isSubscribed = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED)) == 1;
                 subscriptionId = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID));
                 setFabIcon();
                 data.close();
+
+                Bundle reelArgs = new Bundle();
+                if(isSubscribed)
+                    reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organizationSubscribed.nativeInt);
+                else
+                    reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
+                reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
+                FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                Fragment fragment = new ReelFragment();
+                fragment.setArguments(reelArgs);
+                fragmentTransaction.add(R.id.organization_container, fragment);
+
+                fragmentTransaction.commit();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -280,7 +291,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
     }
 
     private void setFabIcon(){
-        if (isSubscripted) {
+        if (isSubscribed) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_on));
         } else {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_off));
@@ -300,7 +311,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
                 return false;
             }
             boolean isConfirm;
-            if(!isSubscripted){
+            if(!isSubscribed){
                 if(organizationId == -1)
                     return false;
                 isConfirm = Subscript(organizationId, "POST");
@@ -320,7 +331,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
             }
             else{
-                isSubscripted = !isSubscripted;
+                isSubscribed = !isSubscribed;
                 setFabIcon();
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG)
                     .show(); // Don’t forget to show!
