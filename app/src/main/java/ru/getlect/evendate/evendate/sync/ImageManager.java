@@ -107,12 +107,12 @@ public class ImageManager {
                     if (organizationEntry.updatedAt() <= match.lastModified())
                         continue;
                 }
-                if(organizationEntry.getLogoMediumUrl() == null)
+                if(organizationEntry.getLogoSmallUrl() == null)
                     continue;
-                String format = Utils.getFileExtension(organizationEntry.getLogoLargeUrl());
+                String format = Utils.getFileExtension(organizationEntry.getLogoSmallUrl());
                 String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
-                URL url = new URL(organizationEntry.getLogoLargeUrl());
+                URL url = new URL(organizationEntry.getLogoSmallUrl());
                 ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){

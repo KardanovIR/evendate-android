@@ -111,11 +111,9 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
             String jsonEvents = getJsonFromServer(urlEvents, token);
 
-            cloudList = ServerDataFetcher.getOrganizationData(evendateService, token);
-            localList = localDataFetcher.getOrganizationDataFromDB();
-            merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, cloudList, localList);
-            imageManager.updateOrganizationsImages(cloudList);
-            imageManager.updateOrganizationsLogos(cloudList);
+            ArrayList<DataEntry> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
+            ArrayList<DataEntry> localOrganizationList = localDataFetcher.getOrganizationDataFromDB();
+            merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, organizationList, localOrganizationList);
 
             cloudList = ServerDataFetcher.getTagData(evendateService, token);
             localList = localDataFetcher.getTagsDataFromDB();
@@ -140,6 +138,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
             mergerEventProps.mergeData(null, cloudList, eventList);
 
+            imageManager.updateOrganizationsLogos(organizationList);
+            imageManager.updateOrganizationsImages(organizationList);
             imageManager.updateEventImages(cloudList);
 
         }catch (JSONException|IOException e) {
