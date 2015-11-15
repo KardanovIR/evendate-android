@@ -172,7 +172,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = sOrganizationWithEventQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
                         projection,
-                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_EVENT_ID + "=?",
                         args,
                         null,
                         null,
@@ -187,7 +187,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.UserEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.UserEntry._ID + "=?",
+                        EvendateContract.UserEntry.COLUMN_USER_ID + "=?",
                         args,
                         null,
                         null,
@@ -202,7 +202,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.TagEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.TagEntry._ID + "=?",
+                        EvendateContract.TagEntry.COLUMN_TAG_ID + "=?",
                         args,
                         null,
                         null,
@@ -217,7 +217,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.OrganizationEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.OrganizationEntry._ID + "=?",
+                        EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=?",
                         args,
                         null,
                         null,
