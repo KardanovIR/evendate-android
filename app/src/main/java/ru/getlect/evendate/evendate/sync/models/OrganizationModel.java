@@ -1,6 +1,7 @@
 package ru.getlect.evendate.evendate.sync.models;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.net.Uri;
 
 import com.google.gson.annotations.SerializedName;
@@ -73,6 +74,54 @@ public class OrganizationModel extends DataModel {
         return mSubscribedUsersList;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public int getSubscribedCount() {
+        return subscribedCount;
+    }
+
+    public Integer getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public boolean isSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setIsSubscribed(boolean isSubscribed) {
+        this.isSubscribed = isSubscribed;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
     public String getLogoLargeUrl() {
         return logoLargeUrl;
     }
@@ -118,12 +167,12 @@ public class OrganizationModel extends DataModel {
         return (this.name.equals(tmp.name) &&
                 this.shortName.equals(tmp.shortName) &&
                 this.description.equals(tmp.description) &&
-                this.siteUrl != null ? this.siteUrl.equals(tmp.siteUrl) : tmp.siteUrl == null &&
+                (this.siteUrl != null ? this.siteUrl.equals(tmp.siteUrl) : tmp.siteUrl == null) &&
                 this.typeId == tmp.typeId &&
                 this.typeName.equals(tmp.typeName) &&
 
                 this.subscribedCount == tmp.subscribedCount &&
-                this.subscriptionId.equals(tmp.subscriptionId) &&
+                (this.subscriptionId != null ? this.subscriptionId.equals(tmp.subscriptionId) : tmp.subscriptionId == null) &&
                 this.isSubscribed == tmp.isSubscribed &&
 
                 this.updatedAt == tmp.updatedAt &&
@@ -151,11 +200,28 @@ public class OrganizationModel extends DataModel {
                 .withValue(OrganizationEntry.COLUMN_TYPE_ID, this.typeId)
                 .withValue(OrganizationEntry.COLUMN_TYPE_NAME, this.typeName)
 
-                .withValue(OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.isSubscribed)
+                .withValue(OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.subscribedCount)
                 .withValue(OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscriptionId)
                 .withValue(OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.isSubscribed)
 
                 .withValue(OrganizationEntry.COLUMN_UPDATED_AT, this.updatedAt)
                 .withValue(OrganizationEntry.COLUMN_CREATED_AT, this.createdAt);
+    }
+    public ContentValues getContentValues(){
+        ContentValues contentValues =  new ContentValues();
+        contentValues.put(OrganizationEntry.COLUMN_NAME, this.name);
+        contentValues.put(OrganizationEntry.COLUMN_SHORT_NAME, this.shortName);
+        contentValues.put(OrganizationEntry.COLUMN_DESCRIPTION, this.description);
+        contentValues.put(OrganizationEntry.COLUMN_SITE_URL, this.siteUrl);
+        contentValues.put(OrganizationEntry.COLUMN_LOGO_URL, this.logoMediumUrl);
+        contentValues.put(OrganizationEntry.COLUMN_BACKGROUND_URL, this.backgroundMediumUrl);
+        contentValues.put(OrganizationEntry.COLUMN_TYPE_ID, this.typeId);
+        contentValues.put(OrganizationEntry.COLUMN_TYPE_NAME, this.typeName);
+        contentValues.put(OrganizationEntry.COLUMN_SUBSCRIBED_COUNT, this.subscribedCount);
+        contentValues.put(OrganizationEntry.COLUMN_SUBSCRIPTION_ID, this.subscriptionId);
+        contentValues.put(OrganizationEntry.COLUMN_IS_SUBSCRIBED, this.isSubscribed);
+        contentValues.put(OrganizationEntry.COLUMN_UPDATED_AT, this.updatedAt);
+        contentValues.put(OrganizationEntry.COLUMN_CREATED_AT, this.createdAt);
+        return contentValues;
     }
 }

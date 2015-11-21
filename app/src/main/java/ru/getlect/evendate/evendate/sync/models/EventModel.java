@@ -97,8 +97,8 @@ public class EventModel extends DataModel {
     @SerializedName("end_time")
     String endTime;
     @Column(EventEntry.COLUMN_FIRST_DATE)
-    @SerializedName("first_date")
-    String firstDate;
+    @SerializedName("timestamp_first_date")
+    long firstDate;
     @Column(EventEntry.COLUMN_START_DATE)
     @SerializedName("timestamp_event_start_date")
     long startDate;
@@ -156,12 +156,6 @@ public class EventModel extends DataModel {
         return title;
     }
 
-    public long getFirstDate() {
-        Date date = Utils.formatDate(firstDate);
-        if(date != null)
-            return date.getTime();
-        return 0;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -194,9 +188,9 @@ public class EventModel extends DataModel {
 
                 this.notificationsSchemaJson.equals(tmp.notificationsSchemaJson) &&
                 this.isFullDay == tmp.isFullDay &&
-                this.beginTime != null ? this.beginTime.equals(tmp.beginTime) : tmp.beginTime == null &&
-                this.endTime != null ? this.endTime.equals(tmp.endTime) : tmp.endTime == null &&
-                this.getFirstDate() == tmp.getFirstDate() &&
+                (this.beginTime != null ? this.beginTime.equals(tmp.beginTime) : tmp.beginTime == null) &&
+                (this.endTime != null ? this.endTime.equals(tmp.endTime) : tmp.endTime == null) &&
+                this.firstDate == tmp.firstDate &&
                 this.startDate == tmp.startDate &&
                 this.endDate == tmp.endDate &&
                 this.updatedAt == tmp.updatedAt &&
@@ -241,7 +235,7 @@ public class EventModel extends DataModel {
                 .withValue(EventEntry.COLUMN_IS_FULL_DAY, this.isFullDay)
                 .withValue(EventEntry.COLUMN_BEGIN_TIME, this.beginTime)
                 .withValue(EventEntry.COLUMN_END_TIME, this.endTime)
-                .withValue(EventEntry.COLUMN_FIRST_DATE, this.getFirstDate())
+                .withValue(EventEntry.COLUMN_FIRST_DATE, this.firstDate)
                 .withValue(EventEntry.COLUMN_START_DATE, this.startDate)
                 .withValue(EventEntry.COLUMN_END_DATE, this.endDate)
                 .withValue(EventEntry.COLUMN_UPDATED_AT, this.updatedAt)

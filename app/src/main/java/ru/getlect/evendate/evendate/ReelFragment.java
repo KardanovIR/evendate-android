@@ -14,6 +14,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.FileObserver;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -30,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
@@ -41,6 +44,7 @@ import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -115,7 +119,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             type = args.getInt(TYPE);
             if(type == TypeFormat.organization.nativeInt){
                 organizationId = args.getInt(ORGANIZATION_ID);
-                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader();
+                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
                 organizationAsyncLoader.execute();
             }
             if(type == TypeFormat.organizationSubscribed.nativeInt){
@@ -267,6 +271,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     ImageLoaderTask imageLoader = new ImageLoaderTask(holder.mEventImageView);
                     imageLoader.execute(eventEntry.getImageHorizontalUrl());
                 }
+
+                if(holder.mImageObserver == null){
+                    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView, getActivity().getExternalCacheDir().toString() + "/" + EvendateContract.PATH_EVENT_IMAGES, holder.id);
+                    holder.mImageObserver.startWatching();
+                }
             }
         }
 
@@ -293,8 +302,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public TextView mDateTextView;
             public TextView mOrganizationTextView;
             public View mFavoriteIndicator;
-            public long id;
+            public int id;
 
+            ImageObserver mImageObserver;
             public ViewHolder(View itemView){
                 super(itemView);
                 cardView = (android.support.v7.widget.CardView)itemView;
@@ -323,20 +333,26 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataModel> {
+        Context mContext;
+
+        public OrganizationAsyncLoader(Context context) {
+            this.mContext = context;
+        }
+
         @Override
         protected DataModel doInBackground(Void... params) {
-            AccountManager accountManager = AccountManager.get(getContext());
-            Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
+            AccountManager accountManager = AccountManager.get(mContext);
+            Account[] accounts = accountManager.getAccountsByType(mContext.getString(R.string.account_type));
             if (accounts.length == 0) {
                 Log.e("SYNC", "No Accounts");
-                Intent dialogIntent = new Intent(getContext(), AuthActivity.class);
+                Intent dialogIntent = new Intent(mContext, AuthActivity.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getContext().startActivity(dialogIntent);
             }
             Account account = accounts[0];
             String token = null;
             try{
-                token = accountManager.blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+                token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -375,5 +391,62 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         // This sample doesn't support uploads, but if *your* code does, make sure you set
         // syncToNetwork=false in the line above to prevent duplicate syncs.
         Log.i(LOG_TAG, "Batch update done");
+    }
+
+    /**
+     * fix cause bug in ChildFragmentManager
+     * http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    class ImageObserver extends FileObserver {
+        Context mContext;
+        ImageView mImageView;
+        int eventId;
+        public ImageObserver(Context context, ImageView imageView, String path, int eventId) {
+            super(path);
+            mImageView = imageView;
+            this.eventId = eventId;
+            mContext = context;
+        }
+        @Override
+        public void onEvent(int event, String path) {
+            switch (event){
+                case CLOSE_NOWRITE:{
+                    mImageView.setImageBitmap(null);
+                    try {
+                        final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
+                                .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                                .appendPath("images").appendPath("events")
+                                                .appendPath(String.valueOf(eventId)
+                                ).build(), "r"
+                                );
+                        if(fileDescriptor == null)
+                            //заглушка на случай отсутствия картинки
+                            mImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                        else {
+                            ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
+                            imageLoadingTask.execute(fileDescriptor);
+                        }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     }
 }

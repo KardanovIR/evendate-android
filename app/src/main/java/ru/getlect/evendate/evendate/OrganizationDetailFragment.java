@@ -2,8 +2,11 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -11,6 +14,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -29,7 +33,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chalup.microorm.MicroOrm;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -38,6 +45,7 @@ import java.net.URL;
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -46,11 +54,11 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         View.OnClickListener{
     private final String LOG_TAG = "OrganizationFragment";
 
+    OrganizationModel mOrganizationModel;
+
     private int organizationId = -1;
-    private int subscriptionId = -1;
 
     private final int LOADER_ORGANIZATION_ID = 0;
-    private boolean isSubscribed = false;
 
     public static final String URI = "uri";
     private Uri mUri;
@@ -109,6 +117,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         //fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey_300)));
 
         mFAB.setOnClickListener(this);
+        EventsObserver eventsObserver = new EventsObserver(getActivity());
+        getActivity().getContentResolver().registerContentObserver(EvendateContract.EventEntry.CONTENT_URI, false, eventsObserver);
         return rootView;
     }
 
@@ -133,25 +143,14 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()){
             case LOADER_ORGANIZATION_ID:
-                setOrganizationInfo(data);
-                organizationId = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
-                isSubscribed = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED)) == 1;
-                subscriptionId = data.getInt(data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID));
+                MicroOrm mOrm = new MicroOrm();
+                data.moveToFirst();
+                mOrganizationModel = mOrm.fromCursor(data, OrganizationModel.class);
+                organizationId = mOrganizationModel.getEntryId();
+                setOrganizationInfo();
                 setFabIcon();
                 data.close();
-
-                Bundle reelArgs = new Bundle();
-                if(isSubscribed)
-                    reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organizationSubscribed.nativeInt);
-                else
-                    reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
-                reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
-                FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-                Fragment fragment = new ReelFragment();
-                fragment.setArguments(reelArgs);
-                fragmentTransaction.add(R.id.organization_container, fragment);
-
-                fragmentTransaction.commit();
+                addReel();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -168,24 +167,17 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         }
     }
 
-    private void setOrganizationInfo(Cursor data){
-        final int COLUMN_ORGANIZATION_ID = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID);
-        final int COLUMN_ORGANIZATION_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME);
-        final int COLUMN_ORGANIZATION_SHORT_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME);
-        final int COLUMN_ORGANIZATION_IMG_URL = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_LOGO_URL);
-        final int COLUMN_ORGANIZATION_DESCRIPTION = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION);
-        final int COLUMN_ORGANIZATION_SUBSCRIBED_COUNT = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT);
-        data.moveToFirst();
-        mOrganizationNameTextView.setText(data.getString(COLUMN_ORGANIZATION_DESCRIPTION));
+    private void setOrganizationInfo(){
+        mOrganizationNameTextView.setText(mOrganizationModel.getName());
         //mEventCountView.setText(data.getString(COLUMN_ORGANIZATION_NAME));
-        mSubscriptionCountView.setText(data.getString(COLUMN_ORGANIZATION_SUBSCRIBED_COUNT));
-        //mFriendCountView.setText(data.getString(COLUMN_TITLE));
+        mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
+        //mFriendCountView.setText();
         //mFavoriteEventCountTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
 
         try {
             mParcelFileDescriptor = getActivity().getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
+                            .appendPath("images").appendPath("organizations").appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
             if(mParcelFileDescriptor == null)
                 //заглушка на случай отсутствия картинки
                 mOrganizationImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
@@ -201,7 +193,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             final ParcelFileDescriptor fileDescriptor = getActivity().getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
+                            .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
             if(fileDescriptor == null)
                 mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
             else{
@@ -218,7 +210,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             url += "?organization_id=" + id;
         }
         else{
-            url += subscriptionId;
+            url += String.valueOf(mOrganizationModel.getSubscriptionId());
         }
         if (Log.isLoggable(LOG_TAG, Log.INFO)) {
             Log.i(LOG_TAG, "Requesting service: " + url);
@@ -287,7 +279,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     }
 
     private void setFabIcon(){
-        if (isSubscribed) {
+        if (mOrganizationModel.isSubscribed()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_on));
         } else {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_off));
@@ -307,15 +299,11 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                 return false;
             }
             boolean isConfirm;
-            if(!isSubscribed){
-                if(organizationId == -1)
-                    return false;
+            if(!mOrganizationModel.isSubscribed()){
                 isConfirm = Subscript(organizationId, "POST");
             }
             else{
-                if(subscriptionId == -1)
-                    return false;
-                isConfirm = Subscript(subscriptionId, "DELETE");
+                isConfirm = Subscript(mOrganizationModel.getSubscriptionId(), "DELETE");
             }
             return isConfirm;
         }
@@ -327,10 +315,11 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
             }
             else{
-                isSubscribed = !isSubscribed;
+                mOrganizationModel.setIsSubscribed(!mOrganizationModel.isSubscribed());
                 setFabIcon();
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG)
-                    .show(); // Don’t forget to show!
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                ContentResolver contentResolver = getActivity().getContentResolver();
+                contentResolver.update(mUri, mOrganizationModel.getContentValues(), null, null);
                 EvendateSyncAdapter.syncImmediately(getContext());
             }
         }
@@ -339,6 +328,56 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         if(v == mFAB) {
             SubscriptAsyncTask subscriptAsyncTask = new SubscriptAsyncTask();
             subscriptAsyncTask.execute();
+        }
+    }
+    /**
+     * observe updates of events because of subscription changes
+     */
+    class EventsObserver extends ContentObserver {
+        Activity mActivity;
+        public EventsObserver(Activity activity){
+            super(new Handler());
+            mActivity = activity;
+        }
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            if(mActivity != null)
+                addReel();
+        }
+    }
+    public void addReel(){
+        Bundle reelArgs = new Bundle();
+        if(mOrganizationModel.isSubscribed())
+            reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organizationSubscribed.nativeInt);
+        else
+            reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
+        reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        Fragment fragment = new ReelFragment();
+        fragment.setArguments(reelArgs);
+        fragmentTransaction.replace(R.id.organization_container, fragment);
+
+        fragmentTransaction.commit();
+    }
+
+    /**
+     * fix cause bug in ChildFragmentManager
+     * http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
+     */
+    @Override
+     public void onDetach() {
+        super.onDetach();
+
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }
