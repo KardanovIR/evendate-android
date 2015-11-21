@@ -119,16 +119,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
                 return new CursorLoader(
                         getActivity(),
                         mUri,
-                        new String[] {
-                                EvendateContract.OrganizationEntry.COLUMN_NAME,
-                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
-                                EvendateContract.OrganizationEntry.COLUMN_IMG_URL,
-                                EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
-                                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT,
-                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID,
-                                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID,
-                                EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED,
-                        },
+                        null,
                         null,
                         null,
                         null
@@ -181,7 +172,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
         final int COLUMN_ORGANIZATION_ID = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID);
         final int COLUMN_ORGANIZATION_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME);
         final int COLUMN_ORGANIZATION_SHORT_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME);
-        final int COLUMN_ORGANIZATION_IMG_URL = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_IMG_URL);
+        final int COLUMN_ORGANIZATION_IMG_URL = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_LOGO_URL);
         final int COLUMN_ORGANIZATION_DESCRIPTION = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION);
         final int COLUMN_ORGANIZATION_SUBSCRIBED_COUNT = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT);
         data.moveToFirst();

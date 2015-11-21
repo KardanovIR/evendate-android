@@ -28,14 +28,12 @@ import java.io.IOException;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.data.EvendateProvider;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -66,7 +64,7 @@ View.OnClickListener{
     private Uri mUri;
     private int organizationId;
     private int eventId;
-    private EventEntry mEventEntry;
+    private EventModel mEventEntry;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,21 +127,7 @@ View.OnClickListener{
             return new CursorLoader(
                 getActivity(),
                 mUri,
-                new String[] {
-                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID,
-                        EvendateContract.EventEntry.COLUMN_TITLE,
-                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-                        EvendateContract.EventEntry.COLUMN_EVENT_ID,
-                        EvendateContract.EventEntry.COLUMN_LOCATION_TEXT,
-                        EvendateContract.EventEntry.COLUMN_START_DATE,
-                        EvendateContract.EventEntry.COLUMN_BEGIN_TIME,
-                        EvendateContract.EventEntry.COLUMN_END_TIME,
-                        EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL,
-                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID,
-                        EvendateContract.OrganizationEntry.COLUMN_NAME,
-                        EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
-                        EvendateContract.OrganizationEntry.COLUMN_IMG_URL,
-                },
+                null,
                 null,
                 null,
                 null
@@ -236,9 +220,9 @@ View.OnClickListener{
             startActivity(intent);
         }
     }
-    private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataEntry> {
+    private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataModel> {
         @Override
-        protected DataEntry doInBackground(Void... params) {
+        protected DataModel doInBackground(Void... params) {
             AccountManager accountManager = AccountManager.get(getContext());
             Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
             if (accounts.length == 0) {
@@ -259,11 +243,11 @@ View.OnClickListener{
         }
 
         @Override
-        protected void onPostExecute(DataEntry dataEntry) {
-            setEvent((EventEntry)dataEntry);
+        protected void onPostExecute(DataModel dataModel) {
+            setEvent((EventModel) dataModel);
         }
     }
-    public void setEvent(EventEntry event){
+    public void setEvent(EventModel event){
         mEventEntry = event;
 
         //mOrganizationTextView.setText();

@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -39,9 +38,9 @@ import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -149,13 +148,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 return new CursorLoader(
                         getActivity(),
                         mUri,
-                        new String[] {
-                                EvendateContract.EventEntry._ID,
-                                EvendateContract.EventEntry.COLUMN_EVENT_ID,
-                                EvendateContract.EventEntry.COLUMN_TITLE,
-                                EvendateContract.EventEntry.COLUMN_DESCRIPTION,
-                                EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
-                        },
+                        null,
                         selection,
                         null,
                         null
@@ -194,13 +187,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         Context mContext;
         Cursor mCursor;
-        private ArrayList<EventEntry> mEventList;
+        private ArrayList<EventModel> mEventList;
 
         public RVAdapter(Context context){
             this.mContext = context;
         }
 
-        public void setEventList(ArrayList<EventEntry> eventList){
+        public void setEventList(ArrayList<EventModel> eventList){
             mEventList = eventList;
             notifyDataSetChanged();
         }
@@ -210,7 +203,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             notifyDataSetChanged();
         }
 
-        public ArrayList<EventEntry> getEventList() {
+        public ArrayList<EventModel> getEventList() {
             return mEventList;
         }
 
@@ -264,7 +257,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
             }
             else{
-                EventEntry eventEntry = mEventList.get(position);
+                EventModel eventEntry = mEventList.get(position);
                 holder.id = eventEntry.getEntryId();
                 holder.mTitleTextView.setText(eventEntry.getTitle());
                 holder.mEventImageView.setImageBitmap(null);
@@ -329,9 +322,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
-    private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataEntry> {
+    private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataModel> {
         @Override
-        protected DataEntry doInBackground(Void... params) {
+        protected DataModel doInBackground(Void... params) {
             AccountManager accountManager = AccountManager.get(getContext());
             Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
             if (accounts.length == 0) {
@@ -352,8 +345,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         @Override
-        protected void onPostExecute(DataEntry dataEntry) {
-            mAdapter.setEventList(((OrganizationEntryWithEvents)dataEntry).getEvents());
+        protected void onPostExecute(DataModel dataModel) {
+            mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
         }
     }
     public void subscribed(){
@@ -364,7 +357,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
 
-        for (DataEntry e : mAdapter.getEventList()) {
+        for (DataModel e : mAdapter.getEventList()) {
             Log.i(LOG_TAG, "Scheduling insert: entry_id=" + e.getEntryId());
             batch.add(e.getInsert(ContentUri));
         }

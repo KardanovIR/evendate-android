@@ -29,26 +29,37 @@ public class EvendateContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_EVENTS;
 
         public static final String TABLE_NAME = "events";
+
         public static final String COLUMN_EVENT_ID = "event_id";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DESCRIPTION = "description";
+        public static final String COLUMN_ORGANIZATION_ID = "organization_id";
+
         public static final String COLUMN_LOCATION_TEXT = "location";
         public static final String COLUMN_LOCATION_URI = "location_uri";
         public static final String COLUMN_LOCATION_JSON = "location_object";
         public static final String COLUMN_LATITUDE = "latitude";
         public static final String COLUMN_LONGITUDE = "longitude";
-        public static final String COLUMN_START_DATE = "event_start_date";
-        public static final String COLUMN_END_DATE = "event_end_date";
-        public static final String COLUMN_NOTIFICATIONS = "notifications_schema_json";
-        public static final String COLUMN_ORGANIZATION_ID = "organization_id";
+
         public static final String COLUMN_IMAGE_VERTICAL_URL = "image_vertical_url";
         public static final String COLUMN_IMAGE_HORIZONTAL_URL = "image_horizontal_url";
+        public static final String COLUMN_IMAGE_SQUARE_URL = "image_square_url";
+
         public static final String COLUMN_DETAIL_INFO_URL = "detail_info_url";
+        public static final String COLUMN_CAN_EDIT = "can_edit";
+        public static final String COLUMN_IS_FAVORITE = "is_favorite";
+        public static final String COLUMN_LIKED_USERS_COUNT = "liked_users_count";
+
+        public static final String COLUMN_NOTIFICATIONS = "notifications_schema_json";
+        public static final String COLUMN_IS_FULL_DAY = "is_full_day";
         public static final String COLUMN_BEGIN_TIME = "begin_time";
         public static final String COLUMN_END_TIME = "end_time";
-        public static final String COLUMN_CAN_EDIT = "can_edit";
-        public static final String COLUMN_EVENT_TYPE = "event_type_latin_name";
-        public static final String COLUMN_IS_FAVORITE = "is_favorite";
+        public static final String COLUMN_FIRST_DATE = "first_date";
+        public static final String COLUMN_START_DATE = "start_date";
+        public static final String COLUMN_END_DATE = "end_date";
+        public static final String COLUMN_UPDATED_AT = "updated_at";
+        public static final String COLUMN_CREATED_AT = "created_at";
+
     }
     public static final class EventTagEntry implements BaseColumns{
         public static final Uri CONTENT_URI =
@@ -66,15 +77,25 @@ public class EvendateContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/organization";
 
         public static final String TABLE_NAME = "organizations";
+
         public static final String COLUMN_ORGANIZATION_ID = "organization_id";
         public static final String COLUMN_NAME = "name";
-        public static final String COLUMN_IMG_URL = "img_url";
         public static final String COLUMN_SHORT_NAME = "short_name";
         public static final String COLUMN_DESCRIPTION = "description";
+        public static final String COLUMN_SITE_URL = "site_url";
+
+        public static final String COLUMN_LOGO_URL = "logo_url";
+        public static final String COLUMN_BACKGROUND_URL = "background_url";
+
+        public static final String COLUMN_TYPE_ID = "type_id";
         public static final String COLUMN_TYPE_NAME = "type_name";
+
+        public static final String COLUMN_SUBSCRIBED_COUNT = "subscribed_count";
         public static final String COLUMN_SUBSCRIPTION_ID = "subscription_id";
         public static final String COLUMN_IS_SUBSCRIBED = "is_subscribed";
-        public static final String COLUMN_SUBSCRIBED_COUNT = "subscribed_count";
+
+        public static final String COLUMN_UPDATED_AT = "updated_at";
+        public static final String COLUMN_CREATED_AT = "created_at";
     }
     public static final class TagEntry implements BaseColumns{
         public static final Uri CONTENT_URI =

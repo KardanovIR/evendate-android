@@ -19,8 +19,6 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
-import org.json.JSONException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +30,9 @@ import java.util.ArrayList;
 import ru.getlect.evendate.evendate.R;
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.FriendEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.FriendModel;
 import ru.getlect.evendate.evendate.sync.merge.MergeEventProps;
 import ru.getlect.evendate.evendate.sync.merge.MergeSimple;
 import ru.getlect.evendate.evendate.sync.merge.MergeStrategy;
@@ -97,8 +95,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
         String urlTags = "http://evendate.ru/api/tags";
         String urlEvents = "http://evendate.ru/api/events/my"; // + теги + друзьяшки + тока будущее
-        ArrayList<DataEntry> cloudList;
-        ArrayList<DataEntry> localList;
+        ArrayList<DataModel> cloudList;
+        ArrayList<DataModel> localList;
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver, mContext);
         MergeStrategy merger = new MergeSimple(mContentResolver);
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
@@ -108,41 +106,45 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         ImageServerLoader.init(mContext);
         try {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
-
-            String jsonEvents = getJsonFromServer(urlEvents, token);
-
-            ArrayList<DataEntry> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
-            ArrayList<DataEntry> localOrganizationList = localDataFetcher.getOrganizationDataFromDB();
+            //organizations sync
+            ArrayList<DataModel> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
+            ArrayList<DataModel> localOrganizationList = localDataFetcher.getOrganizationDataFromDB();
             merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, organizationList, localOrganizationList);
 
+            //tags sync
             cloudList = ServerDataFetcher.getTagData(evendateService, token);
             localList = localDataFetcher.getTagsDataFromDB();
             merger.mergeData(EvendateContract.TagEntry.CONTENT_URI, cloudList, localList);
 
-            //TODO надо зафигачить список другов один, ибо список локальный не обновляется
-            cloudList = CloudDataParser.getEventsDataFromJson(jsonEvents);
-            ArrayList<DataEntry> localFriendList = localDataFetcher.getUserDataFromDB();
-            for(DataEntry e : cloudList){
-                ArrayList<FriendEntry> cloudFriendList = ((EventEntry) e).getFriendList();
-                ArrayList<DataEntry> cloudFriendList2 = new ArrayList<>();
+            //friends sync
+            cloudList = ServerDataFetcher.getFriendsData(evendateService, token);
+            localList = localDataFetcher.getUserDataFromDB();
+            mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudList, localList);
+
+            //events sync
+            ArrayList<DataModel> eventList = ServerDataFetcher.getEventsData(evendateService, token);
+            localList = localDataFetcher.getEventDataFromDB();
+            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localList);
+
+            //users from events sync
+            ArrayList<DataModel> localFriendList = localDataFetcher.getUserDataFromDB();
+            for(DataModel e : eventList){
+                ArrayList<FriendModel> cloudFriendList = ((EventModel) e).getFriendList();
+                ArrayList<DataModel> cloudFriendList2 = new ArrayList<>();
                 cloudFriendList2.addAll(cloudFriendList);
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);
             }
 
-            ArrayList<DataEntry> eventList = localDataFetcher.getEventDataFromDB();
-            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, cloudList, eventList);
-            for(DataEntry e: eventList){
-                ((EventEntry)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getId()));
-                ((EventEntry)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getId()));
-            }
+            //sync links between users and events
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
             mergerEventProps.mergeData(null, cloudList, eventList);
 
+            //images sync
             imageManager.updateOrganizationsLogos(organizationList);
             imageManager.updateOrganizationsImages(organizationList);
-            imageManager.updateEventImages(cloudList);
+            imageManager.updateEventImages(eventList);
 
-        }catch (JSONException|IOException e) {
+        }catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }catch (OperationCanceledException|AuthenticatorException e){

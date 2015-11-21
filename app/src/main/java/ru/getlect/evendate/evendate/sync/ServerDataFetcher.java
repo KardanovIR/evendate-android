@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 import retrofit.Call;
 import retrofit.Response;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
-import ru.getlect.evendate.evendate.sync.dataTypes.TagEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.FriendModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
 
 /**
@@ -20,13 +20,13 @@ public class ServerDataFetcher{
     //TODO нз как сделать без дублирования кода, потому что в интерфейсе явно указывается класс,
     // в который парсится json
     // ПАРАМЕТРИЗОВАТЬ
-    public static ArrayList<DataEntry> getOrganizationData(EvendateService evendateService, String basicAuth) {
-        Call<EvendateServiceResponseArray<OrganizationEntry>> call = evendateService.organizationData(basicAuth);
+    public static ArrayList<DataModel> getOrganizationData(EvendateService evendateService, String basicAuth) {
+        Call<EvendateServiceResponseArray<OrganizationModel>> call = evendateService.organizationData(basicAuth);
 
         try{
-            Response<EvendateServiceResponseArray<OrganizationEntry>> response = call.execute();
+            Response<EvendateServiceResponseArray<OrganizationModel>> response = call.execute();
             if(response.isSuccess()){
-                ArrayList<DataEntry> dataList = new ArrayList<>();
+                ArrayList<DataModel> dataList = new ArrayList<>();
                 dataList.addAll(response.body().getData());
                 return dataList;
             }
@@ -35,12 +35,12 @@ public class ServerDataFetcher{
         }
         return null;
     }
-    public static ArrayList<DataEntry> getTagData(EvendateService evendateService, String basicAuth){
+    public static ArrayList<DataModel> getTagData(EvendateService evendateService, String basicAuth){
         Call<EvendateServiceResponseAttr<TagResponse>> call = evendateService.tagData(basicAuth);
         try{
             Response<EvendateServiceResponseAttr<TagResponse>> response = call.execute();
             if(response.isSuccess()){
-                ArrayList<DataEntry> dataList = new ArrayList<>();
+                ArrayList<DataModel> dataList = new ArrayList<>();
                 TagResponse tagResponse = response.body().getData();
                 dataList.addAll(tagResponse.getTags());
                 return dataList;
@@ -50,11 +50,11 @@ public class ServerDataFetcher{
         }
         return null;
     }
-    public static DataEntry getOrganizationWithEventsData(EvendateService evendateService, String basicAuth, int organizationId) {
-        Call<EvendateServiceResponseAttr<OrganizationEntryWithEvents>> call =
+    public static DataModel getOrganizationWithEventsData(EvendateService evendateService, String basicAuth, int organizationId) {
+        Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> call =
                 evendateService.organizationWithEventsData(organizationId, basicAuth);
         try{
-            Response<EvendateServiceResponseAttr<OrganizationEntryWithEvents>> response = call.execute();
+            Response<EvendateServiceResponseAttr<OrganizationModelWithEvents>> response = call.execute();
             if(response.isSuccess()){
                 return response.body().getData();
             }
@@ -63,13 +63,43 @@ public class ServerDataFetcher{
         }
         return null;
     }
-    public static DataEntry getEventData(EvendateService evendateService, String basicAuth, int eventId){
-        Call<EvendateServiceResponseAttr<EventEntry>> call =
+    public static DataModel getEventData(EvendateService evendateService, String basicAuth, int eventId){
+        Call<EvendateServiceResponseAttr<EventModel>> call =
                 evendateService.eventData(eventId, basicAuth);
         try{
-            Response<EvendateServiceResponseAttr<EventEntry>> response = call.execute();
+            Response<EvendateServiceResponseAttr<EventModel>> response = call.execute();
             if(response.isSuccess()){
                 return response.body().getData();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static ArrayList<DataModel> getEventsData(EvendateService evendateService, String basicAuth){
+        Call<EvendateServiceResponseArray<EventModel>> call =
+                evendateService.eventsData(basicAuth);
+        try{
+            Response<EvendateServiceResponseArray<EventModel>> response = call.execute();
+            if(response.isSuccess()){
+                ArrayList<DataModel> dataList = new ArrayList<>();
+                dataList.addAll(response.body().getData());
+                return dataList;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static ArrayList<DataModel> getFriendsData(EvendateService evendateService, String basicAuth){
+        Call<EvendateServiceResponseArray<FriendModel>> call =
+                evendateService.friendsData(basicAuth);
+        try{
+            Response<EvendateServiceResponseArray<FriendModel>> response = call.execute();
+            if(response.isSuccess()){
+                ArrayList<DataModel> dataList = new ArrayList<>();
+                dataList.addAll(response.body().getData());
+                return dataList;
             }
         }catch (IOException e){
             e.printStackTrace();

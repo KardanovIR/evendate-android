@@ -147,7 +147,7 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
                 mCursor.moveToPosition(position);
                 holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
                 holder.mTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME)));
-                //holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION)));
+                //holder.mSubTitle.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.OrganizationModel.COLUMN_DESCRIPTION)));
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 holder.mImageView.setImageBitmap(null);
                 try {

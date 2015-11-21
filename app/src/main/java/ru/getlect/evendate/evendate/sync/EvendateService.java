@@ -4,10 +4,10 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Path;
-import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntryWithEvents;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.FriendModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
 import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
 
 /**
@@ -16,20 +16,20 @@ import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
 public interface EvendateService {
 
     @GET("/api/organizations?with_subscriptions=true")
-    Call<EvendateServiceResponseArray<OrganizationEntry>> organizationData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseArray<OrganizationModel>> organizationData(@Header("Authorization") String authorization);
 
     @GET("/api/tags")
     Call<EvendateServiceResponseAttr<TagResponse>> tagData(@Header("Authorization") String authorization);
 
     @GET("/api/organizations/{id}?with_events=true")
-    Call<EvendateServiceResponseAttr<OrganizationEntryWithEvents>> organizationWithEventsData(@Path("id") int organizationId, @Header("Authorization") String authorization);
-    //@GET("/api/events/my")
-    //Call<EvendateServiceResponse<TagEntry>> eventData(@Header("Authorization") String authorization);
-//viceResponse<TagList>> tagData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> organizationWithEventsData(@Path("id") int organizationId, @Header("Authorization") String authorization);
 
-    //@GET("/api/users/friends")
-    //Call<EvendateServiceResponse<TagEntry>> eventData(@Header("Authorization") String authorization);
+    @GET("/api/events/my")
+    Call<EvendateServiceResponseArray<EventModel>> eventsData(@Header("Authorization") String authorization);
+
+    @GET("/api/users/friends")
+    Call<EvendateServiceResponseArray<FriendModel>> friendsData(@Header("Authorization") String authorization);
 
     @GET("/api/events/{id}")
-    Call<EvendateServiceResponseAttr<EventEntry>> eventData(@Path("id") int eventId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<EventModel>> eventData(@Path("id") int eventId, @Header("Authorization") String authorization);
 }

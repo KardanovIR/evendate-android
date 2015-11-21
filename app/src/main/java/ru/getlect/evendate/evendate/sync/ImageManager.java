@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
 import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
@@ -29,14 +29,14 @@ public class ImageManager {
     }
 
     //TODO да-да, дублирование кода
-    public void updateEventImages(ArrayList<DataEntry> eventDataList) throws IOException{
+    public void updateEventImages(ArrayList<DataModel> eventDataList) throws IOException{
         HashMap<Integer,File> eventImagesMap = mLocalDataFetcher.getImages(EvendateContract.PATH_EVENT_IMAGES);
 
         Log.i(LOG_TAG, "images sync started");
 
         try {
-            for (DataEntry entry : eventDataList) {
-                EventEntry eventEntry = (EventEntry) entry;
+            for (DataModel entry : eventDataList) {
+                EventModel eventEntry = (EventModel) entry;
                 File match = eventImagesMap.get(eventEntry.getEntryId());
                 if (match != null) {
                     eventImagesMap.remove(entry.getEntryId());
@@ -61,26 +61,26 @@ public class ImageManager {
         }
         Log.i(LOG_TAG, "images sync ended");
     }
-    public void updateOrganizationsImages(ArrayList<DataEntry> organizationDataList) throws IOException{
+    public void updateOrganizationsImages(ArrayList<DataModel> organizationDataList) throws IOException{
         HashMap<Integer,File> organizationImagesMap = mLocalDataFetcher.getImages(EvendateContract.PATH_ORGANIZATION_IMAGES);
 
         Log.i(LOG_TAG, "images sync started");
 
         try {
-            for (DataEntry entry : organizationDataList) {
-                OrganizationEntry organizationEntry = (OrganizationEntry) entry;
-                File match = organizationImagesMap.get(organizationEntry.getEntryId());
+            for (DataModel entry : organizationDataList) {
+                OrganizationModel organizationModel = (OrganizationModel) entry;
+                File match = organizationImagesMap.get(organizationModel.getEntryId());
                 if (match != null) {
                     organizationImagesMap.remove(entry.getEntryId());
-                    if (organizationEntry.updatedAt() <= match.lastModified())
+                    if (organizationModel.updatedAt() <= match.lastModified())
                         continue;
                 }
-                if(organizationEntry.getBackgroundMediumUrl() == null)
+                if(organizationModel.getBackgroundMediumUrl() == null)
                     continue;
-                String format = Utils.getFileExtension(organizationEntry.getBackgroundMediumUrl());
-                String filepath = EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
+                String format = Utils.getFileExtension(organizationModel.getBackgroundMediumUrl());
+                String filepath = EvendateContract.PATH_ORGANIZATION_IMAGES + "/" + Integer.toString(organizationModel.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
-                URL url = new URL(organizationEntry.getBackgroundMediumUrl());
+                URL url = new URL(organizationModel.getBackgroundMediumUrl());
                 ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){
@@ -93,26 +93,26 @@ public class ImageManager {
         }
         Log.i(LOG_TAG, "images sync ended");
     }
-    public void updateOrganizationsLogos(ArrayList<DataEntry> organizationDataList) throws IOException{
+    public void updateOrganizationsLogos(ArrayList<DataModel> organizationDataList) throws IOException{
         HashMap<Integer,File> organizationLogosMap = mLocalDataFetcher.getImages(EvendateContract.PATH_ORGANIZATION_LOGOS);
 
         Log.i(LOG_TAG, "images sync started");
 
         try {
-            for (DataEntry entry : organizationDataList) {
-                OrganizationEntry organizationEntry = (OrganizationEntry) entry;
-                File match = organizationLogosMap.get(organizationEntry.getEntryId());
+            for (DataModel entry : organizationDataList) {
+                OrganizationModel organizationModel = (OrganizationModel) entry;
+                File match = organizationLogosMap.get(organizationModel.getEntryId());
                 if (match != null) {
                     organizationLogosMap.remove(entry.getEntryId());
-                    if (organizationEntry.updatedAt() <= match.lastModified())
+                    if (organizationModel.updatedAt() <= match.lastModified())
                         continue;
                 }
-                if(organizationEntry.getLogoSmallUrl() == null)
+                if(organizationModel.getLogoSmallUrl() == null)
                     continue;
-                String format = Utils.getFileExtension(organizationEntry.getLogoSmallUrl());
-                String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationEntry.getEntryId()) + "." + format;
+                String format = Utils.getFileExtension(organizationModel.getLogoSmallUrl());
+                String filepath = EvendateContract.PATH_ORGANIZATION_LOGOS + "/" + Integer.toString(organizationModel.getEntryId()) + "." + format;
                 format = Utils.normalizeBitmapFormat(format);
-                URL url = new URL(organizationEntry.getLogoSmallUrl());
+                URL url = new URL(organizationModel.getLogoSmallUrl());
                 ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
             }
         }catch (MalformedURLException e){

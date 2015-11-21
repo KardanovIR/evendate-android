@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
+import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
 
 /**
  * Created by Dmitry on 13.09.2015.
@@ -27,12 +27,12 @@ public class MergeProperties extends MergeStrategy {
     }
 
     @Override
-    public void mergeData(final Uri ContentUri, ArrayList<DataEntry> cloudList, ArrayList<DataEntry> localList){
+    public void mergeData(final Uri ContentUri, ArrayList<DataModel> cloudList, ArrayList<DataModel> localList){
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
         // Build hash table of incoming entries
-        HashMap<Integer, DataEntry> cloudMap = new HashMap<>();
-        for (DataEntry e : cloudList) {
+        HashMap<Integer, DataModel> cloudMap = new HashMap<>();
+        for (DataModel e : cloudList) {
             cloudMap.put(e.getEntryId(), e);
         }
 
@@ -41,8 +41,8 @@ public class MergeProperties extends MergeStrategy {
         Log.i(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
         String propListToDelete = "";
-        for(DataEntry e : localList){
-            DataEntry match = cloudMap.get(e.getEntryId());
+        for(DataModel e : localList){
+            DataModel match = cloudMap.get(e.getEntryId());
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
                 cloudMap.remove(e.getEntryId());
@@ -57,7 +57,7 @@ public class MergeProperties extends MergeStrategy {
 
         String propListToAdd = "";
         // Add new items
-        for (DataEntry e : cloudMap.values()) {
+        for (DataModel e : cloudMap.values()) {
             Log.i(LOG_TAG, "Scheduling insert prop: entry_id=" + e.getEntryId());
             if(propListToAdd.isEmpty())
                 propListToAdd += (Integer.toString(e.getEntryId()));

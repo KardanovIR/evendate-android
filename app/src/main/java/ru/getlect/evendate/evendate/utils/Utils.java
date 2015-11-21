@@ -1,6 +1,15 @@
 package ru.getlect.evendate.evendate.utils;
 
+
+import android.util.Log;
+
 import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 /**
  * Created by Dmitry on 21.10.2015.
@@ -42,5 +51,19 @@ public class Utils {
     {
         // http://code.google.com/p/android/issues/detail?id=13830
         return json.isNull(key) ? null : json.optInt(key, 0);
+    }
+
+    //"2015-10-26 00:00:00"
+    public static Date formatDate(String str_date){
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date;
+        try {
+            date = formatter.parse(str_date);
+            return date;
+        }catch (ParseException e){
+            Log.e("format data", "error");
+            e.printStackTrace();
+        }
+        return null;
     }
 }

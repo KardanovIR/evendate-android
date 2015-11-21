@@ -6,10 +6,10 @@ import java.util.ArrayList;
  * Created by Дмитрий on 02.11.2015.
  */
 public class TagResponse extends ResponseData{
-    private ArrayList<TagEntry> tags;
-    private ArrayList<OrganizationEntry> organizations;
+    private ArrayList<TagModel> tags;
+    private ArrayList<OrganizationModel> organizations;
 
-    public ArrayList<TagEntry> getTags() {
+    public ArrayList<TagModel> getTags() {
         return tags;
     }
 }
