@@ -4,11 +4,11 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Path;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.FriendModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
-import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.FriendModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
+import ru.getlect.evendate.evendate.sync.models.TagResponse;
 
 /**
  * Created by Dmitry on 18.10.2015.

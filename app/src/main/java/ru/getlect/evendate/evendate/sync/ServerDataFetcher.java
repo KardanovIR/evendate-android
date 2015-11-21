@@ -5,12 +5,12 @@ import java.util.ArrayList;
 
 import retrofit.Call;
 import retrofit.Response;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.FriendModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
-import ru.getlect.evendate.evendate.sync.dataTypes.TagResponse;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.FriendModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
+import ru.getlect.evendate.evendate.sync.models.TagResponse;
 
 /**
  * Отвечает за обработку получанных данных от retrofit

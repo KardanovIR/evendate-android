@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModel;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
 import ru.getlect.evendate.evendate.utils.Utils;
 
 /**

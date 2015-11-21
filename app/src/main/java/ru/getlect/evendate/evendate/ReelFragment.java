@@ -38,9 +38,9 @@ import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.OrganizationModelWithEvents;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -211,12 +211,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             int layoutItemId;
             if(type == TypeFormat.organization.nativeInt)
-                layoutItemId = R.layout.reel_list_item;
+                layoutItemId = R.layout.reel_item;
             else if(type == TypeFormat.favorites.nativeInt){
                 layoutItemId = R.layout.reel_favorite_item;
             }
             else{
-                layoutItemId = R.layout.reel_list_item;
+                layoutItemId = R.layout.reel_item;
             }
                 return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(layoutItemId, parent, false));
         }
@@ -311,10 +311,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             @Override
             public void onClick(View v) {
                 if(v instanceof CardView){
-                    Intent intent = new Intent(getContext(), DetailActivity.class);
+                    Intent intent = new Intent(getContext(), EventDetailActivity.class);
                     intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
                     if(type == TypeFormat.organization.nativeInt)
-                        intent.putExtra(DetailActivity.IS_LOCAL, true);
+                        intent.putExtra(EventDetailActivity.IS_LOCAL, true);
                     getActivity().startActivity(intent);
                 }
             }

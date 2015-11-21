@@ -98,7 +98,7 @@ public class TestDb extends AndroidTestCase {
         // Create a new map of values, where column names are the keys
         ContentValues testValues = new ContentValues();
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_NAME, "Государственный Университет Управления");
-        testValues.put(EvendateContract.OrganizationEntry.COLUMN_IMG_URL, "www.guushechka1.ru");
+        testValues.put(EvendateContract.OrganizationEntry.COLUMN_LOGO_URL, "www.guushechka1.ru");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME, "ГУУ");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION, "так и живем");
         testValues.put(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME, "образовач");

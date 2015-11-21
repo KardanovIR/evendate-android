@@ -1,6 +1,4 @@
-package ru.getlect.evendate.evendate.sync.dataTypes;
-
-import com.google.gson.annotations.SerializedName;
+package ru.getlect.evendate.evendate.sync.models;
 
 import java.util.ArrayList;
 

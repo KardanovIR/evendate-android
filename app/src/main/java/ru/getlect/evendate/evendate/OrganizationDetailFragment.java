@@ -42,7 +42,7 @@ import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class OrganizationActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class OrganizationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         View.OnClickListener{
     private final String LOG_TAG = "OrganizationFragment";
 
@@ -68,7 +68,7 @@ public class OrganizationActivityFragment extends Fragment implements LoaderMana
     private TextView mOrganizationNameTextView;
 
     private FloatingActionButton mFAB;
-    public OrganizationActivityFragment() {
+    public OrganizationDetailFragment() {
     }
 
     @Override

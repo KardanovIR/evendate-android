@@ -1,10 +1,8 @@
-package ru.getlect.evendate.evendate.sync;
+package ru.getlect.evendate.evendate.authorization;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-
-import java.net.Authenticator;
 
 /**
  * Created by Dmitry on 07.09.2015.

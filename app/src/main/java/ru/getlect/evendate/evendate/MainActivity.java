@@ -180,9 +180,6 @@ public class MainActivity extends AppCompatActivity
             //    return true;
             case R.id.reel:
                 mViewPager.setCurrentItem(0);
-                //временно открывает окно
-                //Intent intent = new Intent(getApplicationContext(), ReelActivity.class);
-                //startActivity(intent);
                 drawerLayout.closeDrawers();
                 return true;
             case R.id.settings:
@@ -214,7 +211,7 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout.closeDrawers();
                 return true;
             default:
-                Intent detailIntent = new Intent(this, OrganizationActivity.class);
+                Intent detailIntent = new Intent(this, OrganizationDetailActivity.class);
                 detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                         .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
                 startActivity(detailIntent);

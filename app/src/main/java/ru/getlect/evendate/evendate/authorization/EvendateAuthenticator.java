@@ -1,4 +1,4 @@
-package ru.getlect.evendate.evendate.sync;
+package ru.getlect.evendate.evendate.authorization;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-
-import ru.getlect.evendate.evendate.authorization.AuthActivity;
 
 /**
  * Created by Dmitry on 07.09.2015.

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-public class DetailActivity extends AppCompatActivity {
+public class EventDetailActivity extends AppCompatActivity {
     public Uri mUri;
     public boolean isLocal;
     public static final String IS_LOCAL = "is_local";
@@ -23,7 +23,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment, new DetailActivityFragment());
+        fragmentTransaction.add(R.id.fragment, new EventDetailFragment());
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_detail);

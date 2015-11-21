@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
 
 /**
  * Created by Dmitry on 11.09.2015.

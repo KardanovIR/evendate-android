@@ -32,15 +32,15 @@ import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventModel;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class EventDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
 View.OnClickListener{
-    private DetailActivity mDetailActivity;
+    private EventDetailActivity mEventDetailActivity;
     /** Loader id that get images */
    // public static final int EVENT_IMAGE_ID = 0;
     public static final int EVENT_DESCRIPTION_ID = 1;
@@ -69,7 +69,7 @@ View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDetailActivity = (DetailActivity)getActivity();
+        mEventDetailActivity = (EventDetailActivity)getActivity();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -78,13 +78,13 @@ View.OnClickListener{
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
-        mDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mEventDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //make status bar transparent
         if (Build.VERSION.SDK_INT >= 21) {
             // Set the status bar to dark-semi-transparentish
-            mDetailActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+            mEventDetailActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
 
@@ -106,10 +106,10 @@ View.OnClickListener{
         mOrganizationIconView.setOnClickListener(this);
         mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
 
-        mUri = mDetailActivity.mUri;
+        mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        if(!mDetailActivity.isLocal)
-            mDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
+        if(!mEventDetailActivity.isLocal)
+            mEventDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
             (LoaderManager.LoaderCallbacks)this);
         else{
             EventDetailAsyncLoader eventDetailAsyncLoader = new EventDetailAsyncLoader();
@@ -152,7 +152,7 @@ View.OnClickListener{
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()){
             case EVENT_DESCRIPTION_ID:
-                mDetailActivity.finish();
+                mEventDetailActivity.finish();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -180,7 +180,7 @@ View.OnClickListener{
         mLinkTextView.setText(data.getString(COLUMN_DETAIL_INFO_URL));
 
         try {
-            mParcelFileDescriptor = mDetailActivity.getContentResolver()
+            mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("events").appendPath(data.getString(COLUMN_EVENT_ID)).build(), "r");
             if(mParcelFileDescriptor == null)
@@ -195,7 +195,7 @@ View.OnClickListener{
         }
 
         try{
-            final ParcelFileDescriptor fileDescriptor = mDetailActivity.getContentResolver()
+            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
@@ -215,7 +215,7 @@ View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v == mOrganizationIconView || v == mOrganizationTextView){
-            Intent intent = new Intent(getContext(), OrganizationActivity.class);
+            Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build());
             startActivity(intent);
         }
@@ -267,7 +267,7 @@ View.OnClickListener{
         }
 
         try{
-            final ParcelFileDescriptor fileDescriptor = mDetailActivity.getContentResolver()
+            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(String.valueOf(event.getOrganizationId())).build(), "r");

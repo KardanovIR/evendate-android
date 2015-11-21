@@ -6,11 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
-public class OrganizationActivity extends AppCompatActivity {
+public class OrganizationDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,10 +17,10 @@ public class OrganizationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent != null){
             Uri organizationUri = intent.getData();
-            args.putString(OrganizationActivityFragment.URI, organizationUri.toString());
+            args.putString(OrganizationDetailFragment.URI, organizationUri.toString());
         }
 
-        Fragment fragment = new OrganizationActivityFragment();
+        Fragment fragment = new OrganizationDetailFragment();
         fragment.setArguments(args);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

@@ -1,6 +1,6 @@
 package ru.getlect.evendate.evendate.sync;
 
-import ru.getlect.evendate.evendate.sync.dataTypes.ResponseData;
+import ru.getlect.evendate.evendate.sync.models.ResponseData;
 
 /**
  * Created by Дмитрий on 02.11.2015.

@@ -202,7 +202,7 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
             @Override
             public void onClick(View v) {
                 if(v instanceof CardView){
-                    Intent intent = new Intent(getContext(), OrganizationActivity.class);
+                    Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
                     intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
                     getActivity().startActivity(intent);
                 }

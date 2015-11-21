@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
-import ru.getlect.evendate.evendate.sync.dataTypes.DataModel;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
 
 /**
  * Created by Dmitry on 11.09.2015.

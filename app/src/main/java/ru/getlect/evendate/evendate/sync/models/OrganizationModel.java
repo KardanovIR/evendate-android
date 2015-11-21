@@ -1,4 +1,4 @@
-package ru.getlect.evendate.evendate.sync.dataTypes;
+package ru.getlect.evendate.evendate.sync.models;
 
 import android.content.ContentProviderOperation;
 import android.net.Uri;

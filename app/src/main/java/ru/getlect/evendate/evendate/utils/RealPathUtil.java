@@ -1,4 +1,4 @@
-package ru.getlect.evendate.evendate;
+package ru.getlect.evendate.evendate.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
