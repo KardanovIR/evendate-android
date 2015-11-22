@@ -41,10 +41,6 @@
             android:id="@+id/sync"
             android:title="Sync"
             android:icon="@drawable/clock"/>
-        <item
-            android:id="@+id/authorization"
-            android:title="Authorization"
-            android:icon="@drawable/clock"/>
     </group>
     <group android:id="@+id/nav_organizations"/>
 </menu>

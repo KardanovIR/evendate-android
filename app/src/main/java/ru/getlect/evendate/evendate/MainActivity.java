@@ -239,11 +239,6 @@ public class MainActivity extends AppCompatActivity
                 Log.w("BUTTON_SYNC", "clicked");
                 EvendateSyncAdapter.syncImmediately(this);
                 return true;
-            case R.id.authorization:
-                Intent intentAuth = new Intent(this, AuthActivity.class);
-                startActivity(intentAuth);
-                drawerLayout.closeDrawers();
-                return true;
             case R.id.nav_add_account:
                 Intent authIntent = new Intent(this, AuthActivity.class);
                 startActivity(authIntent);
