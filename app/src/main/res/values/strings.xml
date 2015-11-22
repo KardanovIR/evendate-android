@@ -47,4 +47,7 @@
     <string name="subscription_fail_cause_network">No internet connection</string>
     <string name="subscription_confirm">Subscription confirmed</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
+
+    <string name="nav_add_account">Add Account</string>
+    <string name="nav_account_management">Account Management</string>
 </resources>

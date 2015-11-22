@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -32,11 +34,16 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
+import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.utils.Utils;
@@ -51,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView mNavigationView;
 
     private SubMenu mOrganizationMenu;
+    private SubMenu mAccountMenu;
     private Cursor mSubscriptionCursor;
 
     /** Loader id that get subs data */
@@ -60,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     private MainPagerAdapter mMainPagerAdapter;
 
     private TabLayout mTabLayout;
+    private ToggleButton mAccountToggle;
 
     private IconObserver mIconObserver;
 
@@ -73,20 +82,27 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.accent_color));
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
 
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.app_name, R.string.app_name);
+                R.string.app_name, R.string.app_name){
+
+            //change menu in nav drawer to provide possibility to change selected item
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                if(mAccountToggle.isChecked()){
+                    mNavigationView.getMenu().clear();
+                    mNavigationView.inflateMenu(R.menu.drawer_actions);
+                    updateSubscriptionMenu();
+                    mAccountToggle.setChecked(false);
+                }
+            }
+        };
         drawerLayout.setDrawerListener(mDrawerToggle);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-
-
-        //debug
-
-        AccountManager accountManager = AccountManager.get(this);
-        Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
+        setAccountInfo();
 
         //sync initialization and account creation if there is no account in app
         //EvendateSyncAdapter.initializeSyncAdapter(this);
@@ -108,18 +124,18 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                switch (position) {
+                //switch (position) {
                     //case 0 : {
                     //    MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.calendar);
                     //    menuItem.setChecked(true);
                     //    break;
                     //}
-                    case 0 : {
-                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.reel);
-                        menuItem.setChecked(true);
-                        break;
-                    }
-                }
+                    //case 0 : {
+                    //    MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.reel);
+                    //    menuItem.setChecked(true);
+                    //    break;
+                    //}
+                //}
             }
 
             @Override
@@ -129,6 +145,23 @@ public class MainActivity extends AppCompatActivity
         });
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
+
+        mAccountToggle = (ToggleButton) findViewById(R.id.account_view_icon_button);
+        mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    mNavigationView.getMenu().clear();
+                    updateAccountMenu();
+                    mNavigationView.inflateMenu(R.menu.drawer_accounts);
+                }
+                else{
+                    mNavigationView.getMenu().clear();
+                    mNavigationView.inflateMenu(R.menu.drawer_actions);
+                    updateSubscriptionMenu();
+                }
+            }
+        });
     }
 
     @Override
@@ -141,6 +174,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+        //TODO убрать, если уже создавалось activity
         /**
          * solution for issue with view pager from support library
          * http://stackoverflow.com/questions/32323570/viewpager-title-doesnt-appear-until-i-swipe-it
@@ -210,11 +244,34 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intentAuth);
                 drawerLayout.closeDrawers();
                 return true;
+            case R.id.nav_add_account:
+                Intent authIntent = new Intent(this, AuthActivity.class);
+                startActivity(authIntent);
+                drawerLayout.closeDrawers();
+                return true;
+            case R.id.nav_account_management:
+                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+                intent.putExtra(Settings.EXTRA_AUTHORITIES, getResources().getString(R.string.content_authority));
+                intent.putExtra(Settings.EXTRA_AUTHORITIES, getResources().getString(R.string.account_type));
+                startActivity(intent);
+                drawerLayout.closeDrawers();
+                return true;
             default:
-                Intent detailIntent = new Intent(this, OrganizationDetailActivity.class);
-                detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
-                        .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
-                startActivity(detailIntent);
+                if(!mAccountToggle.isChecked()){
+                    Intent detailIntent = new Intent(this, OrganizationDetailActivity.class);
+                    detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
+                            .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
+                    startActivity(detailIntent);
+                }
+                else{
+                    String account_name = String.valueOf(menuItem.getTitle());
+                    SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, MODE_PRIVATE);
+                    SharedPreferences.Editor ed = sPref.edit();
+                    ed.putString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, account_name);
+                    ed.apply();
+                    setAccountInfo();
+                    updateAccountMenu();
+                }
                 return true;
         }
     }
@@ -291,14 +348,14 @@ public class MainActivity extends AppCompatActivity
             mOrganizationMenu.clear();
         }
         mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
-        mSubscriptionCursor.moveToFirst();
         if(mSubscriptionCursor != null){
             if(mIconObserver == null){
                 IconUpdaterHandler.init(this);
                 mIconObserver  = new IconObserver(new IconUpdaterHandler(), getExternalCacheDir().toString() + "/" + EvendateContract.PATH_ORGANIZATION_LOGOS);
                 mIconObserver.startWatching();
             }
-            while(mSubscriptionCursor.moveToNext()){
+            mSubscriptionCursor.moveToFirst();
+            while(!mSubscriptionCursor.isAfterLast()){
                 MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID)), 0,
                         mSubscriptionCursor.getString(mSubscriptionCursor
@@ -323,8 +380,40 @@ public class MainActivity extends AppCompatActivity
                 }catch (IOException e){
                     e.printStackTrace();
                 }
+                mSubscriptionCursor.moveToNext();
             }
         }
+    }
+    private void updateAccountMenu(){
+        Menu navigationDrawerMenu = mNavigationView.getMenu();
+        if(mAccountMenu != null){
+            mAccountMenu.clear();
+        }
+        mNavigationView.setItemIconTintList(null);
+
+        AccountManager accountManager =
+                (AccountManager) getSystemService(Context.ACCOUNT_SERVICE);
+
+        SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+
+        Account[] accounts = accountManager.getAccountsByType(getString(R.string.account_type));
+        if (account_name == null)
+            return;
+        if(accounts.length == 0)
+            return;
+        mAccountMenu = navigationDrawerMenu.addSubMenu(R.id.nav_accounts, 0, 0, null);
+        for(Account account : accounts){
+            if(!account.name.equals(account_name)){
+                MenuItem menuItem = mAccountMenu.add(0, 0, 0, account.name);
+            }
+        }
+    }
+    private void setAccountInfo(){
+        TextView email = (TextView)findViewById(R.id.email);
+        SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+        email.setText(account_name);
     }
 
     class MainPagerAdapter extends FragmentStatePagerAdapter{

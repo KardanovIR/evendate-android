@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"
-        android:background="@color/primary_color"/>
+        android:background="?attr/colorPrimary"/>
     <FrameLayout
         android:id="@+id/organization_catalog"
         android:layout_width="match_parent"

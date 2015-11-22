@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/background_color_all"
     tools:context=".MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,14 +16,18 @@
             android:layout_width="match_parent"
             android:id="@+id/toolbar"
             android:minHeight="?attr/actionBarSize"
-            android:background="@color/primary_color" />
+            android:background="?attr/colorPrimary"
+            android:textColorSecondary="#FFFFFF"/>
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabMode="fixed"
             app:tabGravity="fill"
-            android:background="@color/primary_color"
+            android:background="?attr/colorPrimary"
+            app:tabTextColor="@color/text_primary"
+            app:tabIndicatorColor="#FFFFFF"
+            app:tabIndicatorHeight="4dp"
             />
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -32,14 +35,6 @@
             android:layout_height="match_parent">
         </android.support.v4.view.ViewPager>
     </LinearLayout>
-    <!--
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_calendar"
-        android:theme="@style/DrawerTheme"
-        android:name="ru.getlect.evendate.evendate.CalendarFragment" />
-    -->
 
     <include layout="@layout/nav_drawer_layout" />
 

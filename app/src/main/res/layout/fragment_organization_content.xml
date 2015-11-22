@@ -40,6 +40,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="73"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
                 android:id="@+id/organization_event_count" />
@@ -48,6 +49,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="event number"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
         </LinearLayout>
@@ -67,6 +69,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="10"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
                 android:id="@+id/organization_subscription_count" />
@@ -75,6 +78,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="subscriptions"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
         </LinearLayout>
@@ -97,6 +101,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="5"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
                 android:id="@+id/organization_friend_count" />
@@ -105,6 +110,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="friends"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
         </LinearLayout>
@@ -131,6 +137,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:text="1 favorite event"
+        android:textColor="@color/text_primary"
         android:paddingLeft="18dp"
         android:paddingStart="18dp"
         android:paddingRight="18dp"
