@@ -2,11 +2,13 @@ package ru.getlect.evendate.evendate.authorization;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import ru.getlect.evendate.evendate.R;
+import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 /**
  * Created by fj on 14.09.2015.
@@ -64,10 +66,16 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
             am.setAuthToken(account, account.type, token);
 
+            //save account email into shared preferences to find current account later
+            SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, MODE_PRIVATE);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, account.name);
+            ed.apply();
+
         } else {
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
         }
-
+        EvendateSyncAdapter.syncImmediately(this);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
         finish();

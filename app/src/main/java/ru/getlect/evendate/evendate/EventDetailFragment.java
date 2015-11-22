@@ -16,7 +16,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +25,10 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
-import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
+import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
@@ -223,21 +222,16 @@ View.OnClickListener{
     private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataModel> {
         @Override
         protected DataModel doInBackground(Void... params) {
-            AccountManager accountManager = AccountManager.get(getContext());
-            Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
-            if (accounts.length == 0) {
-                Log.e("SYNC", "No Accounts");
-                Intent dialogIntent = new Intent(getContext(), AuthActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(dialogIntent);
-            }
-            Account account = accounts[0];
+
+            Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;
             try{
-                token = accountManager.blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+                token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
             }catch (Exception e){
                 e.printStackTrace();
             }
+            if(token == null)
+                return null;
             EvendateService evendateService = EvendateApiFactory.getEvendateService();
             return ServerDataFetcher.getEventData(evendateService, token, eventId);
         }

@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.FileObserver;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -35,16 +34,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
+import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
-import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -88,20 +86,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static ReelFragment newInstance(int sectionNumber) {
-        ReelFragment fragment = new ReelFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    public ReelFragment() {
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,8 +115,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         mAdapter = new RVAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
-        LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
+        if(type != TypeFormat.organization.nativeInt){
+            LoaderManager loaderManager = getLoaderManager();
+            loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
+        }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return rootView;
@@ -261,6 +248,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
             }
             else{
+                if(mEventList == null)
+                    return;
                 EventModel eventEntry = mEventList.get(position);
                 holder.id = eventEntry.getEntryId();
                 holder.mTitleTextView.setText(eventEntry.getTitle());
@@ -273,7 +262,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
 
                 if(holder.mImageObserver == null){
-                    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView, getActivity().getExternalCacheDir().toString() + "/" + EvendateContract.PATH_EVENT_IMAGES, holder.id);
+                    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView,
+                            getActivity().getExternalCacheDir().toString() + "/" +
+                                    EvendateContract.PATH_EVENT_IMAGES + "/" + holder.id + ".jpg", holder.id);
                     holder.mImageObserver.startWatching();
                 }
             }
@@ -294,6 +285,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         }
 
+        @Override
+        public void onViewRecycled(ViewHolder holder) {
+            super.onViewRecycled(holder);
+            holder.mFavoriteIndicator.setVisibility(View.GONE);
+        }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             public android.support.v7.widget.CardView cardView;
@@ -305,6 +301,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public int id;
 
             ImageObserver mImageObserver;
+
             public ViewHolder(View itemView){
                 super(itemView);
                 cardView = (android.support.v7.widget.CardView)itemView;
@@ -313,8 +310,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
                 mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
                 mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-
-                this.id = (int)this.getItemId();
                 itemView.setOnClickListener(this);
             }
 
@@ -341,21 +336,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         protected DataModel doInBackground(Void... params) {
-            AccountManager accountManager = AccountManager.get(mContext);
-            Account[] accounts = accountManager.getAccountsByType(mContext.getString(R.string.account_type));
-            if (accounts.length == 0) {
-                Log.e("SYNC", "No Accounts");
-                Intent dialogIntent = new Intent(mContext, AuthActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(dialogIntent);
-            }
-            Account account = accounts[0];
+            Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;
             try{
-                token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
+                token = AccountManager.get(getContext()).blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
             }catch (Exception e){
                 e.printStackTrace();
             }
+            if(token == null)
+                return null;
             EvendateService evendateService = EvendateApiFactory.getEvendateService();
             return ServerDataFetcher.getOrganizationWithEventsData(evendateService, token, organizationId);
         }
@@ -365,7 +354,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
         }
     }
-    public void subscribed(){
+    public void onUnsubscripted(){
+        this.type = TypeFormat.organization.nativeInt;
+        OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
+        organizationAsyncLoader.execute();
+    }
+    public void onSubscribed(){
         if(mAdapter.getEventList() == null)
             return;
         ContentResolver contentResolver = getContext().getContentResolver();
@@ -379,6 +373,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         try {
             contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
+            this.type = TypeFormat.organizationSubscribed.nativeInt;
         }catch (Exception e){
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -391,6 +386,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         // This sample doesn't support uploads, but if *your* code does, make sure you set
         // syncToNetwork=false in the line above to prevent duplicate syncs.
         Log.i(LOG_TAG, "Batch update done");
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(EVENT_INFO_LOADER_ID, null, this);
     }
 
     /**
@@ -400,6 +397,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.i(LOG_TAG, "onDetach");
 
         try {
             Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
@@ -425,28 +423,26 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         @Override
         public void onEvent(int event, String path) {
-            switch (event){
-                case CLOSE_NOWRITE:{
-                    mImageView.setImageBitmap(null);
-                    try {
-                        final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
-                                .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                                .appendPath("images").appendPath("events")
-                                                .appendPath(String.valueOf(eventId)
-                                ).build(), "r"
-                                );
-                        if(fileDescriptor == null)
-                            //заглушка на случай отсутствия картинки
-                            mImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-                        else {
-                            ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
-                            imageLoadingTask.execute(fileDescriptor);
-                        }
+            if(event == FileObserver.CLOSE_WRITE){
+                mImageView.setImageBitmap(null);
+                try {
+                    final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
+                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                            .appendPath("images").appendPath("events")
+                                            .appendPath(String.valueOf(eventId)
+                                            ).build(), "r"
+                            );
+                    if(fileDescriptor == null)
+                        //заглушка на случай отсутствия картинки
+                        mImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
+                    else {
+                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
+                        imageLoadingTask.execute(fileDescriptor);
+                    }
                 }catch (IOException e){
                     e.printStackTrace();
                 }
             }
         }
-    }
     }
 }

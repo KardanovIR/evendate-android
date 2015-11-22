@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -20,13 +19,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,14 +34,12 @@ import org.chalup.microorm.MicroOrm;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 
-import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.data.EvendateContract;
+import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
+import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
+import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
 
 /**
@@ -55,6 +50,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     private final String LOG_TAG = "OrganizationFragment";
 
     OrganizationModel mOrganizationModel;
+    ReelFragment mReelFragment;
 
     private int organizationId = -1;
 
@@ -204,77 +200,28 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             e.printStackTrace();
         }
     }
-    public boolean Subscript(int id, String type){
-        String url = "http://evendate.ru/api/subscriptions/";
-        if(type.equals("POST")){
-            url += "?organization_id=" + id;
-        }
-        else{
-            url += String.valueOf(mOrganizationModel.getSubscriptionId());
-        }
-        if (Log.isLoggable(LOG_TAG, Log.INFO)) {
-            Log.i(LOG_TAG, "Requesting service: " + url);
-        }
-
-        HttpURLConnection urlConnection = null;
-        try {
-            // create connection
-            URL urlToRequest = new URL(url);
-            urlConnection = (HttpURLConnection) urlToRequest.openConnection();
-            //urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-            //urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
-
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestMethod(type);
-            //urlConnection.setFixedLengthStreamingMode(
-            //        postParameters.getBytes().length);
-            urlConnection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-
-            AccountManager accountManager = AccountManager.get(getContext());
-            Account[] accounts = accountManager.getAccountsByType(getContext().getString(R.string.account_type));
-            if (accounts.length == 0) {
-                Log.e("SYNC", "No Accounts");
-                Intent dialogIntent = new Intent(getContext(), AuthActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(dialogIntent);
-                return false;
-            }
-            Account account = accounts[0];
+    public boolean Subscript(){
+            Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;
             try{
-                token = accountManager.blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+                token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
             }catch (Exception e){
                 e.printStackTrace();
             }
             if(token == null)
                 return false;
-            urlConnection.setRequestProperty("Authorization", token);
 
-            urlConnection.connect();
-            // handle issues
-            int statusCode = urlConnection.getResponseCode();
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                return false;
+            EvendateService evendateService = EvendateApiFactory.getEvendateService();
+            if(mOrganizationModel.isSubscribed()){
+                if(ServerDataFetcher.organizationDeleteSubscription(evendateService, token, mOrganizationModel.getSubscriptionId()))
+                    mOrganizationModel.setSubscriptionId(null);
             }
-            ReelFragment reelFragment =  (ReelFragment) getChildFragmentManager().findFragmentById(R.id.organization_container);
-
-            //if(reelFragment != null){
-            //    reelFragment.subscribed();
-            //}
-
-
-        } catch (MalformedURLException e) {
-            // handle invalid URL
-        } catch (SocketTimeoutException e) {
-            // hadle timeout
-        } catch (IOException e) {
-            // handle I/0
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
+            else{
+                OrganizationModel organizationModel = ServerDataFetcher.organizationPostSubscription(evendateService, token, organizationId);
+                if(organizationModel == null)
+                    return false;
+                mOrganizationModel.setSubscriptionId(organizationModel.getSubscriptionId());
             }
-        }
         return true;
     }
 
@@ -298,14 +245,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             if (!isConnected){
                 return false;
             }
-            boolean isConfirm;
-            if(!mOrganizationModel.isSubscribed()){
-                isConfirm = Subscript(organizationId, "POST");
-            }
-            else{
-                isConfirm = Subscript(mOrganizationModel.getSubscriptionId(), "DELETE");
-            }
-            return isConfirm;
+            return Subscript();
         }
 
         @Override
@@ -320,6 +260,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mOrganizationModel.getContentValues(), null, null);
+                if(mOrganizationModel.isSubscribed())
+                    mReelFragment.onSubscribed();
+                else
+                    mReelFragment.onUnsubscripted();
                 EvendateSyncAdapter.syncImmediately(getContext());
             }
         }
@@ -342,8 +286,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            if(mActivity != null)
-                addReel();
+            //if(mActivity != null)
+            //    addReel();
         }
     }
     public void addReel(){
@@ -353,12 +297,12 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         else
             reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
         reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        Fragment fragment = new ReelFragment();
-        fragment.setArguments(reelArgs);
-        fragmentTransaction.replace(R.id.organization_container, fragment);
-
-        fragmentTransaction.commit();
+        android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
+        if(fragmentManager != null){
+            mReelFragment = new ReelFragment();
+            mReelFragment.setArguments(reelArgs);
+            fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
+        }
     }
 
     /**

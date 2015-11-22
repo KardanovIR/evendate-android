@@ -15,28 +15,25 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.R;
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
+import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.models.DataModel;
-import ru.getlect.evendate.evendate.sync.models.EventModel;
-import ru.getlect.evendate.evendate.sync.models.FriendModel;
 import ru.getlect.evendate.evendate.sync.merge.MergeEventProps;
 import ru.getlect.evendate.evendate.sync.merge.MergeSimple;
 import ru.getlect.evendate.evendate.sync.merge.MergeStrategy;
 import ru.getlect.evendate.evendate.sync.merge.MergeWithoutDelete;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.FriendModel;
 
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
@@ -89,12 +86,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             String authority,
             ContentProviderClient provider,
             SyncResult syncResult) {
-        //token here
 
         AccountManager accountManager = AccountManager.get(mContext);
-        String urlOrganization = "http://evendate.ru/api/organizations?with_subscriptions=true";
-        String urlTags = "http://evendate.ru/api/tags";
-        String urlEvents = "http://evendate.ru/api/events/my"; // + теги + друзьяшки + тока будущее
         ArrayList<DataModel> cloudList;
         ArrayList<DataModel> localList;
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver, mContext);
@@ -166,50 +159,32 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.content_authority), bundle);
     }
     /**
-     * Create a new dummy account for the sync adapter
-     *
      * @param context The application context
      */
     public static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-//
-        //// Create the account type and default account
-        ////Account newAccount = new Account(
-        ////        context.getString(R.string.app_name), context.getString(R.string.account_type));
-//
-        //// If the password doesn't exist, the account doesn't exist
-        //if ( null == accountManager.getPassword(newAccount) ) {
-//
-        ///*
-        // * Add the account and account type, no password or user data
-        // * If successful, return the Account object, otherwise report an error.
-        // */
-        //    if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
-        //        return null;
-        //    }
-        //    /*
-        //     * If you don't set android:syncable="true" in
-        //     * in your <provider> element in the manifest,
-        //     * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
-        //     * here.
-        //     */
-//
-        //    onAccountCreated(newAccount, context);
-        //}
+
+        SharedPreferences sPref = context.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
 
         Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
-        if (accounts.length == 0) {
+        if (accounts.length == 0 || account_name == null) {
             Log.e("SYNC", "No Accounts");
             Intent dialogIntent = new Intent(context, AuthActivity.class);
             dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(dialogIntent);
             return null;
         }
-        Account account = accounts[0];
-        //onAccountCreated(account, context);
-        return account;
+        for(Account account : accounts){
+            if(account.name.equals(account_name))
+                return account;
+        }
+        Intent dialogIntent = new Intent(context, AuthActivity.class);
+        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(dialogIntent);
+        return null;
     }
     private static void onAccountCreated(Account newAccount, Context context) {
         /*
@@ -229,61 +204,5 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
-    }
-
-    private String getJsonFromServer(String urlServer, String token){
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        String jsonString;
-
-        try {
-            URL url = new URL(urlServer);
-
-            // Create the request and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Authorization", token);
-            urlConnection.connect();
-
-            //Read the input stream into String eventsJsonStr
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuilder buffer = new StringBuilder();
-            if (inputStream == null) {
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-
-            jsonString = buffer.toString();
-            Log.w(LOG_TAG, jsonString);
-            return jsonString;
-        }
-        catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the data, there's no point in attemping
-            // to parse it.
-            return null;
-        }
-        finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
-        }
     }
 }

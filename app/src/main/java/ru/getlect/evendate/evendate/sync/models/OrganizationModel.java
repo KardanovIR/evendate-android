@@ -150,6 +150,10 @@ public class OrganizationModel extends DataModel {
         return updatedAt;
     }
 
+    public void setSubscriptionId(Integer subscriptionId) {
+        this.subscriptionId = subscriptionId;
+    }
+
     @Override
     public int getEntryId() {
         return this.organizationId;

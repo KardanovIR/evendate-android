@@ -1,9 +1,12 @@
 package ru.getlect.evendate.evendate.sync;
 
 import retrofit.Call;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.FriendModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
@@ -32,4 +35,16 @@ public interface EvendateService {
 
     @GET("/api/events/{id}")
     Call<EvendateServiceResponseAttr<EventModel>> eventData(@Path("id") int eventId, @Header("Authorization") String authorization);
+
+    @POST("/api/subscriptions")
+    Call<EvendateServiceResponseAttr<OrganizationModel>> organizationPostSubscription(@Query("organization_id") int organizationId, @Header("Authorization") String authorization);
+
+    @DELETE("/api/subscriptions/{id}")
+    Call<EvendateServiceResponse> organizationDeleteSubscription(@Path("id") int subscriptionId, @Header("Authorization") String authorization);
+
+    @POST("/api/events/favorites")
+    Call<EvendateServiceResponseAttr<OrganizationModel>> eventPostFavorite(@Query("event_id") int eventId, @Header("Authorization") String authorization);
+
+    @DELETE("/api/events/favorites/{id}")
+    Call<EvendateServiceResponse> eventDeleteFavorite(@Path("id") int eventId, @Header("Authorization") String authorization);
 }
