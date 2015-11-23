@@ -2,6 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_for_dialogs"
     android:name="ru.getlect.evendate.evendate.DialogsFragment"
-    tools:layout="@layout/add_event"
+    tools:layout="@layout/activity_add_event"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

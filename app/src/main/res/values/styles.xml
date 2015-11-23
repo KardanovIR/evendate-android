@@ -2,12 +2,12 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorAccent">@color/underline_color</item>
-        <item name="colorPrimaryDark">@color/accent_color</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="tp_textColor">@color/abc_primary_text_material_light</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
     </style>
 
 
@@ -39,7 +39,7 @@
         <item name="spn_arrowSwitchMode">true</item>
         <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="spn_arrowColor">@color/primary_color</item>
+        <item name="spn_arrowColor">@color/primary</item>
         <item name="android:popupBackground">@drawable/popup_background_dark</item>
     </style>
 

@@ -71,6 +71,7 @@ public class ImageServerLoader {
             bitmap.compress(compressFormat, 100, buf);
             buf.flush();
             buf.close();
+            bitmap.recycle();
         }catch (IOException e){
             Log.e(LOG_TAG, "bitmap save error");
             image.delete();

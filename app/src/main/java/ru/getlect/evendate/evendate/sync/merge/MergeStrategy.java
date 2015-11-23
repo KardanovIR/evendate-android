@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
 
 /**
  * Created by Dmitry on 11.09.2015.
@@ -16,5 +16,5 @@ public abstract class MergeStrategy {
     public MergeStrategy(ContentResolver contentResolver) {
         mContentResolver = contentResolver;
     }
-    public abstract void mergeData(final Uri ContentUri, ArrayList<DataEntry> cloudList, ArrayList<DataEntry> localList);
+    public abstract void mergeData(final Uri ContentUri, ArrayList<DataModel> cloudList, ArrayList<DataModel> localList);
 }

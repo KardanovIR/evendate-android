@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_scrolling"
+    android:fitsSystemWindows="true">
+    <!--<android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="true">-->
+    <LinearLayout
+        android:id="@+id/strip"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="?attr/colorPrimary"
+        android:layout_centerHorizontal="true"
+        android:elevation="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="true">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="73"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:id="@+id/organization_event_count" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="event number"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:gravity="center" />
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#FFF"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="10"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:id="@+id/organization_subscription_count" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="subscriptions"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:gravity="center" />
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#FFF"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="5"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:id="@+id/organization_friend_count" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="friends"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+    <!--</android.support.v7.widget.Toolbar>-->
+
+
+    <FrameLayout
+        android:id="@+id/organization_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/organization_favorite_event_count"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:clipToPadding="false"
+        />
+
+    <TextView
+        android:id="@+id/organization_favorite_event_count"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@+id/strip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:text="1 favorite event"
+        android:textColor="@color/text_primary"
+        android:paddingLeft="18dp"
+        android:paddingStart="18dp"
+        android:paddingRight="18dp"
+        android:paddingTop="6dp" />
+</RelativeLayout>

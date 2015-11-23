@@ -16,7 +16,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.organization_catalog, new OrganizationCatalogFragment());
+        fragmentTransaction.replace(R.id.organization_catalog, new OrganizationCatalogFragment());
         fragmentTransaction.commit();
 
     }

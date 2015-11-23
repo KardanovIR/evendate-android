@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/nav_accounts"/>
+    <group>
+        <item
+            android:id="@+id/nav_add_account"
+            android:title="@string/nav_add_account"
+            android:icon="@mipmap/ic_add_black"/>
+        <item
+            android:id="@+id/nav_account_management"
+            android:title="@string/nav_account_management"
+            android:icon="@mipmap/ic_settings_black"/>
+    </group>
+</menu>

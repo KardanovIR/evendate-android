@@ -9,6 +9,6 @@
         android:id="@+id/recyclerView"
         android:layout_gravity="center_horizontal|top"
 
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingLeft="@dimen/reel_horizontal_margin"
+        android:paddingRight="@dimen/reel_horizontal_margin"/>
 </LinearLayout>

@@ -4,6 +4,7 @@
 <android.support.design.widget.NavigationView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_view"
     android:layout_width="304dp"
     android:background="@color/background_color_all"
@@ -11,5 +12,7 @@
     android:layout_gravity="start"
     android:fitsSystemWindows="true"
     app:menu="@menu/drawer_actions"
-    app:headerLayout="@layout/nav_header">
+    app:itemTextColor="@color/text_color_black"
+    app:headerLayout="@layout/nav_header"
+    tools:showIn="@layout/activity_main">
 </android.support.design.widget.NavigationView>

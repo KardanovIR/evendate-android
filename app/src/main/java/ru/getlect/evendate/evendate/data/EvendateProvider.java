@@ -105,7 +105,23 @@ public class EvendateProvider extends ContentProvider {
             case ORGANIZATIONS: {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.OrganizationEntry.TABLE_NAME,
-                        projection,
+                        new String[] {
+                                EvendateContract.OrganizationEntry._ID,
+                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID,
+                                EvendateContract.OrganizationEntry.COLUMN_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
+                                EvendateContract.OrganizationEntry.COLUMN_SITE_URL,
+                                EvendateContract.OrganizationEntry.COLUMN_LOGO_URL,
+                                EvendateContract.OrganizationEntry.COLUMN_BACKGROUND_URL,
+                                EvendateContract.OrganizationEntry.COLUMN_TYPE_ID,
+                                EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME,
+                                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIBED_COUNT,
+                                EvendateContract.OrganizationEntry.COLUMN_SUBSCRIPTION_ID,
+                                EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED,
+                                EvendateContract.OrganizationEntry.COLUMN_UPDATED_AT,
+                                EvendateContract.OrganizationEntry.COLUMN_CREATED_AT,
+                        },
                         selection,
                         selectionArgs,
                         null,
@@ -119,7 +135,11 @@ public class EvendateProvider extends ContentProvider {
             case TAGS: {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.TagEntry.TABLE_NAME,
-                        projection,
+                        new String[] {
+                                EvendateContract.TagEntry._ID,
+                                EvendateContract.TagEntry.COLUMN_TAG_ID,
+                                EvendateContract.TagEntry.COLUMN_NAME,
+                        },
                         selection,
                         selectionArgs,
                         null,
@@ -131,9 +151,57 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case EVENTS: {
-                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
-                        EvendateContract.EventEntry.TABLE_NAME,
-                        projection,
+                final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
+                        = new SQLiteQueryBuilder();
+                sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
+                        + " INNER JOIN " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        " ON " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                        "." + EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID +
+                        " = " + EvendateContract.EventEntry.TABLE_NAME +
+                        "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
+                final Cursor cursor = sOrganizationWithEventQueryBuilder.query(
+                        mEvendateDBHelper.getReadableDatabase(),
+                        new String[]{
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry._ID,
+                                EvendateContract.EventEntry.COLUMN_EVENT_ID,
+                                EvendateContract.EventEntry.COLUMN_TITLE,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_DESCRIPTION,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_TEXT,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_URI,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_JSON,
+                                EvendateContract.EventEntry.COLUMN_LATITUDE,
+                                EvendateContract.EventEntry.COLUMN_LONGITUDE,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_VERTICAL_URL,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_HORIZONTAL_URL,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_SQUARE_URL,
+                                EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL,
+                                EvendateContract.EventEntry.COLUMN_CAN_EDIT,
+                                EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
+                                EvendateContract.EventEntry.COLUMN_LIKED_USERS_COUNT,
+                                EvendateContract.EventEntry.COLUMN_NOTIFICATIONS,
+                                EvendateContract.EventEntry.COLUMN_IS_FULL_DAY,
+                                EvendateContract.EventEntry.COLUMN_BEGIN_TIME,
+                                EvendateContract.EventEntry.COLUMN_END_TIME,
+                                EvendateContract.EventEntry.COLUMN_FIRST_DATE,
+                                EvendateContract.EventEntry.COLUMN_START_DATE,
+                                EvendateContract.EventEntry.COLUMN_END_DATE,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_UPDATED_AT,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_CREATED_AT,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_LOGO_URL,
+                        },
                         selection,
                         selectionArgs,
                         null,
@@ -147,7 +215,17 @@ public class EvendateProvider extends ContentProvider {
             case USERS: {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.UserEntry.TABLE_NAME,
-                        projection,
+                        new String[] {
+                                EvendateContract.UserEntry._ID,
+                                EvendateContract.UserEntry.COLUMN_USER_ID,
+                                EvendateContract.UserEntry.COLUMN_LAST_NAME,
+                                EvendateContract.UserEntry.COLUMN_FIRST_NAME,
+                                EvendateContract.UserEntry.COLUMN_MIDDLE_NAME,
+                                EvendateContract.UserEntry.COLUMN_AVATAR_URL,
+                                EvendateContract.UserEntry.COLUMN_FRIEND_UID,
+                                EvendateContract.UserEntry.COLUMN_TYPE,
+                                EvendateContract.UserEntry.COLUMN_LINK,
+                        },
                         selection,
                         selectionArgs,
                         null,
@@ -171,8 +249,48 @@ public class EvendateProvider extends ContentProvider {
                         "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
                 final Cursor cursor = sOrganizationWithEventQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
-                        projection,
-                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
+                        new String[] {
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry._ID,
+                                EvendateContract.EventEntry.COLUMN_EVENT_ID,
+                                EvendateContract.EventEntry.COLUMN_TITLE,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_DESCRIPTION,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_TEXT,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_URI,
+                                EvendateContract.EventEntry.COLUMN_LOCATION_JSON,
+                                EvendateContract.EventEntry.COLUMN_LATITUDE,
+                                EvendateContract.EventEntry.COLUMN_LONGITUDE,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_VERTICAL_URL,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_HORIZONTAL_URL,
+                                EvendateContract.EventEntry.COLUMN_IMAGE_SQUARE_URL,
+                                EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL,
+                                EvendateContract.EventEntry.COLUMN_CAN_EDIT,
+                                EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
+                                EvendateContract.EventEntry.COLUMN_LIKED_USERS_COUNT,
+                                EvendateContract.EventEntry.COLUMN_NOTIFICATIONS,
+                                EvendateContract.EventEntry.COLUMN_IS_FULL_DAY,
+                                EvendateContract.EventEntry.COLUMN_BEGIN_TIME,
+                                EvendateContract.EventEntry.COLUMN_END_TIME,
+                                EvendateContract.EventEntry.COLUMN_FIRST_DATE,
+                                EvendateContract.EventEntry.COLUMN_START_DATE,
+                                EvendateContract.EventEntry.COLUMN_END_DATE,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_UPDATED_AT,
+                                EvendateContract.EventEntry.TABLE_NAME + "." +
+                                        EvendateContract.EventEntry.COLUMN_CREATED_AT,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME,
+                                EvendateContract.OrganizationEntry.TABLE_NAME + "." +
+                                        EvendateContract.OrganizationEntry.COLUMN_LOGO_URL,
+                        },
+                        EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_EVENT_ID + "=?",
                         args,
                         null,
                         null,
@@ -187,7 +305,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.UserEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.UserEntry._ID + "=?",
+                        EvendateContract.UserEntry.COLUMN_USER_ID + "=?",
                         args,
                         null,
                         null,
@@ -202,7 +320,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.TagEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.TagEntry._ID + "=?",
+                        EvendateContract.TagEntry.COLUMN_TAG_ID + "=?",
                         args,
                         null,
                         null,
@@ -217,7 +335,7 @@ public class EvendateProvider extends ContentProvider {
                 final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
                         EvendateContract.OrganizationEntry.TABLE_NAME,
                         projection,
-                        EvendateContract.OrganizationEntry._ID + "=?",
+                        EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=?",
                         args,
                         null,
                         null,
@@ -253,7 +371,11 @@ public class EvendateProvider extends ContentProvider {
                 String[] args = {uri.getPathSegments().get(1)};
                 final Cursor cursor = sTagsByEventsQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
-                        projection,
+                        new String[] {
+                                EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry._ID,
+                                EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry.COLUMN_TAG_ID,
+                                EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry.COLUMN_NAME,
+                        },
                         EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
@@ -290,7 +412,17 @@ public class EvendateProvider extends ContentProvider {
                 String[] args = {uri.getPathSegments().get(1)};
                 final Cursor cursor = sFriendsByEventsQueryBuilder.query(
                         mEvendateDBHelper.getReadableDatabase(),
-                        projection,
+                        new String[] {
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry._ID,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_USER_ID,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_LAST_NAME,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_FIRST_NAME,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_MIDDLE_NAME,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_AVATAR_URL,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_FRIEND_UID,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_TYPE,
+                                EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_LINK
+                        },
                         EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry._ID + "=?",
                         args,
                         null,
@@ -439,8 +571,8 @@ public class EvendateProvider extends ContentProvider {
                 break;
             case EVENT_ID:
                 rowsDeleted = db.delete(
-                        EvendateContract.TagEntry.TABLE_NAME,
-                        EvendateContract.TagEntry._ID + "=?", args);
+                        EvendateContract.EventEntry.TABLE_NAME,
+                        EvendateContract.EventEntry._ID + "=?", args);
                 break;
             case USER_ID:
                 rowsDeleted = db.delete(

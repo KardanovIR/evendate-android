@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
-import ru.getlect.evendate.evendate.sync.dataTypes.DataEntry;
-import ru.getlect.evendate.evendate.sync.dataTypes.EventEntry;
+import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
 
 /**
  * Created by Dmitry on 13.09.2015.
@@ -33,11 +33,11 @@ public class MergeEventProps extends MergeStrategy {
     //ContentUri = null always
     //да, это говнокод
     @Override
-    public void mergeData(Uri ContentUri, ArrayList<DataEntry> cloudList, ArrayList<DataEntry> localList){
+    public void mergeData(Uri ContentUri, ArrayList<DataModel> cloudList, ArrayList<DataModel> localList){
 
         // Build hash table of incoming entries
-        HashMap<Integer, DataEntry> cloudMap = new HashMap<>();
-        for (DataEntry e : cloudList) {
+        HashMap<Integer, DataModel> cloudMap = new HashMap<>();
+        for (DataModel e : cloudList) {
             cloudMap.put(e.getEntryId(), e);
         }
 
@@ -46,8 +46,8 @@ public class MergeEventProps extends MergeStrategy {
         Log.i(LOG_TAG, "Fetching local entries for merge");
         Log.i(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
-        for(DataEntry e : localList){
-            DataEntry match = cloudMap.get(e.getEntryId());
+        for(DataModel e : localList){
+            DataModel match = cloudMap.get(e.getEntryId());
             if (match != null) {
 
                     Log.i(LOG_TAG, "Scheduling update: ");
@@ -55,10 +55,16 @@ public class MergeEventProps extends MergeStrategy {
                         .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_TAGS).build();
                 Uri contentUriFriends = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(e.getId())).appendPath(EvendateContract.PATH_USERS).build();
-                mMergerTags.mergeData(contentUriTags,
-                        ((EventEntry)match).getTagList(), ((EventEntry) e).getTagList());
-                mMergerFriends.mergeData(contentUriFriends,
-                        ((EventEntry)match).getFriendList(), ((EventEntry) e).getFriendList());
+                ArrayList<DataModel> tagList = new ArrayList<>();
+                ArrayList<DataModel> tagListMatch = new ArrayList<>();
+                tagList.addAll(((EventModel) e).getTagList());
+                tagListMatch.addAll(((EventModel) match).getTagList());
+                mMergerTags.mergeData(contentUriTags, tagListMatch, tagList);
+                ArrayList<DataModel> friendList = new ArrayList<>();
+                ArrayList<DataModel> friendListMatch = new ArrayList<>();
+                friendList.addAll(((EventModel) e).getFriendList());
+                friendListMatch.addAll(((EventModel) match).getFriendList());
+                mMergerFriends.mergeData(contentUriFriends, friendList, friendListMatch);
                 mContentResolver.notifyChange(contentUriTags, null, false);
                 mContentResolver.notifyChange(contentUriFriends, null, false);
             } else {

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_scrolling"
+    tools:showIn="@layout/fragment_detail"
     android:fitsSystemWindows="true">
     <!--<android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
@@ -40,6 +40,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="73"
+                    android:textColor="@color/text_primary"
                     android:textSize="20dp"
                     android:gravity="center"
                     android:id="@+id/event_participant_count" />
@@ -48,6 +49,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="participants"
+                    android:textColor="@color/text_primary"
                     android:textSize="14dp"
                     android:gravity="center" />
                 </LinearLayout>
@@ -63,18 +65,21 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/event_day"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:text="10"
+                        android:textColor="@color/text_primary"
                         android:textSize="20dp"
-                        android:gravity="center"
-                        android:id="@+id/event_month_number" />
+                        android:gravity="center" />
                     <TextView
+                        android:id="@+id/event_month"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:text="month"
+                        android:textColor="@color/text_primary"
                         android:textSize="14dp"
                         android:gravity="center" />
                 </LinearLayout>
@@ -97,6 +102,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:text="10:00-16:00"
+                        android:textColor="@color/text_primary"
                         android:textSize="20dp"
                         android:gravity="center"
                         android:id="@+id/event_time" />
@@ -135,6 +141,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="guu"
+                android:textColor="@color/text_color_black"
                 android:id="@+id/event_organization"
                 android:layout_below="@+id/event_organization_header"
                 android:layout_alignParentLeft="true"
@@ -170,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="bla-bla"
+                android:textColor="@color/text_color_black"
                 android:id="@+id/event_description"
                 android:layout_below="@+id/event_description_header"
                 android:layout_alignLeft="@+id/event_description_header"
@@ -216,6 +224,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Medium Text"
+                    android:textColor="@color/text_color_black"
                     android:id="@+id/event_place"
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
@@ -262,6 +271,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Medium Text"
+                    android:textColor="@color/text_color_black"
                     android:id="@+id/event_tags"
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
@@ -290,7 +300,7 @@
                     android:layout_height="64dp"
                     android:id="@+id/event_link_icon"
                     android:padding="10dp"
-                    android:src="@drawable/clock"/>
+                    android:src="@mipmap/ic_open_in_new_black"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -308,6 +318,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Medium Text"
+                    android:textColor="@color/text_color_black"
                     android:id="@+id/event_link"
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"

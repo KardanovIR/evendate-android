@@ -1,4 +1,5 @@
 <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -44,7 +45,6 @@
                 <ImageView
                     android:layout_width="72dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
                     android:src="@drawable/clock"
                     android:padding="4dp"
                     android:id="@+id/event_organization_icon" />
@@ -52,14 +52,15 @@
                     android:id="@+id/event_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="6"
                     android:textColor="#fff"
                     android:layout_marginLeft="72dp"
+                    android:layout_marginStart="72dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:paddingRight="48dp"
+                    android:paddingEnd="48dp"
                     android:text="title"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
             </FrameLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -72,12 +73,14 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
         <include layout="@layout/fragment_detail_content"/>
-    <!--
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:layout_anchor="@id/toolbar2"
+        app:layout_anchor="@+id/strip"
         app:layout_anchorGravity="end|bottom|right"
+        android:clickable="true"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
-        -->
+        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        />
 </android.support.design.widget.CoordinatorLayout>

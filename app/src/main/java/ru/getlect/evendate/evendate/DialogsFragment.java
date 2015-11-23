@@ -35,6 +35,8 @@ import com.rey.material.widget.EditText;
 
 import java.text.SimpleDateFormat;
 
+import ru.getlect.evendate.evendate.utils.RealPathUtil;
+
 /**
  * Created by fj on 17.08.2015.
  */
@@ -74,7 +76,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener, C
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.add_event, container, false);
+        View v = inflater.inflate(R.layout.activity_add_event, container, false);
 
         Iconify
                 .with(new FontAwesomeModule())

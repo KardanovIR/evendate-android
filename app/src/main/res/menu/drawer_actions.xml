@@ -3,15 +3,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+        <!--
         <item
             android:checked="true"
             android:id="@+id/calendar"
             android:title="@string/calendar"
             android:icon="@drawable/clock"/>
+        -->
         <item
             android:id="@+id/reel"
             android:title="@string/reel"
-            android:icon="@drawable/clock"/>
+            android:icon="@mipmap/ic_event_black"/>
         <item
             android:id="@+id/settings"
             android:title="@string/settings"
@@ -19,11 +21,11 @@
         <item
             android:id="@+id/feedback"
             android:title="@string/feedback"
-            android:icon="@drawable/clock"/>
+            android:icon="@mipmap/ic_thumb_up_black"/>
         <item
             android:id="@+id/help"
             android:title="@string/help"
-            android:icon="@drawable/clock"/>
+            android:icon="@mipmap/ic_help_outline_black"/>
         <item
             android:id="@+id/organizations"
             android:title="@string/organizations"
@@ -34,14 +36,10 @@
         <item
             android:id="@+id/add_event"
             android:title="Add event"
-            android:icon="@drawable/clock"/>
+            android:icon="@mipmap/ic_add_black"/>
         <item
             android:id="@+id/sync"
             android:title="Sync"
-            android:icon="@drawable/clock"/>
-        <item
-            android:id="@+id/authorization"
-            android:title="Authorization"
             android:icon="@drawable/clock"/>
     </group>
     <group android:id="@+id/nav_organizations"/>
