@@ -11,6 +11,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -104,8 +107,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             type = args.getInt(TYPE);
             if(type == TypeFormat.organization.nativeInt){
                 organizationId = args.getInt(ORGANIZATION_ID);
-                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
-                organizationAsyncLoader.execute();
+                if(!checkInternetConnection()){
+                    Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
+                }else{
+                    OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
+                    organizationAsyncLoader.execute();
+                }
             }
             if(type == TypeFormat.organizationSubscribed.nativeInt){
                 organizationId = args.getInt(ORGANIZATION_ID);
@@ -356,6 +363,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
     public void onUnsubscripted(){
+        if(!checkInternetConnection()){
+            Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_SHORT).show();
+            return;
+        }
         this.type = TypeFormat.organization.nativeInt;
         OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
         organizationAsyncLoader.execute();
@@ -411,7 +422,22 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             throw new RuntimeException(e);
         }
     }
+    private boolean checkInternetConnection(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean result = true;
+        if(activeNetwork == null)
+            result = false;
+        else{
+            boolean isConnected = activeNetwork.isConnected();
+            if (!isConnected){
+                result = false;
+            }
+        }
+        return result;
+    }
     class ImageObserver extends FileObserver {
         Context mContext;
         ImageView mImageView;

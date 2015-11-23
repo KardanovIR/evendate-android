@@ -248,8 +248,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                     (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork.isConnectedOrConnecting();
-            //Send the user a message to let them know change was made
+            if(activeNetwork == null)
+                return false;
+            boolean isConnected = activeNetwork.isConnected();
             if (!isConnected){
                 return false;
             }
@@ -299,11 +300,18 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         }
     }
     public void addReel(){
+
         Bundle reelArgs = new Bundle();
-        if(mOrganizationModel.isSubscribed())
+        if(mOrganizationModel.isSubscribed()){
             reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organizationSubscribed.nativeInt);
-        else
+        }
+        else{
             reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
+            if(!checkInternetConnection()){
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+                return;
+            }
+        }
         reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
         if(fragmentManager != null){
@@ -313,6 +321,22 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         }
     }
 
+    private boolean checkInternetConnection(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean result = true;
+        if(activeNetwork == null)
+            result = false;
+        else{
+            boolean isConnected = activeNetwork.isConnected();
+            if (!isConnected){
+                result = false;
+            }
+        }
+        return result;
+    }
     /**
      * fix cause bug in ChildFragmentManager
      * http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed

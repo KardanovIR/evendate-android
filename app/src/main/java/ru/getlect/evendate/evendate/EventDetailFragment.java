@@ -218,35 +218,45 @@ View.OnClickListener{
         mDayTextView.setText(day);
         mMonthTextView.setText(formats[1].format(date));
 
-        try {
-            mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("events").appendPath(String.valueOf(mEventEntry.getEntryId())).build(), "r");
-            if(mParcelFileDescriptor == null)
-                //заглушка на случай отсутствия картинки
+        if(!mEventDetailActivity.isLocal){
+            try {
+                mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
+                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                .appendPath("images").appendPath("events").appendPath(String.valueOf(mEventEntry.getEntryId())).build(), "r");
+                if(mParcelFileDescriptor == null)
+                    //заглушка на случай отсутствия картинки
+                    mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                else {
+                    ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mEventImageView);
+                    imageLoadingTask.execute(mParcelFileDescriptor);
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }else{
+            mEventImageView.setImageBitmap(null);
+            if(mEventEntry.getImageHorizontalUrl() == null)
                 mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-            else {
-                ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mEventImageView);
-                imageLoadingTask.execute(mParcelFileDescriptor);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        try{
-            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
-            if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
             else{
-                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                fileDescriptor.close();
+                ImageLoaderTask imageLoader = new ImageLoaderTask(mEventImageView);
+                imageLoader.execute(mEventEntry.getImageHorizontalUrl());
             }
-        }catch (IOException e){
-            e.printStackTrace();
+
         }
+            try{
+                final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
+                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                .appendPath("images").appendPath("organizations").appendPath("logos")
+                                .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
+                if(fileDescriptor == null)
+                    mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+                else{
+                    mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                    fileDescriptor.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
     }
 
     @Override
@@ -280,41 +290,9 @@ View.OnClickListener{
 
         @Override
         protected void onPostExecute(DataModel dataModel) {
-            setEvent((EventModel) dataModel);
-        }
-    }
-    public void setEvent(EventModel event){
-        mEventEntry = event;
-
-        //mOrganizationTextView.setText();
-        //mDescriptionTextView.setText(data.getString(COLUMN_DESCRIPTION));
-        mTitleTextView.setText(event.getTitle());
-        //mPlaceTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
-        //mTagsTextView.setText(data.getString(COLUMN_DESCRIPTION));
-        //mLinkTextView.setText(data.getString(COLUMN_DETAIL_INFO_URL));
-
-
-        mEventImageView.setImageBitmap(null);
-        if(event.getImageHorizontalUrl() == null)
-            mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-        else{
-            ImageLoaderTask imageLoader = new ImageLoaderTask(mEventImageView);
-            imageLoader.execute(event.getImageHorizontalUrl());
-        }
-
-        try{
-            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(String.valueOf(event.getOrganizationId())).build(), "r");
-            if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
-            else{
-                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                fileDescriptor.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
+            mEventEntry = (EventModel)dataModel;
+            setEventInfo();
+            setFabIcon();
         }
     }
     private void setFabIcon(){
@@ -351,7 +329,9 @@ View.OnClickListener{
                     (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork.isConnectedOrConnecting();
+            if(activeNetwork == null)
+                return false;
+            boolean isConnected = activeNetwork.isConnected();
             //Send the user a message to let them know change was made
             if (!isConnected){
                 return false;
