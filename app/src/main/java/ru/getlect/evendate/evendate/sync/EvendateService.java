@@ -19,32 +19,60 @@ import ru.getlect.evendate.evendate.sync.models.TagResponse;
 public interface EvendateService {
 
     @GET("/api/organizations?with_subscriptions=true")
-    Call<EvendateServiceResponseArray<OrganizationModel>> organizationData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseArray<OrganizationModel>> organizationData(
+            @Header("Authorization") String authorization
+    );
 
     @GET("/api/tags")
-    Call<EvendateServiceResponseAttr<TagResponse>> tagData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<TagResponse>> tagData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length
+    );
 
     @GET("/api/organizations/{id}?with_events=true")
-    Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> organizationWithEventsData(@Path("id") int organizationId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> organizationWithEventsData(
+            @Path("id") int organizationId,
+            @Header("Authorization") String authorization
+    );
 
     @GET("/api/events/my")
-    Call<EvendateServiceResponseArray<EventModel>> eventsData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseArray<EventModel>> eventsData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length
+    );
 
     @GET("/api/users/friends")
-    Call<EvendateServiceResponseArray<FriendModel>> friendsData(@Header("Authorization") String authorization);
+    Call<EvendateServiceResponseArray<FriendModel>> friendsData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length
+    );
 
     @GET("/api/events/{id}")
-    Call<EvendateServiceResponseAttr<EventModel>> eventData(@Path("id") int eventId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<EventModel>> eventData(
+            @Path("id") int eventId,
+            @Header("Authorization") String authorization);
 
     @POST("/api/subscriptions")
-    Call<EvendateServiceResponseAttr<OrganizationModel>> organizationPostSubscription(@Query("organization_id") int organizationId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponseAttr<OrganizationModel>> organizationPostSubscription(
+            @Query("organization_id") int organizationId,
+            @Header("Authorization") String authorization
+    );
 
     @DELETE("/api/subscriptions/{id}")
-    Call<EvendateServiceResponse> organizationDeleteSubscription(@Path("id") int subscriptionId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponse> organizationDeleteSubscription(
+            @Path("id") int subscriptionId, @Header("Authorization") String authorization
+    );
 
     @POST("/api/events/favorites")
-    Call<EvendateServiceResponse> eventPostFavorite(@Query("event_id") int eventId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponse> eventPostFavorite(
+            @Query("event_id") int eventId, @Header("Authorization") String authorization
+    );
 
     @DELETE("/api/events/favorites/{id}")
-    Call<EvendateServiceResponse> eventDeleteFavorite(@Path("id") int eventId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponse> eventDeleteFavorite(
+            @Path("id") int eventId, @Header("Authorization") String authorization
+    );
 }

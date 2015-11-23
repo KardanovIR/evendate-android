@@ -278,11 +278,7 @@ public class MainActivity extends AppCompatActivity
                 return new CursorLoader(
                         this,
                         EvendateContract.OrganizationEntry.CONTENT_URI,
-                        new String[] {
-                                EvendateContract.OrganizationEntry._ID,
-                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
-                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID
-                        },
+                        null,
                         EvendateContract.OrganizationEntry.COLUMN_IS_SUBSCRIBED + " = 1",
                         null,
                         null

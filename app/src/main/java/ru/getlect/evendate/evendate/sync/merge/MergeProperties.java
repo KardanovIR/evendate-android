@@ -16,7 +16,7 @@ import ru.getlect.evendate.evendate.sync.models.DataModel;
  * Created by Dmitry on 13.09.2015.
  */
 public class MergeProperties extends MergeStrategy {
-    String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+    String LOG_TAG = MergeProperties.class.getSimpleName();
     String keyToAdd;
     String KeyToDelete;
 
@@ -38,7 +38,7 @@ public class MergeProperties extends MergeStrategy {
 
         // Get list of all items
         Log.i(LOG_TAG, "update for " + ContentUri.toString());
-        Log.i(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
+        Log.v(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
         String propListToDelete = "";
         for(DataModel e : localList){
@@ -58,21 +58,21 @@ public class MergeProperties extends MergeStrategy {
         String propListToAdd = "";
         // Add new items
         for (DataModel e : cloudMap.values()) {
-            Log.i(LOG_TAG, "Scheduling insert prop: entry_id=" + e.getEntryId());
+            Log.v(LOG_TAG, "Scheduling insert props: entry_id=" + e.getEntryId());
             if(propListToAdd.isEmpty())
                 propListToAdd += (Integer.toString(e.getEntryId()));
             else
                 propListToAdd += "," + (Integer.toString(e.getEntryId()));
         }
         if(!propListToDelete.isEmpty()){
-            Log.i(LOG_TAG, "Scheduling delete props");
+            Log.i(LOG_TAG, "Scheduling delete: props = " + propListToDelete);
             batch.add(ContentProviderOperation.newDelete(Uri.parse(ContentUri.toString() + "?" + KeyToDelete + "=" + propListToDelete)).build());
         }
         if(!propListToAdd.isEmpty()){
-            Log.i(LOG_TAG, "Scheduling insert props");
+            Log.i(LOG_TAG, "Scheduling insert: props = " + propListToAdd);
             batch.add(ContentProviderOperation.newInsert(Uri.parse(ContentUri.toString() + "?" + keyToAdd + "=" + propListToAdd)).build());
         }
-        Log.i(LOG_TAG, "Merge solution ready. Applying batch update");
+        Log.v(LOG_TAG, "Merge solution ready. Applying batch update");
         try {
             mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
         }catch (Exception e){
@@ -86,6 +86,6 @@ public class MergeProperties extends MergeStrategy {
                 false);                         // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set
         // syncToNetwork=false in the line above to prevent duplicate syncs.
-        Log.i(LOG_TAG, "Batch update done");
+        Log.v(LOG_TAG, "Batch update done");
     }
 }

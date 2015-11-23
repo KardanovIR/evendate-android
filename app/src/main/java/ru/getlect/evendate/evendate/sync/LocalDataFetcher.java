@@ -90,8 +90,7 @@ public class LocalDataFetcher {
     public ArrayList<TagModel> getEventTagDataFromDB(int eventId){
         ArrayList<TagModel> resList = new ArrayList<>();
 
-        Uri uri = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_TAGS).build(); // Get all entries
+        Uri uri = EvendateContract.EventTagEntry.GetContentUri(eventId); // Get all entries
         Cursor c = mContentResolver.query(uri, null, null, null, null);
         assert c != null;
         while (c.moveToNext()){
@@ -127,7 +126,7 @@ public class LocalDataFetcher {
             if(!file.isFile())
                 continue;
             files.put(Integer.parseInt(Utils.getFileNameWithoutExtension(file.getName())), file);
-            Log.i("FILE:", file.getAbsolutePath());
+            Log.v("FILE:", file.getAbsolutePath());
         }
         return files;
     }
