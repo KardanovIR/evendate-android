@@ -43,7 +43,7 @@ public interface EvendateService {
     Call<EvendateServiceResponse> organizationDeleteSubscription(@Path("id") int subscriptionId, @Header("Authorization") String authorization);
 
     @POST("/api/events/favorites")
-    Call<EvendateServiceResponseAttr<OrganizationModel>> eventPostFavorite(@Query("event_id") int eventId, @Header("Authorization") String authorization);
+    Call<EvendateServiceResponse> eventPostFavorite(@Query("event_id") int eventId, @Header("Authorization") String authorization);
 
     @DELETE("/api/events/favorites/{id}")
     Call<EvendateServiceResponse> eventDeleteFavorite(@Path("id") int eventId, @Header("Authorization") String authorization);

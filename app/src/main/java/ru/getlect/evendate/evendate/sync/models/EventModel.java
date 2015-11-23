@@ -1,6 +1,7 @@
 package ru.getlect.evendate.evendate.sync.models;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.net.Uri;
 
 import com.google.gson.annotations.SerializedName;
@@ -8,10 +9,9 @@ import com.google.gson.annotations.SerializedName;
 import org.chalup.microorm.annotations.Column;
 
 import java.util.ArrayList;
-import java.util.Date;
 
+import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.data.EvendateContract.EventEntry;
-import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * Created by Dmitry on 13.09.2015.
@@ -37,12 +37,16 @@ public class EventModel extends DataModel {
     int organizationId;
 
     //only for displaying events from server
+    @Column(EvendateContract.OrganizationEntry.COLUMN_NAME)
     @SerializedName("organization_name")
     String organizationName;
+    @Column(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME)
     @SerializedName("organization_type_name")
     String organizationTypeName;
+    @Column(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)
     @SerializedName("organization_short_name")
     String organizationShortName;
+    @Column(EvendateContract.OrganizationEntry.COLUMN_LOGO_URL)
     @SerializedName("organization_img_url")
     String organizationLogoUrl;
 
@@ -156,6 +160,65 @@ public class EventModel extends DataModel {
         return title;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public String getDetailInfoUrl() {
+        return detailInfoUrl;
+    }
+
+    public int getLikedUsersCount() {
+        return likedUsersCount;
+    }
+
+    public boolean isFullDay() {
+        return isFullDay;
+    }
+
+    public String getBeginTime() {
+        return beginTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public long getEndDate() {
+        return endDate;
+    }
+
+    public long getFirstDate() {
+        return firstDate;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -240,5 +303,33 @@ public class EventModel extends DataModel {
                 .withValue(EventEntry.COLUMN_END_DATE, this.endDate)
                 .withValue(EventEntry.COLUMN_UPDATED_AT, this.updatedAt)
                 .withValue(EventEntry.COLUMN_CREATED_AT, this.createdAt);
+    }
+    public ContentValues getContentValues(){
+        ContentValues contentValues =  new ContentValues();
+        contentValues.put(EvendateContract.EventEntry.COLUMN_TITLE, this.title);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_DESCRIPTION, this.description);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID, this.organizationId);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LOCATION_TEXT, this.location);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LOCATION_URI, this.locationUri);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LOCATION_JSON, this.locationObject);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LATITUDE, this.latitude);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LONGITUDE, this.longitude);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_IMAGE_VERTICAL_URL, this.imageVerticalUrl);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_IMAGE_HORIZONTAL_URL, this.imageHorizontalUrl);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_IMAGE_SQUARE_URL, this.imageSquareUrl);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL, this.detailInfoUrl);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_CAN_EDIT, this.canEdit);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_IS_FAVORITE, this.isFavorite);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_LIKED_USERS_COUNT, this.likedUsersCount);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_NOTIFICATIONS, this.notificationsSchemaJson);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_IS_FULL_DAY, this.isFullDay);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_BEGIN_TIME, this.beginTime);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_END_TIME, this.endTime);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_FIRST_DATE, this.firstDate);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_START_DATE, this.startDate);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_END_DATE, this.endDate);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_UPDATED_AT, this.updatedAt);
+        contentValues.put(EvendateContract.EventEntry.COLUMN_CREATED_AT, this.createdAt);
+        return contentValues;
     }
 }

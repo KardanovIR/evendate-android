@@ -132,7 +132,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         if(type == TypeFormat.favorites.nativeInt)
             selection = EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1";
         else if(type == TypeFormat.organizationSubscribed.nativeInt){
-            selection = EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
+            selection = EvendateContract.EventEntry.TABLE_NAME + "." +
+                            EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
         }
         switch (id) {
             case EVENT_INFO_LOADER_ID:

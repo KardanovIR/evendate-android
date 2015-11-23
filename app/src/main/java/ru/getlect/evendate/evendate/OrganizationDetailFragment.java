@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
@@ -27,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -107,7 +109,13 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
 
         mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
 
-        // Set initial state based on pref
+        //make status bar transparent
+        if (Build.VERSION.SDK_INT >= 21) {
+            // Set the status bar to dark-semi-transparentish
+            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
 
         // To over-ride the color of the FAB other then the theme color
         //fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey_300)));

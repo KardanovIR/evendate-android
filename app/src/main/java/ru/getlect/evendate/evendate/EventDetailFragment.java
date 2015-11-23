@@ -2,15 +2,22 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -23,7 +30,13 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chalup.microorm.MicroOrm;
+
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
@@ -44,6 +57,9 @@ View.OnClickListener{
    // public static final int EVENT_IMAGE_ID = 0;
     public static final int EVENT_DESCRIPTION_ID = 1;
 
+    private CoordinatorLayout mCoordinatorLayout;
+    private FloatingActionButton mFAB;
+
     private ImageView mEventImageView;
     private ImageView mOrganizationIconView;
     private ParcelFileDescriptor mParcelFileDescriptor;
@@ -61,7 +77,6 @@ View.OnClickListener{
     private TextView mParticipantCountTextView;
 
     private Uri mUri;
-    private int organizationId;
     private int eventId;
     private EventModel mEventEntry;
 
@@ -76,6 +91,8 @@ View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
         mEventDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -99,11 +116,16 @@ View.OnClickListener{
         mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
         mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
 
-        mOrganizationTextView.setOnClickListener(this);
+        mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
+        mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
+        mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
+        mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
 
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
         mOrganizationIconView.setOnClickListener(this);
         mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
+
+        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
@@ -115,6 +137,7 @@ View.OnClickListener{
             eventDetailAsyncLoader.execute();
         }
 
+        mFAB.setOnClickListener(this);
         return rootView;
     }
 
@@ -140,7 +163,13 @@ View.OnClickListener{
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()){
             case EVENT_DESCRIPTION_ID:
-                setEventInfo(data);
+                MicroOrm mOrm = new MicroOrm();
+                data.moveToFirst();
+                mEventEntry = mOrm.fromCursor(data, EventModel.class);
+                eventId = mEventEntry.getEntryId();
+                setEventInfo();
+                setFabIcon();
+                data.close();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -158,30 +187,41 @@ View.OnClickListener{
         }
     }
 
-    private void setEventInfo(Cursor data){
-        final int COLUMN_EVENT_ID = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_EVENT_ID);
-        final int COLUMN_TITLE = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE);
-        final int COLUMN_DESCRIPTION = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_DESCRIPTION);
-        final int COLUMN_LOCATION_TEXT = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_LOCATION_TEXT);
-        final int COLUMN_START_DATE = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_START_DATE);
-        final int COLUMN_BEGIN_TIME = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_BEGIN_TIME);
-        final int COLUMN_END_TIME = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_END_TIME);
-        final int COLUMN_DETAIL_INFO_URL = data.getColumnIndex(EvendateContract.EventEntry.COLUMN_DETAIL_INFO_URL);
-        final int COLUMN_ORGANIZATION_ID = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID);
-        final int COLUMN_ORGANIZATION_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_NAME);
-        final int COLUMN_ORGANIZATION_SHORT_NAME = data.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME);
-        data.moveToFirst();
-        mOrganizationTextView.setText(data.getString(COLUMN_ORGANIZATION_NAME));
-        mDescriptionTextView.setText(data.getString(COLUMN_DESCRIPTION));
-        mTitleTextView.setText(data.getString(COLUMN_TITLE));
-        mPlaceTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
+    private void setEventInfo(){
+        mOrganizationTextView.setText(mEventEntry.getOrganizationName());
+        mDescriptionTextView.setText(mEventEntry.getDescription());
+        mTitleTextView.setText(mEventEntry.getTitle());
+        mPlaceTextView.setText(mEventEntry.getLocation());
         //mTagsTextView.setText(data.getString(COLUMN_DESCRIPTION));
-        mLinkTextView.setText(data.getString(COLUMN_DETAIL_INFO_URL));
+        mLinkTextView.setText(mEventEntry.getDetailInfoUrl());
+        mParticipantCountTextView.setText(String.valueOf(mEventEntry.getLikedUsersCount()));
+        String time;
+        if(mEventEntry.isFullDay())
+            time = getResources().getString(R.string.event_all_day);
+        else{
+            //cut off seconds
+            //TODO temporary
+            time = "";
+            if(mEventEntry.getBeginTime() != null && mEventEntry.getEndTime() != null)
+                time = mEventEntry.getBeginTime().substring(0, 5) + " - " + mEventEntry.getEndTime().substring(0, 5);
+        }
+        mTimeTextView.setText(time);
+        //convert to milliseconds
+        Date date = new Date(mEventEntry.getFirstDate() * 1000L);
+        DateFormat[] formats = new DateFormat[] {
+                new SimpleDateFormat("dd", Locale.getDefault()),
+                new SimpleDateFormat("MMMM", Locale.getDefault()),
+        };
+        String day = formats[0].format(date);
+        if(day.substring(0, 1).equals("0"))
+            day = day.substring(1);
+        mDayTextView.setText(day);
+        mMonthTextView.setText(formats[1].format(date));
 
         try {
             mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("events").appendPath(data.getString(COLUMN_EVENT_ID)).build(), "r");
+                            .appendPath("images").appendPath("events").appendPath(String.valueOf(mEventEntry.getEntryId())).build(), "r");
             if(mParcelFileDescriptor == null)
                 //заглушка на случай отсутствия картинки
                 mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
@@ -197,7 +237,7 @@ View.OnClickListener{
             final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
                             .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(data.getString(COLUMN_ORGANIZATION_ID)).build(), "r");
+                            .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
             if(fileDescriptor == null)
                 mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
             else{
@@ -207,16 +247,18 @@ View.OnClickListener{
         }catch (IOException e){
             e.printStackTrace();
         }
-        organizationId = data.getInt(COLUMN_ORGANIZATION_ID);
-        data.close();
     }
 
     @Override
     public void onClick(View v) {
         if(v == mOrganizationIconView || v == mOrganizationTextView){
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
-            intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build());
+            intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(mEventEntry.getOrganizationId())).build());
             startActivity(intent);
+        }
+        if(v == mFAB) {
+            FavoriteAsyncTask favoriteAsyncTask = new FavoriteAsyncTask();
+            favoriteAsyncTask.execute();
         }
     }
     private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataModel> {
@@ -274,6 +316,63 @@ View.OnClickListener{
         }catch (IOException e){
             e.printStackTrace();
         }
-        organizationId = event.getOrganizationId();
+    }
+    private void setFabIcon(){
+        if (mEventEntry.isFavorite()) {
+            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_on));
+        } else {
+            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_off));
+        }
+    }
+    public boolean favorite(){
+        Account account = EvendateSyncAdapter.getSyncAccount(getContext());
+        String token = null;
+        try{
+            token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(token == null)
+            return false;
+
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        if(mEventEntry.isFavorite()){
+            return ServerDataFetcher.eventDeleteFavorite(evendateService, token, mEventEntry.getEntryId());
+        }
+        else{
+            return ServerDataFetcher.eventPostFavorite(evendateService, token, mEventEntry.getEntryId());
+        }
+    }
+    private class FavoriteAsyncTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork.isConnectedOrConnecting();
+            //Send the user a message to let them know change was made
+            if (!isConnected){
+                return false;
+            }
+            return favorite();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(!result){
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+            }
+            else{
+                mEventEntry.setIsFavorite(!mEventEntry.isFavorite());
+                setFabIcon();
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                ContentResolver contentResolver = getActivity().getContentResolver();
+                contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);
+                EvendateSyncAdapter.syncImmediately(getContext());
+            }
+        }
     }
 }

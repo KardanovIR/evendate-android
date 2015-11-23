@@ -132,4 +132,31 @@ public class ServerDataFetcher{
         }
         return false;
     }
+
+    public static boolean eventPostFavorite(EvendateService evendateService, String basicAuth, int eventId){
+        Call<EvendateServiceResponse> call =
+                evendateService.eventPostFavorite(eventId, basicAuth);
+        try{
+            Response<EvendateServiceResponse> response = call.execute();
+            if(response.isSuccess()){
+                return true;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static boolean eventDeleteFavorite(EvendateService evendateService, String basicAuth, int eventId){
+        Call<EvendateServiceResponse> call =
+                evendateService.eventDeleteFavorite(eventId, basicAuth);
+        try{
+            Response<EvendateServiceResponse> response = call.execute();
+            if(response.isSuccess()){
+                return true;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
