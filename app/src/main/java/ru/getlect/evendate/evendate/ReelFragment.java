@@ -276,6 +276,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     holder.mImageObserver.startWatching();
                 }
             }
+
+            //if(position % 3 == 0){
+            //    holder.mDayGroup.setVisibility(View.VISIBLE);
+            //}
         }
 
         @Override
@@ -297,6 +301,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         public void onViewRecycled(ViewHolder holder) {
             super.onViewRecycled(holder);
             holder.mFavoriteIndicator.setVisibility(View.GONE);
+            holder.mDayGroup.setVisibility(View.GONE);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -306,19 +311,21 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public TextView mDateTextView;
             public TextView mOrganizationTextView;
             public View mFavoriteIndicator;
+            public TextView mDayGroup;
             public int id;
 
             ImageObserver mImageObserver;
 
             public ViewHolder(View itemView){
                 super(itemView);
-                cardView = (android.support.v7.widget.CardView)itemView;
+                cardView = (android.support.v7.widget.CardView)itemView.findViewById(R.id.cardView);
                 mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
                 mTitleTextView = (TextView)itemView.findViewById(R.id.event_item_title);
                 mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
                 mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
                 mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-                itemView.setOnClickListener(this);
+                mDayGroup = (TextView)itemView.findViewById(R.id.event_day_group);
+                cardView.setOnClickListener(this);
             }
 
             @Override
