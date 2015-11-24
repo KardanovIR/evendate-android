@@ -16,7 +16,7 @@ import ru.getlect.evendate.evendate.sync.models.DataModel;
  * Created by Dmitry on 11.09.2015.
  */
 public class MergeSimple extends MergeStrategy {
-    String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+    String LOG_TAG = MergeSimple.class.getSimpleName();
 
     public MergeSimple(ContentResolver contentResolver){
         super(contentResolver);
@@ -33,9 +33,9 @@ public class MergeSimple extends MergeStrategy {
         }
 
         // Get list of all items
-        Log.i(LOG_TAG, "update for " + ContentUri.toString());
-        Log.i(LOG_TAG, "Fetching local entries for merge");
-        Log.i(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
+        Log.v(LOG_TAG, "update for " + ContentUri.toString());
+        Log.v(LOG_TAG, "Fetching local entries for merge");
+        Log.v(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
         for(DataModel e : localList){
             DataModel match = cloudMap.get(e.getEntryId());
@@ -44,7 +44,7 @@ public class MergeSimple extends MergeStrategy {
                 cloudMap.remove(e.getEntryId());
                 // Check to see if the entry needs to be updated
                 Uri existingUri = ContentUri.buildUpon()
-                        .appendPath(Integer.toString(e.getId())).build();
+                        .appendPath(Integer.toString(e.getEntryId())).build();
                 if (!e.equals(match)){
                     // Update existing record
                     Log.i(LOG_TAG, "Scheduling update: " + existingUri);
@@ -55,7 +55,7 @@ public class MergeSimple extends MergeStrategy {
             } else {
                 // Entry doesn't exist. Remove it from the database.
                 Uri deleteUri = ContentUri.buildUpon()
-                        .appendPath(Integer.toString(e.getId())).build();
+                        .appendPath(Integer.toString(e.getEntryId())).build();
                 Log.i(LOG_TAG, "Scheduling delete: " + deleteUri);
                 batch.add(ContentProviderOperation.newDelete(deleteUri).build());
             }
@@ -66,7 +66,7 @@ public class MergeSimple extends MergeStrategy {
             Log.i(LOG_TAG, "Scheduling insert: entry_id=" + e.getEntryId());
             batch.add(e.getInsert(ContentUri));
         }
-        Log.i(LOG_TAG, "Merge solution ready. Applying batch update");
+        Log.v(LOG_TAG, "Merge solution ready. Applying batch update");
         try {
             mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
         }catch (Exception e){
@@ -80,6 +80,6 @@ public class MergeSimple extends MergeStrategy {
                 false);                         // IMPORTANT: Do not sync to network
         // This sample doesn't support uploads, but if *your* code does, make sure you set
         // syncToNetwork=false in the line above to prevent duplicate syncs.
-        Log.i(LOG_TAG, "Batch update done");
+        Log.v(LOG_TAG, "Batch update done");
     }
 }

@@ -81,13 +81,7 @@ public class OrganizationCatalogFragment extends Fragment implements LoaderManag
                 return new CursorLoader(
                         getActivity(),
                         mUri,
-                        new String[] {
-                                EvendateContract.OrganizationEntry._ID,
-                                EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME,
-                                EvendateContract.OrganizationEntry.COLUMN_NAME,
-                                EvendateContract.OrganizationEntry.COLUMN_DESCRIPTION,
-                                EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID
-                        },
+                        null,
                         null,
                         null,
                         null

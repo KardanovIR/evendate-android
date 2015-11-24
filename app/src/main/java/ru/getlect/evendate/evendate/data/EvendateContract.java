@@ -62,8 +62,12 @@ public class EvendateContract {
 
     }
     public static final class EventTagEntry implements BaseColumns{
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTS).appendPath(PATH_TAGS).build();
+        public static Uri GetContentUri(int eventId){
+            return EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_TAGS).build();
+        }
+        public static final String QUERY_ADD_PARAMETER_NAME = "addTags";
+        public static final String QUERY_REMOVE_PARAMETER_NAME = "removeTags";
         public static final String TABLE_NAME = "events_tags";
         public static final String COLUMN_EVENT_ID = "event_id";
         public static final String COLUMN_TAG_ID = "tag_id";
@@ -128,6 +132,12 @@ public class EvendateContract {
         public static final String COLUMN_LINK = "link";
     }
     public static final class UserEventEntry implements BaseColumns{
+        public static Uri getContentUri(int eventId){
+            return EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_USERS).build();
+        }
+        public static final String QUERY_ADD_PARAMETER_NAME = "addFriends";
+        public static final String QUERY_REMOVE_PARAMETER_NAME = "removeFriends";
         public static final String TABLE_NAME = "events_users";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_EVENT_ID = "event_id";

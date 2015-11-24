@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.chalup.microorm.annotations.Column;
+
 import ru.getlect.evendate.evendate.data.EvendateContract;
 
 /**
@@ -12,19 +14,27 @@ import ru.getlect.evendate.evendate.data.EvendateContract;
  */
 public class FriendModel extends DataModel {
 
+    @Column(EvendateContract.UserEntry.COLUMN_USER_ID)
     @SerializedName("id")
     int userId;
+    @Column(EvendateContract.UserEntry.COLUMN_LAST_NAME)
     @SerializedName("last_name")
     String lastName;
+    @Column(EvendateContract.UserEntry.COLUMN_FIRST_NAME)
     @SerializedName("first_name")
     String firstName;
+    @Column(EvendateContract.UserEntry.COLUMN_MIDDLE_NAME)
     @SerializedName("middle_name")
     String middleName;
+    @Column(EvendateContract.UserEntry.COLUMN_AVATAR_URL)
     @SerializedName("avatar_url")
     String avatarUrl;
+    @Column(EvendateContract.UserEntry.COLUMN_TYPE)
     String type;
+    @Column(EvendateContract.UserEntry.COLUMN_FRIEND_UID)
     @SerializedName("friend_uid")
     String friendUid;
+    @Column(EvendateContract.UserEntry.COLUMN_LINK)
     String link;
 
     @Override
@@ -40,12 +50,12 @@ public class FriendModel extends DataModel {
         
         FriendModel tmp = (FriendModel) obj;
         return (this.lastName.equals(tmp.lastName) &&
-            this.firstName.equals(tmp.firstName) &&
-            this.middleName.equals(tmp.middleName) &&
-            this.avatarUrl.equals(tmp.avatarUrl) &&
-            this.type.equals(tmp.type) &&
-            this.friendUid.equals(tmp.friendUid) &&
-            this.link.equals(tmp.link)
+                this.firstName.equals(tmp.firstName) &&
+                (this.middleName != null ? this.middleName.equals(tmp.middleName) : tmp.middleName == null) &&
+                this.avatarUrl.equals(tmp.avatarUrl) &&
+                this.type.equals(tmp.type) &&
+                this.friendUid.equals(tmp.friendUid) &&
+                this.link.equals(tmp.link)
         );
     }
 

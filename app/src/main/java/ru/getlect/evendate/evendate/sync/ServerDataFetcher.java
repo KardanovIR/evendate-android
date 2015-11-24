@@ -13,7 +13,7 @@ import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
 import ru.getlect.evendate.evendate.sync.models.TagResponse;
 
 /**
- * Отвечает за обработку получанных данных от retrofit
+ * Отвечает за обработку полученных данных от retrofit
  * Created by Dmitry on 18.10.2015.
  */
 public class ServerDataFetcher{
@@ -36,7 +36,7 @@ public class ServerDataFetcher{
         return null;
     }
     public static ArrayList<DataModel> getTagData(EvendateService evendateService, String basicAuth){
-        Call<EvendateServiceResponseAttr<TagResponse>> call = evendateService.tagData(basicAuth);
+        Call<EvendateServiceResponseAttr<TagResponse>> call = evendateService.tagData(basicAuth, EvendateSyncAdapter.PAGE, EvendateSyncAdapter.ENTRY_LIMIT);
         try{
             Response<EvendateServiceResponseAttr<TagResponse>> response = call.execute();
             if(response.isSuccess()){
@@ -78,7 +78,7 @@ public class ServerDataFetcher{
     }
     public static ArrayList<DataModel> getEventsData(EvendateService evendateService, String basicAuth){
         Call<EvendateServiceResponseArray<EventModel>> call =
-                evendateService.eventsData(basicAuth);
+                evendateService.eventsData(basicAuth, EvendateSyncAdapter.PAGE, EvendateSyncAdapter.ENTRY_LIMIT);
         try{
             Response<EvendateServiceResponseArray<EventModel>> response = call.execute();
             if(response.isSuccess()){
@@ -93,7 +93,7 @@ public class ServerDataFetcher{
     }
     public static ArrayList<DataModel> getFriendsData(EvendateService evendateService, String basicAuth){
         Call<EvendateServiceResponseArray<FriendModel>> call =
-                evendateService.friendsData(basicAuth);
+                evendateService.friendsData(basicAuth, EvendateSyncAdapter.PAGE, EvendateSyncAdapter.ENTRY_LIMIT);
         try{
             Response<EvendateServiceResponseArray<FriendModel>> response = call.execute();
             if(response.isSuccess()){

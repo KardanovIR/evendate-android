@@ -37,7 +37,9 @@ import ru.getlect.evendate.evendate.sync.models.FriendModel;
 
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
-    // Global variables
+
+    public static final int ENTRY_LIMIT = 1000;
+    public static final int PAGE = 0;
 
     ContentResolver mContentResolver;
     Context mContext;
@@ -116,8 +118,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
             //events sync
             ArrayList<DataModel> eventList = ServerDataFetcher.getEventsData(evendateService, token);
-            localList = localDataFetcher.getEventDataFromDB();
-            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localList);
+            ArrayList<DataModel> localEventList = localDataFetcher.getEventDataFromDB();
+            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
 
             //users from events sync
             ArrayList<DataModel> localFriendList = localDataFetcher.getUserDataFromDB();
@@ -127,10 +129,13 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 cloudFriendList2.addAll(cloudFriendList);
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);
             }
-
-            //sync links between users and events
+            for(DataModel e : localEventList){
+                ((EventModel)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getEntryId()));
+                ((EventModel)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getEntryId()));
+            }
+            //sync links between users, tags and events
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
-            mergerEventProps.mergeData(null, cloudList, eventList);
+            mergerEventProps.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
 
             //images sync
             imageManager.updateOrganizationsLogos(organizationList);

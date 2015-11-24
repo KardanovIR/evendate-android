@@ -34,7 +34,7 @@ public class Utils {
     }
     public static String normalizeBitmapFormat(String format){
         format = format.toUpperCase();
-        if(format.equals("JPG"))
+        if(format.equals("JPG") || format.equals("JPE"))
             format = "JPEG";
         return format;
     }
