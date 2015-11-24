@@ -132,8 +132,10 @@ public class EvendateContract {
         public static final String COLUMN_LINK = "link";
     }
     public static final class UserEventEntry implements BaseColumns{
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_USERS).build();
+        public static Uri getContentUri(int eventId){
+            return EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_USERS).build();
+        }
         public static final String QUERY_ADD_PARAMETER_NAME = "addFriends";
         public static final String QUERY_REMOVE_PARAMETER_NAME = "removeFriends";
         public static final String TABLE_NAME = "events_users";

@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -297,38 +296,38 @@ public class EvendateProvider extends ContentProvider {
             }
             case EVENT_TAGS: {
                 //events/1/tags?addTag=tagId1,tagId2
-                String event_id = uri.getPathSegments().get(1);
+                String eventId = uri.getPathSegments().get(1);
                 String tags = uri.getQueryParameter(EvendateContract.EventTagEntry.QUERY_ADD_PARAMETER_NAME);
                 if(tags == null)
                     throw new IllegalArgumentException("no parameter " + EvendateContract.EventTagEntry.QUERY_ADD_PARAMETER_NAME);
 
                 for (String tagId: tags.split(",")) {
                     ContentValues contentValues = new ContentValues(2);
-                    contentValues.put(EvendateContract.EventTagEntry.COLUMN_EVENT_ID, event_id);
+                    contentValues.put(EvendateContract.EventTagEntry.COLUMN_EVENT_ID, eventId);
                     contentValues.put(EvendateContract.EventTagEntry.COLUMN_TAG_ID, tagId);
                     long id =  db.insert(EvendateContract.EventTagEntry.TABLE_NAME, null, contentValues);
                     if( id <= 0 )
                         throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + event_id + "/" + EvendateContract.PATH_TAGS);
+                returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + eventId + "/" + EvendateContract.PATH_TAGS);
                 break;
             }
             case EVENT_FRIENDS: {
                 //events/1/tags?addFriends=friendId1,friendId2
-                String event_id = uri.getPathSegments().get(1);
+                String eventId = uri.getPathSegments().get(1);
                 String friends = uri.getQueryParameter(EvendateContract.UserEventEntry.QUERY_ADD_PARAMETER_NAME);
                 if(friends == null)
                     throw new IllegalArgumentException("no parameter " + EvendateContract.UserEventEntry.QUERY_ADD_PARAMETER_NAME);
 
                 for (String friendId: friends.split(",")) {
                     ContentValues contentValues = new ContentValues(2);
-                    contentValues.put("event_id", event_id);
-                    contentValues.put("user_id", friendId);
+                    contentValues.put(EvendateContract.UserEventEntry.COLUMN_EVENT_ID, eventId);
+                    contentValues.put(EvendateContract.UserEventEntry.COLUMN_USER_ID, friendId);
                     long id =  db.insert(EvendateContract.UserEventEntry.TABLE_NAME, null, contentValues);
                     if( id <= 0 )
                         throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + event_id + "/" + EvendateContract.PATH_TAGS);
+                returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + eventId + "/" + EvendateContract.PATH_TAGS);
                 break;
             }
             default:

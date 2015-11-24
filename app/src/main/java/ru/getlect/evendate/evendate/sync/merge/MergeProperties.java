@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 
 /**
@@ -37,41 +36,49 @@ public class MergeProperties extends MergeStrategy {
         }
 
         // Get list of all items
-        Log.i(LOG_TAG, "update for " + ContentUri.toString());
+        Log.v(LOG_TAG, "update for " + ContentUri.toString());
         Log.v(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
         String propListToDelete = "";
-        for(DataModel e : localList){
-            DataModel match = cloudMap.get(e.getEntryId());
+        //we will try to find property that don't exist in cloud
+        for(DataModel localProp : localList){
+            DataModel match = cloudMap.get(localProp.getEntryId());
             if (match != null) {
-                // Entry exists. Remove from entry map to prevent insert later.
-                cloudMap.remove(e.getEntryId());
+                // Entry exists. We remove entry from cloud map to prevent insert
+                cloudMap.remove(localProp.getEntryId());
             } else {
-                // Entry doesn't exist. Remove it from the database.
+                // Entry doesn't exist. Let's prepare removing property
+                Log.v(LOG_TAG, "Scheduling delete props: entry_id=" + localProp.getEntryId());
                 if(propListToDelete.isEmpty())
-                    propListToDelete += (Integer.toString(e.getEntryId()));
+                    propListToDelete += (Integer.toString(localProp.getEntryId()));
                 else
-                    propListToDelete += "," + (Integer.toString(e.getEntryId()));
+                    propListToDelete += "," + (Integer.toString(localProp.getEntryId()));
             }
         }
 
         String propListToAdd = "";
-        // Add new items
-        for (DataModel e : cloudMap.values()) {
-            Log.v(LOG_TAG, "Scheduling insert props: entry_id=" + e.getEntryId());
+        // Add new properties
+        for (DataModel cloudProp : cloudMap.values()) {
+            Log.v(LOG_TAG, "Scheduling insert props: entry_id=" + cloudProp.getEntryId());
             if(propListToAdd.isEmpty())
-                propListToAdd += (Integer.toString(e.getEntryId()));
+                propListToAdd += (Integer.toString(cloudProp.getEntryId()));
             else
-                propListToAdd += "," + (Integer.toString(e.getEntryId()));
+                propListToAdd += "," + (Integer.toString(cloudProp.getEntryId()));
         }
+        //just for logging
+        boolean isChanged = false;
         if(!propListToDelete.isEmpty()){
             Log.i(LOG_TAG, "Scheduling delete: props = " + propListToDelete);
             batch.add(ContentProviderOperation.newDelete(Uri.parse(ContentUri.toString() + "?" + KeyToDelete + "=" + propListToDelete)).build());
+            isChanged = true;
         }
         if(!propListToAdd.isEmpty()){
             Log.i(LOG_TAG, "Scheduling insert: props = " + propListToAdd);
             batch.add(ContentProviderOperation.newInsert(Uri.parse(ContentUri.toString() + "?" + keyToAdd + "=" + propListToAdd)).build());
+            isChanged = true;
         }
+        if(!isChanged)
+            Log.i(LOG_TAG, "no action with props " + ContentUri);
         Log.v(LOG_TAG, "Merge solution ready. Applying batch update");
         try {
             mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);

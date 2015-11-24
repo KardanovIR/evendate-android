@@ -133,7 +133,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 ((EventModel)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getEntryId()));
                 ((EventModel)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getEntryId()));
             }
-            //sync links between users and events
+            //sync links between users, tags and events
             MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
             mergerEventProps.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
 

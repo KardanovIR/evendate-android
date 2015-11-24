@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 
@@ -17,10 +16,6 @@ import ru.getlect.evendate.evendate.sync.models.EventModel;
  */
 public class MergeEventProps extends MergeStrategy {
     String LOG_TAG = MergeEventProps.class.getSimpleName();
-    String tagKeyToAdd = "addTags";
-    String tagKeyToRemove = "removeTags";
-    String friendKeyToAdd = "addFriends";
-    String friendKeyToRemove = "removeFriends";
     MergeStrategy mMergerFriends;
     MergeStrategy mMergerTags;
 
@@ -55,20 +50,19 @@ public class MergeEventProps extends MergeStrategy {
             if (match != null) {
 
                 Log.i(LOG_TAG, "Scheduling update: " + ContentUri);
-                Uri contentUriTags = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath(Integer.toString(e.getEntryId())).appendPath(EvendateContract.PATH_TAGS).build();
-                Uri contentUriFriends = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath(Integer.toString(e.getEntryId())).appendPath(EvendateContract.PATH_USERS).build();
-                ArrayList<DataModel> tagList = new ArrayList<>();
+                Uri contentUriTags = EvendateContract.EventTagEntry.GetContentUri(e.getEntryId());
+                Uri contentUriFriends = EvendateContract.UserEventEntry.getContentUri(e.getEntryId());
+                ArrayList<DataModel> tagLocalList = new ArrayList<>();
                 ArrayList<DataModel> tagListMatch = new ArrayList<>();
-                tagList.addAll(((EventModel) e).getTagList());
+                tagLocalList.addAll(((EventModel) e).getTagList());
                 tagListMatch.addAll(((EventModel) match).getTagList());
-                mMergerTags.mergeData(contentUriTags, tagList, tagListMatch);
-                ArrayList<DataModel> friendList = new ArrayList<>();
+                mMergerTags.mergeData(contentUriTags, tagListMatch, tagLocalList);
+
+                ArrayList<DataModel> friendLocalList = new ArrayList<>();
                 ArrayList<DataModel> friendListMatch = new ArrayList<>();
-                friendList.addAll(((EventModel) e).getFriendList());
+                friendLocalList.addAll(((EventModel) e).getFriendList());
                 friendListMatch.addAll(((EventModel) match).getFriendList());
-                mMergerFriends.mergeData(contentUriFriends, friendListMatch, friendList);
+                //mMergerFriends.mergeData(contentUriFriends, friendListMatch, friendLocalList);
                 mContentResolver.notifyChange(contentUriTags, null, false);
                 mContentResolver.notifyChange(contentUriFriends, null, false);
             } else {
