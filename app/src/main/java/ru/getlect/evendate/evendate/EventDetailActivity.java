@@ -23,7 +23,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment, new EventDetailFragment());
+        fragmentTransaction.replace(R.id.fragment, new EventDetailFragment());
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_detail);
