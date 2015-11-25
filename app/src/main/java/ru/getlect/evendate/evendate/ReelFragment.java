@@ -33,9 +33,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.chalup.microorm.MicroOrm;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
@@ -163,7 +170,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 //
         switch (loader.getId()) {
             case EVENT_INFO_LOADER_ID:
-                mAdapter.setCursor(cursor);
+                ArrayList<EventModel> eventArrayList = new ArrayList<>();
+                MicroOrm mOrm = new MicroOrm();
+                List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
+                eventArrayList.addAll(eventList);
+                mAdapter.setEventList(eventArrayList);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -185,7 +196,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
 
         Context mContext;
-        Cursor mCursor;
+        //Cursor mCursor;
         private ArrayList<EventModel> mEventList;
 
         public RVAdapter(Context context){
@@ -198,7 +209,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         public void setCursor(Cursor cursor) {
-            this.mCursor = cursor;
+            //this.mCursor = cursor;
             notifyDataSetChanged();
         }
 
@@ -222,6 +233,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+            /*
             if(type != TypeFormat.organization.nativeInt){
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
@@ -254,14 +266,39 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                         e.printStackTrace();
                     }
                 }
-            }
+            }*/
+            if(mEventList == null)
+                return;
+            EventModel eventEntry = mEventList.get(position);
+            holder.id = eventEntry.getEntryId();
+            holder.mTitleTextView.setText(eventEntry.getTitle());
+            holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
+            holder.mEventImageView.setImageBitmap(null);
+
+            String time;
+            if(eventEntry.isFullDay())
+                time = getResources().getString(R.string.event_all_day);
             else{
-                if(mEventList == null)
-                    return;
-                EventModel eventEntry = mEventList.get(position);
-                holder.id = eventEntry.getEntryId();
-                holder.mTitleTextView.setText(eventEntry.getTitle());
-                holder.mEventImageView.setImageBitmap(null);
+                //cut off seconds
+                //TODO temporary
+                time = "";
+                if(eventEntry.getBeginTime() != null && eventEntry.getEndTime() != null)
+                    time = eventEntry.getBeginTime().substring(0, 5) + " - " + eventEntry.getEndTime().substring(0, 5);
+            }
+            //convert to milliseconds
+            Date date = new Date(eventEntry.getFirstDate() * 1000L);
+            DateFormat[] formats = new DateFormat[] {
+                    new SimpleDateFormat("dd", Locale.getDefault()),
+                    new SimpleDateFormat("MMMM", Locale.getDefault()),
+            };
+            String day = formats[0].format(date);
+            if(day.substring(0, 1).equals("0"))
+                day = day.substring(1);
+            String dateString = day + " " + formats[1].format(date) + " " + time;
+            holder.mDateTextView.setText(dateString);
+
+
+            if(type == TypeFormat.organization.nativeInt){
                 if(eventEntry.getImageHorizontalUrl() == null)
                     holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
                 else{
@@ -276,32 +313,39 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     holder.mImageObserver.startWatching();
                 }
             }
-
-            //if(position % 3 == 0){
-            //    holder.mDayGroup.setVisibility(View.VISIBLE);
-            //}
+            else{
+                try {
+                    final ParcelFileDescriptor fileDescriptor = getActivity().getContentResolver()
+                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                            .appendPath("images").appendPath("events")
+                                            .appendPath(String.valueOf(eventEntry.getEntryId())
+                                            ).build(), "r"
+                            );
+                    if(fileDescriptor == null)
+                        //заглушка на случай отсутствия картинки
+                        holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                    else {
+                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
+                        imageLoadingTask.execute(fileDescriptor);
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
         public int getItemCount() {
-            if(type != TypeFormat.organization.nativeInt){
-                if (mCursor == null) {
-                    return 0;
-                } else {
-                    return mCursor.getCount();
-                }
-            }else {
-                if(mEventList == null)
-                    return 0;
-                return mEventList.size();
-            }
+            if(mEventList == null)
+                return 0;
+            return mEventList.size();
         }
 
         @Override
         public void onViewRecycled(ViewHolder holder) {
             super.onViewRecycled(holder);
-            holder.mFavoriteIndicator.setVisibility(View.GONE);
-            holder.mDayGroup.setVisibility(View.GONE);
+            if(holder.mFavoriteIndicator != null)
+                holder.mFavoriteIndicator.setVisibility(View.GONE);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -311,20 +355,18 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public TextView mDateTextView;
             public TextView mOrganizationTextView;
             public View mFavoriteIndicator;
-            public TextView mDayGroup;
             public int id;
 
             ImageObserver mImageObserver;
 
             public ViewHolder(View itemView){
                 super(itemView);
-                cardView = (android.support.v7.widget.CardView)itemView.findViewById(R.id.cardView);
+                cardView = (android.support.v7.widget.CardView)itemView;
                 mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
                 mTitleTextView = (TextView)itemView.findViewById(R.id.event_item_title);
                 mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
                 mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
                 mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-                mDayGroup = (TextView)itemView.findViewById(R.id.event_day_group);
                 cardView.setOnClickListener(this);
             }
 

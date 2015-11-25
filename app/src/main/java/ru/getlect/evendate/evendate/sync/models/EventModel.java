@@ -176,6 +176,10 @@ public class EventModel extends DataModel {
         return organizationName;
     }
 
+    public String getOrganizationShortName() {
+        return organizationShortName;
+    }
+
     public String getLocation() {
         return location;
     }
