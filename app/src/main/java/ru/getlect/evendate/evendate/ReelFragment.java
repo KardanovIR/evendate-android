@@ -13,11 +13,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -25,6 +27,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +43,9 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,10 +54,12 @@ import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -145,10 +152,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         String selection = "";
         if(type == TypeFormat.favorites.nativeInt)
             selection = EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1";
+                    //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         else if(type == TypeFormat.organizationSubscribed.nativeInt){
             selection = EvendateContract.EventEntry.TABLE_NAME + "." +
                             EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
+                    //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         }
+        //else{
+        //    selection = EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
+        //}
         switch (id) {
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
@@ -174,6 +186,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 MicroOrm mOrm = new MicroOrm();
                 List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
                 eventArrayList.addAll(eventList);
+                setDateRange(eventArrayList);
                 mAdapter.setEventList(eventArrayList);
                 break;
             default:
@@ -187,10 +200,17 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 //
         switch (loader.getId()) {
             case EVENT_INFO_LOADER_ID:
-                mAdapter.setCursor(null);
+                mAdapter.setEventList(null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
+        }
+    }
+
+    private void setDateRange(ArrayList<EventModel> eventModels){
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
+        for(EventModel eventModel : eventModels){
+            eventModel.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(eventModel.getEntryId(), true));
         }
     }
     public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
@@ -208,10 +228,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             notifyDataSetChanged();
         }
 
-        public void setCursor(Cursor cursor) {
-            //this.mCursor = cursor;
-            notifyDataSetChanged();
-        }
+        //public void setCursor(Cursor cursor) {
+        //    //this.mCursor = cursor;
+        //    notifyDataSetChanged();
+        //}
 
         public ArrayList<EventModel> getEventList() {
             return mEventList;
@@ -233,40 +253,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            /*
-            if(type != TypeFormat.organization.nativeInt){
-                if (mCursor != null) {
-                    mCursor.moveToPosition(position);
-                    holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_EVENT_ID));
-
-                    holder.mTitleTextView.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
-                    ContentResolver contentResolver = getActivity().getContentResolver();
-                    if(mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1
-                            && type != TypeFormat.favorites.nativeInt){
-                        holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
-                    }
-                    holder.mEventImageView.setImageBitmap(null);
-                    try {
-                        final ParcelFileDescriptor fileDescriptor = contentResolver
-                                .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                                .appendPath("images").appendPath("events")
-                                                .appendPath(mCursor.getString(
-                                                                mCursor.getColumnIndex(EvendateContract.EventEntry
-                                                                        .COLUMN_EVENT_ID))
-                                                ).build(), "r"
-                                );
-                        if(fileDescriptor == null)
-                            //заглушка на случай отсутствия картинки
-                            holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-                        else {
-                            ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
-                            imageLoadingTask.execute(fileDescriptor);
-                        }
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
-            }*/
             if(mEventList == null)
                 return;
             EventModel eventEntry = mEventList.get(position);
@@ -285,17 +271,18 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 if(eventEntry.getBeginTime() != null && eventEntry.getEndTime() != null)
                     time = eventEntry.getBeginTime().substring(0, 5) + " - " + eventEntry.getEndTime().substring(0, 5);
             }
-            //convert to milliseconds
-            Date date = new Date(eventEntry.getFirstDate() * 1000L);
+            Date date = eventEntry.getActialDate();
             DateFormat[] formats = new DateFormat[] {
                     new SimpleDateFormat("dd", Locale.getDefault()),
                     new SimpleDateFormat("MMMM", Locale.getDefault()),
             };
-            String day = formats[0].format(date);
-            if(day.substring(0, 1).equals("0"))
-                day = day.substring(1);
-            String dateString = day + " " + formats[1].format(date) + " " + time;
-            holder.mDateTextView.setText(dateString);
+            if(date != null){
+                String day = formats[0].format(date);
+                if(day.substring(0, 1).equals("0"))
+                    day = day.substring(1);
+                String dateString = day + " " + formats[1].format(date) + " " + time;
+                holder.mDateTextView.setText(dateString);
+            }
 
 
             if(type == TypeFormat.organization.nativeInt){

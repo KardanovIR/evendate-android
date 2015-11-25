@@ -11,6 +11,7 @@ import org.chalup.microorm.MicroOrm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.SimpleTimeZone;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
@@ -109,6 +110,22 @@ public class LocalDataFetcher {
         assert c != null;
         while (c.moveToNext()){
             EventFriendModel entry = mMicroOrm.fromCursor(c, EventFriendModel.class);
+            resList.add(entry);
+        }
+        c.close();
+        return resList;
+    }
+    public ArrayList<String> getEventDatesDataFromDB(int eventId, boolean future){
+        ArrayList<String> resList = new ArrayList<>();
+
+        Uri uri = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_DATES).build();
+        Cursor c = mContentResolver.query(uri, null,
+                future ? "date(date) >= date('now')" : null
+                , null, "date(date) ASC");
+        assert c != null;
+        while (c.moveToNext()){
+            String entry = c.getString(c.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE));
             resList.add(entry);
         }
         c.close();

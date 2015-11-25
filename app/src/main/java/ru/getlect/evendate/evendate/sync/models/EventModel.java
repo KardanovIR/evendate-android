@@ -8,10 +8,14 @@ import com.google.gson.annotations.SerializedName;
 
 import org.chalup.microorm.annotations.Column;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.data.EvendateContract.EventEntry;
+import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * Created by Dmitry on 13.09.2015.
@@ -141,6 +145,14 @@ public class EventModel extends DataModel {
         return mFriendList;
     }
 
+    public ArrayList<String> getDataRangeList() {
+        return mDataRangeList;
+    }
+
+    public void setDataRangeList(ArrayList<String> dataRangeList) {
+        this.mDataRangeList = dataRangeList;
+    }
+
     @Override
     public int getId() {
         return super.getId();
@@ -198,6 +210,10 @@ public class EventModel extends DataModel {
 
     public int getLikedUsersCount() {
         return likedUsersCount;
+    }
+
+    public void setLikedUsersCount(int likedUsersCount) {
+        this.likedUsersCount = likedUsersCount;
     }
 
     public boolean isFullDay() {
@@ -335,5 +351,25 @@ public class EventModel extends DataModel {
         contentValues.put(EvendateContract.EventEntry.COLUMN_UPDATED_AT, this.updatedAt);
         contentValues.put(EvendateContract.EventEntry.COLUMN_CREATED_AT, this.createdAt);
         return contentValues;
+    }
+    public Date getActialDate(){
+        Calendar calendar = Calendar.getInstance();
+
+        Date dateStamp = null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+        for(String date : mDataRangeList){
+            dateStamp = Utils.formatDate(date, format);
+            if(dateStamp == null){
+                dateStamp = Utils.formatDate(date, format2);
+            }
+            if(dateStamp == null)
+                break;
+            calendar.setTime(dateStamp);
+            calendar.add(Calendar.DATE, 1);
+            if(calendar.getTime().getTime() > System.currentTimeMillis())
+                break;
+        }
+        return dateStamp;
     }
 }

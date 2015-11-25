@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity
 
     private IconObserver mIconObserver;
 
+    private boolean isRunning = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,18 +176,21 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        //TODO убрать, если уже создавалось activity
+
         /**
          * solution for issue with view pager from support library
          * http://stackoverflow.com/questions/32323570/viewpager-title-doesnt-appear-until-i-swipe-it
          */
-        mViewPager.setCurrentItem(1);
-        mViewPager.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mViewPager.setCurrentItem(0);
-            }
-        }, 100);
+        if(!isRunning){
+            mViewPager.setCurrentItem(1);
+            mViewPager.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mViewPager.setCurrentItem(0);
+                }
+            }, 100);
+            isRunning = true;
+        }
     }
 
     @Override

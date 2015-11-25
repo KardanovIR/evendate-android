@@ -1,5 +1,6 @@
 package ru.getlect.evendate.evendate.sync.merge;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
@@ -52,6 +53,7 @@ public class MergeEventProps extends MergeStrategy {
                 Log.i(LOG_TAG, "Scheduling update: " + ContentUri);
                 Uri contentUriTags = EvendateContract.EventTagEntry.GetContentUri(e.getEntryId());
                 Uri contentUriFriends = EvendateContract.UserEventEntry.getContentUri(e.getEntryId());
+                Uri contentUriDates = EvendateContract.EventDateEntry.getContentUri(e.getEntryId());
                 ArrayList<DataModel> tagLocalList = new ArrayList<>();
                 ArrayList<DataModel> tagListMatch = new ArrayList<>();
                 tagLocalList.addAll(((EventModel) e).getTagList());
@@ -63,12 +65,49 @@ public class MergeEventProps extends MergeStrategy {
                 friendLocalList.addAll(((EventModel) e).getFriendList());
                 friendListMatch.addAll(((EventModel) match).getFriendList());
                 //mMergerFriends.mergeData(contentUriFriends, friendListMatch, friendLocalList);
-                mContentResolver.notifyChange(contentUriTags, null, false);
-                mContentResolver.notifyChange(contentUriFriends, null, false);
+                mergeDates(contentUriDates, ((EventModel) match).getDataRangeList(),
+                        ((EventModel) e).getDataRangeList());
             } else {
                 Log.wtf(LOG_TAG, "WTF");
             }
         }
         Log.v(LOG_TAG, "Batch update done");
+    }
+    private void mergeDates(Uri ContentUri, ArrayList<String> cloudList, ArrayList<String> localList){
+        Log.d(LOG_TAG, "started sync date ranges");
+        ArrayList<ContentProviderOperation> batch = new ArrayList<>();
+        for (String cloudDate: cloudList) {
+            boolean found = false;
+            for (String localDate: localList) {
+                if (cloudDate.equals(localDate)) {
+                    localList.remove(localDate);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Log.d(LOG_TAG, "insert date " + cloudDate);
+                batch.add(ContentProviderOperation.newInsert(ContentUri)
+                        .withValue(EvendateContract.EventDateEntry.COLUMN_DATE, cloudDate).build());
+            }
+            else{
+                localList.remove(cloudDate);
+            }
+        }
+        for(String localDate: localList){
+            Log.d(LOG_TAG, "remove date " + localDate);
+            batch.add(ContentProviderOperation.newDelete(ContentUri.buildUpon()
+                    .appendQueryParameter("date", localDate).build()).build());
+        }try {
+            mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
+        }catch (Exception e){
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+            return;
+        }
+        mContentResolver.notifyChange(
+                ContentUri, // URI where data was modified
+                null,                           // No local observer
+                false);
     }
 }
