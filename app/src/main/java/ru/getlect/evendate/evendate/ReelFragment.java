@@ -33,15 +33,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.chalup.microorm.MicroOrm;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
@@ -138,10 +146,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         String selection = "";
         if(type == TypeFormat.favorites.nativeInt)
             selection = EvendateContract.EventEntry.COLUMN_IS_FAVORITE + " = 1";
+                    //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         else if(type == TypeFormat.organizationSubscribed.nativeInt){
             selection = EvendateContract.EventEntry.TABLE_NAME + "." +
                             EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
+                    //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         }
+        //else{
+        //    selection = EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
+        //}
         switch (id) {
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
@@ -163,7 +176,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 //
         switch (loader.getId()) {
             case EVENT_INFO_LOADER_ID:
-                mAdapter.setCursor(cursor);
+                ArrayList<EventModel> eventArrayList = new ArrayList<>();
+                MicroOrm mOrm = new MicroOrm();
+                List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
+                eventArrayList.addAll(eventList);
+                setDateRange(eventArrayList);
+                mAdapter.setEventList(eventArrayList);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -176,16 +194,23 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 //
         switch (loader.getId()) {
             case EVENT_INFO_LOADER_ID:
-                mAdapter.setCursor(null);
+                mAdapter.setEventList(null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
         }
     }
+
+    private void setDateRange(ArrayList<EventModel> eventModels){
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
+        for(EventModel eventModel : eventModels){
+            eventModel.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(eventModel.getEntryId(), true));
+        }
+    }
     public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
 
         Context mContext;
-        Cursor mCursor;
+        //Cursor mCursor;
         private ArrayList<EventModel> mEventList;
 
         public RVAdapter(Context context){
@@ -197,10 +222,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             notifyDataSetChanged();
         }
 
-        public void setCursor(Cursor cursor) {
-            this.mCursor = cursor;
-            notifyDataSetChanged();
-        }
+        //public void setCursor(Cursor cursor) {
+        //    //this.mCursor = cursor;
+        //    notifyDataSetChanged();
+        //}
 
         public ArrayList<EventModel> getEventList() {
             return mEventList;
@@ -222,46 +247,42 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if(type != TypeFormat.organization.nativeInt){
-                if (mCursor != null) {
-                    mCursor.moveToPosition(position);
-                    holder.id = mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_EVENT_ID));
-
-                    holder.mTitleTextView.setText(mCursor.getString(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_TITLE)));
-                    ContentResolver contentResolver = getActivity().getContentResolver();
-                    if(mCursor.getInt(mCursor.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1
-                            && type != TypeFormat.favorites.nativeInt){
-                        holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
-                    }
-                    holder.mEventImageView.setImageBitmap(null);
-                    try {
-                        final ParcelFileDescriptor fileDescriptor = contentResolver
-                                .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                                .appendPath("images").appendPath("events")
-                                                .appendPath(mCursor.getString(
-                                                                mCursor.getColumnIndex(EvendateContract.EventEntry
-                                                                        .COLUMN_EVENT_ID))
-                                                ).build(), "r"
-                                );
-                        if(fileDescriptor == null)
-                            //заглушка на случай отсутствия картинки
-                            holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-                        else {
-                            ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
-                            imageLoadingTask.execute(fileDescriptor);
-                        }
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
+            if(mEventList == null)
+                return;
+            EventModel eventEntry = mEventList.get(position);
+            holder.id = eventEntry.getEntryId();
+            holder.mTitleTextView.setText(eventEntry.getTitle());
+            holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
+            if(eventEntry.isFavorite() && type != TypeFormat.favorites.nativeInt){
+                holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
             }
+            holder.mEventImageView.setImageBitmap(null);
+
+            String time;
+            if(eventEntry.isFullDay())
+                time = getResources().getString(R.string.event_all_day);
             else{
-                if(mEventList == null)
-                    return;
-                EventModel eventEntry = mEventList.get(position);
-                holder.id = eventEntry.getEntryId();
-                holder.mTitleTextView.setText(eventEntry.getTitle());
-                holder.mEventImageView.setImageBitmap(null);
+                //cut off seconds
+                //TODO temporary
+                time = "";
+                if(eventEntry.getBeginTime() != null && eventEntry.getEndTime() != null)
+                    time = eventEntry.getBeginTime().substring(0, 5) + " - " + eventEntry.getEndTime().substring(0, 5);
+            }
+            Date date = eventEntry.getActialDate();
+            DateFormat[] formats = new DateFormat[] {
+                    new SimpleDateFormat("dd", Locale.getDefault()),
+                    new SimpleDateFormat("MMMM", Locale.getDefault()),
+            };
+            if(date != null){
+                String day = formats[0].format(date);
+                if(day.substring(0, 1).equals("0"))
+                    day = day.substring(1);
+                String dateString = day + " " + formats[1].format(date) + " " + time;
+                holder.mDateTextView.setText(dateString);
+            }
+
+
+            if(type == TypeFormat.organization.nativeInt){
                 if(eventEntry.getImageHorizontalUrl() == null)
                     holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
                 else{
@@ -276,27 +297,39 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     holder.mImageObserver.startWatching();
                 }
             }
+            else{
+                try {
+                    final ParcelFileDescriptor fileDescriptor = getActivity().getContentResolver()
+                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                                            .appendPath("images").appendPath("events")
+                                            .appendPath(String.valueOf(eventEntry.getEntryId())
+                                            ).build(), "r"
+                            );
+                    if(fileDescriptor == null)
+                        //заглушка на случай отсутствия картинки
+                        holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                    else {
+                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
+                        imageLoadingTask.execute(fileDescriptor);
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
         public int getItemCount() {
-            if(type != TypeFormat.organization.nativeInt){
-                if (mCursor == null) {
-                    return 0;
-                } else {
-                    return mCursor.getCount();
-                }
-            }else {
-                if(mEventList == null)
-                    return 0;
-                return mEventList.size();
-            }
+            if(mEventList == null)
+                return 0;
+            return mEventList.size();
         }
 
         @Override
         public void onViewRecycled(ViewHolder holder) {
             super.onViewRecycled(holder);
-            holder.mFavoriteIndicator.setVisibility(View.GONE);
+            if(holder.mFavoriteIndicator != null)
+                holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -318,7 +351,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
                 mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
                 mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-                itemView.setOnClickListener(this);
+                cardView.setOnClickListener(this);
             }
 
             @Override

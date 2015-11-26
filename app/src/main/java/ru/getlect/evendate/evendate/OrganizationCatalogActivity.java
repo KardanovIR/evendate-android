@@ -15,6 +15,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.organization_catalog, new OrganizationCatalogFragment());
         fragmentTransaction.commit();

@@ -27,6 +27,7 @@ public class EvendateProvider extends ContentProvider {
     private static final int EVENT_ID = 302;
     private static final int EVENT_TAGS = 303;
     private static final int EVENT_FRIENDS = 305;
+    private static final int EVENT_DATES = 306;
     private static final int USERS = 400;
     private static final int USER_ID = 401;
     private static final int EVENT_IMAGE = 501;
@@ -55,6 +56,8 @@ public class EvendateProvider extends ContentProvider {
                 EvendateContract.PATH_EVENTS + "/#/" + EvendateContract.PATH_TAGS, EVENT_TAGS);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_EVENTS + "/#/" + EvendateContract.PATH_USERS, EVENT_FRIENDS);
+        mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
+                EvendateContract.PATH_EVENTS + "/#/" + EvendateContract.PATH_DATES, EVENT_DATES);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_USERS, USERS);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
@@ -130,7 +133,7 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case EVENTS: {
-                final Cursor cursor = QueryHelper.buildEventQuery().query(
+                final Cursor cursor = QueryHelper.buildEventWithDateQuery().query(
                         mEvendateDBHelper.getReadableDatabase(),
                         QueryHelper.getEventProjection(),
                         selection,
@@ -234,8 +237,6 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case EVENT_FRIENDS: {
-
-
                 //events/1/friends
                 String[] args = {uri.getPathSegments().get(1)};
                 final Cursor cursor = QueryHelper.buildEventFriendQuery().query(
@@ -248,9 +249,58 @@ public class EvendateProvider extends ContentProvider {
                         sortOrder
                 );
                 cursor.setNotificationUri(getContext().getContentResolver(),
-                        EvendateContract.EventEntry.CONTENT_URI);
+                        EvendateContract.UserEventEntry.getContentUri(Integer.parseInt(args[0])));
                 return cursor;
             }
+            case EVENT_DATES: {
+                //events/1/dates
+                String[] args = {uri.getPathSegments().get(1)};
+                String selectionDate;
+                if(selection != null){
+                    selectionDate = selection + "AND " + EvendateContract.EventDateEntry.COLUMN_EVENT_ID + "=?";
+                }
+                else
+                    selectionDate = EvendateContract.EventDateEntry.COLUMN_EVENT_ID + "=?";
+                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
+                        EvendateContract.EventDateEntry.TABLE_NAME,
+                        projection,
+                        selectionDate,
+                        args,
+                        null,
+                        null,
+                        sortOrder
+                );
+                cursor.setNotificationUri(getContext().getContentResolver(),
+                        EvendateContract.EventDateEntry.getContentUri(Integer.parseInt(args[0])));
+                return cursor;
+            }
+            //case EVENT_WITH_PARAMS: {
+            //    //events/1/dates
+            //    //params since till future
+            //    String since = uri.getQueryParameter("since");
+            //    String till = uri.getQueryParameter("till");
+            //    String future = uri.getQueryParameter("future");
+            //    String[] args = {uri.getPathSegments().get(1)};
+            //    final Cursor cursor = QueryHelper.buildEventWithDateQuery().query(
+            //            mEvendateDBHelper.getReadableDatabase(),
+            //            QueryHelper.getEventProjection(),
+            //            EvendateContract.EventDateEntry.COLUMN_EVENT_ID + "=?" +
+            //                    (since != null ? " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + ">?" : null) +
+            //                    (till != null ? " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "<?" : null) +
+            //                    (future != null ? " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')" : null),
+            //            new String[]{
+            //                    (since != null ? since : null),
+            //                    (till != null ? till : null),
+            //                    (future != null ? future : null)
+            //            },
+            //            null,
+            //            null,
+            //            sortOrder
+            //    );
+            //    cursor.setNotificationUri(getContext().getContentResolver(),
+            //            EvendateContract.EventDateEntry.getContentUri(Integer.parseInt(args[0])));
+            //    return cursor;
+            //}
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -290,6 +340,16 @@ public class EvendateProvider extends ContentProvider {
                 long id = db.insert(EvendateContract.UserEntry.TABLE_NAME, null, values);
                 if( id > 0 )
                     returnUri = ContentUris.withAppendedId(EvendateContract.UserEntry.CONTENT_URI, id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case EVENT_DATES: {
+                String eventId = uri.getPathSegments().get(1);
+                values.put(EvendateContract.EventDateEntry.COLUMN_EVENT_ID, eventId);
+                long id = db.insert(EvendateContract.EventDateEntry.TABLE_NAME, null, values);
+                if( id > 0 )
+                    returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + eventId + "/" + EvendateContract.PATH_DATES);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -403,6 +463,21 @@ public class EvendateProvider extends ContentProvider {
                         EvendateContract.UserEntry.TABLE_NAME,
                         EvendateContract.UserEntry.COLUMN_USER_ID + "=?", args);
                 break;
+            case EVENT_DATES:{
+                //events/1/dates?date=bla_bla
+                String event_id = uri.getPathSegments().get(1);
+                String date = uri.getQueryParameter("date");
+                if(date == null)
+                    throw new IllegalArgumentException("no parameter date");
+                String[] eventsDatesArgs = {event_id, date};
+                rowsDeleted = db.delete(
+                        EvendateContract.EventDateEntry.TABLE_NAME,
+                        EvendateContract.EventDateEntry.COLUMN_EVENT_ID + "=?" + " AND " +
+                                EvendateContract.EventDateEntry.COLUMN_DATE + "=?",
+                        eventsDatesArgs
+                );
+                break;
+            }
             case EVENT_TAGS:{
                 //events/1/tags?removeTags=tagId1,tagId2
                 String event_id = uri.getPathSegments().get(1);

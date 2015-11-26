@@ -30,7 +30,8 @@ public class QueryHelper {
         return new String[]{
                 EvendateContract.EventEntry.TABLE_NAME + "." +
                         EvendateContract.EventEntry._ID,
-                EvendateContract.EventEntry.COLUMN_EVENT_ID,
+                EvendateContract.EventEntry.TABLE_NAME + "." +
+                        EvendateContract.EventEntry.COLUMN_EVENT_ID,
                 EvendateContract.EventEntry.COLUMN_TITLE,
                 EvendateContract.EventEntry.TABLE_NAME + "." +
                         EvendateContract.EventEntry.COLUMN_DESCRIPTION,
@@ -125,6 +126,24 @@ public class QueryHelper {
                 "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
         return sOrganizationWithEventQueryBuilder;
     }
+    public static SQLiteQueryBuilder buildEventWithDateQuery(){
+        final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
+                = new SQLiteQueryBuilder();
+        sOrganizationWithEventQueryBuilder.setDistinct(true);
+        sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
+                + " INNER JOIN " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                " ON " + EvendateContract.OrganizationEntry.TABLE_NAME +
+                "." + EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID +
+                " = " + EvendateContract.EventEntry.TABLE_NAME +
+                "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID
+                + " LEFT JOIN " + EvendateContract.EventDateEntry.TABLE_NAME +
+                " ON " + EvendateContract.EventDateEntry.TABLE_NAME +
+                "." + EvendateContract.EventDateEntry.COLUMN_EVENT_ID +
+                " = " + EvendateContract.EventEntry.TABLE_NAME +
+                "." + EvendateContract.EventEntry.COLUMN_EVENT_ID);
+        sOrganizationWithEventQueryBuilder.setDistinct(true);
+        return sOrganizationWithEventQueryBuilder;
+    }
 
     public static SQLiteQueryBuilder buildEventTagQuery(){
         final SQLiteQueryBuilder sTagsByEventsQueryBuilder
@@ -163,6 +182,20 @@ public class QueryHelper {
                         "." + EvendateContract.UserEventEntry.COLUMN_USER_ID
         );
         return sFriendsByEventsQueryBuilder;
+    }
+    public static SQLiteQueryBuilder buildEventDatesQuery(){
+
+        final SQLiteQueryBuilder sDatesByEventsQueryBuilder
+                = new SQLiteQueryBuilder();
+        sDatesByEventsQueryBuilder.setTables(
+                EvendateContract.EventEntry.TABLE_NAME + " INNER JOIN " +
+                        EvendateContract.EventDateEntry.TABLE_NAME +
+                        " ON " + EvendateContract.EventDateEntry.TABLE_NAME +
+                        "." + EvendateContract.EventDateEntry.COLUMN_EVENT_ID +
+                        " = " + EvendateContract.EventEntry.TABLE_NAME +
+                        "." + EvendateContract.EventEntry.COLUMN_EVENT_ID
+        );
+        return sDatesByEventsQueryBuilder;
     }
 
 }

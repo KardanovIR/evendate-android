@@ -43,6 +43,7 @@ import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
@@ -167,6 +168,7 @@ View.OnClickListener{
                 data.moveToFirst();
                 mEventEntry = mOrm.fromCursor(data, EventModel.class);
                 eventId = mEventEntry.getEntryId();
+                setDateRange();
                 setEventInfo();
                 setFabIcon();
                 data.close();
@@ -187,6 +189,10 @@ View.OnClickListener{
         }
     }
 
+    private void setDateRange(){
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
+        mEventEntry.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(mEventEntry.getEntryId(), true));
+    }
     private void setEventInfo(){
         mOrganizationTextView.setText(mEventEntry.getOrganizationName());
         mDescriptionTextView.setText(mEventEntry.getDescription());
@@ -207,16 +213,18 @@ View.OnClickListener{
         }
         mTimeTextView.setText(time);
         //convert to milliseconds
-        Date date = new Date(mEventEntry.getFirstDate() * 1000L);
+        Date date = mEventEntry.getActialDate();
         DateFormat[] formats = new DateFormat[] {
                 new SimpleDateFormat("dd", Locale.getDefault()),
                 new SimpleDateFormat("MMMM", Locale.getDefault()),
         };
-        String day = formats[0].format(date);
-        if(day.substring(0, 1).equals("0"))
-            day = day.substring(1);
-        mDayTextView.setText(day);
-        mMonthTextView.setText(formats[1].format(date));
+        if(date != null){
+            String day = formats[0].format(date);
+            if(day.substring(0, 1).equals("0"))
+                day = day.substring(1);
+            mDayTextView.setText(day);
+            mMonthTextView.setText(formats[1].format(date));
+        }
 
         if(!mEventDetailActivity.isLocal){
             try {
@@ -347,7 +355,13 @@ View.OnClickListener{
             }
             else{
                 mEventEntry.setIsFavorite(!mEventEntry.isFavorite());
+                if(mEventEntry.isFavorite())
+                    mEventEntry.setLikedUsersCount(mEventEntry.getLikedUsersCount() + 1);
+                else{
+                    mEventEntry.setLikedUsersCount(mEventEntry.getLikedUsersCount() - 1);
+                }
                 setFabIcon();
+                setEventInfo();
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_scrolling"
+    tools:showIn="@layout/fragment_organization"
     android:fitsSystemWindows="true">
     <!--<android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="73"
+                android:text="-"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="event number"
+                android:text="@string/organization_event_number"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
@@ -68,16 +68,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="10"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:id="@+id/organization_subscription_count" />
+                android:id="@+id/organization_subscription_count"
+                android:text="-" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="subscriptions"
+                android:text="@string/organization_subscribers"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="5"
+                android:text="-"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
@@ -109,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="friends"
+                android:text="@string/organization_friends"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />
@@ -136,7 +136,7 @@
         android:layout_alignParentStart="true"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:text="1 favorite event"
+        android:text="- favorite event"
         android:textColor="@color/text_primary"
         android:paddingLeft="18dp"
         android:paddingStart="18dp"

@@ -114,6 +114,10 @@ public class OrganizationModel extends DataModel {
         this.isSubscribed = isSubscribed;
     }
 
+    public void setSubscribedCount(int subscribedCount) {
+        this.subscribedCount = subscribedCount;
+    }
+
     public long getUpdatedAt() {
         return updatedAt;
     }

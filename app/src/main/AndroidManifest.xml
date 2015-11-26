@@ -24,7 +24,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
+        android:name=".EvendateApplication">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -98,8 +98,10 @@
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.getlect.evendate.evendate.MainActivity" />
         </activity>
         <activity
             android:name=".OrganizationDetailActivity"
@@ -114,6 +116,9 @@
         <activity android:name=".OrganizationCatalogActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.getlect.evendate.evendate.MainActivity" />
         </activity>
     </application>
 

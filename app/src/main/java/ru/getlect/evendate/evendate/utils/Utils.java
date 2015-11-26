@@ -53,9 +53,16 @@ public class Utils {
         return json.isNull(key) ? null : json.optInt(key, 0);
     }
 
+    /**
+     * convert string date cause api return days in such ways
+     * @param str_date
+     * @param formatter
+     * @return
+     */
     //"2015-10-26 00:00:00"
-    public static Date formatDate(String str_date){
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static Date formatDate(String str_date, SimpleDateFormat formatter){
+        if(formatter == null)
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date;
         try {
             date = formatter.parse(str_date);

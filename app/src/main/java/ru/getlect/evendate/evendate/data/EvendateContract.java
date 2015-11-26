@@ -15,6 +15,7 @@ public class EvendateContract {
     public static final String PATH_ORGANIZATIONS = "organizations";
     public static final String PATH_TAGS = "tags";
     public static final String PATH_USERS = "users";
+    public static final String PATH_DATES = "dates";
 
     public static final String PATH_EVENT_IMAGES = "images/events";
     public static final String PATH_ORGANIZATION_IMAGES = "images/organizations";
@@ -60,6 +61,15 @@ public class EvendateContract {
         public static final String COLUMN_UPDATED_AT = "updated_at";
         public static final String COLUMN_CREATED_AT = "created_at";
 
+    }
+    public static final class EventDateEntry implements BaseColumns{
+        public static Uri getContentUri(int eventId){
+            return EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_DATES).build();
+        }
+        public static final String TABLE_NAME = "events_dates";
+        public static final String COLUMN_EVENT_ID = "event_id";
+        public static final String COLUMN_DATE = "date";
     }
     public static final class EventTagEntry implements BaseColumns{
         public static Uri GetContentUri(int eventId){

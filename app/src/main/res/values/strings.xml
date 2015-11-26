@@ -1,13 +1,8 @@
 <resources>
     <string name="app_name">Evendate</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
-
-    <string name="close">Close</string>
-    <string name="open">Open</string>
+    <string name="title_activity_reel">ReelActivity</string>
+    <string name="title_activity_detail">Event</string>
+    <string name="title_activity_organization">Organization</string>
 
     <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
      <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
@@ -16,18 +11,10 @@
     <string name="title_activity_maps">Map</string>
 
     <!-- strings for sync -->
-    <string name="content_authority">ru.getlect.evendate.evendate</string>
-    <string name="account_type">ru.getlect.evendate.evendate.accounts</string>
+    <string name="content_authority" translatable="false">ru.getlect.evendate.evendate</string>
+    <string name="account_type" translatable="false">ru.getlect.evendate.evendate.accounts</string>
 
-
-
-    <string name="title_activity_reel">ReelActivity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_detail">Event</string>
-    <string name="title_activity_organization">Organization</string>
-
-    <!-- strings for navigation drawer -->
+    <!-- strings for navigation drawer and main activity -->
     <string name="calendar">Calendar</string>
     <string name="reel">My events</string>
     <string name="settings">Settings</string>
@@ -35,8 +22,23 @@
     <string name="help">Help</string>
     <string name="organizations">Organization catalog</string>
     <string name="subscriptions">Subscriptions</string>
-    <string name="feed">Feed</string>
 
+    <string name="feed">Feed</string>
+    <string name="favorite">Favorite</string>
+
+    <!-- detail event -->
+    <string name="event_participants">participants</string>
+    <string name="event_organization">Organization</string>
+    <string name="event_description">Description</string>
+    <string name="event_place">Place</string>
+    <string name="event_tags">Tags</string>
+    <string name="event_link">More</string>
+
+    <!-- detail organization -->
+    <string name="organization_event_number">events</string>
+    <string name="organization_subscribers">subscribers</string>
+    <string name="organization_friends">friends</string>
+    <string name="favorite_events">favorite events</string>
 
     <!-- strings for sign in -->
     <string name="sing_in_vk">Sing in by Vkontakte</string>

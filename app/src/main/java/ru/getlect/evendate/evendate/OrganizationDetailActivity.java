@@ -24,7 +24,7 @@ public class OrganizationDetailActivity extends AppCompatActivity {
         fragment.setArguments(args);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment, fragment);
+        fragmentTransaction.replace(R.id.fragment, fragment);
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_organization);

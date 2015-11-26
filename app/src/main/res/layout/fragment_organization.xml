@@ -36,25 +36,33 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
                 android:layout_gravity="bottom">
-                <ImageView
+                <FrameLayout
                     android:layout_width="72dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
-                    android:src="@drawable/clock"
-                    android:padding="4dp"
-                    android:id="@+id/organization_icon" />
+                    android:padding="4dp">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="72dp"
+                        android:layout_height="match_parent"
+                        app:civ_border_width="0dp"
+                        android:src="#FFFFFF"/>
+                    <ImageView
+                        android:layout_width="72dp"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:src="@drawable/clock"
+                        android:id="@+id/organization_icon" />
+                </FrameLayout>
                 <TextView
                     android:id="@+id/organization_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="6"
                     android:textColor="#fff"
                     android:layout_marginLeft="72dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:paddingRight="48dp"
                     android:text="title"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
             </FrameLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

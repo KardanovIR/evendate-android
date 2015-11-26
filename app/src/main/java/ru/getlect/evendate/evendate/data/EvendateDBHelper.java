@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import ru.getlect.evendate.evendate.data.EvendateContract.EventEntry;
+import ru.getlect.evendate.evendate.data.EvendateContract.EventDateEntry;
 import ru.getlect.evendate.evendate.data.EvendateContract.EventTagEntry;
 import ru.getlect.evendate.evendate.data.EvendateContract.OrganizationEntry;
 import ru.getlect.evendate.evendate.data.EvendateContract.TagEntry;
@@ -14,7 +15,7 @@ import ru.getlect.evendate.evendate.data.EvendateContract.UserEventEntry;
  * Created by Dmitry on 02.09.2015.
  */
 public class EvendateDBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     static final String DATABASE_NAME = "evendate.db";
     public EvendateDBHelper(Context context) {
@@ -59,6 +60,18 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
                         OrganizationEntry.TABLE_NAME + " (" + OrganizationEntry.COLUMN_ORGANIZATION_ID + ")" +
 
                         " UNIQUE (" + EventEntry.COLUMN_EVENT_ID +
+                        ") ON CONFLICT REPLACE " +
+                        " );";
+        final String SQL_CREATE_EVENTS_DATES_TABLE =
+                "CREATE TABLE " + EventDateEntry.TABLE_NAME + " (" +
+                        EventDateEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        EventDateEntry.COLUMN_EVENT_ID + " INTEGER NOT NULL, " +
+                        EventDateEntry.COLUMN_DATE + " TEXT NOT NULL, " +
+
+                        " FOREIGN KEY (" + EventDateEntry.COLUMN_EVENT_ID + ") REFERENCES " +
+                        EventEntry.TABLE_NAME + " (" + EventEntry.COLUMN_EVENT_ID + "), " +
+
+                        " UNIQUE (" + EventDateEntry.COLUMN_EVENT_ID + ", " + EventDateEntry.COLUMN_DATE +
                         ") ON CONFLICT REPLACE " +
                         " );";
         final String SQL_CREATE_EVENTS_TAGS_TABLE =
@@ -135,6 +148,7 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(SQL_CREATE_ORGANIZATIONS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_DATES_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TAGS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TAGS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
@@ -143,6 +157,7 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.EventEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.EventDateEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.EventTagEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.OrganizationEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.TagEntry.TABLE_NAME);

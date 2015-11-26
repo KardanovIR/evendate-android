@@ -112,5 +112,16 @@
         <item name="android:layout_marginTop">10dp</item>
     </style>
 
+    <style name="EventCard" parent="CardView">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+    <style name="EventCardWithGroupDate">
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:layout_marginTop">18dp</item>
+    </style>
 
 </resources>
