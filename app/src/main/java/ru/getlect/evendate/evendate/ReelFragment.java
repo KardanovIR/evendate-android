@@ -13,13 +13,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,7 +25,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,9 +40,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,7 +54,6 @@ import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModelWithEvents;
-import ru.getlect.evendate.evendate.utils.Utils;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -259,6 +253,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             holder.id = eventEntry.getEntryId();
             holder.mTitleTextView.setText(eventEntry.getTitle());
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
+            if(eventEntry.isFavorite() && type != TypeFormat.favorites.nativeInt){
+                holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
+            }
             holder.mEventImageView.setImageBitmap(null);
 
             String time;
@@ -332,7 +329,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         public void onViewRecycled(ViewHolder holder) {
             super.onViewRecycled(holder);
             if(holder.mFavoriteIndicator != null)
-                holder.mFavoriteIndicator.setVisibility(View.GONE);
+                holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

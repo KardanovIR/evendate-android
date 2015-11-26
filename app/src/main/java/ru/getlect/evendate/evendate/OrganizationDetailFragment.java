@@ -265,6 +265,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             }
             else{
                 mOrganizationModel.setIsSubscribed(!mOrganizationModel.isSubscribed());
+                int count_change = mOrganizationModel.isSubscribed() ? 1 : -1;
+                mOrganizationModel.setSubscribedCount(mOrganizationModel.getSubscribedCount() + count_change);
+                setOrganizationInfo();
                 setFabIcon();
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();

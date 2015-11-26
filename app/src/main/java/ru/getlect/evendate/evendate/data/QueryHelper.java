@@ -129,13 +129,14 @@ public class QueryHelper {
     public static SQLiteQueryBuilder buildEventWithDateQuery(){
         final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
                 = new SQLiteQueryBuilder();
+        sOrganizationWithEventQueryBuilder.setDistinct(true);
         sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
                 + " INNER JOIN " + EvendateContract.OrganizationEntry.TABLE_NAME +
                 " ON " + EvendateContract.OrganizationEntry.TABLE_NAME +
                 "." + EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID +
                 " = " + EvendateContract.EventEntry.TABLE_NAME +
                 "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID
-                + " INNER JOIN " + EvendateContract.EventDateEntry.TABLE_NAME +
+                + " LEFT JOIN " + EvendateContract.EventDateEntry.TABLE_NAME +
                 " ON " + EvendateContract.EventDateEntry.TABLE_NAME +
                 "." + EvendateContract.EventDateEntry.COLUMN_EVENT_ID +
                 " = " + EvendateContract.EventEntry.TABLE_NAME +
