@@ -47,23 +47,22 @@
             android:id="@+id/frameLayout">
 
             <TextView
+                android:id="@+id/event_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 month 10:00 - 16:00"
+                android:textSize="14sp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp" />
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Organizator"
                 android:id="@+id/event_item_organization"
                 android:textSize="14sp"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="10dp"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="14dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10 month 10:00 - 16:00"
-                android:id="@+id/event_item_date"
-                android:textSize="14sp"
-                android:layout_toEndOf="@+id/event_item_organization"
-                android:layout_toRightOf="@+id/event_item_organization"
+                android:layout_toEndOf="@+id/event_item_date"
+                android:layout_toRightOf="@+id/event_item_date"
                 android:layout_centerVertical="true" />
         </RelativeLayout>
 
