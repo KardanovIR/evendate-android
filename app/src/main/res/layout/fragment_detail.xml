@@ -42,12 +42,22 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
                 android:layout_gravity="bottom">
-                <ImageView
+                <FrameLayout
                     android:layout_width="72dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/clock"
-                    android:padding="4dp"
-                    android:id="@+id/event_organization_icon" />
+                    android:padding="4dp">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:civ_border_width="0dp"
+                        android:src="#FFFFFF"/>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:src="@drawable/clock"
+                        android:id="@+id/event_organization_icon" />
+                </FrameLayout>
                 <TextView
                     android:id="@+id/event_name"
                     android:layout_width="match_parent"

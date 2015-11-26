@@ -35,7 +35,6 @@ import org.chalup.microorm.MicroOrm;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -219,11 +218,13 @@ View.OnClickListener{
                 new SimpleDateFormat("dd", Locale.getDefault()),
                 new SimpleDateFormat("MMMM", Locale.getDefault()),
         };
-        String day = formats[0].format(date);
-        if(day.substring(0, 1).equals("0"))
-            day = day.substring(1);
-        mDayTextView.setText(day);
-        mMonthTextView.setText(formats[1].format(date));
+        if(date != null){
+            String day = formats[0].format(date);
+            if(day.substring(0, 1).equals("0"))
+                day = day.substring(1);
+            mDayTextView.setText(day);
+            mMonthTextView.setText(formats[1].format(date));
+        }
 
         if(!mEventDetailActivity.isLocal){
             try {

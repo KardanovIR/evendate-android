@@ -464,9 +464,9 @@ public class MainActivity extends AppCompatActivity
                 //case 0:
                 //    return getString(R.string.calendar);
                 case 0:
-                    return getString(R.string.reel);
-                case 1:
                     return getString(R.string.feed);
+                case 1:
+                    return getString(R.string.favorite);
                 default:
                     return null;
             }
