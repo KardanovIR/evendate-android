@@ -3,18 +3,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <!--
-        <item
-            android:checked="true"
-            android:id="@+id/calendar"
-            android:title="@string/calendar"
-            android:icon="@drawable/clock"/>
-        -->
         <item
             android:id="@+id/reel"
             android:title="@string/reel"
             android:icon="@mipmap/ic_event_black"/>
         <item
+            android:checked="true"
+            android:id="@+id/calendar"
+            android:title="@string/calendar"
+            android:icon="@drawable/clock"/>
+        <!--<item
             android:id="@+id/settings"
             android:title="@string/settings"
             android:icon="@drawable/clock"/>
@@ -25,7 +23,7 @@
         <item
             android:id="@+id/help"
             android:title="@string/help"
-            android:icon="@mipmap/ic_help_outline_black"/>
+            android:icon="@mipmap/ic_help_outline_black"/>-->
         <item
             android:id="@+id/organizations"
             android:title="@string/organizations"
@@ -33,10 +31,10 @@
     </group>
     <group android:id="@+id/temp">
         <!-- TODO temporary fields -->
-        <item
+        <!--<item
             android:id="@+id/add_event"
             android:title="Add event"
-            android:icon="@mipmap/ic_add_black"/>
+            android:icon="@mipmap/ic_add_black"/> -->
         <item
             android:id="@+id/sync"
             android:title="Sync"

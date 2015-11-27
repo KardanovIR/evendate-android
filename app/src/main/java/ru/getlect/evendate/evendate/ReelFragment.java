@@ -40,6 +40,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -83,11 +84,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public static final String TYPE = "feed";
 
     private int type = 0;
+    private Date mDate;
     public enum TypeFormat {
         feed                (0),
         favorites           (1),
         organization        (2),
-        organizationSubscribed  (3);
+        organizationSubscribed  (3),
+        calendar  (4);
 
         TypeFormat(int nativeInt) {
             this.nativeInt = nativeInt;
@@ -95,9 +98,26 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         final int nativeInt;
     }
 
+    private OnEventsDataLoadedListener mDataListener;
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
+    public static ReelFragment newInstance(int type){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        return reelFragment;
+    }
+    public static ReelFragment newInstance(int type, Date date, OnEventsDataLoadedListener listener){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        reelFragment.mDate = date;
+        reelFragment.mDataListener = listener;
+        return reelFragment;
+    }
+
+    public void setDataListener(OnEventsDataLoadedListener dataListener) {
+        this.mDataListener = dataListener;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -152,9 +172,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                             EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
                     //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         }
-        //else{
-        //    selection = EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
-        //}
+        else if(type == TypeFormat.calendar.nativeInt){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mDate);
+            calendar.add(Calendar.DATE, 1);
+            calendar.add(Calendar.SECOND, -1);
+            selection = EvendateContract.EventDateEntry.COLUMN_DATE + " BETWEEN DATETIME(" + mDate.getTime() / 1000L + ", 'unixepoch') AND DATETIME(" + calendar.getTime().getTime() / 1000L + ", 'unixepoch')";
+        }
         switch (id) {
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
@@ -182,6 +206,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 eventArrayList.addAll(eventList);
                 setDateRange(eventArrayList);
                 mAdapter.setEventList(eventArrayList);
+                if(mDataListener != null)
+                    mDataListener.onEventsDataLoaded();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -207,6 +233,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             eventModel.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(eventModel.getEntryId(), true));
         }
     }
+
+    public ArrayList<EventModel> getEventList(){
+        return mAdapter.getEventList();
+    }
+
     public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
 
         Context mContext;
@@ -393,6 +424,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         @Override
         protected void onPostExecute(DataModel dataModel) {
             mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
+            if(mDataListener != null)
+                mDataListener.onEventsDataLoaded();
         }
     }
     public void onUnsubscripted(){
@@ -504,5 +537,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
             }
         }
+    }
+
+    interface OnEventsDataLoadedListener{
+        void onEventsDataLoaded();
     }
 }

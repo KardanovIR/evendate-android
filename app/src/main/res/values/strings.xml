@@ -5,7 +5,7 @@
     <string name="title_activity_organization">Organization</string>
 
     <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
-     <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
         AIzaSyDHLxUykPATBZ8M5oG_teq0rd7Ryu7rqCQ
     </string>
     <string name="title_activity_maps">Map</string>

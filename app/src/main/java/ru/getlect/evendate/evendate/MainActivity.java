@@ -224,10 +224,6 @@ public class MainActivity extends AppCompatActivity
         menuItem.setChecked(true);
         switch (menuItem.getItemId()) {
             //TODO fragments controlling
-            //case R.id.calendar:
-            //    mViewPager.setCurrentItem(0);
-            //    drawerLayout.closeDrawers();
-            //    return true;
             case R.id.reel:
                 mViewPager.setCurrentItem(0);
                 drawerLayout.closeDrawers();
@@ -236,21 +232,27 @@ public class MainActivity extends AppCompatActivity
                 //viewPager.setCurrentItem(2);
                 drawerLayout.closeDrawers();
                 return true;
-            case R.id.feedback:
+            case R.id.calendar:{
+                Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                startActivity(intent);
+                drawerLayout.closeDrawers();
+                return true;
+            }
+           //case R.id.feedback:
 
-                drawerLayout.closeDrawers();
-                return true;
-            case R.id.help:
-                drawerLayout.closeDrawers();
-                return true;
+           //    drawerLayout.closeDrawers();
+           //    return true;
+           //case R.id.help:
+           //    drawerLayout.closeDrawers();
+           //    return true;
             case R.id.organizations:
                 Intent intentCatalog = new Intent(MainActivity.this, OrganizationCatalogActivity.class);
                 startActivity(intentCatalog);
                 return true;
-            case R.id.add_event:
-                Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
-                startActivity(intentEvent);
-                return true;
+            //case R.id.add_event:
+            //    Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
+            //    startActivity(intentEvent);
+            //    return true;
             case R.id.sync:
                 Log.w("BUTTON_SYNC", "clicked");
                 EvendateSyncAdapter.syncImmediately(this);
