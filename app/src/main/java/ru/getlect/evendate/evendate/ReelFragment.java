@@ -6,10 +6,12 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -66,6 +69,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private final static int EVENT_INFO_LOADER_ID = 0;
     private RVAdapter mAdapter;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    boolean refreshingEnabled = false;
+
 
     /**
      * The fragment argument representing the section number for this
@@ -102,16 +108,25 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
-    public static ReelFragment newInstance(int type){
+    public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing){
         ReelFragment reelFragment = new ReelFragment();
         reelFragment.type = type;
+        reelFragment.organizationId = organizationId;
+        reelFragment.refreshingEnabled = enableRefreshing;
         return reelFragment;
     }
-    public static ReelFragment newInstance(int type, Date date, OnEventsDataLoadedListener listener){
+    public static ReelFragment newInstance(int type, boolean enableRefreshing){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        reelFragment.refreshingEnabled = enableRefreshing;
+        return reelFragment;
+    }
+    public static ReelFragment newInstance(int type, Date date, OnEventsDataLoadedListener listener, boolean enableRefreshing){
         ReelFragment reelFragment = new ReelFragment();
         reelFragment.type = type;
         reelFragment.mDate = date;
         reelFragment.mDataListener = listener;
+        reelFragment.refreshingEnabled = enableRefreshing;
         return reelFragment;
     }
 
@@ -133,21 +148,30 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         Bundle args = getArguments();
         if(args != null) {
             type = args.getInt(TYPE);
-            if(type == TypeFormat.organization.nativeInt){
+            if(type == TypeFormat.organization.nativeInt || type == TypeFormat.organizationSubscribed.nativeInt)
                 organizationId = args.getInt(ORGANIZATION_ID);
-                if(!checkInternetConnection()){
-                    Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
-                }else{
-                    OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
-                    organizationAsyncLoader.execute();
-                }
-            }
-            if(type == TypeFormat.organizationSubscribed.nativeInt){
-                organizationId = args.getInt(ORGANIZATION_ID);
+
+        }
+        if(type == TypeFormat.organization.nativeInt){
+            if(!checkInternetConnection()){
+                Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
+            }else{
+                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
+                organizationAsyncLoader.execute();
             }
         }
 
-        mAdapter = new RVAdapter(getActivity());
+        mSwipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh_layout);
+        if(!refreshingEnabled)
+            mSwipeRefreshLayout.setEnabled(false);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(LOG_TAG, "request sync");
+                EvendateSyncAdapter.syncImmediately(getContext());
+            }
+        });
+            mAdapter = new RVAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
         if(type != TypeFormat.organization.nativeInt){
@@ -159,6 +183,24 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         return rootView;
     }
 
+    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(syncFinishedReceiver);
+    }
     @Override
     public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         //Log.d(TAG, "onCreateLoader: " + id);

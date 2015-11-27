@@ -41,6 +41,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int ENTRY_LIMIT = 1000;
     public static final int PAGE = 0;
 
+    public static String SYNC_FINISHED = "sync_finished";
     ContentResolver mContentResolver;
     Context mContext;
 
@@ -89,6 +90,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
+        Log.i(LOG_TAG, "SYNC_STARTED");
         AccountManager accountManager = AccountManager.get(mContext);
         ArrayList<DataModel> cloudList;
         ArrayList<DataModel> localList;
@@ -150,6 +152,10 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, "problem with getting token");
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+        }finally {
+            Log.i(LOG_TAG, "SYNC_ENDED");
+            Intent i = new Intent(SYNC_FINISHED);
+            mContext.sendBroadcast(i);
         }
     }
 

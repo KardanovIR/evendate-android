@@ -73,7 +73,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), this);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), this, false);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }

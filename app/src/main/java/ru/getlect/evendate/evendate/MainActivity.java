@@ -3,8 +3,11 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -440,15 +443,11 @@ public class MainActivity extends AppCompatActivity
                 //    return new CalendarFragment();
                 //}
                 case 0: {
-                    return new ReelFragment();
+                    return ReelFragment.newInstance(ReelFragment.TypeFormat.feed.nativeInt, true);
                 }
                 case 1: {
                     // we need only favorite events in this fragment
-                    Fragment fragment = new ReelFragment();
-                    Bundle args = new Bundle();
-                    args.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.favorites.nativeInt);
-                    fragment.setArguments(args);
-                    return fragment;
+                    return ReelFragment.newInstance(ReelFragment.TypeFormat.favorites.nativeInt, true);
                 }
                 default:
                     throw new IllegalArgumentException("invalid page number");

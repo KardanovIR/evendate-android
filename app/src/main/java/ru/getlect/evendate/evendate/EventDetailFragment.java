@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -76,6 +77,8 @@ View.OnClickListener{
     private TextView mDayTextView;
     private TextView mTimeTextView;
     private TextView mParticipantCountTextView;
+
+    private FrameLayout mLink;
 
     private Uri mUri;
     private int eventId;
@@ -139,6 +142,8 @@ View.OnClickListener{
         }
 
         mFAB.setOnClickListener(this);
+
+        mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
         return rootView;
     }
 
@@ -265,6 +270,14 @@ View.OnClickListener{
             }catch (IOException e){
                 e.printStackTrace();
             }
+        mLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openLink = new Intent(Intent.ACTION_VIEW);
+                openLink.setData(Uri.parse(mEventEntry.getDetailInfoUrl()));
+                startActivity(openLink);
+            }
+        });
     }
 
     @Override
