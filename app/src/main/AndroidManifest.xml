@@ -18,6 +18,11 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
+    <!-- permissions for google analytics -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <application
         android:name=".EvendateApplication"
@@ -119,6 +124,22 @@
         <activity android:name=".CalendarActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
+
+        <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
+             dispatching on non-Google Play devices -->
+        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false"/>
+        <meta-data
+        android:name="com.google.android.gms.analytics.globalConfigResource"
+        android:resource="@xml/analytics" />
     </application>
+
 
 </manifest>

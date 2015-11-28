@@ -2,9 +2,11 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -83,6 +85,14 @@ View.OnClickListener{
     private Uri mUri;
     private int eventId;
     private EventModel mEventEntry;
+
+    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setupImage();
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -230,7 +240,18 @@ View.OnClickListener{
             mDayTextView.setText(day);
             mMonthTextView.setText(formats[1].format(date));
         }
+        setupImage();
+        mLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openLink = new Intent(Intent.ACTION_VIEW);
+                openLink.setData(Uri.parse(mEventEntry.getDetailInfoUrl()));
+                startActivity(openLink);
+            }
+        });
+    }
 
+    private void setupImage(){
         if(!mEventDetailActivity.isLocal){
             try {
                 mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
@@ -256,28 +277,20 @@ View.OnClickListener{
             }
 
         }
-            try{
-                final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
-                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                .appendPath("images").appendPath("organizations").appendPath("logos")
-                                .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
-                if(fileDescriptor == null)
-                    mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
-                else{
-                    mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                    fileDescriptor.close();
-                }
-            }catch (IOException e){
-                e.printStackTrace();
+        try{
+            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
+                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                            .appendPath("images").appendPath("organizations").appendPath("logos")
+                            .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
+            if(fileDescriptor == null)
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+            else{
+                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
+                fileDescriptor.close();
             }
-        mLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openLink = new Intent(Intent.ACTION_VIEW);
-                openLink.setData(Uri.parse(mEventEntry.getDetailInfoUrl()));
-                startActivity(openLink);
-            }
-        });
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -382,4 +395,17 @@ View.OnClickListener{
             }
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(syncFinishedReceiver);
+    }
+
 }

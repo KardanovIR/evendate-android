@@ -177,6 +177,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
         //mFriendCountView.setText();
         //mFavoriteEventCountTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
+        setupImage();
+    }
+
+    private void setupImage(){
 
         try {
             mParcelFileDescriptor = getActivity().getContentResolver()
@@ -208,7 +212,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             e.printStackTrace();
         }
     }
-    public boolean Subscript(){
+    public boolean subscript(){
             Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;
             try{
@@ -254,7 +258,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             if (!isConnected){
                 return false;
             }
-            return Subscript();
+            return subscript();
         }
 
         @Override

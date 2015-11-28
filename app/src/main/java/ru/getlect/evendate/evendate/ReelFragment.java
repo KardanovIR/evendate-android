@@ -13,12 +13,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,7 +70,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private final static int EVENT_INFO_LOADER_ID = 0;
     private RVAdapter mAdapter;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
 
 
@@ -143,6 +145,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
+        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
         Bundle args = getArguments();
@@ -188,6 +193,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         @Override
         public void onReceive(Context context, Intent intent) {
             mSwipeRefreshLayout.setRefreshing(false);
+            mAdapter.notifyDataSetChanged();
         }
     };
 
@@ -247,6 +253,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
                 eventArrayList.addAll(eventList);
                 setDateRange(eventArrayList);
+                mProgressBar.setVisibility(View.GONE);
                 mAdapter.setEventList(eventArrayList);
                 if(mDataListener != null)
                     mDataListener.onEventsDataLoaded();
@@ -329,8 +336,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             if(eventEntry.isFavorite() && type != TypeFormat.favorites.nativeInt){
                 holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
             }
-            holder.mEventImageView.setImageBitmap(null);
+            setupTime(eventEntry, holder);
+            setupImage(eventEntry, holder);
+        }
 
+        private void setupTime(EventModel eventEntry, ViewHolder holder){
             String time;
             if(eventEntry.isFullDay())
                 time = getResources().getString(R.string.event_all_day);
@@ -353,8 +363,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 String dateString = day + " " + formats[1].format(date) + " " + time;
                 holder.mDateTextView.setText(dateString);
             }
-
-
+        }
+        private void setupImage(EventModel eventEntry, ViewHolder holder){
+            holder.mEventImageView.setImageBitmap(null);
             if(type == TypeFormat.organization.nativeInt){
                 if(eventEntry.getImageHorizontalUrl() == null)
                     holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
@@ -363,12 +374,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     imageLoader.execute(eventEntry.getImageHorizontalUrl());
                 }
 
-                if(holder.mImageObserver == null){
-                    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView,
-                            getActivity().getExternalCacheDir().toString() + "/" +
-                                    EvendateContract.PATH_EVENT_IMAGES + "/" + holder.id + ".jpg", holder.id);
-                    holder.mImageObserver.startWatching();
-                }
+                //if(holder.mImageObserver == null){
+                //    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView,
+                //            getActivity().getExternalCacheDir().toString() + "/" +
+                //                    EvendateContract.PATH_EVENT_IMAGES + "/" + holder.id + ".jpg", holder.id);
+                //    holder.mImageObserver.startWatching();
+                //}
             }
             else{
                 try {
@@ -414,7 +425,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public View mFavoriteIndicator;
             public int id;
 
-            ImageObserver mImageObserver;
+            //ImageObserver mImageObserver;
 
             public ViewHolder(View itemView){
                 super(itemView);
@@ -465,6 +476,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         protected void onPostExecute(DataModel dataModel) {
+            mProgressBar.setVisibility(View.GONE);
             mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
             if(mDataListener != null)
                 mDataListener.onEventsDataLoaded();
@@ -546,40 +558,40 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         return result;
     }
-    class ImageObserver extends FileObserver {
-        Context mContext;
-        ImageView mImageView;
-        int eventId;
-        public ImageObserver(Context context, ImageView imageView, String path, int eventId) {
-            super(path);
-            mImageView = imageView;
-            this.eventId = eventId;
-            mContext = context;
-        }
-        @Override
-        public void onEvent(int event, String path) {
-            if(event == FileObserver.CLOSE_WRITE){
-                mImageView.setImageBitmap(null);
-                try {
-                    final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
-                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                            .appendPath("images").appendPath("events")
-                                            .appendPath(String.valueOf(eventId)
-                                            ).build(), "r"
-                            );
-                    if(fileDescriptor == null)
-                        //заглушка на случай отсутствия картинки
-                        mImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
-                    else {
-                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
-                        imageLoadingTask.execute(fileDescriptor);
-                    }
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+    //class ImageObserver extends FileObserver {
+    //    Context mContext;
+    //    ImageView mImageView;
+    //    int eventId;
+    //    public ImageObserver(Context context, ImageView imageView, String path, int eventId) {
+    //        super(path);
+    //        mImageView = imageView;
+    //        this.eventId = eventId;
+    //        mContext = context;
+    //    }
+    //    @Override
+    //    public void onEvent(int event, String path) {
+    //        if(event == FileObserver.CLOSE_WRITE){
+    //            mImageView.setImageBitmap(null);
+    //            try {
+    //                final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
+    //                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+    //                                        .appendPath("images").appendPath("events")
+    //                                        .appendPath(String.valueOf(eventId)
+    //                                        ).build(), "r"
+    //                        );
+    //                if(fileDescriptor == null)
+    //                    //заглушка на случай отсутствия картинки
+    //                    mImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
+    //                else {
+    //                    ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
+    //                    imageLoadingTask.execute(fileDescriptor);
+    //                }
+    //            }catch (IOException e){
+    //                e.printStackTrace();
+    //            }
+    //        }
+    //    }
+    //}
 
     interface OnEventsDataLoadedListener{
         void onEventsDataLoaded();

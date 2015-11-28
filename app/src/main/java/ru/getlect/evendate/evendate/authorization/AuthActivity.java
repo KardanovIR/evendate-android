@@ -2,6 +2,7 @@ package ru.getlect.evendate.evendate.authorization;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -75,6 +76,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         } else {
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
         }
+        ContentResolver.addPeriodicSync(
+                EvendateSyncAdapter.getSyncAccount(this),
+                getString(R.string.content_authority),
+                Bundle.EMPTY,
+                EvendateSyncAdapter.SYNC_INTERVAL);
         EvendateSyncAdapter.syncImmediately(this);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
