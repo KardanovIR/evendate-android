@@ -185,6 +185,26 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView view, int scrollState) {
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                boolean enable = false;
+                if (mRecyclerView != null && mRecyclerView.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    // check if the top of the first item is visible
+                    boolean verticalScrollOffset = mRecyclerView.computeVerticalScrollOffset() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = verticalScrollOffset;
+                }
+                mSwipeRefreshLayout.setEnabled(enable);
+            }
+        });
         return rootView;
     }
 
