@@ -3,8 +3,11 @@ package ru.getlect.evendate.evendate;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
+import com.google.android.gms.analytics.ExceptionReporter;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.StandardExceptionParser;
 import com.google.android.gms.analytics.Tracker;
 
 /**
@@ -19,7 +22,12 @@ public class EvendateApplication extends MultiDexApplication {
         super.onCreate();
         analytics = GoogleAnalytics.getInstance(this);
         tracker = analytics.newTracker("UA-70748374-1");
-
+        //final int versionCode = BuildConfigHelper.VERSION_CODE;
+        tracker.enableAdvertisingIdCollection(true);
+        tracker.enableAutoActivityTracking(true);
+        tracker.enableExceptionReporting(true);
+        tracker.setSessionTimeout(300);
+        tracker.set("&av", BuildConfig.VERSION_NAME);
     }
 
     @Override

@@ -136,9 +136,6 @@
         <service android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false"/>
-        <meta-data
-        android:name="com.google.android.gms.analytics.globalConfigResource"
-        android:resource="@xml/analytics" />
     </application>
 
 
