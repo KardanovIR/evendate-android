@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -43,6 +46,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     private ReelFragment mReelFragment;
     private EventDecorator mEventDecorator;
     public SlidingUpPanelLayout mSlidingUpPanelLayout;
+    private Date minimumDate;
+    private ToggleButton mToggleButton;
 
     final int DATES_LOADER_ID = 0;
 
@@ -62,11 +67,40 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date(System.currentTimeMillis()));
         calendar.add(Calendar.DATE, -1);
+        minimumDate = calendar.getTime();
         mCalendarView.setMinimumDate(calendar.getTime());
         mCalendarView.addDecorator(new PrimeDayDisableDecorator());
         mCalendarView.setShowOtherDates(true);
         getLoaderManager().initLoader(DATES_LOADER_ID, null, this);
 
+        mToggleButton = (ToggleButton)rootView.findViewById(R.id.calendar_button);
+
+        mSlidingUpPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+                mToggleButton.setChecked(false);
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+                mToggleButton.setChecked(true);
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+
+            }
+
+            @Override
+            public void onPanelHidden(View panel) {
+
+            }
+        });
         return rootView;
     }
 
@@ -86,20 +120,17 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     public class EventDecorator implements DayViewDecorator {
 
         private final int color;
-        private final HashSet<CalendarDay> dates;
+        private final HashMap<CalendarDay, Boolean> dates;
 
-        public EventDecorator(Collection<CalendarDay> dates) {
-            this.color = Color.RED;
-            this.dates = new HashSet<>(dates);
-        }
-
-        public void addDate(CalendarDay calendarDay){
-            dates.add(calendarDay);
+        public EventDecorator(HashMap<CalendarDay, Boolean> dates) {
+            this.color = getResources().getColor(R.color.accent);
+            this.dates = dates;
         }
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return dates.contains(day);
+            return dates.keySet().contains(day) && dates.get(day) &&
+                    day.getDate().getTime() > minimumDate.getTime();
         }
 
         @Override
@@ -108,9 +139,28 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             view.addSpan(new DotSpan(5, color));
         }
     }
-    public void setActiveDays(ArrayList<String> datesList){
-        HashSet<CalendarDay> dates = new HashSet<>();
-        for(String dateString : datesList){
+    public class EventActiveDecorator implements DayViewDecorator {
+
+        private final HashMap<CalendarDay, Boolean> dates;
+
+        public EventActiveDecorator(HashMap<CalendarDay, Boolean> dates) {
+            this.dates = dates;
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return dates.keySet().contains(day) &&
+                    day.getDate().getTime() > minimumDate.getTime();
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setDaysDisabled(false);
+        }
+    }
+    public void setActiveDays(HashMap<String, Boolean> datesList){
+        HashMap<CalendarDay, Boolean> dates = new HashMap<>();
+        for(String dateString : datesList.keySet()){
             Date dateStamp;
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
@@ -123,10 +173,15 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(dateStamp);
-            if(!dates.contains(CalendarDay.from(calendar)))
-                dates.add(CalendarDay.from(calendar));
+            if(!dates.containsKey(CalendarDay.from(calendar)))
+                dates.put(CalendarDay.from(calendar), datesList.get(dateString));
+            else
+                if(datesList.get(dateString))
+                    dates.put(CalendarDay.from(calendar), true);
         }
 
+        EventActiveDecorator eventActiveDecorator = new EventActiveDecorator(dates);
+        mCalendarView.addDecorator(eventActiveDecorator);
         mEventDecorator = new EventDecorator(dates);
         mCalendarView.addDecorator(mEventDecorator);
     }
@@ -150,7 +205,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
                 return new CursorLoader(
                         getActivity(),
                         EvendateContract.BASE_CONTENT_URI.buildUpon().
-                                appendPath(EvendateContract.PATH_DATES).build(),
+                                appendPath(EvendateContract.PATH_DATES).appendQueryParameter("with_favorites", "1").build(),
                         null,
                         null,
                         null,
@@ -163,12 +218,14 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        ArrayList<String> list = new ArrayList<>();
+        HashMap<String, Boolean> list = new HashMap<>();
         while (data.moveToNext()){
-            list.add(data.getString(data.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE)));
+            list.put(data.getString(data.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE)),
+                    data.getInt(data.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1);
         }
         setActiveDays(list);
 
+        list.clear();
     }
 
     @Override

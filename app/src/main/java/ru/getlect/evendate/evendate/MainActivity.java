@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     private NavigationView mNavigationView;
 
+    CalendarFragment mCalendarFragment;
+
     private SubMenu mOrganizationMenu;
     private SubMenu mAccountMenu;
     private Cursor mSubscriptionCursor;

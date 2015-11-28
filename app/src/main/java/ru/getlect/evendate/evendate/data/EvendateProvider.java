@@ -34,6 +34,7 @@ public class EvendateProvider extends ContentProvider {
     private static final int ORGANIZATION_IMAGE = 502;
     private static final int ORGANIZATION_LOGO = 503;
     private static final int DATES = 601;
+    private static final int DATES_WITH_PARAMS = 602;
 
     private EvendateDBHelper mEvendateDBHelper;
     private final UriMatcher mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -164,20 +165,32 @@ public class EvendateProvider extends ContentProvider {
                 return cursor;
             }
             case DATES: {
-                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
-                        true,
-                        EvendateContract.EventDateEntry.TABLE_NAME,
-                        null,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder,
-                        null
-                );
-                cursor.setNotificationUri(getContext().getContentResolver(),
-                        EvendateContract.UserEntry.CONTENT_URI);
-                return cursor;
+
+                String with_favorite = uri.getQueryParameter("with_favorite");
+                if(with_favorite != null && !with_favorite.equals("1")){
+                    return mEvendateDBHelper.getReadableDatabase().query(
+                            true,
+                            EvendateContract.EventDateEntry.TABLE_NAME,
+                            null,
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            sortOrder,
+                            null
+                    );
+                }
+                else{
+                    return QueryHelper.buildDateWithEventQuery().query(
+                            mEvendateDBHelper.getReadableDatabase(),
+                            QueryHelper.getDateWithEventProjection(),
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            sortOrder
+                    );
+                }
             }
             case EVENT_ID: {
                 String[] args = {uri.getLastPathSegment()};
