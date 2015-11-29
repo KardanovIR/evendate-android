@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Evendate</string>
-    <string name="title_activity_reel">ReelActivity</string>
     <string name="title_activity_detail">Event</string>
     <string name="title_activity_organization">Organization</string>
 
