@@ -3,11 +3,8 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -168,12 +165,11 @@ public class MainActivity extends AppCompatActivity
         mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     mNavigationView.getMenu().clear();
                     updateAccountMenu();
                     mNavigationView.inflateMenu(R.menu.drawer_accounts);
-                }
-                else{
+                } else {
                     mNavigationView.getMenu().clear();
                     mNavigationView.inflateMenu(R.menu.drawer_actions);
                     updateSubscriptionMenu();

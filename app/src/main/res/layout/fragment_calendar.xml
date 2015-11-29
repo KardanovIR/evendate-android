@@ -21,13 +21,12 @@
         android:gravity="bottom"
         sothree:umanoPanelHeight="?attr/actionBarSize"
         sothree:umanoShadowHeight="4dp"
-        sothree:umanoDragView="@+id/dragView"
-        sothree:umanoScrollableView="@+id/recyclerView"
+        sothree:umanoDragView="@+id/dragToolbar"
         >
         <!-- MAIN CONTENT -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
             <com.prolificinteractive.materialcalendarview.MaterialCalendarView
                 android:id="@+id/calendarView"
@@ -48,25 +47,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <android.support.v7.widget.Toolbar
+            <FrameLayout
+                android:id="@+id/dragToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:titleTextColor="#fff"
                 >
                 <ToggleButton
                     android:id="@+id/calendar_button"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/toggle_expand_collapse"
+                    android:background="@drawable/toggle_calendar"
                     android:textOff="@null"
                     android:textOn="@null"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginEnd="30dp" />
-            </android.support.v7.widget.Toolbar>
+                    android:clickable="false"/>
+            </FrameLayout>
             <FrameLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"

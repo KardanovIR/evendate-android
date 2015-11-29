@@ -1,10 +1,9 @@
 package ru.getlect.evendate.evendate;
 
 import android.database.Cursor;
-import android.graphics.Color;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -26,12 +24,9 @@ import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.utils.Utils;
@@ -105,6 +100,15 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mCalendarView.setSelectedDate(new Date(System.currentTimeMillis()));
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, mCalendarView.getSelectedDate().getDate(), this, false);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
+    }
+
+    @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
         mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), this, false);
@@ -115,7 +119,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     @Override
     public void onEventsDataLoaded() {
         Log.i(LOG_TAG, "data loaded");
-        mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
     }
     public class EventDecorator implements DayViewDecorator {
 
@@ -175,9 +179,11 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             calendar.setTime(dateStamp);
             if(!dates.containsKey(CalendarDay.from(calendar)))
                 dates.put(CalendarDay.from(calendar), datesList.get(dateString));
-            else
+            else{
                 if(datesList.get(dateString))
+                    dates.remove(CalendarDay.from(calendar));
                     dates.put(CalendarDay.from(calendar), true);
+            }
         }
 
         EventActiveDecorator eventActiveDecorator = new EventActiveDecorator(dates);
@@ -220,8 +226,10 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         HashMap<String, Boolean> list = new HashMap<>();
         while (data.moveToNext()){
-            list.put(data.getString(data.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE)),
-                    data.getInt(data.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1);
+            String date = data.getString(data.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE));
+            boolean favorite = data.getInt(data.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1;
+            if(list.get(date) == null || !list.get(date))
+                list.put(date, favorite);
         }
         setActiveDays(list);
 

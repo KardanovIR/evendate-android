@@ -202,7 +202,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     // enabling or disabling the refresh layout
                     enable = verticalScrollOffset;
                 }
-                mSwipeRefreshLayout.setEnabled(enable);
+                if(refreshingEnabled)
+                    mSwipeRefreshLayout.setEnabled(enable);
             }
         });
         return rootView;
