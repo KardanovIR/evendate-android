@@ -68,8 +68,8 @@ public class Utils {
             date = formatter.parse(str_date);
             return date;
         }catch (ParseException e){
-            Log.e("format data", "error");
-            e.printStackTrace();
+            Log.w("format data", "error");
+            //e.printStackTrace();
         }
         return null;
     }

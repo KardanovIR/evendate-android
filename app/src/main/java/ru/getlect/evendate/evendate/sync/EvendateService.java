@@ -5,6 +5,7 @@ import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
@@ -74,5 +75,12 @@ public interface EvendateService {
     @DELETE("/api/events/favorites/{id}")
     Call<EvendateServiceResponse> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
+    );
+
+    @PUT("/api/users/device")
+    Call<EvendateServiceResponse> putDeviceToken(
+            @Query("device_token") String deviceToken,
+            @Query("client_type") String clientType,
+            @Header("Authorization") String authorization
     );
 }

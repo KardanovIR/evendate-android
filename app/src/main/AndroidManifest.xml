@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.getlect.evendate.evendate" >
+    package="ru.getlect.evendate.evendate">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,18 +18,26 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
+    <!-- permissions for google analytics -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- gcm_permissions -->
+    <uses-permission android:name="ru.getlect.evendate.evendate.c2dm.permission.RECEIVE" />
+
 
     <application
+        android:name=".EvendateApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".EvendateApplication">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/TransparentStatusBar" >
+            android:theme="@style/TransparentStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,25 +62,20 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".authorization.AuthActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-
-
+            android:screenOrientation="portrait"></activity>
 
         <provider
             android:name=".data.EvendateProvider"
             android:authorities="ru.getlect.evendate.evendate"
             android:exported="false"
-            android:syncable="true" >
-        </provider>
+            android:syncable="true"></provider>
 
         <service
             android:name=".authorization.EvendateAuthenticatorService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -83,7 +86,7 @@
         </service>
         <service
             android:name=".sync.EvendateSyncService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -96,8 +99,8 @@
         <activity
             android:name=".EventDetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
             android:launchMode="singleInstance"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -106,20 +109,66 @@
         <activity
             android:name=".OrganizationDetailActivity"
             android:label="@string/title_activity_organization"
-            android:parentActivityName=".MainActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.getlect.evendate.evendate.MainActivity" />
-        </activity>
-        <activity android:name=".OrganizationCatalogActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.getlect.evendate.evendate.MainActivity" />
         </activity>
+        <activity
+            android:name=".OrganizationCatalogActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.getlect.evendate.evendate.MainActivity" />
+        </activity>
+        <activity android:name=".CalendarActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
+
+        <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
+             dispatching on non-Google Play devices -->
+        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false"/>
+        
+        <!-- Google Cloud messaging -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="ru.getlect.evendate.evendate.gcm" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".gcm.EvendateGCMListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".gcm.EvendateInstanceIDListener"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".gcm.RegistrationGCMIntentService"
+            android:exported="false">
+        </service>
     </application>
+
 
 </manifest>

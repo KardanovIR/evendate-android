@@ -114,6 +114,12 @@ public class QueryHelper {
                 EvendateContract.UserEventEntry.TABLE_NAME + "." + EvendateContract.UserEventEntry.COLUMN_EVENT_ID
         };
     }
+    public static String[] getDateWithEventProjection(){
+        return new String[]{
+                EvendateContract.EventDateEntry.TABLE_NAME + "." + EvendateContract.EventDateEntry.COLUMN_DATE,
+                EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
+        };
+    }
 
     public static SQLiteQueryBuilder buildEventQuery(){
         final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
@@ -198,4 +204,15 @@ public class QueryHelper {
         return sDatesByEventsQueryBuilder;
     }
 
+    public static SQLiteQueryBuilder buildDateWithEventQuery(){
+        final SQLiteQueryBuilder sDateWithEventQueryBuilder
+                = new SQLiteQueryBuilder();
+        sDateWithEventQueryBuilder.setTables(EvendateContract.EventDateEntry.TABLE_NAME
+                + " INNER JOIN " + EvendateContract.EventEntry.TABLE_NAME +
+                " ON " + EvendateContract.EventDateEntry.TABLE_NAME +
+                "." + EvendateContract.EventDateEntry.COLUMN_EVENT_ID +
+                " = " + EvendateContract.EventEntry.TABLE_NAME +
+                "." + EvendateContract.EventEntry.COLUMN_EVENT_ID);
+        return sDateWithEventQueryBuilder;
+    }
 }

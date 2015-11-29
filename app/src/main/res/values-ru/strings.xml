@@ -26,7 +26,11 @@
     <string name="event_participants">участников</string>
     <string name="event_place">Место</string>
     <string name="event_tags">Теги</string>
-    <string name="favorite_events"></string>
+    <string name="favorite_events">избранных событий</string>
     <string name="event_description">Описание</string>
     <string name="feed">Лента</string>
+    <string name="account_already_exists">Аккаунт уже существует</string>
+    <string name="subscription_confirm">Подписка оформлена</string>
+    <string name="subscription_fail_cause_error">Произошла ошибка</string>
+    <string name="title_activity_maps">Карта</string>
 </resources>

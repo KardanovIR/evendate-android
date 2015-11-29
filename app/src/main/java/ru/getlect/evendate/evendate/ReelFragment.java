@@ -6,22 +6,25 @@ package ru.getlect.evendate.evendate;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +44,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -65,6 +70,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private final static int EVENT_INFO_LOADER_ID = 0;
     private RVAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ProgressBar mProgressBar;
+    boolean refreshingEnabled = false;
+
 
     /**
      * The fragment argument representing the section number for this
@@ -83,11 +92,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public static final String TYPE = "feed";
 
     private int type = 0;
+    private Date mDate;
     public enum TypeFormat {
         feed                (0),
         favorites           (1),
         organization        (2),
-        organizationSubscribed  (3);
+        organizationSubscribed  (3),
+        calendar  (4);
 
         TypeFormat(int nativeInt) {
             this.nativeInt = nativeInt;
@@ -95,9 +106,35 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         final int nativeInt;
     }
 
+    private OnEventsDataLoadedListener mDataListener;
 
     private Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
+    public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        reelFragment.organizationId = organizationId;
+        reelFragment.refreshingEnabled = enableRefreshing;
+        return reelFragment;
+    }
+    public static ReelFragment newInstance(int type, boolean enableRefreshing){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        reelFragment.refreshingEnabled = enableRefreshing;
+        return reelFragment;
+    }
+    public static ReelFragment newInstance(int type, Date date, OnEventsDataLoadedListener listener, boolean enableRefreshing){
+        ReelFragment reelFragment = new ReelFragment();
+        reelFragment.type = type;
+        reelFragment.mDate = date;
+        reelFragment.mDataListener = listener;
+        reelFragment.refreshingEnabled = enableRefreshing;
+        return reelFragment;
+    }
+
+    public void setDataListener(OnEventsDataLoadedListener dataListener) {
+        this.mDataListener = dataListener;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,26 +145,38 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
+        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
         Bundle args = getArguments();
         if(args != null) {
             type = args.getInt(TYPE);
-            if(type == TypeFormat.organization.nativeInt){
+            if(type == TypeFormat.organization.nativeInt || type == TypeFormat.organizationSubscribed.nativeInt)
                 organizationId = args.getInt(ORGANIZATION_ID);
-                if(!checkInternetConnection()){
-                    Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
-                }else{
-                    OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
-                    organizationAsyncLoader.execute();
-                }
-            }
-            if(type == TypeFormat.organizationSubscribed.nativeInt){
-                organizationId = args.getInt(ORGANIZATION_ID);
+
+        }
+        if(type == TypeFormat.organization.nativeInt){
+            if(!checkInternetConnection()){
+                Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
+            }else{
+                OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
+                organizationAsyncLoader.execute();
             }
         }
 
-        mAdapter = new RVAdapter(getActivity());
+        mSwipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh_layout);
+        if(!refreshingEnabled)
+            mSwipeRefreshLayout.setEnabled(false);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(LOG_TAG, "request sync");
+                EvendateSyncAdapter.syncImmediately(getContext());
+            }
+        });
+            mAdapter = new RVAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
         if(type != TypeFormat.organization.nativeInt){
@@ -136,9 +185,49 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView view, int scrollState) {
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                boolean enable = false;
+                if (mRecyclerView != null && mRecyclerView.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    // check if the top of the first item is visible
+                    boolean verticalScrollOffset = mRecyclerView.computeVerticalScrollOffset() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = verticalScrollOffset;
+                }
+                if(refreshingEnabled)
+                    mSwipeRefreshLayout.setEnabled(enable);
+            }
+        });
         return rootView;
     }
 
+    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            mAdapter.notifyDataSetChanged();
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(syncFinishedReceiver);
+    }
     @Override
     public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         //Log.d(TAG, "onCreateLoader: " + id);
@@ -152,9 +241,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                             EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID + "=" + organizationId;
                     //+ " AND " + EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
         }
-        //else{
-        //    selection = EvendateContract.EventDateEntry.COLUMN_DATE + "> date('now')";
-        //}
+        else if(type == TypeFormat.calendar.nativeInt){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mDate);
+            calendar.add(Calendar.DATE, 1);
+            calendar.add(Calendar.SECOND, -1);
+            selection = EvendateContract.EventDateEntry.COLUMN_DATE + " BETWEEN DATETIME(" + mDate.getTime() / 1000L + ", 'unixepoch') AND DATETIME(" + calendar.getTime().getTime() / 1000L + ", 'unixepoch')";
+        }
         switch (id) {
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
@@ -181,7 +274,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
                 eventArrayList.addAll(eventList);
                 setDateRange(eventArrayList);
+                mProgressBar.setVisibility(View.GONE);
                 mAdapter.setEventList(eventArrayList);
+                if(mDataListener != null)
+                    mDataListener.onEventsDataLoaded();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -207,6 +303,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             eventModel.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(eventModel.getEntryId(), true));
         }
     }
+
+    public ArrayList<EventModel> getEventList(){
+        return mAdapter.getEventList();
+    }
+
     public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>{
 
         Context mContext;
@@ -256,8 +357,11 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             if(eventEntry.isFavorite() && type != TypeFormat.favorites.nativeInt){
                 holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
             }
-            holder.mEventImageView.setImageBitmap(null);
+            setupTime(eventEntry, holder);
+            setupImage(eventEntry, holder);
+        }
 
+        private void setupTime(EventModel eventEntry, ViewHolder holder){
             String time;
             if(eventEntry.isFullDay())
                 time = getResources().getString(R.string.event_all_day);
@@ -280,8 +384,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 String dateString = day + " " + formats[1].format(date) + " " + time;
                 holder.mDateTextView.setText(dateString);
             }
-
-
+        }
+        private void setupImage(EventModel eventEntry, ViewHolder holder){
+            holder.mEventImageView.setImageBitmap(null);
             if(type == TypeFormat.organization.nativeInt){
                 if(eventEntry.getImageHorizontalUrl() == null)
                     holder.mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
@@ -290,12 +395,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                     imageLoader.execute(eventEntry.getImageHorizontalUrl());
                 }
 
-                if(holder.mImageObserver == null){
-                    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView,
-                            getActivity().getExternalCacheDir().toString() + "/" +
-                                    EvendateContract.PATH_EVENT_IMAGES + "/" + holder.id + ".jpg", holder.id);
-                    holder.mImageObserver.startWatching();
-                }
+                //if(holder.mImageObserver == null){
+                //    holder.mImageObserver = new ImageObserver(getContext(), holder.mEventImageView,
+                //            getActivity().getExternalCacheDir().toString() + "/" +
+                //                    EvendateContract.PATH_EVENT_IMAGES + "/" + holder.id + ".jpg", holder.id);
+                //    holder.mImageObserver.startWatching();
+                //}
             }
             else{
                 try {
@@ -341,7 +446,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             public View mFavoriteIndicator;
             public int id;
 
-            ImageObserver mImageObserver;
+            //ImageObserver mImageObserver;
 
             public ViewHolder(View itemView){
                 super(itemView);
@@ -392,7 +497,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @Override
         protected void onPostExecute(DataModel dataModel) {
+            mProgressBar.setVisibility(View.GONE);
             mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
+            if(mDataListener != null)
+                mDataListener.onEventsDataLoaded();
         }
     }
     public void onUnsubscripted(){
@@ -471,38 +579,42 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         return result;
     }
-    class ImageObserver extends FileObserver {
-        Context mContext;
-        ImageView mImageView;
-        int eventId;
-        public ImageObserver(Context context, ImageView imageView, String path, int eventId) {
-            super(path);
-            mImageView = imageView;
-            this.eventId = eventId;
-            mContext = context;
-        }
-        @Override
-        public void onEvent(int event, String path) {
-            if(event == FileObserver.CLOSE_WRITE){
-                mImageView.setImageBitmap(null);
-                try {
-                    final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
-                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                            .appendPath("images").appendPath("events")
-                                            .appendPath(String.valueOf(eventId)
-                                            ).build(), "r"
-                            );
-                    if(fileDescriptor == null)
-                        //заглушка на случай отсутствия картинки
-                        mImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
-                    else {
-                        ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
-                        imageLoadingTask.execute(fileDescriptor);
-                    }
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
+    //class ImageObserver extends FileObserver {
+    //    Context mContext;
+    //    ImageView mImageView;
+    //    int eventId;
+    //    public ImageObserver(Context context, ImageView imageView, String path, int eventId) {
+    //        super(path);
+    //        mImageView = imageView;
+    //        this.eventId = eventId;
+    //        mContext = context;
+    //    }
+    //    @Override
+    //    public void onEvent(int event, String path) {
+    //        if(event == FileObserver.CLOSE_WRITE){
+    //            mImageView.setImageBitmap(null);
+    //            try {
+    //                final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
+    //                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+    //                                        .appendPath("images").appendPath("events")
+    //                                        .appendPath(String.valueOf(eventId)
+    //                                        ).build(), "r"
+    //                        );
+    //                if(fileDescriptor == null)
+    //                    //заглушка на случай отсутствия картинки
+    //                    mImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
+    //                else {
+    //                    ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mImageView);
+    //                    imageLoadingTask.execute(fileDescriptor);
+    //                }
+    //            }catch (IOException e){
+    //                e.printStackTrace();
+    //            }
+    //        }
+    //    }
+    //}
+
+    interface OnEventsDataLoadedListener{
+        void onEventsDataLoaded();
     }
 }

@@ -36,11 +36,19 @@ import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.FriendModel;
 
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
-    String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+    private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
+    public static final long SYNC_INTERVAL =
+            SYNC_INTERVAL_IN_MINUTES *
+                    SECONDS_PER_MINUTE;
 
     public static final int ENTRY_LIMIT = 1000;
     public static final int PAGE = 0;
 
+    public static String SYNC_FINISHED = "sync_finished";
+    public static boolean isSyncRunning = false;
     ContentResolver mContentResolver;
     Context mContext;
 
@@ -73,7 +81,6 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
          */
         mContext = context;
         mContentResolver = context.getContentResolver();
-
     }
     /*
      * Specify the code you want to run in the sync adapter. The entire
@@ -89,6 +96,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             ContentProviderClient provider,
             SyncResult syncResult) {
 
+        Log.i(LOG_TAG, "SYNC_STARTED");
         AccountManager accountManager = AccountManager.get(mContext);
         ArrayList<DataModel> cloudList;
         ArrayList<DataModel> localList;
@@ -150,6 +158,11 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, "problem with getting token");
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+        }finally {
+            Log.i(LOG_TAG, "SYNC_ENDED");
+            Intent i = new Intent(SYNC_FINISHED);
+            mContext.sendBroadcast(i);
+            isSyncRunning = false;
         }
     }
 
@@ -158,11 +171,20 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
+        if(isSyncRunning)
+            return;
+        isSyncRunning = true;
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(getSyncAccount(context),
+        Account account = getSyncAccount(context);
+        if(account == null){
+            Log.e(LOG_TAG, "no account");
+            return;
+        }
+        ContentResolver.requestSync(account,
                 context.getString(R.string.content_authority), bundle);
+        Log.d(LOG_TAG, "Scheduled sync");
     }
     /**
      * @param context The application context
@@ -196,12 +218,11 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Since we've created an account
          */
-        //SunshineSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
 
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
          */
-        //ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
 
         /*
          * Finally, let's do a sync to get things started

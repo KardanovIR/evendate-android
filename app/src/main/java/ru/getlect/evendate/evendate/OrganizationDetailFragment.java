@@ -177,6 +177,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
         //mFriendCountView.setText();
         //mFavoriteEventCountTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
+        setupImage();
+    }
+
+    private void setupImage(){
 
         try {
             mParcelFileDescriptor = getActivity().getContentResolver()
@@ -208,7 +212,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             e.printStackTrace();
         }
     }
-    public boolean Subscript(){
+    public boolean subscript(){
             Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;
             try{
@@ -254,7 +258,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             if (!isConnected){
                 return false;
             }
-            return Subscript();
+            return subscript();
         }
 
         @Override
@@ -304,22 +308,15 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     }
     public void addReel(){
 
-        Bundle reelArgs = new Bundle();
-        if(mOrganizationModel.isSubscribed()){
-            reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organizationSubscribed.nativeInt);
-        }
-        else{
-            reelArgs.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.organization.nativeInt);
-            if(!checkInternetConnection()){
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
-                return;
-            }
-        }
-        reelArgs.putInt(ReelFragment.ORGANIZATION_ID, organizationId);
+
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
-        if(fragmentManager != null){
-            mReelFragment = new ReelFragment();
-            mReelFragment.setArguments(reelArgs);
+        if(!checkInternetConnection()){
+            Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+        }else{
+            if(mOrganizationModel.isSubscribed())
+                mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organizationSubscribed.nativeInt, organizationId, false);
+            else
+                mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
             fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
         }
     }

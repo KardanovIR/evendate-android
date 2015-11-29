@@ -39,13 +39,15 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.utils.Utils;
 
 
@@ -53,9 +55,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoaderManager.LoaderCallbacks<Cursor>{
 
+    final String LOG_TAG = MainActivity.class.getSimpleName();
+
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
     private NavigationView mNavigationView;
+
+    CalendarFragment mCalendarFragment;
 
     private SubMenu mOrganizationMenu;
     private SubMenu mAccountMenu;
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity
     private IconObserver mIconObserver;
 
     private boolean isRunning = false;
+
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 
     @Override
@@ -163,18 +171,18 @@ public class MainActivity extends AppCompatActivity
         mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     mNavigationView.getMenu().clear();
                     updateAccountMenu();
                     mNavigationView.inflateMenu(R.menu.drawer_accounts);
-                }
-                else{
+                } else {
                     mNavigationView.getMenu().clear();
                     mNavigationView.inflateMenu(R.menu.drawer_actions);
                     updateSubscriptionMenu();
                 }
             }
         });
+        checkPlayServices();
     }
 
     @Override
@@ -224,10 +232,6 @@ public class MainActivity extends AppCompatActivity
         menuItem.setChecked(true);
         switch (menuItem.getItemId()) {
             //TODO fragments controlling
-            //case R.id.calendar:
-            //    mViewPager.setCurrentItem(0);
-            //    drawerLayout.closeDrawers();
-            //    return true;
             case R.id.reel:
                 mViewPager.setCurrentItem(0);
                 drawerLayout.closeDrawers();
@@ -236,25 +240,31 @@ public class MainActivity extends AppCompatActivity
                 //viewPager.setCurrentItem(2);
                 drawerLayout.closeDrawers();
                 return true;
-            case R.id.feedback:
+            case R.id.calendar:{
+                Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                startActivity(intent);
+                drawerLayout.closeDrawers();
+                return true;
+            }
+           //case R.id.feedback:
 
-                drawerLayout.closeDrawers();
-                return true;
-            case R.id.help:
-                drawerLayout.closeDrawers();
-                return true;
+           //    drawerLayout.closeDrawers();
+           //    return true;
+           //case R.id.help:
+           //    drawerLayout.closeDrawers();
+           //    return true;
             case R.id.organizations:
                 Intent intentCatalog = new Intent(MainActivity.this, OrganizationCatalogActivity.class);
                 startActivity(intentCatalog);
                 return true;
-            case R.id.add_event:
-                Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
-                startActivity(intentEvent);
-                return true;
-            case R.id.sync:
-                Log.w("BUTTON_SYNC", "clicked");
-                EvendateSyncAdapter.syncImmediately(this);
-                return true;
+            //case R.id.add_event:
+            //    Intent intentEvent = new Intent(MainActivity.this, AddEventActivity.class);
+            //    startActivity(intentEvent);
+            //    return true;
+            //case R.id.sync:
+            //    Log.w("BUTTON_SYNC", "clicked");
+            //    EvendateSyncAdapter.syncImmediately(this);
+            //    return true;
             case R.id.nav_add_account:
                 Intent authIntent = new Intent(this, AuthActivity.class);
                 startActivity(authIntent);
@@ -438,15 +448,11 @@ public class MainActivity extends AppCompatActivity
                 //    return new CalendarFragment();
                 //}
                 case 0: {
-                    return new ReelFragment();
+                    return ReelFragment.newInstance(ReelFragment.TypeFormat.feed.nativeInt, true);
                 }
                 case 1: {
                     // we need only favorite events in this fragment
-                    Fragment fragment = new ReelFragment();
-                    Bundle args = new Bundle();
-                    args.putInt(ReelFragment.TYPE, ReelFragment.TypeFormat.favorites.nativeInt);
-                    fragment.setArguments(args);
-                    return fragment;
+                    return ReelFragment.newInstance(ReelFragment.TypeFormat.favorites.nativeInt, true);
                 }
                 default:
                     throw new IllegalArgumentException("invalid page number");
@@ -512,5 +518,26 @@ public class MainActivity extends AppCompatActivity
                     break;
             }
         }
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
