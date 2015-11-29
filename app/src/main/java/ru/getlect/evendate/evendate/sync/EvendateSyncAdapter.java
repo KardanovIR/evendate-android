@@ -36,7 +36,7 @@ import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.FriendModel;
 
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
-    String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+    private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
 
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
@@ -177,8 +177,14 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(getSyncAccount(context),
+        Account account = getSyncAccount(context);
+        if(account == null){
+            Log.e(LOG_TAG, "no account");
+            return;
+        }
+        ContentResolver.requestSync(account,
                 context.getString(R.string.content_authority), bundle);
+        Log.d(LOG_TAG, "Scheduled sync");
     }
     /**
      * @param context The application context
@@ -212,7 +218,6 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Since we've created an account
          */
-        //SunshineSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
 
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.

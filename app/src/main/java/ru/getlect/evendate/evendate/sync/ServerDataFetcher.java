@@ -159,4 +159,17 @@ public class ServerDataFetcher{
         }
         return false;
     }
+    public static boolean putDeviceToken(EvendateService evendateService, String basicAuth, String deviceToken){
+        Call<EvendateServiceResponse> call =
+                evendateService.putDeviceToken(deviceToken, "android", basicAuth);
+        try{
+            Response<EvendateServiceResponse> response = call.execute();
+            if(response.isSuccess()){
+                return true;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -23,6 +23,9 @@
     <!-- permissions for google analytics -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- gcm_permissions -->
+    <uses-permission android:name="ru.getlect.evendate.evendate.c2dm.permission.RECEIVE" />
+
 
     <application
         android:name=".EvendateApplication"
@@ -136,6 +139,35 @@
         <service android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false"/>
+        
+        <!-- Google Cloud messaging -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="ru.getlect.evendate.evendate.gcm" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".gcm.EvendateGCMListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".gcm.EvendateInstanceIDListener"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".gcm.RegistrationGCMIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 
