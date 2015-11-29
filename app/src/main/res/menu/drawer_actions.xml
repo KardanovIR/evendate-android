@@ -29,16 +29,15 @@
             android:title="@string/organizations"
             android:icon="@drawable/clock"/>
     </group>
-    <group android:id="@+id/temp">
-        <!-- TODO temporary fields -->
-        <!--<item
+    <!-- <group android:id="@+id/temp">
+        <item
             android:id="@+id/add_event"
             android:title="Add event"
-            android:icon="@mipmap/ic_add_black"/> -->
+            android:icon="@mipmap/ic_add_black"/>
         <item
             android:id="@+id/sync"
             android:title="Sync"
             android:icon="@drawable/clock"/>
-    </group>
+    </group> -->
     <group android:id="@+id/nav_organizations"/>
 </menu>

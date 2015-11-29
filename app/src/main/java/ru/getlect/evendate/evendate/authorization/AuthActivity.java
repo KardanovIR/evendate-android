@@ -3,12 +3,14 @@ package ru.getlect.evendate.evendate.authorization;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import ru.getlect.evendate.evendate.R;
+import ru.getlect.evendate.evendate.gcm.RegistrationGCMIntentService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 /**
@@ -81,7 +83,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 getString(R.string.content_authority),
                 Bundle.EMPTY,
                 EvendateSyncAdapter.SYNC_INTERVAL);
+        ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
         EvendateSyncAdapter.syncImmediately(this);
+        // Start IntentService to register this application with GCM.
+        Intent intent = new Intent(this, RegistrationGCMIntentService.class);
+        startService(intent);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
         finish();
