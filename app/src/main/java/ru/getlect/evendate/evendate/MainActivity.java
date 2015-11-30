@@ -3,8 +3,10 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -12,7 +14,6 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.provider.Settings;
@@ -43,12 +44,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.utils.Utils;
+import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 
 
 public class MainActivity extends AppCompatActivity
@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
     private NavigationView mNavigationView;
-
-    CalendarFragment mCalendarFragment;
 
     private SubMenu mOrganizationMenu;
     private SubMenu mAccountMenu;
@@ -76,12 +74,17 @@ public class MainActivity extends AppCompatActivity
     private TabLayout mTabLayout;
     private ToggleButton mAccountToggle;
 
-    private IconObserver mIconObserver;
-
     private boolean isRunning = false;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateSubscriptionMenu();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +197,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
 
 
         /**
@@ -210,6 +214,11 @@ public class MainActivity extends AppCompatActivity
             }, 100);
             isRunning = true;
         }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(syncFinishedReceiver);
     }
 
     @Override
@@ -366,11 +375,6 @@ public class MainActivity extends AppCompatActivity
         }
         mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
         if(mSubscriptionCursor != null){
-            if(mIconObserver == null){
-                IconUpdaterHandler.init(this);
-                mIconObserver  = new IconObserver(new IconUpdaterHandler(), getExternalCacheDir().toString() + "/" + EvendateContract.PATH_ORGANIZATION_LOGOS);
-                mIconObserver.startWatching();
-            }
             mSubscriptionCursor.moveToFirst();
             while(!mSubscriptionCursor.isAfterLast()){
                 MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
@@ -391,7 +395,6 @@ public class MainActivity extends AppCompatActivity
                     else {
                         menuItem.setIcon(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
                         //add to monitoring
-                        mIconObserver.addId(mSubscriptionCursor.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
                         fileDescriptor.close();
                     }
                 }catch (IOException e){
@@ -475,47 +478,6 @@ public class MainActivity extends AppCompatActivity
                     return getString(R.string.favorite);
                 default:
                     return null;
-            }
-        }
-    }
-    class IconObserver extends FileObserver{
-        Handler mHandler;
-        ArrayList<Integer> ids;
-        public IconObserver(Handler h, String path) {
-            super(path);
-            mHandler = h;
-            ids = new ArrayList<>();
-        }
-
-        public void addId(int id){
-            ids.add(id);
-        }
-        @Override
-        public void onEvent(int event, String path) {
-            switch (event){
-                case CREATE:
-                case MODIFY:{
-                    if(ids.lastIndexOf(Integer.parseInt(Utils.getFileNameWithoutExtension(path))) != -1)
-                        //TODO эта зараза не работает. Почему хрен знает
-                        mHandler.sendEmptyMessageDelayed(IconUpdaterHandler.UPDATE_ICON, 500);
-                }
-            }
-        }
-    }
-
-    static class IconUpdaterHandler extends Handler{
-        public static final int UPDATE_ICON = 0;
-        private static MainActivity mainActivity;
-
-        public static void init(MainActivity activity){
-            mainActivity = activity;
-        }
-        public void handleMessage(android.os.Message msg) {
-            switch (msg.what) {
-                case UPDATE_ICON:
-                    if(mainActivity != null)
-                        mainActivity.updateSubscriptionMenu();
-                    break;
             }
         }
     }
