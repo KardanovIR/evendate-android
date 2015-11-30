@@ -103,7 +103,9 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     public void onResume() {
         super.onResume();
         mCalendarView.setSelectedDate(new Date(System.currentTimeMillis()));
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, mCalendarView.getSelectedDate().getDate(), this, false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt,
+                mCalendarView.getSelectedDate().getDate(), false);
+        mReelFragment.setDataListener(this);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
@@ -111,7 +113,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), this, false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), false);
+        mReelFragment.setDataListener(this);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }

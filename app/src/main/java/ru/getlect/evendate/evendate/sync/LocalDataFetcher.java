@@ -11,7 +11,6 @@ import org.chalup.microorm.MicroOrm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.SimpleTimeZone;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
@@ -41,6 +40,19 @@ public class LocalDataFetcher {
 
         Uri uri = EvendateContract.OrganizationEntry.CONTENT_URI; // Get all entries
         Cursor c = mContentResolver.query(uri, null, null, null, null);
+        assert c != null;
+        while (c.moveToNext()){
+            OrganizationModel entry = mMicroOrm.fromCursor(c, OrganizationModel.class);
+            resList.add(entry);
+        }
+        c.close();
+        return resList;
+    }
+    public ArrayList<DataModel> getOrganizationDataFromDB(String Category){
+        ArrayList<DataModel> resList = new ArrayList<>();
+
+        Uri uri = EvendateContract.OrganizationEntry.CONTENT_URI; // Get all entries
+        Cursor c = mContentResolver.query(uri, null, EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME + "= ?", new String[]{Category}, null);
         assert c != null;
         while (c.moveToNext()){
             OrganizationModel entry = mMicroOrm.fromCursor(c, OrganizationModel.class);
@@ -83,6 +95,20 @@ public class LocalDataFetcher {
         assert c != null;
         while (c.moveToNext()){
             EventModel entry = mMicroOrm.fromCursor(c, EventModel.class);
+            resList.add(entry);
+        }
+        c.close();
+        return resList;
+    }
+    public ArrayList<String> getOrganizationCategoriesDataFromDB(){
+        ArrayList<String> resList = new ArrayList<>();
+
+        Uri uri = EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
+                .appendQueryParameter("categories", "true").build();
+        Cursor c = mContentResolver.query(uri, null, null, null, null);
+        assert c != null;
+        while (c.moveToNext()){
+            String entry = c.getString(c.getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME));
             resList.add(entry);
         }
         c.close();

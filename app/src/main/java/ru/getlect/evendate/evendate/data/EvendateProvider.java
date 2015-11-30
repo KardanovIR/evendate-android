@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -109,15 +110,34 @@ public class EvendateProvider extends ContentProvider {
                         final String[] selectionArgs, final String sortOrder){
         switch(mUriMatcher.match(uri)){
             case ORGANIZATIONS: {
-                final Cursor cursor = mEvendateDBHelper.getReadableDatabase().query(
-                        EvendateContract.OrganizationEntry.TABLE_NAME,
-                        QueryHelper.getOrganizationProjection(),
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
+                String categories = uri.getQueryParameter("categories");
+                Cursor cursor;
+                if(categories == null || !categories.equals("true")){
+                    cursor = mEvendateDBHelper.getReadableDatabase().query(
+                            EvendateContract.OrganizationEntry.TABLE_NAME,
+                            QueryHelper.getOrganizationProjection(),
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            sortOrder
+                    );
+                }else{
+                    final SQLiteQueryBuilder sOrganizationCategoriesBuilder
+                            = new SQLiteQueryBuilder();
+                    sOrganizationCategoriesBuilder.setDistinct(true);
+                    sOrganizationCategoriesBuilder.setTables(EvendateContract.OrganizationEntry.TABLE_NAME);
+                    cursor = sOrganizationCategoriesBuilder.query(
+                            mEvendateDBHelper.getReadableDatabase(),
+                            new String[]{EvendateContract.OrganizationEntry.COLUMN_TYPE_NAME},
+                            selection,
+                            selectionArgs,
+                            null,
+                            null,
+                            null
+                    );
+                }
+
                 cursor.setNotificationUri(getContext().getContentResolver(),
                         EvendateContract.OrganizationEntry.CONTENT_URI);
                 return cursor;

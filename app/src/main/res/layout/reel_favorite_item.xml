@@ -6,7 +6,7 @@
     android:layout_height="224dp"
     android:id="@+id/cardView"
     style="@style/EventCard"
-    android:stateListAnimator="@anim/card_raise">>
+    android:stateListAnimator="@anim/card_raise">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

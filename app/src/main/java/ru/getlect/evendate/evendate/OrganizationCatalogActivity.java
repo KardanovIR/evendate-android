@@ -1,11 +1,16 @@
 package ru.getlect.evendate.evendate;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
+
 public class OrganizationCatalogActivity extends AppCompatActivity {
+    private android.support.v7.widget.RecyclerView mRecyclerView;
+    private OrganizationCategoryAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,9 +21,14 @@ public class OrganizationCatalogActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.organization_catalog, new OrganizationCatalogFragment());
-        fragmentTransaction.commit();
 
+        mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+
+        mAdapter = new OrganizationCategoryAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getContentResolver(), this);
+        mAdapter.setCategoryList(localDataFetcher.getOrganizationCategoriesDataFromDB());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }
