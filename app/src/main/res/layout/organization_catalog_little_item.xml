@@ -35,11 +35,24 @@
         android:textIsSelectable="false"
         android:layout_toRightOf="@+id/icon_frame"
         android:layout_toEndOf="@+id/icon_frame"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_centerVertical="true" />
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/organization_item_subs"
+        android:text="subs"
+        android:textColor="#FF000000"
+        android:textSize="14sp"
+        android:textIsSelectable="false"
+        android:layout_below="@+id/item_title"
+        android:layout_toRightOf="@+id/icon_frame"
+        android:layout_toEndOf="@+id/icon_frame"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
 
 </RelativeLayout>

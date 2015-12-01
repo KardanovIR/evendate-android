@@ -65,6 +65,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
 
+    private ArrayList<EventModel> mEventList;
+
 
     private int organizationId;
 
@@ -240,13 +242,14 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 //
         switch (loader.getId()) {
             case EVENT_INFO_LOADER_ID:
-                ArrayList<EventModel> eventArrayList = new ArrayList<>();
+                mEventList = new ArrayList<>();
                 MicroOrm mOrm = new MicroOrm();
                 List<EventModel> eventList = mOrm.listFromCursor(cursor, EventModel.class);
-                eventArrayList.addAll(eventList);
-                setDateRange(eventArrayList);
+                mEventList.addAll(eventList);
+                setDateRange(mEventList);
+                setFriends(mEventList);
                 mProgressBar.setVisibility(View.GONE);
-                mAdapter.setEventList(eventArrayList);
+                mAdapter.setEventList(mEventList);
                 if(mDataListener != null)
                     mDataListener.onEventsDataLoaded();
                 break;
@@ -272,6 +275,12 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
         for(EventModel eventModel : eventModels){
             eventModel.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(eventModel.getEntryId(), true));
+        }
+    }
+    private void setFriends(ArrayList<EventModel> eventModels){
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
+        for(EventModel eventModel : eventModels){
+            eventModel.setFriendList(localDataFetcher.getEventFriendDataFromDB(eventModel.getEntryId()));
         }
     }
 
@@ -300,7 +309,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         @Override
         protected void onPostExecute(DataModel dataModel) {
             mProgressBar.setVisibility(View.GONE);
-            mAdapter.setEventList(((OrganizationModelWithEvents) dataModel).getEvents());
+            mEventList = ((OrganizationModelWithEvents) dataModel).getEvents();
+            mAdapter.setEventList(mEventList);
             if(mDataListener != null)
                 mDataListener.onEventsDataLoaded();
         }
@@ -380,6 +390,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         }
         return result;
+    }
+
+    public ArrayList<EventModel> getEventList() {
+        return mEventList;
     }
 
     interface OnEventsDataLoadedListener{

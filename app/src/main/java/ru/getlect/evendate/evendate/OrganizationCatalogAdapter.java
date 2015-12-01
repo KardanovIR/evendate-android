@@ -53,6 +53,8 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
             OrganizationModel organizationEntry = mOrganizationList.get(position);
             holder.id = organizationEntry.getEntryId();
             holder.mTitle.setText(organizationEntry.getShortName());
+            holder.mSubCounts.setText(organizationEntry.getSubscribedCount() + " " +
+                    mContext.getResources().getString(R.string.organization_subscribers));
             setupImage(organizationEntry, holder);
         }
     }
@@ -92,14 +94,14 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
     public class OrganizationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private View mItem;
         public TextView mTitle;
-        public TextView mSubTitle;
+        public TextView mSubCounts;
         public ImageView mImageView;
         public long id;
 
         public OrganizationHolder(View itemView){
             super(itemView);
             mItem = itemView;
-            mSubTitle = (TextView)itemView.findViewById(R.id.item_subtitle);
+            mSubCounts = (TextView)itemView.findViewById(R.id.organization_item_subs);
             mTitle = (TextView)itemView.findViewById(R.id.item_title);
             mImageView = (ImageView)itemView.findViewById(R.id.organization_icon);
             this.id = (int)this.getItemId();

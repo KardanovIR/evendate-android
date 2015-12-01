@@ -3,6 +3,7 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.usage.UsageEvents;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -36,19 +37,22 @@ import org.chalup.microorm.MicroOrm;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
+import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.FriendModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class OrganizationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        View.OnClickListener{
+        View.OnClickListener, ReelFragment.OnEventsDataLoadedListener{
     private final String LOG_TAG = "OrganizationFragment";
 
     OrganizationModel mOrganizationModel;
@@ -185,7 +189,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         try {
             mParcelFileDescriptor = getActivity().getContentResolver()
                     .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
+                            .appendPath("images").appendPath("organizations")
+                            .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
             if(mParcelFileDescriptor == null)
                 //заглушка на случай отсутствия картинки
                 mOrganizationImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
@@ -308,17 +313,21 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     }
     public void addReel(){
 
-
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
-        if(!checkInternetConnection()){
-            Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
-        }else{
-            if(mOrganizationModel.isSubscribed())
-                mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organizationSubscribed.nativeInt, organizationId, false);
-            else
-                mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
-            fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
+        if(mOrganizationModel.isSubscribed()){
+            mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organizationSubscribed.nativeInt, organizationId, false);
+            mReelFragment.setDataListener(this);
         }
+        else{
+            if(!checkInternetConnection()){
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+            }
+            else{
+                mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
+                mReelFragment.setDataListener(this);
+            }
+        }
+        fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
     }
 
     private boolean checkInternetConnection(){
@@ -337,6 +346,22 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
         }
         return result;
     }
+
+    @Override
+    public void onEventsDataLoaded() {
+        mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
+        int favoriteCount = 0;
+        HashSet<Integer> friendSet = new HashSet<>();
+        for(EventModel event : mReelFragment.getEventList()){
+            favoriteCount += event.isFavorite() ? 1 : 0;
+            for(FriendModel friend : event.getFriendList())
+            friendSet.add(friend.getEntryId());
+        }
+        String favoriteEvents = favoriteCount + " " + getResources().getString(R.string.favorite_events);
+        mFavoriteEventCountTextView.setText(favoriteEvents);
+        mFriendCountView.setText(String.valueOf(friendSet.size()));
+    }
+
     /**
      * fix cause bug in ChildFragmentManager
      * http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed

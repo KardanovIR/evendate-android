@@ -46,27 +46,27 @@ public class MergeEventProps extends MergeStrategy {
         Log.v(LOG_TAG, "Fetching local entries for merge");
         Log.v(LOG_TAG, "Found " + localList.size() + " local entries. Computing merge solution...");
 
-        for(DataModel e : localList){
-            DataModel match = cloudMap.get(e.getEntryId());
-            if (match != null) {
+        for(DataModel localEvent : localList){
+            DataModel cloudEvent = cloudMap.get(localEvent.getEntryId());
+            if (cloudEvent != null) {
 
                 Log.i(LOG_TAG, "Scheduling update: " + ContentUri);
-                Uri contentUriTags = EvendateContract.EventTagEntry.GetContentUri(e.getEntryId());
-                Uri contentUriFriends = EvendateContract.UserEventEntry.getContentUri(e.getEntryId());
-                Uri contentUriDates = EvendateContract.EventDateEntry.getContentUri(e.getEntryId());
+                Uri contentUriTags = EvendateContract.EventTagEntry.GetContentUri(localEvent.getEntryId());
+                Uri contentUriFriends = EvendateContract.UserEventEntry.getContentUri(localEvent.getEntryId());
+                Uri contentUriDates = EvendateContract.EventDateEntry.getContentUri(localEvent.getEntryId());
                 ArrayList<DataModel> tagLocalList = new ArrayList<>();
                 ArrayList<DataModel> tagListMatch = new ArrayList<>();
-                tagLocalList.addAll(((EventModel) e).getTagList());
-                tagListMatch.addAll(((EventModel) match).getTagList());
+                tagLocalList.addAll(((EventModel) localEvent).getTagList());
+                tagListMatch.addAll(((EventModel) cloudEvent).getTagList());
                 mMergerTags.mergeData(contentUriTags, tagListMatch, tagLocalList);
 
                 ArrayList<DataModel> friendLocalList = new ArrayList<>();
                 ArrayList<DataModel> friendListMatch = new ArrayList<>();
-                friendLocalList.addAll(((EventModel) e).getFriendList());
-                friendListMatch.addAll(((EventModel) match).getFriendList());
+                friendLocalList.addAll(((EventModel) localEvent).getFriendList());
+                friendListMatch.addAll(((EventModel) cloudEvent).getFriendList());
                 //mMergerFriends.mergeData(contentUriFriends, friendListMatch, friendLocalList);
-                mergeDates(contentUriDates, ((EventModel) match).getDataRangeList(),
-                        ((EventModel) e).getDataRangeList());
+                mergeDates(contentUriDates, ((EventModel) cloudEvent).getDataRangeList(),
+                        ((EventModel) localEvent).getDataRangeList());
             } else {
                 Log.wtf(LOG_TAG, "WTF");
             }
