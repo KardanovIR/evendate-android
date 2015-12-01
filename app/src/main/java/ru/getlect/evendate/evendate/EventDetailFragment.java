@@ -50,6 +50,7 @@ import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.TagModel;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -184,6 +185,7 @@ View.OnClickListener{
                 mEventEntry = mOrm.fromCursor(data, EventModel.class);
                 eventId = mEventEntry.getEntryId();
                 setDateRange();
+                setTags();
                 setEventInfo();
                 setFabIcon();
                 data.close();
@@ -208,12 +210,23 @@ View.OnClickListener{
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
         mEventEntry.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(mEventEntry.getEntryId(), true));
     }
+    private void setTags(){
+        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
+        mEventEntry.setTagList(localDataFetcher.getEventTagDataFromDB(mEventEntry.getEntryId()));
+    }
     private void setEventInfo(){
         mOrganizationTextView.setText(mEventEntry.getOrganizationName());
         mDescriptionTextView.setText(mEventEntry.getDescription());
         mTitleTextView.setText(mEventEntry.getTitle());
         mPlaceTextView.setText(mEventEntry.getLocation());
-        //mTagsTextView.setText(data.getString(COLUMN_DESCRIPTION));
+        String tags = null;
+        for(TagModel tag : mEventEntry.getTagList()){
+            if(tags == null)
+                tags = tag.getName();
+            else
+                tags += ", " + tag.getName();
+        }
+        mTagsTextView.setText(tags);
         mLinkTextView.setText(mEventEntry.getDetailInfoUrl());
         mParticipantCountTextView.setText(String.valueOf(mEventEntry.getLikedUsersCount()));
         String time;

@@ -21,6 +21,10 @@ public class TagModel extends DataModel {
     String created_at;
     String updated_at;
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public int getEntryId() {
         return this.tagId;

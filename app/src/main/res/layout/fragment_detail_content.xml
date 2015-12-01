@@ -133,6 +133,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingTop="40dp"
+            android:paddingBottom="16dp"
             android:paddingRight="16dp"
             android:paddingLeft="16dp" >
 
@@ -168,7 +169,6 @@
                 android:layout_below="@+id/event_organization"
                 android:layout_alignLeft="@+id/event_organization"
                 android:layout_alignStart="@+id/event_organization"
-                android:layout_marginBottom="8dp"
                 android:textSize="16sp" />
 
             <TextView
@@ -180,7 +180,7 @@
                 android:layout_below="@+id/event_description_header"
                 android:layout_alignLeft="@+id/event_description_header"
                 android:layout_alignStart="@+id/event_description_header"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="12dp"
                 android:textSize="14sp" />
             <View
                 android:layout_width="match_parent"
@@ -196,15 +196,16 @@
                 android:layout_below="@+id/separator_1"
                 android:layout_alignLeft="@+id/event_description"
                 android:layout_alignStart="@+id/event_description"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:id="@+id/event_place_icon"
-                    android:padding="10dp"
-                    android:src="@drawable/place"/>
+                    android:padding="8dp"
+                    android:src="@drawable/place"
+                    android:alpha="0.54" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -227,7 +228,7 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
             </FrameLayout>
             <View
                 android:layout_width="match_parent"
@@ -243,15 +244,16 @@
                 android:layout_below="@+id/separator_2"
                 android:layout_alignLeft="@+id/event_description"
                 android:layout_alignStart="@+id/event_description"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:id="@+id/event_tag_icon"
-                    android:padding="10dp"
-                    android:src="@drawable/clock"/>
+                    android:padding="8dp"
+                    android:src="@mipmap/ic_local_offer_black"
+                    android:alpha="0.54" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -274,7 +276,7 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
             </FrameLayout>
             <View
                 android:id="@+id/separator_3"
@@ -290,16 +292,17 @@
                 android:layout_below="@+id/separator_3"
                 android:layout_alignLeft="@+id/event_description"
                 android:layout_alignStart="@+id/event_description"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:foreground="?attr/selectableItemBackground">
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:id="@+id/event_link_icon"
-                    android:padding="10dp"
-                    android:src="@mipmap/ic_open_in_new_black"/>
+                    android:padding="8dp"
+                    android:src="@mipmap/ic_open_in_new_black"
+                    android:alpha="0.54" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -322,7 +325,7 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
             </FrameLayout>
 
     </RelativeLayout>
