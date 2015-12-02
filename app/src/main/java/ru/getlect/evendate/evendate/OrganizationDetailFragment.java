@@ -208,7 +208,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
             if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
             else{
                 mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
                 fileDescriptor.close();
@@ -319,8 +319,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             mReelFragment.setDataListener(this);
         }
         else{
-            if(!checkInternetConnection()){
+            if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+                return;
             }
             else{
                 mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
@@ -328,23 +329,6 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
             }
         }
         fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
-    }
-
-    private boolean checkInternetConnection(){
-        ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean result = true;
-        if(activeNetwork == null)
-            result = false;
-        else{
-            boolean isConnected = activeNetwork.isConnected();
-            if (!isConnected){
-                result = false;
-            }
-        }
-        return result;
     }
 
     @Override

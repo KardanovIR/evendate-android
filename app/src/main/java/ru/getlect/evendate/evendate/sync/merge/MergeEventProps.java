@@ -98,7 +98,8 @@ public class MergeEventProps extends MergeStrategy {
             Log.d(LOG_TAG, "remove date " + localDate);
             batch.add(ContentProviderOperation.newDelete(ContentUri.buildUpon()
                     .appendQueryParameter("date", localDate).build()).build());
-        }try {
+        }
+        try {
             mContentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, batch);
         }catch (Exception e){
             Log.e(LOG_TAG, e.getMessage(), e);

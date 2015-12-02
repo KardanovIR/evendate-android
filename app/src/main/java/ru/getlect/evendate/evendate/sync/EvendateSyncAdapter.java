@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -97,6 +99,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         Log.i(LOG_TAG, "SYNC_STARTED");
+        if(!checkInternetConnection(mContext) || account == null)
+            return;
         AccountManager accountManager = AccountManager.get(mContext);
         ArrayList<DataModel> cloudList;
         ArrayList<DataModel> localList;
@@ -200,18 +204,12 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
             Log.e("SYNC", "No Accounts");
-            Intent dialogIntent = new Intent(context, AuthActivity.class);
-            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(dialogIntent);
             return null;
         }
         for(Account account : accounts){
             if(account.name.equals(account_name))
                 return account;
         }
-        Intent dialogIntent = new Intent(context, AuthActivity.class);
-        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(dialogIntent);
         return null;
     }
     private static void onAccountCreated(Account newAccount, Context context) {
@@ -231,5 +229,23 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
+    }
+
+
+    public static boolean checkInternetConnection(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean result = true;
+        if(activeNetwork == null)
+            result = false;
+        else{
+            boolean isConnected = activeNetwork.isConnected();
+            if (!isConnected){
+                result = false;
+            }
+        }
+        return result;
     }
 }

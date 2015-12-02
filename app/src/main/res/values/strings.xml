@@ -46,6 +46,7 @@
     <string name="account_already_exists">Evendate account already exist</string>
 
     <string name="subscription_fail_cause_network">No internet connection</string>
+    <string name="no_internet_connection">No internet connection</string>
     <string name="subscription_confirm">Subscription confirmed</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
 

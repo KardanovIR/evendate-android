@@ -19,6 +19,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -129,8 +130,8 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
         if(type == TypeFormat.organization.nativeInt){
-            if(!checkInternetConnection()){
-                Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_LONG).show();
+            if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
+                Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_LONG).show();
             }else{
                 OrganizationAsyncLoader organizationAsyncLoader = new OrganizationAsyncLoader(getContext());
                 organizationAsyncLoader.execute();
@@ -143,10 +144,13 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(checkInternetConnection()){
-                    Log.d(LOG_TAG, "request sync");
-                    EvendateSyncAdapter.syncImmediately(getContext());
+                if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
+                    Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
                 }
+                Log.d(LOG_TAG, "request sync");
+                EvendateSyncAdapter.syncImmediately(getContext());
             }
         });
         mAdapter = new EventAdapter(getActivity(), type);
@@ -316,7 +320,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
     public void onUnsubscripted(){
-        if(!checkInternetConnection()){
+        if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
             Toast.makeText(getContext(), R.string.subscription_fail_cause_network, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -374,22 +378,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-    private boolean checkInternetConnection(){
-        ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean result = true;
-        if(activeNetwork == null)
-            result = false;
-        else{
-            boolean isConnected = activeNetwork.isConnected();
-            if (!isConnected){
-                result = false;
-            }
-        }
-        return result;
     }
 
     public ArrayList<EventModel> getEventList() {

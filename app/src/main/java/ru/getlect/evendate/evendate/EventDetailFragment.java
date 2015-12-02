@@ -296,7 +296,7 @@ View.OnClickListener{
                             .appendPath("images").appendPath("organizations").appendPath("logos")
                             .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
             if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.drawable.place));
+                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
             else{
                 mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
                 fileDescriptor.close();

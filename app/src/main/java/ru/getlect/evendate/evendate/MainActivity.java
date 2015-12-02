@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity
     private boolean isRunning = false;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private final int AUTH_REQUEST = 0;
 
     private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
 
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
-
+        checkAccount();
 
         /**
          * solution for issue with view pager from support library
@@ -391,7 +392,7 @@ public class MainActivity extends AppCompatActivity
                     //TODo перенести в xml
                     if(fileDescriptor == null)
                         //заглушка на случай отсутствия картинки
-                        menuItem.setIcon(R.drawable.place);
+                        menuItem.setIcon(R.mipmap.ic_launcher);
                     else {
                         menuItem.setIcon(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
                         //add to monitoring
@@ -501,5 +502,20 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         return true;
+    }
+    private void checkAccount(){
+        Account account = EvendateSyncAdapter.getSyncAccount(this);
+        if(account == null){
+            Intent authIntent = new Intent(this, AuthActivity.class);
+            startActivityForResult(authIntent, AUTH_REQUEST);
+        }
+    }
+    @Override
+     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTH_REQUEST) {
+            if (resultCode == RESULT_CANCELED) {
+                finish();
+            }
+        }
     }
 }

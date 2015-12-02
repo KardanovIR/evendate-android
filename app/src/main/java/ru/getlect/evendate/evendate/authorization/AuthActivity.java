@@ -77,6 +77,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
         } else {
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
+            setResult(RESULT_CANCELED);
+            finish();
         }
         ContentResolver.addPeriodicSync(
                 EvendateSyncAdapter.getSyncAccount(this),
