@@ -14,12 +14,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -252,6 +249,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 mEventList.addAll(eventList);
                 setDateRange(mEventList);
                 setFriends(mEventList);
+                sortEvents();
                 mProgressBar.setVisibility(View.GONE);
                 mAdapter.setEventList(mEventList);
                 if(mDataListener != null)
@@ -285,6 +283,29 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
         for(EventModel eventModel : eventModels){
             eventModel.setFriendList(localDataFetcher.getEventFriendDataFromDB(eventModel.getEntryId()));
+        }
+    }
+    private void sortEvents(){
+        if(mEventList == null)
+            return;
+        for(int i = 0; i < mEventList.size() - 1; i++ ){
+            //костыльное решение
+            // синхронизация не проходит, когда вызывается метод
+            if(mEventList.get(i).getActialDate() == null)
+                return;
+            long min = mEventList.get(i).getActialDate().getTime();
+            int min_ind = i;
+            for(int j = i+1; j < mEventList.size(); j++){
+                if(mEventList.get(j).getActialDate().getTime() < min){
+                    min = mEventList.get(j).getActialDate().getTime();
+                    min_ind = j;
+                }
+            }
+            if(min_ind == i)
+                continue;
+            EventModel temp = mEventList.get(i);
+            mEventList.set(i, mEventList.get(min_ind));
+            mEventList.set(min_ind, temp);
         }
     }
 
