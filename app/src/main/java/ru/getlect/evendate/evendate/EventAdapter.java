@@ -55,9 +55,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         if(type == ReelFragment.TypeFormat.organization.nativeInt){
             layoutItemId = R.layout.reel_item;
         } else if(type == ReelFragment.TypeFormat.favorites.nativeInt){
-            layoutItemId = R.layout.reel_item;
+            layoutItemId = R.layout.reel_favorite_item;
         } else if(type == ReelFragment.TypeFormat.calendar.nativeInt){
-            layoutItemId = R.layout.reel_item_little;
+            layoutItemId = R.layout.reel_item;
         } else if(type == ReelFragment.TypeFormat.organizationSubscribed.nativeInt){
             layoutItemId = R.layout.reel_item;
         }

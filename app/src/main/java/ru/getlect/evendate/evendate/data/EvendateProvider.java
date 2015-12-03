@@ -167,7 +167,7 @@ public class EvendateProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        sortOrder
+                        EvendateContract.EventDateEntry.COLUMN_DATE + " ASC"
                 );
                 cursor.setNotificationUri(getContext().getContentResolver(),
                         EvendateContract.EventEntry.CONTENT_URI);

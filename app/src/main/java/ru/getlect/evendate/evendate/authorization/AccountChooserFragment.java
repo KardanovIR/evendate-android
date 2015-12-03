@@ -16,7 +16,6 @@ import com.joanzapata.iconify.fonts.MeteoconsModule;
 import com.joanzapata.iconify.fonts.SimpleLineIconsModule;
 import com.joanzapata.iconify.fonts.TypiconsModule;
 import com.joanzapata.iconify.fonts.WeathericonsModule;
-import com.joanzapata.iconify.widget.IconTextView;
 
 import ru.getlect.evendate.evendate.R;
 
@@ -41,13 +40,13 @@ public class AccountChooserFragment extends Fragment {
                 .with(new IoniconsModule());
 
 
-        IconTextView itv_vk = (IconTextView)rootView.findViewById(R.id.icon_text_vk);
-        IconTextView itv_fb = (IconTextView)rootView.findViewById(R.id.icon_text_fb);
-        IconTextView itv_gPlus = (IconTextView)rootView.findViewById(R.id.icon_text_google);
+        //IconTextView itv_vk = (IconTextView)rootView.findViewById(R.id.icon_text_vk);
+        //IconTextView itv_fb = (IconTextView)rootView.findViewById(R.id.icon_text_fb);
+        //IconTextView itv_gPlus = (IconTextView)rootView.findViewById(R.id.icon_text_google);
 
-        itv_vk.setText("{entypo-vk}");
-        itv_fb.setText("{entypo-facebook}");
-        itv_gPlus.setText("{entypo-google}");
+        //itv_vk.setText("{entypo-vk}");
+        //itv_fb.setText("{entypo-facebook}");
+        //itv_gPlus.setText("{entypo-google}");
 
         Button SingInVkButton = (Button)rootView.findViewById(R.id.sing_in_vk_button);
         Button SingInFbButton = (Button)rootView.findViewById(R.id.sing_in_fb_button);

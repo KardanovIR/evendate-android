@@ -68,6 +68,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private int organizationId;
 
+    static final String TYPE = "type";
     private int type = 0;
     private Date mDate;
 
@@ -125,6 +126,10 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
+
+        if (savedInstanceState != null){
+            type = savedInstanceState.getInt(TYPE);
+        }
 
         if(type == TypeFormat.organization.nativeInt){
             if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
@@ -202,6 +207,14 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onPause();
         getActivity().unregisterReceiver(syncFinishedReceiver);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(TYPE, type);
+    }
+
+
     @Override
     public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         //Log.d(TAG, "onCreateLoader: " + id);
@@ -249,7 +262,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 mEventList.addAll(eventList);
                 setDateRange(mEventList);
                 setFriends(mEventList);
-                sortEvents();
                 mProgressBar.setVisibility(View.GONE);
                 mAdapter.setEventList(mEventList);
                 if(mDataListener != null)
@@ -285,29 +297,29 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             eventModel.setFriendList(localDataFetcher.getEventFriendDataFromDB(eventModel.getEntryId()));
         }
     }
-    private void sortEvents(){
-        if(mEventList == null)
-            return;
-        for(int i = 0; i < mEventList.size() - 1; i++ ){
-            //костыльное решение
-            // синхронизация не проходит, когда вызывается метод
-            if(mEventList.get(i).getActialDate() == null)
-                return;
-            long min = mEventList.get(i).getActialDate().getTime();
-            int min_ind = i;
-            for(int j = i+1; j < mEventList.size(); j++){
-                if(mEventList.get(j).getActialDate().getTime() < min){
-                    min = mEventList.get(j).getActialDate().getTime();
-                    min_ind = j;
-                }
-            }
-            if(min_ind == i)
-                continue;
-            EventModel temp = mEventList.get(i);
-            mEventList.set(i, mEventList.get(min_ind));
-            mEventList.set(min_ind, temp);
-        }
-    }
+    //private void sortEvents(){
+    //    if(mEventList == null)
+    //        return;
+    //    for(int i = 0; i < mEventList.size() - 1; i++ ){
+    //        //костыльное решение
+    //        // синхронизация не проходит, когда вызывается метод
+    //        if(mEventList.get(i).getActialDate() == null)
+    //            return;
+    //        long min = mEventList.get(i).getActialDate().getTime();
+    //        int min_ind = i;
+    //        for(int j = i+1; j < mEventList.size(); j++){
+    //            if(mEventList.get(j).getActialDate().getTime() < min){
+    //                min = mEventList.get(j).getActialDate().getTime();
+    //                min_ind = j;
+    //            }
+    //        }
+    //        if(min_ind == i)
+    //            continue;
+    //        EventModel temp = mEventList.get(i);
+    //        mEventList.set(i, mEventList.get(min_ind));
+    //        mEventList.set(min_ind, temp);
+    //    }
+    //}
 
     private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataModel> {
         Context mContext;

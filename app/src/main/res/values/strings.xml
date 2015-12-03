@@ -41,9 +41,10 @@
     <string name="favorite_events">favorite events</string>
 
     <!-- strings for sign in -->
-    <string name="sing_in_vk">Sing in by Vkontakte</string>
-    <string name="sing_in_fb">Sing in by Facebook</string>
-    <string name="sing_in_google">Sing in by Google+</string>
+    <string name="sing_in_description">Sing in via social network</string>
+    <string name="sing_in_vk">Vkontakte</string>
+    <string name="sing_in_fb">Facebook</string>
+    <string name="sing_in_google">Google+</string>
     <string name="account_already_exists">Evendate account already exist</string>
 
     <string name="subscription_fail_cause_network">No internet connection</string>
