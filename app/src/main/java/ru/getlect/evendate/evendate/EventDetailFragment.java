@@ -272,7 +272,7 @@ View.OnClickListener{
                                 .appendPath("images").appendPath("events").appendPath(String.valueOf(mEventEntry.getEntryId())).build(), "r");
                 if(mParcelFileDescriptor == null)
                     //заглушка на случай отсутствия картинки
-                    mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                    mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
                 else {
                     ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mEventImageView);
                     imageLoadingTask.execute(mParcelFileDescriptor);
@@ -390,7 +390,7 @@ View.OnClickListener{
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             if(!result){
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mCoordinatorLayout, R.string.no_internet_connection, Snackbar.LENGTH_LONG).show();
             }
             else{
                 mEventEntry.setIsFavorite(!mEventEntry.isFavorite());
@@ -401,7 +401,7 @@ View.OnClickListener{
                 }
                 setFabIcon();
                 setEventInfo();
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);
                 EvendateSyncAdapter.syncImmediately(getContext());

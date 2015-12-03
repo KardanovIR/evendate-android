@@ -3,7 +3,6 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.app.usage.UsageEvents;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -193,7 +192,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                             .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
             if(mParcelFileDescriptor == null)
                 //заглушка на случай отсутствия картинки
-                mOrganizationImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
+                mOrganizationImageView.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
             else {
                 ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mOrganizationImageView);
                 imageLoadingTask.execute(mParcelFileDescriptor);

@@ -24,6 +24,7 @@
 
     <string name="feed">Feed</string>
     <string name="favorite">Favorite</string>
+    <string name="accounts">Accounts</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
@@ -48,6 +49,7 @@
     <string name="subscription_fail_cause_network">No internet connection</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="subscription_confirm">Subscription confirmed</string>
+    <string name="favorite_confirm">Event added to favorite</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
 
     <string name="nav_add_account">Add Account</string>

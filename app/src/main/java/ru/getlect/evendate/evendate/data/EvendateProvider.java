@@ -34,6 +34,7 @@ public class EvendateProvider extends ContentProvider {
     private static final int EVENT_IMAGE = 501;
     private static final int ORGANIZATION_IMAGE = 502;
     private static final int ORGANIZATION_LOGO = 503;
+    private static final int USER_AVATAR = 504;
     private static final int DATES = 601;
     private static final int DATES_WITH_PARAMS = 602;
 
@@ -71,6 +72,8 @@ public class EvendateProvider extends ContentProvider {
                 EvendateContract.PATH_ORGANIZATION_IMAGES + "/#", ORGANIZATION_IMAGE);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_ORGANIZATION_LOGOS + "/#", ORGANIZATION_LOGO);
+        mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
+                "images/user", USER_AVATAR);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_DATES, DATES);
         return true;
@@ -599,6 +602,15 @@ public class EvendateProvider extends ContentProvider {
                 File file = new File(BASE_PATH, EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".jpg");
                 if(!file.exists()){
                     file = new File(BASE_PATH, EvendateContract.PATH_EVENT_IMAGES + "/" + event_id + ".png");
+                    if(!file.exists())
+                        return null;
+                }
+                return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            }
+            case USER_AVATAR: {
+                File file = new File(BASE_PATH, "images/user.jpg");
+                if(!file.exists()){
+                    file = new File(BASE_PATH, "images/user.png");
                     if(!file.exists())
                         return null;
                 }

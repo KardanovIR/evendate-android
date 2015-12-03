@@ -52,10 +52,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     @Override
     public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutItemId;
-        if(type == ReelFragment.TypeFormat.organization.nativeInt)
+        if(type == ReelFragment.TypeFormat.organization.nativeInt){
             layoutItemId = R.layout.reel_item;
-        else if(type == ReelFragment.TypeFormat.favorites.nativeInt){
-            layoutItemId = R.layout.reel_favorite_item;
+        } else if(type == ReelFragment.TypeFormat.favorites.nativeInt){
+            layoutItemId = R.layout.reel_item;
+        } else if(type == ReelFragment.TypeFormat.calendar.nativeInt){
+            layoutItemId = R.layout.reel_item_little;
+        } else if(type == ReelFragment.TypeFormat.organizationSubscribed.nativeInt){
+            layoutItemId = R.layout.reel_item;
         }
         else{
             layoutItemId = R.layout.reel_item;
@@ -122,7 +126,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
                         );
                 if(fileDescriptor == null)
                     //заглушка на случай отсутствия картинки
-                    holder.mEventImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
+                    holder.mEventImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.default_background));
                 else {
                     ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
                     imageLoadingTask.execute(fileDescriptor);
@@ -148,7 +152,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     }
 
     public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public android.support.v7.widget.CardView cardView;
+        public View holderView;
         public ImageView mEventImageView;
         public TextView mTitleTextView;
         public TextView mDateTextView;
@@ -158,13 +162,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
         public EventHolder(View itemView){
             super(itemView);
-            cardView = (android.support.v7.widget.CardView)itemView;
+            holderView = itemView;
             mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
             mTitleTextView = (TextView)itemView.findViewById(R.id.event_item_title);
             mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
             mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
             mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
-            cardView.setOnClickListener(this);
+            holderView.setOnClickListener(this);
         }
 
         @Override

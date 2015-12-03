@@ -106,6 +106,19 @@ public class ServerDataFetcher{
         }
         return null;
     }
+    public static FriendModel getMyData(EvendateService evendateService, String basicAuth){
+        Call<EvendateServiceResponseAttr<FriendModel>> call =
+                evendateService.meData(basicAuth);
+        try{
+            Response<EvendateServiceResponseAttr<FriendModel>> response = call.execute();
+            if(response.isSuccess()){
+                return response.body().getData();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static OrganizationModel organizationPostSubscription(EvendateService evendateService, String basicAuth, int organizationId){
         Call<EvendateServiceResponseAttr<OrganizationModel>> call =
                 evendateService.organizationPostSubscription(organizationId, basicAuth);

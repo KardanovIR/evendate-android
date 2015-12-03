@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.R;
-import ru.getlect.evendate.evendate.authorization.AuthActivity;
 import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.merge.MergeEventProps;
@@ -53,6 +52,14 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     public static boolean isSyncRunning = false;
     ContentResolver mContentResolver;
     Context mContext;
+
+    /**
+     * constants for user data in shared preferences
+     */
+
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String AVATAR_URL = "avatar_url";
 
     /**
      * Set up the sync adapter
@@ -113,6 +120,18 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         ImageServerLoader.init(mContext);
         try {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
+
+            //user info sync
+            FriendModel me = ServerDataFetcher.getMyData(evendateService, token);
+            if(me != null) {
+                SharedPreferences sPref = mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor ed = sPref.edit();
+                ed.putString(FIRST_NAME, me.getFirstName());
+                ed.putString(LAST_NAME, me.getLastName());
+                ed.putString(AVATAR_URL, me.getAvatarUrl());
+                ed.apply();
+                imageManager.saveUserPhoto(me);
+            }
             //organizations sync
             ArrayList<DataModel> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
             ArrayList<DataModel> localOrganizationList = localDataFetcher.getOrganizationDataFromDB();

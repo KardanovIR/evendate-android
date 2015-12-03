@@ -37,6 +37,8 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -184,6 +186,24 @@ public class MainActivity extends AppCompatActivity
                     mNavigationView.inflateMenu(R.menu.drawer_actions);
                     updateSubscriptionMenu();
                 }
+            }
+        });
+        RelativeLayout navHeader = (RelativeLayout)findViewById(R.id.nav_header);
+        navHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v instanceof RelativeLayout)
+                    if (mAccountToggle.isChecked()) {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.drawer_accounts);
+                        updateAccountMenu();
+                        mAccountToggle.setChecked(false);
+                    } else {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.drawer_actions);
+                        updateSubscriptionMenu();
+                        mAccountToggle.setChecked(true);
+                    }
             }
         });
         checkPlayServices();
@@ -423,7 +443,7 @@ public class MainActivity extends AppCompatActivity
             return;
         if(accounts.length == 0)
             return;
-        mAccountMenu = navigationDrawerMenu.addSubMenu(R.id.nav_accounts, 0, 0, null);
+        mAccountMenu = navigationDrawerMenu.addSubMenu(R.id.nav_accounts, 0, 0, R.string.accounts);
         for(Account account : accounts){
             if(!account.name.equals(account_name)){
                 MenuItem menuItem = mAccountMenu.add(0, 0, 0, account.name);
@@ -432,9 +452,30 @@ public class MainActivity extends AppCompatActivity
     }
     private void setAccountInfo(){
         TextView email = (TextView)findViewById(R.id.email);
+        ImageView avatar = (ImageView)findViewById(R.id.avatar);
+        TextView username = (TextView) findViewById(R.id.username);
         SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
         String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+        String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
+        String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
         email.setText(account_name);
+        username.setText(first_name + " " + last_name);
+
+        try {
+            final ParcelFileDescriptor fileDescriptor = getContentResolver()
+                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
+                            .appendPath("images").appendPath("user").build(), "r");
+            //TODo перенести в xml
+            if(fileDescriptor == null)
+                //заглушка на случай отсутствия картинки
+                avatar.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+            else {
+                avatar.setImageDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
+                fileDescriptor.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     class MainPagerAdapter extends FragmentStatePagerAdapter{

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
+import ru.getlect.evendate.evendate.sync.models.FriendModel;
 import ru.getlect.evendate.evendate.sync.models.OrganizationModel;
 import ru.getlect.evendate.evendate.utils.Utils;
 
@@ -21,7 +22,7 @@ import ru.getlect.evendate.evendate.utils.Utils;
  * Класс, отвечающий за синхронизацию картинок.
  */
 public class ImageManager {
-    String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
+    private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
     public LocalDataFetcher mLocalDataFetcher;
 
     public ImageManager(LocalDataFetcher localDataFetcher) {
@@ -124,5 +125,22 @@ public class ImageManager {
             file.delete();
         }
         Log.i(LOG_TAG, "images sync ended");
+    }
+    public void saveUserPhoto(FriendModel friendModel) throws IOException{
+        try {
+            if(friendModel.getAvatarUrl() == null)
+                return;
+            String urlStr = friendModel.getAvatarUrl();
+            //cut off google params
+            urlStr = urlStr.substring(0, urlStr.lastIndexOf("?"));
+            String format = Utils.getFileExtension(urlStr);
+            String filepath = "images" + "/user" + "." + format;
+            format = Utils.normalizeBitmapFormat(format);
+            URL url = new URL(friendModel.getAvatarUrl());
+            ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
+        }catch (MalformedURLException e){
+            Log.e(LOG_TAG, "error parsing image url");
+            throw e;
+        }
     }
 }

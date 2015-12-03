@@ -51,6 +51,11 @@ public interface EvendateService {
             @Query("length") int length
     );
 
+    @GET("/api/users/me")
+    Call<EvendateServiceResponseAttr<FriendModel>> meData(
+            @Header("Authorization") String authorization
+    );
+
     @GET("/api/events/{id}")
     Call<EvendateServiceResponseAttr<EventModel>> eventData(
             @Path("id") int eventId,

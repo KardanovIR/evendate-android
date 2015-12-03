@@ -42,6 +42,26 @@ public class FriendModel extends DataModel {
         return this.userId;
     }
 
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
