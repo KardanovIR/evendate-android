@@ -401,7 +401,10 @@ View.OnClickListener{
                 }
                 setFabIcon();
                 setEventInfo();
-                Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
+                if(mEventEntry.isFavorite())
+                    Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
+                else
+                    Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);
                 EvendateSyncAdapter.syncImmediately(getContext());

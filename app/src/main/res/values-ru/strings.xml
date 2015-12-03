@@ -36,5 +36,6 @@
     <string name="title_activity_maps">Карта</string>
     <string name="accounts">Аккаунты</string>
     <string name="favorite_confirm">Событие добавлено в избранное</string>
+    <string name="remove_favorite_confirm">Событие удалено из избранного</string>
     <string name="no_internet_connection">Нет интернет подключения</string>
 </resources>
