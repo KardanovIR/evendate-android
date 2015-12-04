@@ -65,12 +65,15 @@
                     android:textColor="#fff"
                     android:layout_marginLeft="72dp"
                     android:layout_marginStart="72dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:paddingRight="48dp"
-                    android:paddingEnd="48dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:paddingRight="8dp"
+                    android:paddingEnd="8dp"
                     android:text="title"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:textIsSelectable="false" />
             </FrameLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

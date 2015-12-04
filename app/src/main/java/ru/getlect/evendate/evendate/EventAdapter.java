@@ -3,24 +3,21 @@ package ru.getlect.evendate.evendate;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
-import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
+import ru.getlect.evendate.evendate.sync.models.EventFormatter;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 
 /**
@@ -74,67 +71,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         EventModel eventEntry = mEventList.get(position);
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
+        if(eventEntry.getTitle().length() > 60)
+            holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
-        setupTime(eventEntry, holder);
-        setupImage(eventEntry, holder);
-    }
-
-    private void setupTime(EventModel eventEntry, EventHolder holder){
-        String time;
-        if(eventEntry.isFullDay())
-            time = mContext.getResources().getString(R.string.event_all_day);
-        else{
-            //cut off seconds
-            //TODO temporary
-            time = "";
-            if(eventEntry.getBeginTime() != null && eventEntry.getEndTime() != null)
-                time = eventEntry.getBeginTime().substring(0, 5) + " - " + eventEntry.getEndTime().substring(0, 5);
-        }
-        Date date = eventEntry.getActialDate();
-        DateFormat[] formats = new DateFormat[] {
-                new SimpleDateFormat("dd", Locale.getDefault()),
-                new SimpleDateFormat("MMMM", Locale.getDefault()),
-        };
-        if(date != null){
-            String day = formats[0].format(date);
-            if(day.substring(0, 1).equals("0"))
-                day = day.substring(1);
-            String dateString = day + " " + formats[1].format(date) + " " + time;
-            holder.mDateTextView.setText(dateString);
-        }
-    }
-    private void setupImage(EventModel eventEntry, EventHolder holder){
-        holder.mEventImageView.setImageBitmap(null);
-        if(type == ReelFragment.TypeFormat.organization.nativeInt){
-            if(eventEntry.getImageHorizontalUrl() == null)
-                holder.mEventImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.butterfly));
-            else{
-                ImageLoaderTask imageLoader = new ImageLoaderTask(holder.mEventImageView);
-                imageLoader.execute(eventEntry.getImageHorizontalUrl());
-            }
-        }
-        else{
-            try {
-                final ParcelFileDescriptor fileDescriptor = mContext.getContentResolver()
-                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                        .appendPath("images").appendPath("events")
-                                        .appendPath(String.valueOf(eventEntry.getEntryId())
-                                        ).build(), "r"
-                        );
-                if(fileDescriptor == null)
-                    //заглушка на случай отсутствия картинки
-                    holder.mEventImageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.default_background));
-                else {
-                    ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mEventImageView);
-                    imageLoadingTask.execute(fileDescriptor);
-                }
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
+        EventFormatter eventFormatter = new EventFormatter(mContext);
+        String date = eventFormatter.formatDay(eventEntry) + " "
+                + eventFormatter.formatMonth(eventEntry) + " " + eventFormatter.formatTime(eventEntry);
+        holder.mDateTextView.setText(date);
+        Picasso.with(mContext)
+                .load(type == ReelFragment.TypeFormat.favorites.nativeInt ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
+                .error(R.drawable.default_background)
+                .into(holder.mEventImageView);
     }
 
     @Override

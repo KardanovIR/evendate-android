@@ -140,6 +140,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/event_organization"
+                android:id="@+id/event_organization_header"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="18sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/text_color_black"
                 android:id="@+id/event_organization"
@@ -147,18 +157,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="16dp"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/event_organization"
-                android:id="@+id/event_organization_header"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="Dream Academy"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -169,7 +169,7 @@
                 android:layout_below="@+id/event_organization"
                 android:layout_alignLeft="@+id/event_organization"
                 android:layout_alignStart="@+id/event_organization"
-                android:textSize="16sp" />
+                android:textSize="18sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -181,7 +181,8 @@
                 android:layout_alignLeft="@+id/event_description_header"
                 android:layout_alignStart="@+id/event_description_header"
                 android:layout_marginBottom="12dp"
-                android:textSize="14sp" />
+                android:textSize="16sp"
+                tools:text="Для Топ-менеджеров крупных предприятий, собственников бизнеса и всех…"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -328,6 +329,12 @@
                     android:textSize="12sp" />
             </FrameLayout>
 
+            <View
+                android:id="@+id/separator_4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#AAAAAA"
+                android:layout_above="@+id/event_link_content" />
     </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>

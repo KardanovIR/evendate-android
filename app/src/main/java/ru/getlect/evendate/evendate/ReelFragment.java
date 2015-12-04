@@ -233,7 +233,9 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             calendar.setTime(mDate);
             calendar.add(Calendar.DATE, 1);
             calendar.add(Calendar.SECOND, -1);
-            selection = EvendateContract.EventDateEntry.COLUMN_DATE + " BETWEEN DATETIME(" + mDate.getTime() / 1000L + ", 'unixepoch') AND DATETIME(" + calendar.getTime().getTime() / 1000L + ", 'unixepoch')";
+            selection = EvendateContract.EventDateEntry.COLUMN_DATE
+                    + " BETWEEN DATETIME(" + mDate.getTime() / 1000L + ", 'unixepoch')"
+                    + " AND DATETIME(" + calendar.getTime().getTime() / 1000L + ", 'unixepoch')";
         }
         switch (id) {
             case EVENT_INFO_LOADER_ID:
@@ -243,7 +245,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                         null,
                         selection,
                         null,
-                        null
+                        "DATE(" + EvendateContract.EventDateEntry.COLUMN_DATE + ") ASC"
                 );
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + id);
@@ -297,29 +299,6 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             eventModel.setFriendList(localDataFetcher.getEventFriendDataFromDB(eventModel.getEntryId()));
         }
     }
-    //private void sortEvents(){
-    //    if(mEventList == null)
-    //        return;
-    //    for(int i = 0; i < mEventList.size() - 1; i++ ){
-    //        //костыльное решение
-    //        // синхронизация не проходит, когда вызывается метод
-    //        if(mEventList.get(i).getActialDate() == null)
-    //            return;
-    //        long min = mEventList.get(i).getActialDate().getTime();
-    //        int min_ind = i;
-    //        for(int j = i+1; j < mEventList.size(); j++){
-    //            if(mEventList.get(j).getActialDate().getTime() < min){
-    //                min = mEventList.get(j).getActialDate().getTime();
-    //                min_ind = j;
-    //            }
-    //        }
-    //        if(min_ind == i)
-    //            continue;
-    //        EventModel temp = mEventList.get(i);
-    //        mEventList.set(i, mEventList.get(min_ind));
-    //        mEventList.set(min_ind, temp);
-    //    }
-    //}
 
     private class OrganizationAsyncLoader extends AsyncTask<Void, Void, DataModel> {
         Context mContext;

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +24,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,24 +33,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chalup.microorm.MicroOrm;
+import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import org.chalup.microorm.MicroOrm;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
 import ru.getlect.evendate.evendate.sync.EvendateApiFactory;
 import ru.getlect.evendate.evendate.sync.EvendateService;
 import ru.getlect.evendate.evendate.sync.EvendateSyncAdapter;
-import ru.getlect.evendate.evendate.sync.ImageLoaderTask;
 import ru.getlect.evendate.evendate.sync.LocalDataFetcher;
 import ru.getlect.evendate.evendate.sync.ServerDataFetcher;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
+import ru.getlect.evendate.evendate.sync.models.EventFormatter;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
-import ru.getlect.evendate.evendate.sync.models.TagModel;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -91,7 +86,7 @@ View.OnClickListener{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            setupImage();
+            //setupImage();
         }
     };
 
@@ -121,7 +116,6 @@ View.OnClickListener{
 
         CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        //collapsingToolbarLayout.setTitle("test");
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
         mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization);
@@ -215,45 +209,30 @@ View.OnClickListener{
         mEventEntry.setTagList(localDataFetcher.getEventTagDataFromDB(mEventEntry.getEntryId()));
     }
     private void setEventInfo(){
+        EventFormatter eventFormatter = new EventFormatter(getActivity());
         mOrganizationTextView.setText(mEventEntry.getOrganizationName());
         mDescriptionTextView.setText(mEventEntry.getDescription());
         mTitleTextView.setText(mEventEntry.getTitle());
+        if(mEventEntry.getTitle().length() > 60)
+            mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         mPlaceTextView.setText(mEventEntry.getLocation());
-        String tags = null;
-        for(TagModel tag : mEventEntry.getTagList()){
-            if(tags == null)
-                tags = tag.getName();
-            else
-                tags += ", " + tag.getName();
-        }
-        mTagsTextView.setText(tags);
+        if(mEventEntry.getLocation().length() > 30)
+            mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        mTagsTextView.setText(eventFormatter.formatTags(mEventEntry));
         mLinkTextView.setText(mEventEntry.getDetailInfoUrl());
         mParticipantCountTextView.setText(String.valueOf(mEventEntry.getLikedUsersCount()));
-        String time;
-        if(mEventEntry.isFullDay())
-            time = getResources().getString(R.string.event_all_day);
-        else{
-            //cut off seconds
-            //TODO temporary
-            time = "";
-            if(mEventEntry.getBeginTime() != null && mEventEntry.getEndTime() != null)
-                time = mEventEntry.getBeginTime().substring(0, 5) + " - " + mEventEntry.getEndTime().substring(0, 5);
-        }
-        mTimeTextView.setText(time);
-        //convert to milliseconds
-        Date date = mEventEntry.getActialDate();
-        DateFormat[] formats = new DateFormat[] {
-                new SimpleDateFormat("dd", Locale.getDefault()),
-                new SimpleDateFormat("MMMM", Locale.getDefault()),
-        };
-        if(date != null){
-            String day = formats[0].format(date);
-            if(day.substring(0, 1).equals("0"))
-                day = day.substring(1);
-            mDayTextView.setText(day);
-            mMonthTextView.setText(formats[1].format(date));
-        }
-        setupImage();
+        mTimeTextView.setText(eventFormatter.formatTime(mEventEntry));
+        mDayTextView.setText(eventFormatter.formatDay(mEventEntry));
+        mMonthTextView.setText(eventFormatter.formatMonth(mEventEntry));
+
+        Picasso.with(getContext())
+                .load(mEventEntry.getImageHorizontalUrl())
+                .error(R.drawable.default_background)
+                .into(mEventImageView);
+        Picasso.with(getContext())
+                .load(mEventEntry.getOrganizationLogoUrl())
+                .error(R.mipmap.ic_launcher)
+                .into(mOrganizationIconView);
         mLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -262,48 +241,6 @@ View.OnClickListener{
                 startActivity(openLink);
             }
         });
-    }
-
-    private void setupImage(){
-        if(!mEventDetailActivity.isLocal){
-            try {
-                mParcelFileDescriptor = mEventDetailActivity.getContentResolver()
-                        .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                .appendPath("images").appendPath("events").appendPath(String.valueOf(mEventEntry.getEntryId())).build(), "r");
-                if(mParcelFileDescriptor == null)
-                    //заглушка на случай отсутствия картинки
-                    mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
-                else {
-                    ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mEventImageView);
-                    imageLoadingTask.execute(mParcelFileDescriptor);
-                }
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }else{
-            mEventImageView.setImageBitmap(null);
-            if(mEventEntry.getImageHorizontalUrl() == null)
-                mEventImageView.setImageDrawable(getResources().getDrawable(R.drawable.butterfly));
-            else{
-                ImageLoaderTask imageLoader = new ImageLoaderTask(mEventImageView);
-                imageLoader.execute(mEventEntry.getImageHorizontalUrl());
-            }
-
-        }
-        try{
-            final ParcelFileDescriptor fileDescriptor = mEventDetailActivity.getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(String.valueOf(mEventEntry.getOrganizationId())).build(), "r");
-            if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            else{
-                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                fileDescriptor.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
     }
 
     @Override

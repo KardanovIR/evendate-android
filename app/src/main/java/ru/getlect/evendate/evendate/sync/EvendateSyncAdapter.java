@@ -116,8 +116,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
 
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        ImageManager imageManager = new ImageManager(localDataFetcher);
-        ImageServerLoader.init(mContext);
+        //ImageManager imageManager = new ImageManager(localDataFetcher);
+        //ImageServerLoader.init(mContext);
         try {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
 
@@ -130,7 +130,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 ed.putString(LAST_NAME, me.getLastName());
                 ed.putString(AVATAR_URL, me.getAvatarUrl());
                 ed.apply();
-                imageManager.saveUserPhoto(me);
+                //imageManager.saveUserPhoto(me);
             }
             //organizations sync
             ArrayList<DataModel> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
@@ -170,9 +170,9 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             mergerEventProps.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
 
             //images sync
-            imageManager.updateOrganizationsLogos(organizationList);
-            imageManager.updateOrganizationsImages(organizationList);
-            imageManager.updateEventImages(eventList);
+            //imageManager.updateOrganizationsLogos(organizationList);
+            //imageManager.updateOrganizationsImages(organizationList);
+            //imageManager.updateEventImages(eventList);
 
         }catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

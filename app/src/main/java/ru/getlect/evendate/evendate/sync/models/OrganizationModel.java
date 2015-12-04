@@ -7,7 +7,9 @@ import android.net.Uri;
 import com.google.gson.annotations.SerializedName;
 
 import org.chalup.microorm.annotations.Column;
+
 import java.util.ArrayList;
+
 import ru.getlect.evendate.evendate.data.EvendateContract.OrganizationEntry;
 
 /**
@@ -36,6 +38,7 @@ public class OrganizationModel extends DataModel {
     String logoLargeUrl;
     @SerializedName("img_medium_url")
     String logoMediumUrl;
+    @Column(OrganizationEntry.COLUMN_LOGO_URL)
     @SerializedName("img_small_url")
     String logoSmallUrl;
 

@@ -3,11 +3,9 @@
  */
 package ru.getlect.evendate.evendate;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -53,31 +52,13 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
             OrganizationModel organizationEntry = mOrganizationList.get(position);
             holder.id = organizationEntry.getEntryId();
             holder.mTitle.setText(organizationEntry.getShortName());
-            holder.mSubCounts.setText(organizationEntry.getSubscribedCount() + " " +
-                    mContext.getResources().getString(R.string.organization_subscribers));
-            setupImage(organizationEntry, holder);
-        }
-    }
-
-    private void setupImage(OrganizationModel organizationEntry, OrganizationHolder holder){
-        holder.mImageView.setImageBitmap(null);
-        ContentResolver contentResolver = mContext.getContentResolver();
-        try {
-            final ParcelFileDescriptor fileDescriptor = contentResolver
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                    .appendPath("images").appendPath("organizations").appendPath("logos")
-                                    .appendPath(String.valueOf(organizationEntry.getEntryId())
-                                    ).build(), "r"
-                    );
-            if(fileDescriptor == null)
-                //заглушка на случай отсутствия картинки
-                holder.mImageView.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.ic_launcher));
-            else {
-                ImageLoadingTask imageLoadingTask = new ImageLoadingTask(holder.mImageView);
-                imageLoadingTask.execute(fileDescriptor);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
+            String subs = organizationEntry.getSubscribedCount() + " " +
+                    mContext.getResources().getString(R.string.organization_subscribers);
+            holder.mSubCounts.setText(subs);
+            Picasso.with(mContext)
+                    .load(organizationEntry.getLogoSmallUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .into(holder.mImageView);
         }
     }
 

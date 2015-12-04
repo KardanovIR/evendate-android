@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -32,9 +31,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.chalup.microorm.MicroOrm;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
@@ -176,46 +176,17 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
 
     private void setOrganizationInfo(){
         mOrganizationNameTextView.setText(mOrganizationModel.getName());
-        //mEventCountView.setText(data.getString(COLUMN_ORGANIZATION_NAME));
         mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
-        //mFriendCountView.setText();
-        //mFavoriteEventCountTextView.setText(data.getString(COLUMN_LOCATION_TEXT));
-        setupImage();
+        Picasso.with(getContext())
+                .load(mOrganizationModel.getBackgroundMediumUrl())
+                .error(R.drawable.default_background)
+                .into(mOrganizationImageView);
+        Picasso.with(getContext())
+                .load(mOrganizationModel.getLogoSmallUrl())
+                .error(R.mipmap.ic_launcher)
+                .into(mOrganizationIconView);
     }
 
-    private void setupImage(){
-
-        try {
-            mParcelFileDescriptor = getActivity().getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations")
-                            .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
-            if(mParcelFileDescriptor == null)
-                //заглушка на случай отсутствия картинки
-                mOrganizationImageView.setImageDrawable(getResources().getDrawable(R.drawable.default_background));
-            else {
-                ImageLoadingTask imageLoadingTask = new ImageLoadingTask(mOrganizationImageView);
-                imageLoadingTask.execute(mParcelFileDescriptor);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        try{
-            final ParcelFileDescriptor fileDescriptor = getActivity().getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("organizations").appendPath("logos")
-                            .appendPath(String.valueOf(mOrganizationModel.getEntryId())).build(), "r");
-            if(fileDescriptor == null)
-                mOrganizationIconView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            else{
-                mOrganizationIconView.setImageBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor()));
-                fileDescriptor.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
     public boolean subscript(){
             Account account = EvendateSyncAdapter.getSyncAccount(getContext());
             String token = null;

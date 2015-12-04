@@ -127,6 +127,14 @@ public class EventModel extends DataModel {
         return imageHorizontalUrl;
     }
 
+    public String getImageVerticalUrl() {
+        return imageVerticalUrl;
+    }
+
+    public String getImageSquareUrl() {
+        return imageSquareUrl;
+    }
+
     public long getUpdatedAt() {
         return updatedAt;
     }
@@ -190,6 +198,14 @@ public class EventModel extends DataModel {
 
     public String getOrganizationShortName() {
         return organizationShortName;
+    }
+
+    public String getOrganizationTypeName() {
+        return organizationTypeName;
+    }
+
+    public String getOrganizationLogoUrl() {
+        return organizationLogoUrl;
     }
 
     public String getLocation() {

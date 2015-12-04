@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -11,13 +12,15 @@
             android:id="@+id/organization_category"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="16dp"
             android:textSize="16sp"
             android:textIsSelectable="false"
-            android:textColor="@color/accent" />
+            android:textColor="@color/accent"
+            tools:text="Музеи"
+            android:padding="16dp" />
     </FrameLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/reel_item"/>
 </LinearLayout>

@@ -11,11 +11,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -44,6 +44,7 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
 
-        mAccountToggle = (ToggleButton) findViewById(R.id.account_view_icon_button);
+        mAccountToggle = (ToggleButton)mNavigationView.getHeaderView(0).findViewById(R.id.account_view_icon_button);
         mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        RelativeLayout navHeader = (RelativeLayout)findViewById(R.id.nav_header);
+        RelativeLayout navHeader = (RelativeLayout)mNavigationView.getHeaderView(0);
         navHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -226,16 +227,16 @@ public class MainActivity extends AppCompatActivity
          * solution for issue with view pager from support library
          * http://stackoverflow.com/questions/32323570/viewpager-title-doesnt-appear-until-i-swipe-it
          */
-        if(!isRunning){
-            mViewPager.setCurrentItem(1);
-            mViewPager.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mViewPager.setCurrentItem(0);
-                }
-            }, 100);
-            isRunning = true;
-        }
+        //if(!isRunning){
+        //    mViewPager.setCurrentItem(1);
+        //    mViewPager.postDelayed(new Runnable() {
+        //        @Override
+        //        public void run() {
+        //            mViewPager.setCurrentItem(0);
+        //        }
+        //    }, 100);
+        //    isRunning = true;
+        //}
     }
     @Override
     public void onPause() {
@@ -395,35 +396,50 @@ public class MainActivity extends AppCompatActivity
         if(mOrganizationMenu != null){
             mOrganizationMenu.clear();
         }
-        mOrganizationMenu = navigationDrawerMenu.addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
+        mOrganizationMenu = navigationDrawerMenu
+                .addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
+        mNavigationView.setItemIconTintList(null);
         if(mSubscriptionCursor != null){
             mSubscriptionCursor.moveToFirst();
             while(!mSubscriptionCursor.isAfterLast()){
-                MenuItem menuItem = mOrganizationMenu.add(0, mSubscriptionCursor.getInt(mSubscriptionCursor
-                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID)), 0,
+                int id = mSubscriptionCursor.getInt(mSubscriptionCursor
+                                .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID));
+                MenuItem menuItem = mOrganizationMenu.add(0, id, 0,
                         mSubscriptionCursor.getString(mSubscriptionCursor
                                 .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_SHORT_NAME)));
-                mNavigationView.setItemIconTintList(null);
-                try {
-                    final ParcelFileDescriptor fileDescriptor = getContentResolver()
-                            .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                                    .appendPath("images").appendPath("organizations").appendPath("logos")
-                                    .appendPath(mSubscriptionCursor.getString(mSubscriptionCursor
-                                            .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID))).build(), "r");
-                    //TODo перенести в xml
-                    if(fileDescriptor == null)
-                        //заглушка на случай отсутствия картинки
-                        menuItem.setIcon(R.mipmap.ic_launcher);
-                    else {
-                        menuItem.setIcon(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
-                        //add to monitoring
-                        fileDescriptor.close();
-                    }
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
+                menuItem.setVisible(false);
+                MenuIconTask menuIconTask = new MenuIconTask(this, menuItem);
+                menuIconTask.execute(mSubscriptionCursor.getString(mSubscriptionCursor
+                        .getColumnIndex(EvendateContract.OrganizationEntry.COLUMN_LOGO_URL)));
                 mSubscriptionCursor.moveToNext();
             }
+        }
+    }
+    public class MenuIconTask extends AsyncTask<String, Void, Bitmap> {
+        MenuItem mMenuItem;
+        Context mContext;
+        public MenuIconTask(Context context, MenuItem menuItem) {
+            mMenuItem = menuItem;
+            mContext = context;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            try{
+                return Picasso.with(mContext)
+                        .load(params[0])
+                        .get();
+            }catch (IOException e){
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(bitmap == null)
+                mMenuItem.setIcon(R.mipmap.ic_launcher).setVisible(true);
+            else
+                mMenuItem.setIcon(new BitmapDrawable(getResources(), bitmap)).setVisible(true);
         }
     }
     private void updateAccountMenu(){
@@ -452,9 +468,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void setAccountInfo(){
-        TextView email = (TextView)findViewById(R.id.email);
-        ImageView avatar = (ImageView)findViewById(R.id.avatar);
-        TextView username = (TextView) findViewById(R.id.username);
+        RelativeLayout header = (RelativeLayout)mNavigationView.getHeaderView(0);
+        TextView email = (TextView)header.findViewById(R.id.email);
+        ImageView avatar = (ImageView)header.findViewById(R.id.avatar);
+        TextView username = (TextView)header.findViewById(R.id.username);
         SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
         String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
         String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
@@ -462,21 +479,10 @@ public class MainActivity extends AppCompatActivity
         email.setText(account_name);
         username.setText(first_name + " " + last_name);
 
-        try {
-            final ParcelFileDescriptor fileDescriptor = getContentResolver()
-                    .openFileDescriptor(EvendateContract.BASE_CONTENT_URI.buildUpon()
-                            .appendPath("images").appendPath("user").build(), "r");
-            //TODo перенести в xml
-            if(fileDescriptor == null)
-                //заглушка на случай отсутствия картинки
-                avatar.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-            else {
-                avatar.setImageDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor())));
-                fileDescriptor.close();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        Picasso.with(this)
+                .load(sPref.getString(EvendateSyncAdapter.AVATAR_URL, null))
+                .error(R.mipmap.ic_launcher)
+                .into(avatar);
     }
 
     class MainPagerAdapter extends FragmentStatePagerAdapter{
@@ -516,9 +522,9 @@ public class MainActivity extends AppCompatActivity
                 //case 0:
                 //    return getString(R.string.calendar);
                 case 0:
-                    return getString(R.string.feed);
+                    return mContext.getString(R.string.feed);
                 case 1:
-                    return getString(R.string.favorite);
+                    return mContext.getString(R.string.favorite);
                 default:
                     return null;
             }
