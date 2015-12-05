@@ -368,6 +368,14 @@ public class EventModel extends DataModel {
         contentValues.put(EvendateContract.EventEntry.COLUMN_CREATED_AT, this.createdAt);
         return contentValues;
     }
+    public ArrayList<ContentProviderOperation> getInsertDates(){
+        ArrayList<ContentProviderOperation> batch = new ArrayList<>();
+        for (String localDate: getDataRangeList()) {
+            batch.add(ContentProviderOperation.newInsert(EvendateContract.EventDateEntry.getContentUri(eventId))
+                    .withValue(EvendateContract.EventDateEntry.COLUMN_DATE, localDate).build());
+        }
+        return batch;
+    }
     public Date getActialDate(){
         Calendar calendar = Calendar.getInstance();
 

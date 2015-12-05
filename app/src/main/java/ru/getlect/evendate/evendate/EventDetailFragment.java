@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +23,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +52,8 @@ import ru.getlect.evendate.evendate.sync.models.EventModel;
  */
 public class EventDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
 View.OnClickListener{
+    private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
+
     private EventDetailActivity mEventDetailActivity;
     /** Loader id that get images */
    // public static final int EVENT_IMAGE_ID = 0;
@@ -62,7 +64,6 @@ View.OnClickListener{
 
     private ImageView mEventImageView;
     private ImageView mOrganizationIconView;
-    private ParcelFileDescriptor mParcelFileDescriptor;
 
     private TextView mOrganizationTextView;
     private TextView mDescriptionTextView;
@@ -281,9 +282,9 @@ View.OnClickListener{
     }
     private void setFabIcon(){
         if (mEventEntry.isFavorite()) {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_on));
+            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
         } else {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_off));
+            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_add_white));
         }
     }
     public boolean favorite(){
@@ -344,7 +345,13 @@ View.OnClickListener{
                     Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);
-                EvendateSyncAdapter.syncImmediately(getContext());
+                //EvendateSyncAdapter.syncImmediately(getContext());
+                try {
+                    contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, mEventEntry.getInsertDates());
+                }catch (Exception e){
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -44,6 +44,7 @@ public class OrganizationModel extends DataModel {
 
     @SerializedName("background_img_url")
     String backgroundLargeUrl;
+    @Column(OrganizationEntry.COLUMN_BACKGROUND_URL)
     @SerializedName("background_medium_img_url")
     String backgroundMediumUrl;
     @SerializedName("background_small_img_url")

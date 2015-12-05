@@ -1,10 +1,14 @@
 package ru.getlect.evendate.evendate.sync;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit.Call;
 import retrofit.Response;
+import ru.getlect.evendate.evendate.EvendateApplication;
 import ru.getlect.evendate.evendate.sync.models.DataModel;
 import ru.getlect.evendate.evendate.sync.models.EventModel;
 import ru.getlect.evendate.evendate.sync.models.FriendModel;
@@ -17,6 +21,16 @@ import ru.getlect.evendate.evendate.sync.models.TagResponse;
  * Created by Dmitry on 18.10.2015.
  */
 public class ServerDataFetcher{
+
+    private static void postExceptionToTracker(Exception e){
+        // Get tracker.
+        Tracker t = EvendateApplication.getTracker();
+        // Build and send exception.
+        t.send(new HitBuilders.ExceptionBuilder()
+                .setDescription(e.getMessage())
+                .setFatal(false)
+                .build());
+    }
     //TODO нз как сделать без дублирования кода, потому что в интерфейсе явно указывается класс,
     // в который парсится json
     // ПАРАМЕТРИЗОВАТЬ
@@ -32,6 +46,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -47,6 +62,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -60,6 +76,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -73,6 +90,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -88,6 +106,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -103,6 +122,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -116,6 +136,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -129,6 +150,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return null;
     }
@@ -142,6 +164,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return false;
     }
@@ -156,6 +179,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return false;
     }
@@ -169,6 +193,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return false;
     }
@@ -182,6 +207,7 @@ public class ServerDataFetcher{
             }
         }catch (IOException e){
             e.printStackTrace();
+            postExceptionToTracker(e);
         }
         return false;
     }

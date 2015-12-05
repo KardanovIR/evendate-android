@@ -27,6 +27,10 @@ public class EvendateApplication extends MultiDexApplication {
         tracker.set("&av", BuildConfig.VERSION_NAME);
     }
 
+    public static Tracker getTracker() {
+        return tracker;
+    }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);

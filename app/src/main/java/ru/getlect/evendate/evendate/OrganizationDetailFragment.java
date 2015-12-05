@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,6 +23,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +67,6 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     private CoordinatorLayout mCoordinatorLayout;
     private ImageView mOrganizationImageView;
     private ImageView mOrganizationIconView;
-    private ParcelFileDescriptor mParcelFileDescriptor;
 
 
     private TextView mEventCountView;
@@ -214,9 +213,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
 
     private void setFabIcon(){
         if (mOrganizationModel.isSubscribed()) {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_on));
+            mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_done));
         } else {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_favorite_off));
+            mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_add_white));
         }
     }
     private class SubscriptAsyncTask extends AsyncTask<Void, Void, Boolean>{
@@ -248,14 +247,25 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
                 mOrganizationModel.setSubscribedCount(mOrganizationModel.getSubscribedCount() + count_change);
                 setOrganizationInfo();
                 setFabIcon();
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                if(mOrganizationModel.isSubscribed())
+                    Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                else
+                    Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
                 ContentResolver contentResolver = getActivity().getContentResolver();
                 contentResolver.update(mUri, mOrganizationModel.getContentValues(), null, null);
                 if(mOrganizationModel.isSubscribed())
                     mReelFragment.onSubscribed();
                 else
                     mReelFragment.onUnsubscripted();
-                EvendateSyncAdapter.syncImmediately(getContext());
+                //EvendateSyncAdapter.syncImmediately(getContext());
+                for(EventModel event : mReelFragment.getEventList()){
+                    try {
+                        contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, event.getInsertDates());
+                    }catch (Exception e){
+                        Log.e(LOG_TAG, e.getMessage(), e);
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

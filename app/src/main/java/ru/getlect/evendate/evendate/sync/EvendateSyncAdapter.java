@@ -22,9 +22,13 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ru.getlect.evendate.evendate.EvendateApplication;
 import ru.getlect.evendate.evendate.R;
 import ru.getlect.evendate.evendate.authorization.EvendateAuthenticator;
 import ru.getlect.evendate.evendate.data.EvendateContract;
@@ -177,10 +181,22 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         }catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+
+            Tracker t = EvendateApplication.getTracker();
+            t.send(new HitBuilders.ExceptionBuilder()
+                    .setDescription(e.getMessage())
+                    .setFatal(false)
+                    .build());
         }catch (OperationCanceledException|AuthenticatorException e){
             Log.e(LOG_TAG, "problem with getting token");
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+
+            Tracker t = EvendateApplication.getTracker();
+            t.send(new HitBuilders.ExceptionBuilder()
+                    .setDescription(e.getMessage())
+                    .setFatal(false)
+                    .build());
         }finally {
             Log.i(LOG_TAG, "SYNC_ENDED");
             Intent i = new Intent(SYNC_FINISHED);

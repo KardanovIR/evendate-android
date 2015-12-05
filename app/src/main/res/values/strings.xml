@@ -53,6 +53,7 @@
     <string name="subscription_fail_cause_network">No internet connection</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="subscription_confirm">Subscription confirmed</string>
+    <string name="removing_subscription_confirm">Subscription removed</string>
     <string name="favorite_confirm">Event added to favorite</string>
     <string name="remove_favorite_confirm">Event removed from favorite</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
