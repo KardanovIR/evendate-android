@@ -19,9 +19,9 @@ import ru.evendate.android.sync.EvendateSyncAdapter;
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
-    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,offline,nohttps&redirect_uri=http://ru.evendate.android.ru/vkOauthDone.php?mobile=true&response_type=code";
-    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=code&scope=public_profile,email,user_friends&display=popup&redirect_uri=http://ru.evendate.android.ru/fbOauthDone.php?mobile=true";
-    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=http://ru.evendate.android.ru/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,offline,nohttps&redirect_uri=http://evendate.ru/vkOauthDone.php?mobile=true&response_type=code";
+    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=code&scope=public_profile,email,user_friends&display=popup&redirect_uri=http://evendate.ru/fbOauthDone.php?mobile=true";
+    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=http://evendate.ru/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
 
     static public String URL_KEY = "url";
 
