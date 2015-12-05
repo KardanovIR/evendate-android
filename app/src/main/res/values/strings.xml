@@ -10,8 +10,8 @@
     <string name="title_activity_maps">Map</string>
 
     <!-- strings for sync -->
-    <string name="content_authority" translatable="false">ru.getlect.evendate.evendate</string>
-    <string name="account_type" translatable="false">ru.getlect.evendate.evendate.accounts</string>
+    <string name="content_authority" translatable="false">ru.evendate.android</string>
+    <string name="account_type" translatable="false">ru.evendate.android.accounts</string>
 
     <!-- strings for navigation drawer and main activity -->
     <string name="calendar">Calendar</string>
