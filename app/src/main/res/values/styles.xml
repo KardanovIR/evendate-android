@@ -123,5 +123,10 @@
         <item name="android:layout_marginBottom">6dp</item>
         <item name="android:layout_marginTop">18dp</item>
     </style>
+    <style name="Theme_FirstSyncDialog" parent="Material.App.Dialog.Light">
+        <item name="android:textColorPrimary">#000000</item>
+    </style>
+
+
 
 </resources>

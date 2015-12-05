@@ -73,6 +73,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, MODE_PRIVATE);
             SharedPreferences.Editor ed = sPref.edit();
             ed.putString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, account.name);
+            // will be updated by sync
+            ed.putString(EvendateSyncAdapter.FIRST_NAME, null);
+            ed.putString(EvendateSyncAdapter.FIRST_NAME, null);
+            ed.putString(EvendateSyncAdapter.FIRST_NAME, null);
             ed.apply();
 
         } else {

@@ -26,6 +26,9 @@
     <string name="favorite">Favorite</string>
     <string name="accounts">Accounts</string>
 
+    <string name="progress_dialog_title">First synchronization</string>
+    <string name="progress_dialog_message">Please, wait</string>
+
     <!-- detail event -->
     <string name="event_participants">participants</string>
     <string name="event_organization">Organization</string>

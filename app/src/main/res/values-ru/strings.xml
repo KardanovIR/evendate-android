@@ -38,4 +38,6 @@
     <string name="favorite_confirm">Событие добавлено в избранное</string>
     <string name="remove_favorite_confirm">Событие удалено из избранного</string>
     <string name="no_internet_connection">Нет интернет подключения</string>
+    <string name="progress_dialog_message">Пожалуйста подождите</string>
+    <string name="progress_dialog_title">Первичная синхронизация</string>
 </resources>

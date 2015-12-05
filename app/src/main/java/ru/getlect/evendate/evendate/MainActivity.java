@@ -3,6 +3,7 @@ package ru.getlect.evendate.evendate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     private ToggleButton mAccountToggle;
 
     private boolean isRunning = false;
+    ProgressDialog mProgressDialog;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int AUTH_REQUEST = 0;
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             updateSubscriptionMenu();
             setAccountInfo();
+            if(mProgressDialog != null)
+                mProgressDialog.dismiss();
         }
     };
 
@@ -476,6 +480,15 @@ public class MainActivity extends AppCompatActivity
         String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
         String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
         String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
+        if(first_name == null && last_name == null) {
+            mProgressDialog = new ProgressDialog(this, R.style.Theme_FirstSyncDialog);
+            mProgressDialog.setTitle(getString(R.string.progress_dialog_title));
+            mProgressDialog.setMessage(getString(R.string.progress_dialog_message));
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.show();
+        }
+
         email.setText(account_name);
         username.setText(first_name + " " + last_name);
 

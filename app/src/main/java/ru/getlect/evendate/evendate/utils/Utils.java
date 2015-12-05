@@ -1,11 +1,8 @@
 package ru.getlect.evendate.evendate.utils;
 
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,7 +65,7 @@ public class Utils {
             date = formatter.parse(str_date);
             return date;
         }catch (ParseException e){
-            Log.w("format data", "error");
+            //Log.w("format data", "error");
             //e.printStackTrace();
         }
         return null;
