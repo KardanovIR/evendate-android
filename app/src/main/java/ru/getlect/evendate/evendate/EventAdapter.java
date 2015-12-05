@@ -73,6 +73,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if(eventEntry.getTitle().length() > 60)
             holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        else
+            holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
