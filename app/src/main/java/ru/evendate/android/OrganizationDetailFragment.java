@@ -174,6 +174,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     }
 
     private void setOrganizationInfo(){
+        //prevent illegal state exception cause fragment not attached to
+        if(!isAdded())
+            return;
         mOrganizationNameTextView.setText(mOrganizationModel.getName());
         mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
         Picasso.with(getContext())
@@ -212,6 +215,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
     }
 
     private void setFabIcon(){
+        if(!isAdded())
+            return;
         if (mOrganizationModel.isSubscribed()) {
             mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_done));
         } else {

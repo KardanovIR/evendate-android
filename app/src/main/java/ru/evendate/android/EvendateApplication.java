@@ -25,6 +25,8 @@ public class EvendateApplication extends MultiDexApplication {
         tracker.enableExceptionReporting(true);
         tracker.setSessionTimeout(300);
         tracker.set("&av", BuildConfig.VERSION_NAME);
+        if (BuildConfig.DEBUG)
+            analytics.setDryRun(true);
     }
 
     public static Tracker getTracker() {

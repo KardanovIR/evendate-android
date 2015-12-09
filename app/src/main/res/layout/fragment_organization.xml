@@ -2,6 +2,7 @@
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -49,7 +50,6 @@
                         android:layout_width="72dp"
                         android:layout_height="match_parent"
                         android:padding="8dp"
-                        android:src="@drawable/clock"
                         android:id="@+id/organization_icon" />
                 </FrameLayout>
                 <TextView
@@ -61,7 +61,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:paddingRight="48dp"
-                    android:text="title"
+                    tools:text="title"
                     android:textSize="16sp" />
             </FrameLayout>
             <android.support.v7.widget.Toolbar

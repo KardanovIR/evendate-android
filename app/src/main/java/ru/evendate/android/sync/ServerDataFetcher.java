@@ -27,7 +27,7 @@ public class ServerDataFetcher{
         Tracker t = EvendateApplication.getTracker();
         // Build and send exception.
         t.send(new HitBuilders.ExceptionBuilder()
-                .setDescription(e.getMessage())
+                .setDescription(e.getMessage() + "\n" + e.getStackTrace()[0] + "\n" + e.getStackTrace()[1])
                 .setFatal(false)
                 .build());
     }

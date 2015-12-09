@@ -223,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Medium Text"
+                    tools:text="Place"
                     android:textColor="@color/text_color_black"
                     android:id="@+id/event_place"
                     android:layout_gravity="start|bottom"
@@ -271,7 +271,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Medium Text"
+                    tools:text="Medium Text"
                     android:textColor="@color/text_color_black"
                     android:id="@+id/event_tags"
                     android:layout_gravity="start|bottom"
@@ -320,13 +320,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Medium Text"
+                    tools:text="MOAR"
                     android:textColor="@color/text_color_black"
                     android:id="@+id/event_link"
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true" />
             </FrameLayout>
 
             <View

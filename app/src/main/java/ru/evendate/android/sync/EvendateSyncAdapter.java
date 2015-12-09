@@ -184,17 +184,18 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
             Tracker t = EvendateApplication.getTracker();
             t.send(new HitBuilders.ExceptionBuilder()
-                    .setDescription(e.getMessage())
+                    .setDescription(e.getMessage() + "\n" + e.getStackTrace()[1])
                     .setFatal(false)
                     .build());
         }catch (OperationCanceledException|AuthenticatorException e){
-            Log.e(LOG_TAG, "problem with getting token");
+            String description = "problem with getting token";
+            Log.e(LOG_TAG, description);
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
 
             Tracker t = EvendateApplication.getTracker();
             t.send(new HitBuilders.ExceptionBuilder()
-                    .setDescription(e.getMessage())
+                    .setDescription(description + "\n" + e.getMessage())
                     .setFatal(false)
                     .build());
         }finally {

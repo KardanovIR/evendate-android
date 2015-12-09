@@ -210,6 +210,8 @@ View.OnClickListener{
         mEventEntry.setTagList(localDataFetcher.getEventTagDataFromDB(mEventEntry.getEntryId()));
     }
     private void setEventInfo(){
+        if(!isAdded())
+            return;
         EventFormatter eventFormatter = new EventFormatter(getActivity());
         mOrganizationTextView.setText(mEventEntry.getOrganizationName());
         mDescriptionTextView.setText(mEventEntry.getDescription());
@@ -281,6 +283,8 @@ View.OnClickListener{
         }
     }
     private void setFabIcon(){
+        if(!isAdded())
+            return;
         if (mEventEntry.isFavorite()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
         } else {
