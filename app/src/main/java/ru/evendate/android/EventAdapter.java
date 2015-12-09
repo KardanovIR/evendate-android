@@ -130,7 +130,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
             if(v instanceof CardView){
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(type == ReelFragment.TypeFormat.organization.nativeInt)
+                if(type != ReelFragment.TypeFormat.organization.nativeInt)
                     intent.putExtra(EventDetailActivity.IS_LOCAL, true);
                 mContext.startActivity(intent);
             }

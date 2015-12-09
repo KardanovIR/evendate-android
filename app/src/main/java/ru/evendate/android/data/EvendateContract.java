@@ -28,7 +28,9 @@ public class EvendateContract {
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_EVENTS;
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_EVENTS;
-
+        public static Uri getContentUri(int eventId){
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(eventId)).build();
+        }
         public static final String TABLE_NAME = "events";
 
         public static final String COLUMN_EVENT_ID = "event_id";

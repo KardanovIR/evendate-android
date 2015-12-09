@@ -139,7 +139,7 @@ View.OnClickListener{
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        if(!mEventDetailActivity.isLocal)
+        if(mEventDetailActivity.isLocal)
             mEventDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
             (LoaderManager.LoaderCallbacks)this);
         else{
