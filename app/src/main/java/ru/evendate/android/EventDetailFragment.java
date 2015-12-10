@@ -2,12 +2,15 @@ package ru.evendate.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -31,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -55,6 +59,10 @@ View.OnClickListener{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
+    private View eventCover;
+    private View stripCover;
+    private View eventDescriptionContent;
+    private View eventStrip;
     /** Loader id that get images */
    // public static final int EVENT_IMAGE_ID = 0;
     public static final int EVENT_DESCRIPTION_ID = 1;
@@ -68,6 +76,7 @@ View.OnClickListener{
     private TextView mOrganizationTextView;
     private TextView mDescriptionTextView;
     private TextView mTitleTextView;
+    private TextView mDateTextView;
     private TextView mPlaceTextView;
     private TextView mTagsTextView;
     private TextView mLinkTextView;
@@ -82,6 +91,7 @@ View.OnClickListener{
     private Uri mUri;
     private int eventId;
     private EventModel mEventEntry;
+    ProgressBar mProgressBar;
 
     private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
 
@@ -102,11 +112,23 @@ View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        eventCover = rootView.findViewById(R.id.cover);
+        stripCover = rootView.findViewById(R.id.strip_cover);
+        eventCover.setVisibility(View.VISIBLE);
+        stripCover.setVisibility(View.VISIBLE);
+        eventDescriptionContent = rootView.findViewById(R.id.event_description_content);
+        eventStrip = rootView.findViewById(R.id.strip);
+
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
         mEventDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         //make status bar transparent
         if (Build.VERSION.SDK_INT >= 21) {
@@ -122,6 +144,8 @@ View.OnClickListener{
         mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization);
         mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
         mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
+        mTitleTextView.setAlpha(0.0f);
+        mDateTextView = (TextView)rootView.findViewById(R.id.event_date);
         mPlaceTextView = (TextView)rootView.findViewById(R.id.event_place);
         mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
         mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
@@ -181,9 +205,8 @@ View.OnClickListener{
                 eventId = mEventEntry.getEntryId();
                 setDateRange();
                 setTags();
-                setEventInfo();
-                setFabIcon();
                 data.close();
+                onLoaded();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
@@ -227,6 +250,7 @@ View.OnClickListener{
         mTimeTextView.setText(eventFormatter.formatTime(mEventEntry));
         mDayTextView.setText(eventFormatter.formatDay(mEventEntry));
         mMonthTextView.setText(eventFormatter.formatMonth(mEventEntry));
+        //mDateTextView.setText(eventFormatter.formatDate(mEventEntry));
 
         Picasso.with(getContext())
                 .load(mEventEntry.getImageHorizontalUrl())
@@ -278,13 +302,11 @@ View.OnClickListener{
         @Override
         protected void onPostExecute(DataModel dataModel) {
             mEventEntry = (EventModel)dataModel;
-            setEventInfo();
-            setFabIcon();
+            onLoaded();
         }
     }
+
     private void setFabIcon(){
-        if(!isAdded())
-            return;
         if (mEventEntry.isFavorite()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
         } else {
@@ -341,7 +363,6 @@ View.OnClickListener{
                 else{
                     mEventEntry.setLikedUsersCount(mEventEntry.getLikedUsersCount() - 1);
                 }
-                setFabIcon();
                 setEventInfo();
                 if(mEventEntry.isFavorite())
                     Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
@@ -356,6 +377,7 @@ View.OnClickListener{
                     Log.e(LOG_TAG, e.getMessage(), e);
                     e.printStackTrace();
                 }
+                onLoaded();
             }
         }
     }
@@ -372,4 +394,53 @@ View.OnClickListener{
         getActivity().unregisterReceiver(syncFinishedReceiver);
     }
 
+    public void onLoaded(){
+        if(!isAdded())
+            return;
+        setEventInfo();
+        final int duration = 200;
+        mTitleTextView.setAlpha(0.0f);
+        mTitleTextView.animate()
+                .alpha(1.0f)
+                .setDuration(duration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mTitleTextView.setVisibility(View.VISIBLE);
+                    }
+                });
+        eventDescriptionContent.setAlpha(0.0f);
+        eventDescriptionContent.animate()
+                .alpha(1.0f)
+                .setDuration(duration)
+                .setListener(null);
+        eventStrip.setAlpha(0.0f);
+        eventStrip.animate()
+                .alpha(1.0f)
+                .setDuration(duration)
+                .setListener(null);
+        eventCover.animate()
+                .alpha(0.0f)
+                .setDuration(duration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        eventCover.setVisibility(View.GONE);
+                    }
+                });
+        stripCover.animate()
+                .alpha(0.0f)
+                .setDuration(duration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        stripCover.setVisibility(View.GONE);
+                    }
+                });
+        mProgressBar.setVisibility(View.GONE);
+        setFabIcon();
+    }
 }

@@ -405,8 +405,10 @@ public class EvendateProvider extends ContentProvider {
                 long id = db.insert(EvendateContract.EventDateEntry.TABLE_NAME, null, values);
                 if( id > 0 )
                     returnUri = Uri.parse(EvendateContract.PATH_EVENTS + "/" + eventId + "/" + EvendateContract.PATH_DATES);
-                else
+                else{
+                    Log.e(LOG_TAG, "Failed to insert row into " + uri);
                     throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
                 break;
             }
             case EVENT_TAGS: {

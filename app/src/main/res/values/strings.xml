@@ -33,6 +33,7 @@
     <string name="event_participants">participants</string>
     <string name="event_organization">Organization</string>
     <string name="event_description">Description</string>
+    <string name="event_date">Date</string>
     <string name="event_place">Place</string>
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>

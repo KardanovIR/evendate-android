@@ -201,11 +201,14 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
+        if(EvendateSyncAdapter.isSyncRunning)
+            mSwipeRefreshLayout.setRefreshing(true);
     }
     @Override
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(syncFinishedReceiver);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

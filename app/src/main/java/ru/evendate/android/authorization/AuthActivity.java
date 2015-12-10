@@ -90,7 +90,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 Bundle.EMPTY,
                 EvendateSyncAdapter.SYNC_INTERVAL);
         ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
-        EvendateSyncAdapter.syncImmediately(this);
+        //EvendateSyncAdapter.syncImmediately(this);
         // Start IntentService to register this application with GCM.
         Intent intent = new Intent(this, RegistrationGCMIntentService.class);
         startService(intent);

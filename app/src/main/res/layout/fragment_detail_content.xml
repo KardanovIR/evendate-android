@@ -28,7 +28,7 @@
             android:layout_centerHorizontal="true"
             android:elevation="4dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="false"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
                 <LinearLayout
                 android:layout_width="0dp"
@@ -43,7 +43,7 @@
                     android:textSize="20sp"
                     android:gravity="center"
                     android:id="@+id/event_participant_count"
-                    android:text="-" />
+                    tools:text="1" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -72,7 +72,7 @@
                         android:textColor="@color/text_primary"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:text="-" />
+                        tools:text="1" />
                     <TextView
                         android:id="@+id/event_month"
                         android:layout_width="match_parent"
@@ -81,7 +81,7 @@
                         android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:gravity="center"
-                        android:text="-" />
+                        tools:text="month" />
                 </LinearLayout>
                 <View
                     android:layout_width="1dp"
@@ -105,7 +105,7 @@
                         android:textSize="20sp"
                         android:gravity="center"
                         android:id="@+id/event_time"
-                        android:text="-" />
+                        tools:text="1" />
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -114,7 +114,6 @@
                 </LinearLayout>
         </LinearLayout>
     <!--</android.support.v7.widget.Toolbar>-->
-
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll"
@@ -184,10 +183,60 @@
                 android:textSize="16sp"
                 tools:text="Для Топ-менеджеров крупных предприятий, собственников бизнеса и всех…"/>
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
                 android:background="#AAAAAA"
                 android:layout_below="@+id/event_description"
+                android:id="@+id/separator_0" />
+
+            <FrameLayout
+                android:id="@+id/event_date_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/separator_0"
+                android:layout_alignLeft="@+id/event_description"
+                android:layout_alignStart="@+id/event_description"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:id="@+id/event_date_icon"
+                    android:padding="8dp"
+                    android:src="@drawable/place"
+                    android:alpha="0.54" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/event_date"
+                    android:id="@+id/event_date_header"
+                    android:layout_gravity="start|top"
+                    android:layout_marginLeft="64dp"
+                    android:layout_marginStart="64dp"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    tools:text="date"
+                    android:textColor="@color/text_color_black"
+                    android:id="@+id/event_date"
+                    android:layout_gravity="start|bottom"
+                    android:layout_marginLeft="64dp"
+                    android:layout_marginStart="64dp"
+                    android:textSize="12sp"
+                    android:maxHeight="30dp"
+                    android:ellipsize="end"/>
+            </FrameLayout>
+            <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+                android:background="#AAAAAA"
+                android:layout_below="@+id/event_date_content"
                 android:id="@+id/separator_1" />
 
             <FrameLayout
@@ -195,8 +244,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/separator_1"
-                android:layout_alignLeft="@+id/event_description"
-                android:layout_alignStart="@+id/event_description"
+                android:layout_alignLeft="@+id/separator_1"
+                android:layout_alignStart="@+id/separator_1"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
@@ -217,7 +266,7 @@
                     android:layout_gravity="start|top"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -229,7 +278,9 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxHeight="30dp"
+                    android:ellipsize="end"/>
             </FrameLayout>
             <View
                 android:layout_width="match_parent"
@@ -277,7 +328,9 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:maxHeight="30dp"
+                    android:ellipsize="end"/>
             </FrameLayout>
             <View
                 android:id="@+id/separator_3"
@@ -327,7 +380,8 @@
                     android:layout_marginLeft="64dp"
                     android:layout_marginStart="64dp"
                     android:textSize="12sp"
-                    android:singleLine="true" />
+                    android:maxHeight="30dp"
+                    android:ellipsize="end"/>
             </FrameLayout>
 
             <View
@@ -339,4 +393,44 @@
     </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
+    <!-- background strip for cross-fading -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="?attr/colorPrimary"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+    <!-- loader view for strip -->
+    <View
+        android:id="@+id/strip_cover"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        tools:visibility="gone"/>
+    <View
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_below="@id/strip"
+        tools:visibility="gone"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_below="@id/strip"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

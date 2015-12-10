@@ -164,6 +164,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 cloudFriendList2.addAll(cloudFriendList);
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);
             }
+            //reload after updating
+            localEventList = localDataFetcher.getEventDataFromDB();
             for(DataModel e : localEventList){
                 ((EventModel)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getEntryId()));
                 ((EventModel)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getEntryId()));
@@ -248,21 +250,21 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         return null;
     }
-    private static void onAccountCreated(Account newAccount, Context context) {
-        /*
-         * Since we've created an account
-         */
-
-        /*
-         * Without calling setSyncAutomatically, our periodic sync will not be enabled.
-         */
-        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
-
-        /*
-         * Finally, let's do a sync to get things started
-         */
-        syncImmediately(context);
-    }
+    //private static void onAccountCreated(Account newAccount, Context context) {
+    //    /*
+    //     * Since we've created an account
+    //     */
+//
+    //    /*
+    //     * Without calling setSyncAutomatically, our periodic sync will not be enabled.
+    //     */
+    //    ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+//
+    //    /*
+    //     * Finally, let's do a sync to get things started
+    //     */
+    //    syncImmediately(context);
+    //}
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
     }

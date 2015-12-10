@@ -481,7 +481,11 @@ public class MainActivity extends AppCompatActivity
         String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
         String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
         if(first_name == null && last_name == null) {
-            mProgressDialog = new ProgressDialog(this, R.style.Theme_FirstSyncDialog);
+            if(!EvendateSyncAdapter.isSyncRunning){
+                EvendateSyncAdapter.syncImmediately(this);
+                Log.d(LOG_TAG, "request first sync");
+            }
+            mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setTitle(getString(R.string.progress_dialog_title));
             mProgressDialog.setMessage(getString(R.string.progress_dialog_message));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
