@@ -398,6 +398,9 @@ View.OnClickListener{
         if(!isAdded())
             return;
         setEventInfo();
+        setFabIcon();
+        if(eventCover.getVisibility() != View.VISIBLE && stripCover.getVisibility() != View.VISIBLE)
+            return;
         final int duration = 200;
         mTitleTextView.setAlpha(0.0f);
         mTitleTextView.animate()
@@ -407,7 +410,6 @@ View.OnClickListener{
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        mTitleTextView.setVisibility(View.VISIBLE);
                     }
                 });
         eventDescriptionContent.setAlpha(0.0f);
@@ -441,6 +443,5 @@ View.OnClickListener{
                     }
                 });
         mProgressBar.setVisibility(View.GONE);
-        setFabIcon();
     }
 }
