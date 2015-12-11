@@ -70,9 +70,6 @@ public class EventFormatter {
                 }
                 else{
                     if(isInterval){
-                        if(monthFormat.format(prevDate).equals(month))
-                            currentDates += "-" + formatDay(parsedDate);
-                        else
                             currentDates += "-" + formatDay(prevDate);
                         isInterval = false;
                     }
