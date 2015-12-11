@@ -204,7 +204,7 @@
                     android:layout_height="48dp"
                     android:id="@+id/event_date_icon"
                     android:padding="8dp"
-                    android:src="@drawable/place"
+                    android:src="@drawable/calendar_icon"
                     android:alpha="0.54" />
 
                 <TextView
