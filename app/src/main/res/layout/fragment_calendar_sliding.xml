@@ -12,6 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
+        android:elevation="4dp"
         >
         <TextView
             android:id="@+id/calendar_date"
@@ -20,12 +21,12 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            tools:text="ПТ, 11 декабря 2015"
+            tools:text="ПТ, 11 декабря"
             android:textColor="@color/text_primary"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
         <TextView
             android:id="@+id/calendar_event_count"
             android:layout_width="150dp"
@@ -38,7 +39,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
         <ToggleButton
             android:id="@+id/calendar_button"
             android:layout_width="48dp"

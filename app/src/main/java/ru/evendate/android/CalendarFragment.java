@@ -2,6 +2,7 @@ package ru.evendate.android;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -56,6 +57,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     private ToggleButton mToggleButton;
     private TextView mSelectedDateTextView;
     private TextView mEventCountTextView;
+    private View Toolbar;
     private View mDragView;
 
     final int DATES_LOADER_ID = 0;
@@ -93,6 +95,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         mEventCountTextView = (TextView)rootView.findViewById(R.id.calendar_event_count);
         mCalendarView = (MaterialCalendarView)rootView.findViewById(R.id.calendarView);
         mDragView = rootView.findViewById(R.id.dragView);
+        Toolbar = rootView.findViewById(R.id.toolbar);
         mCalendarView.getCurrentDate();
         mCalendarView.setOnDateChangedListener(this);
         Calendar calendar = Calendar.getInstance();
@@ -118,11 +121,15 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             @Override
             public void onPanelCollapsed(View panel) {
                 mToggleButton.setChecked(false);
+                if (Build.VERSION.SDK_INT >= 21)
+                    Toolbar.setElevation(4.0f);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
                 mToggleButton.setChecked(true);
+                if (Build.VERSION.SDK_INT >= 21)
+                    Toolbar.setElevation(0.0f);
             }
 
             @Override
@@ -159,7 +166,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     @Override
     public void onResume() {
         super.onResume();
-        mCalendarView.setSelectedDate(new Date(System.currentTimeMillis()));
+
+        mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
         mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt,
                 mCalendarView.getSelectedDate().getDate(), false);
         mReelFragment.setDataListener(this);
@@ -250,6 +258,10 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             view.setDaysDisabled(false);
         }
     }
+
+    /**
+     * decorate selected day
+     */
     public class OneDayDecorator implements DayViewDecorator {
 
         private CalendarDay date;
@@ -277,6 +289,10 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
          */
         public void setDate(Date date) {
             this.date = CalendarDay.from(date);
+        }
+
+        public CalendarDay getDate() {
+            return date;
         }
     }
 
