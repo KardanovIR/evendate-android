@@ -26,12 +26,12 @@ public class EventFormatter {
         return formatDay(date);
     }
     private String formatDay(Date date){
-        DateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat("d", Locale.getDefault());
         if(date == null)
             return null;
         String day = dateFormat.format(date);
-        if(day.substring(0, 1).equals("0"))
-            day = day.substring(1);
+        //if(day.substring(0, 1).equals("0"))
+        //    day = day.substring(1);
         return day;
     }
     public String formatMonth(EventModel event) {
@@ -42,7 +42,7 @@ public class EventFormatter {
         return dateFormat.format(date);
     }
     public String formatDate(EventModel event) {
-        //10-13, 15 december; 23 january
+        //10-13, 15, 20-31 december; 23 january
         //TODO ой говнокод
         String resDate = "";
         String currentMonth = null;
@@ -62,7 +62,8 @@ public class EventFormatter {
             if(prevDate != null){
                 calendar.setTime(parsedDate);
                 calendar.add(Calendar.DATE, -1);
-                if(calendar.getTime().equals(prevDate)){
+                if(calendar.getTime().equals(prevDate)
+                        && month.equals(monthFormat.format(prevDate))){
                     isInterval = true;
                     prevDate = parsedDate;
                     continue;
@@ -84,7 +85,6 @@ public class EventFormatter {
                     resDate += currentDates + " " + currentMonth;
                 currentMonth = month;
                 currentDates = "";
-                month = null;
             }
             if(currentDates.equals(""))
                 currentDates += formatDay(parsedDate);
