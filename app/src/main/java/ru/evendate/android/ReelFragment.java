@@ -402,4 +402,15 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     interface OnEventsDataLoadedListener{
         void onEventsDataLoaded();
     }
+
+    public void setDate(Date mDate) {
+        if(type != TypeFormat.calendar.nativeInt)
+            return;
+        this.mDate = mDate;
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.restartLoader(EVENT_INFO_LOADER_ID, null, this);
+    }
+    public void setRecyclerViewOnScrollListener(RecyclerView.OnScrollListener onScrollListener){
+        mRecyclerView.addOnScrollListener(onScrollListener);
+    }
 }

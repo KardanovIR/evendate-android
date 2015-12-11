@@ -63,4 +63,6 @@
     <string name="nav_account_management">Account Management</string>
 
     <string name="event_all_day">All day</string>
+
+    <string name="calendar_events">events</string>
 </resources>

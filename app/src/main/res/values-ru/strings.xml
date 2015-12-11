@@ -42,4 +42,5 @@
     <string name="progress_dialog_title">Первичная синхронизация</string>
     <string name="removing_subscription_confirm">Подписка удалена</string>
     <string name="event_date">Дата</string>
+    <string name="calendar_events">событий</string>
 </resources>
