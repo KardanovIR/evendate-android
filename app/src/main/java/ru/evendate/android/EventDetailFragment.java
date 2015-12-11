@@ -250,7 +250,7 @@ View.OnClickListener{
         mTimeTextView.setText(eventFormatter.formatTime(mEventEntry));
         mDayTextView.setText(eventFormatter.formatDay(mEventEntry));
         mMonthTextView.setText(eventFormatter.formatMonth(mEventEntry));
-        //mDateTextView.setText(eventFormatter.formatDate(mEventEntry));
+        mDateTextView.setText(eventFormatter.formatDate(mEventEntry));
 
         Picasso.with(getContext())
                 .load(mEventEntry.getImageHorizontalUrl())
