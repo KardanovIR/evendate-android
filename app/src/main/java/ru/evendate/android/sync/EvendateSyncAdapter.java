@@ -241,7 +241,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
         Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
-            Log.e("SYNC", "No Accounts");
+            Log.e(LOG_TAG, "get account: No Accounts");
             return null;
         }
         for(Account account : accounts){

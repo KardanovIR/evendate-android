@@ -576,10 +576,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
     @Override
-     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AUTH_REQUEST) {
             if (resultCode == RESULT_CANCELED) {
                 finish();
+            }
+            if (resultCode == RESULT_OK){
+                updateAccountMenu();
             }
         }
     }

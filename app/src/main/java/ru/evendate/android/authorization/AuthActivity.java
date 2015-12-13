@@ -62,6 +62,13 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onTokenReceived(Account account, String password, String token) {
 
         final AccountManager am = AccountManager.get(this);
+        // TODO change account
+        // temporary we remove function to change accounts
+        // delete old account
+        Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        if(oldAccount != null)
+            am.removeAccount(oldAccount, null, null);
+
         final Bundle result = new Bundle();
         if (am.addAccountExplicitly(account, password, new Bundle())) {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
@@ -80,9 +87,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             ed.apply();
 
         } else {
+            Log.i(LOG_TAG, "cannot add account");
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
+            return;
         }
         ContentResolver.addPeriodicSync(
                 EvendateSyncAdapter.getSyncAccount(this),
