@@ -318,6 +318,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderManage
 
     @Override
     public void onEventsDataLoaded() {
+        if(!isAdded())
+            return;
         mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
         int favoriteCount = 0;
         HashSet<Integer> friendSet = new HashSet<>();
