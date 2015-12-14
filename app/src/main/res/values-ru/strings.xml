@@ -14,7 +14,7 @@
     <string name="settings">Настройки</string>
     <string name="reel">Мои мероприятия</string>
     <string name="organizations">Каталог организаций</string>
-    <string name="nav_add_account">Добавить аккаунт</string>
+    <string name="nav_add_account">Сменить аккаунт</string>
     <string name="nav_account_management">Управление аккаунтами</string>
     <string name="help">Помощь</string>
     <string name="feedback">Оставить отзыв</string>
@@ -42,4 +42,11 @@
     <string name="progress_dialog_title">Первичная синхронизация</string>
     <string name="removing_subscription_confirm">Подписка удалена</string>
     <string name="event_date">Дата</string>
+    <string name="calendar_events">событий</string>
+    <string name="intro_done">Начать</string>
+    <string name="intro_interests">Узнай, что интересно твоим друзьям</string>
+    <string name="intro_miss">Не пропусти важное событие</string>
+    <string name="intro_share">Делись событиями с друзьями</string>
+    <string name="intro_sync">Синхронизируйся со всем устройствами</string>
+    <string name="intro_manage">Управляй уведомлениями</string>
 </resources>

@@ -47,7 +47,7 @@ public class MergeWithoutDelete extends MergeStrategy{
                 if (!e.equals(match)){
                     // Update existing record
                     Log.i(LOG_TAG, "Scheduling update: " + existingUri);
-                    batch.add(match.getUpdate(ContentUri));
+                    batch.add(match.getUpdate(existingUri));
                 } else {
                     Log.i(LOG_TAG, "No action: " + existingUri);
                 }

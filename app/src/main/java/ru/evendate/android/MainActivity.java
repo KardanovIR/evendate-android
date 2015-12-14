@@ -571,15 +571,18 @@ public class MainActivity extends AppCompatActivity
     private void checkAccount(){
         Account account = EvendateSyncAdapter.getSyncAccount(this);
         if(account == null){
-            Intent authIntent = new Intent(this, AuthActivity.class);
-            startActivityForResult(authIntent, AUTH_REQUEST);
+            Intent introIntent = new Intent(this, EvendateIntro.class);
+            startActivity(introIntent);
         }
     }
     @Override
-     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AUTH_REQUEST) {
             if (resultCode == RESULT_CANCELED) {
                 finish();
+            }
+            if (resultCode == RESULT_OK){
+                updateAccountMenu();
             }
         }
     }
