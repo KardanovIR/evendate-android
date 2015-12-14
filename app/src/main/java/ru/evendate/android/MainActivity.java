@@ -571,8 +571,8 @@ public class MainActivity extends AppCompatActivity
     private void checkAccount(){
         Account account = EvendateSyncAdapter.getSyncAccount(this);
         if(account == null){
-            Intent authIntent = new Intent(this, AuthActivity.class);
-            startActivityForResult(authIntent, AUTH_REQUEST);
+            Intent introIntent = new Intent(this, EvendateIntro.class);
+            startActivity(introIntent);
         }
     }
     @Override

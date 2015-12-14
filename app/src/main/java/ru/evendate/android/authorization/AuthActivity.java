@@ -34,6 +34,14 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.auth_container, fragment)
                 .commit();
+
+        final AccountManager am = AccountManager.get(this);
+        // TODO change account
+        // temporary we remove function to change accounts
+        // delete old account
+        Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        if(oldAccount != null)
+            am.removeAccount(oldAccount, null, null);
     }
 
 
@@ -62,12 +70,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onTokenReceived(Account account, String password, String token) {
 
         final AccountManager am = AccountManager.get(this);
-        // TODO change account
-        // temporary we remove function to change accounts
-        // delete old account
-        Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
-        if(oldAccount != null)
-            am.removeAccount(oldAccount, null, null);
 
         final Bundle result = new Bundle();
         if (am.addAccountExplicitly(account, password, new Bundle())) {

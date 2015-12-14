@@ -125,6 +125,9 @@
         <activity android:name=".CalendarActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".EvendateIntro"
+            android:screenOrientation="portrait"/>
 
         <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices -->
