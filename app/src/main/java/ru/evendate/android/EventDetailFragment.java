@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -38,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.chalup.microorm.MicroOrm;
 
@@ -255,7 +259,25 @@ View.OnClickListener{
         Picasso.with(getContext())
                 .load(mEventEntry.getImageHorizontalUrl())
                 .error(R.drawable.default_background)
-                .into(mEventImageView);
+                .into(new Target() {
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        if(bitmap == null)
+                            return;
+                        mEventImageView.setImageBitmap(bitmap);
+                        pallete(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                    }
+                });
         Picasso.with(getContext())
                 .load(mEventEntry.getOrganizationLogoUrl())
                 .error(R.mipmap.ic_launcher)
@@ -399,7 +421,7 @@ View.OnClickListener{
             return;
         setEventInfo();
         setFabIcon();
-        if(eventCover.getVisibility() != View.VISIBLE && stripCover.getVisibility() != View.VISIBLE)
+        if (eventCover.getVisibility() != View.VISIBLE && stripCover.getVisibility() != View.VISIBLE)
             return;
         final int duration = 200;
         mTitleTextView.setAlpha(0.0f);
@@ -443,5 +465,29 @@ View.OnClickListener{
                     }
                 });
         mProgressBar.setVisibility(View.GONE);
+    }
+    public void pallete(Bitmap bitmap){
+        Palette palette = Palette.generate(bitmap);
+        Palette.Swatch mutedSwatch = palette.getMutedSwatch();
+        Palette.Swatch mutedLightSwatch = palette.getLightMutedSwatch();
+        Palette.Swatch mutedDarkSwatch = palette.getDarkMutedSwatch();
+        Palette.Swatch swatch = palette.getVibrantSwatch();
+        // Gets the RGB packed int -> same as palette.getVibrantColor(defaultColor);
+        int rgbColor = swatch.getRgb();
+        // Gets the HSL values
+        // Hue between 0 and 360
+        // Saturation between 0 and 1
+        // Lightness between 0 and 1
+        float[] hslValues = swatch.getHsl();
+        // Gets the number of pixels represented by this swatch
+        int pixelCount = swatch.getPopulation();
+        // Gets an appropriate title text color
+        int titleTextColor = swatch.getTitleTextColor();
+        // Gets an appropriate body text color
+        int bodyTextColor = swatch.getBodyTextColor();
+
+        eventStrip.setBackgroundColor(mutedDarkSwatch.getRgb());
+        mTitleTextView.setTextColor(mutedDarkSwatch.getTitleTextColor());
+
     }
 }
