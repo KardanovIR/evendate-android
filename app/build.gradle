@@ -55,4 +55,5 @@ dependencies {
     compile 'org.chalup.microorm:microorm:0.6.2'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.paolorotolo:appintro:3.3.0'
 }

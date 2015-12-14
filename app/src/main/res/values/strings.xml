@@ -59,10 +59,18 @@
     <string name="remove_favorite_confirm">Event removed from favorite</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
 
-    <string name="nav_add_account">Add Account</string>
+    <string name="nav_add_account">Change Account</string>
     <string name="nav_account_management">Account Management</string>
 
     <string name="event_all_day">All day</string>
 
     <string name="calendar_events">events</string>
+
+    <!-- intro strings -->
+    <string name="intro_miss">Don\'t miss important event</string>
+    <string name="intro_interests">Find out friends interests</string>
+    <string name="intro_share">Share events with friends</string>
+    <string name="intro_manage">Manage notifications</string>
+    <string name="intro_sync">Sync all devices</string>
+    <string name="intro_done">Begin</string>
 </resources>
