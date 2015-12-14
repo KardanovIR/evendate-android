@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="-"
+                tools:text="1"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
@@ -72,7 +72,7 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:id="@+id/organization_subscription_count"
-                android:text="-" />
+                tools:text="1" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="-"
+                tools:text="1"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:gravity="center"
@@ -136,7 +136,7 @@
         android:layout_alignParentStart="true"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:text="- favorite event"
+        tools:text="1 favorite event"
         android:textColor="@color/text_primary"
         android:paddingLeft="18dp"
         android:paddingStart="18dp"

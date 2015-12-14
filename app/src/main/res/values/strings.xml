@@ -10,8 +10,8 @@
     <string name="title_activity_maps">Map</string>
 
     <!-- strings for sync -->
-    <string name="content_authority" translatable="false">ru.getlect.evendate.evendate</string>
-    <string name="account_type" translatable="false">ru.getlect.evendate.evendate.accounts</string>
+    <string name="content_authority" translatable="false">ru.evendate.android</string>
+    <string name="account_type" translatable="false">ru.evendate.android.accounts</string>
 
     <!-- strings for navigation drawer and main activity -->
     <string name="calendar">Calendar</string>
@@ -24,11 +24,16 @@
 
     <string name="feed">Feed</string>
     <string name="favorite">Favorite</string>
+    <string name="accounts">Accounts</string>
+
+    <string name="progress_dialog_title">First synchronization</string>
+    <string name="progress_dialog_message">Please, wait</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
     <string name="event_organization">Organization</string>
     <string name="event_description">Description</string>
+    <string name="event_date">Date</string>
     <string name="event_place">Place</string>
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>
@@ -40,17 +45,24 @@
     <string name="favorite_events">favorite events</string>
 
     <!-- strings for sign in -->
-    <string name="sing_in_vk">Sing in by Vkontakte</string>
-    <string name="sing_in_fb">Sing in by Facebook</string>
-    <string name="sing_in_google">Sing in by Google+</string>
+    <string name="sing_in_description">Sing in via social network</string>
+    <string name="sing_in_vk">Vkontakte</string>
+    <string name="sing_in_fb">Facebook</string>
+    <string name="sing_in_google">Google+</string>
     <string name="account_already_exists">Evendate account already exist</string>
 
     <string name="subscription_fail_cause_network">No internet connection</string>
+    <string name="no_internet_connection">No internet connection</string>
     <string name="subscription_confirm">Subscription confirmed</string>
+    <string name="removing_subscription_confirm">Subscription removed</string>
+    <string name="favorite_confirm">Event added to favorite</string>
+    <string name="remove_favorite_confirm">Event removed from favorite</string>
     <string name="subscription_fail_cause_error">Error occurred</string>
 
     <string name="nav_add_account">Add Account</string>
     <string name="nav_account_management">Account Management</string>
 
     <string name="event_all_day">All day</string>
+
+    <string name="calendar_events">events</string>
 </resources>

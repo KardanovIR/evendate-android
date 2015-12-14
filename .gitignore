@@ -43,3 +43,5 @@ build/
 # *.ipr
 # *~
 # *.swp
+
+app/google-services.json

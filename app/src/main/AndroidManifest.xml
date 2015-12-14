@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.getlect.evendate.evendate">
+    package="ru.evendate.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -62,16 +62,16 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".authorization.AuthActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name=".data.EvendateProvider"
-            android:authorities="ru.getlect.evendate.evendate"
+            android:authorities="@string/content_authority"
             android:exported="false"
-            android:syncable="true"></provider>
+            android:syncable="true"/>
 
         <service
             android:name=".authorization.EvendateAuthenticatorService"
@@ -99,22 +99,20 @@
         <activity
             android:name=".EventDetailActivity"
             android:label="@string/title_activity_detail"
-            android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.getlect.evendate.evendate.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".OrganizationDetailActivity"
             android:label="@string/title_activity_organization"
-            android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.getlect.evendate.evendate.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".OrganizationCatalogActivity"
@@ -122,7 +120,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.getlect.evendate.evendate.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity android:name=".CalendarActivity"
             android:parentActivityName=".MainActivity"
