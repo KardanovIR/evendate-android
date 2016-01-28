@@ -39,7 +39,6 @@ import ru.evendate.android.sync.merge.MergeWithoutDelete;
 import ru.evendate.android.sync.models.DataModel;
 import ru.evendate.android.sync.models.EventModel;
 import ru.evendate.android.sync.models.FriendModel;
-
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
 

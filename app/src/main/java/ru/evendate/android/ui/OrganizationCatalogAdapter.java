@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.OrganizationModel;
 

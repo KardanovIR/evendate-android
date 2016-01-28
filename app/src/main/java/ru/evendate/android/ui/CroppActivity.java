@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -16,6 +16,8 @@ import com.rey.material.widget.Button;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import ru.evendate.android.R;
 
 /**
  * Created by fj on 14.09.2015.

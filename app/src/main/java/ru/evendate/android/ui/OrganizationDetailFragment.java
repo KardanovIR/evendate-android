@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -38,6 +38,7 @@ import org.chalup.microorm.MicroOrm;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
+import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;

@@ -19,6 +19,7 @@ import ru.evendate.android.data.EvendateContract;
  *
  * Класс, отвечающий за загрузку и сохрание картинок на sd карту
  */
+@Deprecated
 public class ImageServerLoader {
     private static Context mContext;
 

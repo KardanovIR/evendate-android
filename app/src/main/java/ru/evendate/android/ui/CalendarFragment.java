@@ -1,16 +1,13 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.database.Cursor;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
@@ -39,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.utils.Utils;
 
@@ -57,7 +55,6 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     private ToggleButton mToggleButton;
     private TextView mSelectedDateTextView;
     private TextView mEventCountTextView;
-    private View Toolbar;
     private View mDragView;
 
     final int DATES_LOADER_ID = 0;
@@ -85,17 +82,11 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((Toolbar)rootView.findViewById(R.id.toolbar)).setNavigationIcon(R.mipmap.ic_arrow_back_white);
-
         mSlidingUpPanelLayout = (SlidingUpPanelLayout)rootView.findViewById(R.id.sliding_layout);
         mSelectedDateTextView = (TextView)rootView.findViewById(R.id.calendar_date);
         mEventCountTextView = (TextView)rootView.findViewById(R.id.calendar_event_count);
         mCalendarView = (MaterialCalendarView)rootView.findViewById(R.id.calendarView);
         mDragView = rootView.findViewById(R.id.dragView);
-        Toolbar = rootView.findViewById(R.id.toolbar);
         mCalendarView.getCurrentDate();
         mCalendarView.setOnDateChangedListener(this);
         Calendar calendar = Calendar.getInstance();
@@ -121,15 +112,15 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             @Override
             public void onPanelCollapsed(View panel) {
                 mToggleButton.setChecked(false);
-                if (Build.VERSION.SDK_INT >= 21)
-                    Toolbar.setElevation(4.0f);
+                //if (Build.VERSION.SDK_INT >= 21)
+                    //Toolbar.setElevation(4.0f);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
                 mToggleButton.setChecked(true);
-                if (Build.VERSION.SDK_INT >= 21)
-                    Toolbar.setElevation(0.0f);
+                //if (Build.VERSION.SDK_INT >= 21)
+                    //Toolbar.setElevation(0.0f);
             }
 
             @Override

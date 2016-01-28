@@ -13,6 +13,7 @@ import java.net.URL;
 /**
  * Created by Dmitry on 15.11.2015.
  */
+@Deprecated
 public class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
     private String LOG_TAG = ImageLoaderTask.class.getSimpleName();
     private ImageView mImageView;

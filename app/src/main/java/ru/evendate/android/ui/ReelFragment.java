@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 /**
  * Created by Dmitry on 23.09.2015.
@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
@@ -58,7 +59,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
     private android.support.v7.widget.RecyclerView mRecyclerView;
 
     private final static int EVENT_INFO_LOADER_ID = 0;
-    private EventAdapter mAdapter;
+    private EventsAdapter mAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
@@ -155,7 +156,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
                 EvendateSyncAdapter.syncImmediately(getContext());
             }
         });
-        mAdapter = new EventAdapter(getActivity(), type);
+        mAdapter = new EventsAdapter(getActivity(), type);
         mRecyclerView.setAdapter(mAdapter);
 
         if(type != TypeFormat.organization.nativeInt){
@@ -244,7 +245,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
             case EVENT_INFO_LOADER_ID:
                 return new CursorLoader(
                         getActivity(),
-                        EventAdapter.mUri,
+                        EventsAdapter.mUri,
                         null,
                         selection,
                         null,
@@ -347,7 +348,7 @@ public class ReelFragment extends Fragment implements LoaderManager.LoaderCallba
         if(mAdapter.getEventList() == null)
             return;
         ContentResolver contentResolver = getContext().getContentResolver();
-        Uri ContentUri = EventAdapter.mUri;
+        Uri ContentUri = EventsAdapter.mUri;
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
 

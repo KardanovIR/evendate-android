@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.EventFormatter;
 import ru.evendate.android.sync.models.EventModel;
@@ -24,7 +25,7 @@ import ru.evendate.android.sync.models.EventModel;
  * Created by Dmitry on 01.12.2015.
  */
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>{
+public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolder>{
 
     Context mContext;
     private ArrayList<EventModel> mEventList;
@@ -32,7 +33,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 
-    public EventAdapter(Context context, int type){
+    public EventsAdapter(Context context, int type){
         this.mContext = context;
         this.type = type;
     }

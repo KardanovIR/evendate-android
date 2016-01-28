@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -6,8 +6,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import ru.evendate.android.R;
 import ru.evendate.android.sync.LocalDataFetcher;
-
+@Deprecated
 public class OrganizationCatalogActivity extends AppCompatActivity {
     private android.support.v7.widget.RecyclerView mRecyclerView;
     private OrganizationCategoryAdapter mAdapter;

@@ -61,6 +61,10 @@ public interface EvendateService {
             @Path("id") int eventId,
             @Header("Authorization") String authorization);
 
+    @GET("/api/subscriptions/my")
+    Call<EvendateServiceResponseArray<OrganizationModel>> subscriptionData(
+            @Header("Authorization") String authorization);
+
     @POST("/api/subscriptions")
     Call<EvendateServiceResponseAttr<OrganizationModel>> organizationPostSubscription(
             @Query("organization_id") int organizationId,

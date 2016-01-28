@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.R;
 import ru.evendate.android.sync.LocalDataFetcher;
 import ru.evendate.android.sync.models.DataModel;
 import ru.evendate.android.sync.models.OrganizationModel;

@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -35,6 +35,7 @@ import com.rey.material.widget.EditText;
 
 import java.text.SimpleDateFormat;
 
+import ru.evendate.android.R;
 import ru.evendate.android.utils.RealPathUtil;
 
 /**

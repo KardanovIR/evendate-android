@@ -9,6 +9,7 @@ import android.widget.ImageView;
 /**
  * Created by Dmitry on 01.11.2015.
  */
+@Deprecated
 public class ImageLoadingTask extends AsyncTask<ParcelFileDescriptor, Void, Bitmap> {
     ImageView mImageView;
     public ImageLoadingTask(ImageView imageView) {

@@ -1,4 +1,4 @@
-package ru.evendate.android;
+package ru.evendate.android.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import ru.evendate.android.R;
+@Deprecated
 public class CalendarActivity extends AppCompatActivity {
     CalendarFragment mCalendarFragment;
 

@@ -16,9 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
-import ru.evendate.android.EventDetailActivity;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.ui.EventDetailActivity;
 
 /**
  * Created by Dmitry on 29.11.2015.

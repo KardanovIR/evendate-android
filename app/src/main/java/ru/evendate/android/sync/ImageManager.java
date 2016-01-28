@@ -21,6 +21,7 @@ import ru.evendate.android.utils.Utils;
  * Created by Dmitry on 18.10.2015.
  * Класс, отвечающий за синхронизацию картинок.
  */
+@Deprecated
 public class ImageManager {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
     public LocalDataFetcher mLocalDataFetcher;

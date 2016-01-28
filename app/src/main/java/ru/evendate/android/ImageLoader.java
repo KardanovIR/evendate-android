@@ -12,6 +12,7 @@ import java.io.FileDescriptor;
 /**
  * Created by denis on 31.10.15.
  */
+@Deprecated
 public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     private FileDescriptor mImageFileDescriptor;
     private ImageView mImageView;

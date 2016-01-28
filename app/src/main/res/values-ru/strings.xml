@@ -47,6 +47,6 @@
     <string name="intro_interests">Узнай, что интересно твоим друзьям</string>
     <string name="intro_miss">Не пропусти важное событие</string>
     <string name="intro_share">Делись событиями с друзьями</string>
-    <string name="intro_sync">Синхронизируйся со всем устройствами</string>
+    <string name="intro_sync">Синхронизируйся со всеми устройствами</string>
     <string name="intro_manage">Управляй уведомлениями</string>
 </resources>
