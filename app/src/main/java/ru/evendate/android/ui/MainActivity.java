@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -62,6 +63,10 @@ public class MainActivity extends AppCompatActivity{
 
     private SubscriptionsAdapter mSubscriptionAdapter;
     private AccountsAdapter mAccountAdapter;
+    /**
+     * false -> action menu
+     * true -> account menu
+     */
     private ToggleButton mAccountToggle;
 
     private Fragment mFragment;
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity{
             //change menu in nav drawer to provide possibility to change selected item
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                if(mAccountToggle.isChecked()){
+                if(!mAccountToggle.isChecked()){
                     setupActionMenu();
                 }
             }
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity{
         mAccountToggle = (ToggleButton)mNavigationView.getHeaderView(0).findViewById(R.id.account_view_icon_button);
         RelativeLayout navHeader = (RelativeLayout)mNavigationView.getHeaderView(0);
         navHeader.setOnClickListener(new NavigationHeaderOnClickListener());
+        mAccountToggle.setOnCheckedChangeListener(new ToggleAccountOnCheckedChangeListener());
         checkPlayServices();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -214,7 +220,6 @@ public class MainActivity extends AppCompatActivity{
         public boolean onNavigationItemSelected(MenuItem menuItem) {
             menuItem.setChecked(true);
             switch (menuItem.getItemId()) {
-                //TODO fragments controlling
                 case R.id.reel:{
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     if(!(mFragment instanceof MainPagerFragment)){
@@ -259,7 +264,7 @@ public class MainActivity extends AppCompatActivity{
                     drawerLayout.closeDrawers();
                     return true;
                 default:
-                    if(mAccountToggle.isChecked()){
+                    if(!mAccountToggle.isChecked()){
                         //open organization from subs
                         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
@@ -290,10 +295,20 @@ public class MainActivity extends AppCompatActivity{
         public void onClick(View v) {
             if (v instanceof RelativeLayout)
                 if (mAccountToggle.isChecked()) {
-                    setupAccountMenu();
-                } else {
                     setupActionMenu();
+                } else {
+                    setupAccountMenu();
                 }
+        }
+    }
+    private class ToggleAccountOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                setupAccountMenu();
+            } else {
+                setupActionMenu();
+            }
         }
     }
 
@@ -301,13 +316,13 @@ public class MainActivity extends AppCompatActivity{
         mNavigationView.getMenu().clear();
         mNavigationView.inflateMenu(R.menu.drawer_accounts);
         mAccountAdapter.updateAccountMenu();
-        mAccountToggle.setChecked(false);
+        mAccountToggle.setChecked(true);
     }
     private void setupActionMenu(){
         mNavigationView.getMenu().clear();
         mNavigationView.inflateMenu(R.menu.drawer_actions);
         mSubscriptionAdapter.updateSubscriptionMenu();
-        mAccountToggle.setChecked(true);
+        mAccountToggle.setChecked(false);
     }
     /**
      * update menu with accounts and clear it if it's already existed
