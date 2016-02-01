@@ -20,6 +20,7 @@ import ru.evendate.android.sync.models.TagResponse;
  * Отвечает за обработку полученных данных от retrofit
  * Created by Dmitry on 18.10.2015.
  */
+@Deprecated
 public class ServerDataFetcher{
 
     private static void postExceptionToTracker(Exception e){

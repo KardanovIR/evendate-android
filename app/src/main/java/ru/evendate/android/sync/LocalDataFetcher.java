@@ -25,6 +25,7 @@ import ru.evendate.android.utils.Utils;
 /**
  * Created by Dmitry on 11.09.2015.
  */
+@Deprecated
 public class LocalDataFetcher {
     ContentResolver mContentResolver;
     Context mContext;
