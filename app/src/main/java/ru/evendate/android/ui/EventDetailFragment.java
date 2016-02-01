@@ -53,7 +53,7 @@ import ru.evendate.android.sync.models.EventFormatter;
 import ru.evendate.android.sync.models.EventModel;
 
 /**
- * A placeholder fragment containing a simple view.
+ * contain details of events
  */
 public class EventDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
 View.OnClickListener{

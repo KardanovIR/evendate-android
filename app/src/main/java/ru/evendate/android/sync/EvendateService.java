@@ -43,6 +43,21 @@ public interface EvendateService {
             @Query("page") int page,
             @Query("length") int length
     );
+    @GET("/api/events/my")
+    Call<EvendateServiceResponseArray<EventModel>> eventsData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length,
+            @Query("date") String date
+    );
+
+    @GET("/api/events/my")
+    Call<EvendateServiceResponseArray<EventModel>> eventsData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length,
+            @Query("organization") int organizationId
+    );
 
     @GET("/api/users/friends")
     Call<EvendateServiceResponseArray<FriendModel>> friendsData(
@@ -76,6 +91,12 @@ public interface EvendateService {
             @Path("id") int subscriptionId, @Header("Authorization") String authorization
     );
 
+    @GET("/api/events/favorites")
+    Call<EvendateServiceResponseArray<EventModel>> favoritesEventData(
+            @Header("Authorization") String authorization,
+            @Query("page") int page,
+            @Query("length") int length
+    );
     @POST("/api/events/favorites")
     Call<EvendateServiceResponse> eventPostFavorite(
             @Query("event_id") int eventId, @Header("Authorization") String authorization
