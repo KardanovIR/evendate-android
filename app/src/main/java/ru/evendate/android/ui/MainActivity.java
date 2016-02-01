@@ -28,6 +28,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -46,6 +47,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.SubscriptionLoader;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
@@ -53,7 +55,7 @@ import ru.evendate.android.sync.EvendateSyncAdapter;
 import ru.evendate.android.sync.models.OrganizationModel;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements SubscriptionLoader.SubscriptionLoaderListener{
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity{
 
     private SubscriptionsAdapter mSubscriptionAdapter;
     private AccountsAdapter mAccountAdapter;
+    private SubscriptionLoader mSubscriptionLoader;
     /**
      * false -> action menu
      * true -> account menu
@@ -83,6 +86,8 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
 
         mSubscriptionAdapter = new SubscriptionsAdapter(this);
+        mSubscriptionLoader = new SubscriptionLoader(this);
+        mSubscriptionLoader.setSubscriptionLoaderListener(this);
         mAccountAdapter = new AccountsAdapter(this);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
@@ -136,7 +141,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         checkAccount();
-        getSubs();
+        mSubscriptionLoader.getSubscriptions();
     }
 
     @Override
@@ -202,6 +207,18 @@ public class MainActivity extends AppCompatActivity{
                 mAccountAdapter.updateAccountMenu();
             }
         }
+    }
+
+    @Override
+    public void onLoaded(ArrayList<OrganizationModel> subList) {
+        mSubscriptionAdapter.setSubscriptions(subList);
+        if(!mAccountToggle.isChecked())
+            setupActionMenu();
+    }
+
+    @Override
+    public void onError() {
+        Toast.makeText(this, R.string.download_error, Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -282,6 +299,7 @@ public class MainActivity extends AppCompatActivity{
                         //setAccountInfo();
                         mAccountAdapter.updateAccountMenu();
                     }
+                    drawerLayout.closeDrawers();
                     return true;
             }
         }
@@ -427,43 +445,5 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     * downloading subs from server
-     */
-    private void getSubs(){
-        Log.d(LOG_TAG, "getting subs");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        AccountManager accountManager = AccountManager.get(this);
-        String token;
-        try {
-            token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(this),
-                    getString(R.string.account_type));
-        } catch (Exception e){
-            Log.d(LOG_TAG, "Error with peeking token");
-            e.fillInStackTrace();
-            return;
-        }
-        Call<EvendateServiceResponseArray<OrganizationModel>> call = evendateService.subscriptionData(token);
-        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationModel>>() {
-            @Override
-            public void onResponse(Response<EvendateServiceResponseArray<OrganizationModel>> response,
-                                   Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    mSubscriptionAdapter.setSubscriptions(response.body().getData());
-                    if(!mAccountToggle.isChecked())
-                        setupActionMenu();
-                } else {
-                    Log.d(LOG_TAG, "Error with response with subs");
-                    // error response, no access to resource?
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                // something went completely south (like no internet connection)
-                Log.d("Error", t.getMessage());
-            }
-        });
-    }
 }

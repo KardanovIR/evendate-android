@@ -56,6 +56,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
     ReelFragment mReelFragment;
     OrganizationAdapter mAdapter;
+    OrganizationLoader mOrganizationLoader = new OrganizationLoader();
 
     private int organizationId = -1;
     public static final String URI = "uri";
@@ -103,6 +104,15 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
         mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
 
+        setupStatusBar();
+        mAdapter = new OrganizationAdapter();
+        mOrganizationLoader.getOrganization();
+
+        mFAB.setOnClickListener(this);
+        return rootView;
+    }
+
+    public void setupStatusBar(){
         //make status bar transparent
         //if (Build.VERSION.SDK_INT >= 21) {
         //    // Set the status bar to dark-semi-transparentish
@@ -121,10 +131,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         //        }
         //    });
         //}
-
-        mAdapter = new OrganizationAdapter();
-        mFAB.setOnClickListener(this);
-        return rootView;
     }
 
     public boolean subscript(){
@@ -156,11 +162,11 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         if(!isAdded())
             return;
         if (mAdapter.getOrganizationModel().isSubscribed()) {
+            //mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
             mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_done));
         } else {
+            //mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
             mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_add_white));
-            // To over-ride the color of the FAB other then the theme color
-            mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
         }
     }
     private class SubscriptAsyncTask extends AsyncTask<Void, Void, Boolean>{
@@ -196,21 +202,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
                 else
                     Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
-                ContentResolver contentResolver = getActivity().getContentResolver();
-                contentResolver.update(mUri, mAdapter.getOrganizationModel().getContentValues(), null, null);
-                //if(mOrganizationModel.isSubscribed())
-                    //mReelFragment.onSubscribed();
-                //else
-                    //mReelFragment.onUnsubscripted();
-                //EvendateSyncAdapter.syncImmediately(getContext());
-                for(EventModel event : mReelFragment.getEventList()){
-                    try {
-                        contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, event.getInsertDates());
-                    }catch (Exception e){
-                        Log.e(LOG_TAG, e.getMessage(), e);
-                        e.printStackTrace();
-                    }
-                }
             }
         }
     }
@@ -286,7 +277,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 onDownloaded();
                 return;
             }
-            Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>>  call = evendateService.organizationWithEventsData(organizationId, token);
+            Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>>  call =
+                    evendateService.organizationWithEventsData(organizationId, token);
 
             call.enqueue(new Callback<EvendateServiceResponseAttr<OrganizationModelWithEvents>>() {
                 @Override
@@ -297,8 +289,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     } else {
                         Log.d(LOG_TAG, "Error with response with events");
                         // error response, no access to resource?
+                        Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
                     }
-                    Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
                     onDownloaded();
                 }
 
@@ -314,6 +306,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
     public void onDownloaded(){
+        mAdapter.setOrganizationInfo();
+        setFabIcon();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
         if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
             Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
@@ -322,28 +316,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         else{
             mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
             mReelFragment.setDataListener(this);
+            fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
         }
-        fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
     }
-
-
-    /**
-     * fix cause bug in ChildFragmentManager
-     * http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
-     */
-    //@Override
-    // public void onDetach() {
-    //    super.onDetach();
-//
-    //    try {
-    //        Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
-    //        childFragmentManager.setAccessible(true);
-    //        childFragmentManager.set(this, null);
-//
-    //    } catch (NoSuchFieldException e) {
-    //        throw new RuntimeException(e);
-    //    } catch (IllegalAccessException e) {
-    //        throw new RuntimeException(e);
-    //    }
-    //}
 }

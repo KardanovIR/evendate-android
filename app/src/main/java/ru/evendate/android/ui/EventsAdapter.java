@@ -56,10 +56,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
             layoutItemId = R.layout.reel_favorite_item;
         } else if(type == ReelFragment.TypeFormat.calendar.nativeInt){
             layoutItemId = R.layout.reel_item;
-        } else if(type == ReelFragment.TypeFormat.organizationSubscribed.nativeInt){
-            layoutItemId = R.layout.reel_item;
-        }
-        else{
+        } else{
             layoutItemId = R.layout.reel_item;
         }
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(layoutItemId, parent, false));

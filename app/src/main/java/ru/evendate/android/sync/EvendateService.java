@@ -51,12 +51,13 @@ public interface EvendateService {
             @Query("date") String date
     );
 
-    @GET("/api/events/my")
+    @GET("/api/events")
     Call<EvendateServiceResponseArray<EventModel>> eventsData(
             @Header("Authorization") String authorization,
             @Query("page") int page,
             @Query("length") int length,
-            @Query("organization") int organizationId
+            @Query("organization_id") int organizationId,
+            @Query("type") String type
     );
 
     @GET("/api/users/friends")

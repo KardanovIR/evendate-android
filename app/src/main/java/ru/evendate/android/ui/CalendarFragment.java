@@ -99,7 +99,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         mCalendarView.addDecorator(mOneDayDecorator);
         mCalendarView.setShowOtherDates(true);
         mCalendarView.setTitleFormatter(new MyTitleFormatter());
-        getLoaderManager().initLoader(DATES_LOADER_ID, null, this);
+        //getLoaderManager().initLoader(DATES_LOADER_ID, null, this);
 
         mToggleButton = (ToggleButton)rootView.findViewById(R.id.calendar_button);
 
@@ -135,25 +135,6 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         });
         return rootView;
     }
-    final class ColoredUnderlineSpan extends CharacterStyle implements UpdateAppearance {
-        private final int mColor;
-
-        public ColoredUnderlineSpan(final int color) {
-            mColor = color;
-        }
-
-        @Override
-        public void updateDrawState(final TextPaint tp) {
-            try {
-                final Method method = TextPaint.class.getMethod("setUnderlineText",
-                        Integer.TYPE,
-                        Float.TYPE);
-                method.invoke(tp, mColor, 1.0f);
-            } catch (final Exception e) {
-                tp.setUnderlineText(true);
-            }
-        }
-    }
     @Override
     public void onResume() {
         super.onResume();
@@ -169,8 +150,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
-        //mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), false);
-        //mReelFragment.setDataListener(this);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), false);
+        mReelFragment.setDataListener(this);
         mCalendarView.removeDecorator(mOneDayDecorator);
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);

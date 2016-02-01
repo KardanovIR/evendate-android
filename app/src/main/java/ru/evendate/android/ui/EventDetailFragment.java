@@ -55,18 +55,10 @@ import ru.evendate.android.sync.models.EventModel;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-View.OnClickListener{
+public class EventDetailFragment extends Fragment implements View.OnClickListener{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
-    private View eventCover;
-    private View stripCover;
-    private View eventDescriptionContent;
-    private View eventStrip;
-    /** Loader id that get images */
-   // public static final int EVENT_IMAGE_ID = 0;
-    public static final int EVENT_DESCRIPTION_ID = 1;
 
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton mFAB;
@@ -94,14 +86,6 @@ View.OnClickListener{
     private EventModel mEventEntry;
     ProgressBar mProgressBar;
 
-    private BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //setupImage();
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,12 +97,6 @@ View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        eventCover = rootView.findViewById(R.id.cover);
-        stripCover = rootView.findViewById(R.id.strip_cover);
-        eventCover.setVisibility(View.VISIBLE);
-        stripCover.setVisibility(View.VISIBLE);
-        eventDescriptionContent = rootView.findViewById(R.id.event_description_content);
-        eventStrip = rootView.findViewById(R.id.strip);
 
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
@@ -145,7 +123,6 @@ View.OnClickListener{
         mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization);
         mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
         mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
-        mTitleTextView.setAlpha(0.0f);
         mDateTextView = (TextView)rootView.findViewById(R.id.event_date);
         mPlaceTextView = (TextView)rootView.findViewById(R.id.event_place);
         mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
@@ -164,13 +141,8 @@ View.OnClickListener{
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        if(mEventDetailActivity.isLocal)
-            mEventDetailActivity.getSupportLoaderManager().initLoader(EVENT_DESCRIPTION_ID, null,
-            (LoaderManager.LoaderCallbacks)this);
-        else{
-            EventDetailAsyncLoader eventDetailAsyncLoader = new EventDetailAsyncLoader();
-            eventDetailAsyncLoader.execute();
-        }
+        EventDetailAsyncLoader eventDetailAsyncLoader = new EventDetailAsyncLoader();
+        eventDetailAsyncLoader.execute();
 
         mFAB.setOnClickListener(this);
 
@@ -178,61 +150,6 @@ View.OnClickListener{
         return rootView;
     }
 
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id){
-            case EVENT_DESCRIPTION_ID:
-            return new CursorLoader(
-                getActivity(),
-                mUri,
-                null,
-                null,
-                null,
-                null
-            );
-            default:
-                throw new IllegalArgumentException("Unknown loader id: " + id);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch (loader.getId()){
-            case EVENT_DESCRIPTION_ID:
-                MicroOrm mOrm = new MicroOrm();
-                data.moveToFirst();
-                mEventEntry = mOrm.fromCursor(data, EventModel.class);
-                eventId = mEventEntry.getEntryId();
-                setDateRange();
-                setTags();
-                data.close();
-                onLoaded();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()){
-            case EVENT_DESCRIPTION_ID:
-                mEventDetailActivity.finish();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown loader id: " + loader.getId());
-        }
-    }
-
-    private void setDateRange(){
-        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
-        mEventEntry.setDataRangeList(localDataFetcher.getEventDatesDataFromDB(mEventEntry.getEntryId(), true));
-    }
-    private void setTags(){
-        LocalDataFetcher localDataFetcher = new LocalDataFetcher(getActivity().getContentResolver(), getContext());
-        mEventEntry.setTagList(localDataFetcher.getEventTagDataFromDB(mEventEntry.getEntryId()));
-    }
     private void setEventInfo(){
         if(!isAdded())
             return;
@@ -369,30 +286,9 @@ View.OnClickListener{
                     Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
                 else
                     Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
-                ContentResolver contentResolver = getActivity().getContentResolver();
-                contentResolver.update(mUri, mEventEntry.getContentValues(), null, null);
-                //EvendateSyncAdapter.syncImmediately(getContext());
-                try {
-                    contentResolver.applyBatch(EvendateContract.CONTENT_AUTHORITY, mEventEntry.getInsertDates());
-                }catch (Exception e){
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                    e.printStackTrace();
-                }
                 onLoaded();
             }
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().registerReceiver(syncFinishedReceiver, new IntentFilter(EvendateSyncAdapter.SYNC_FINISHED));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(syncFinishedReceiver);
     }
 
     public void onLoaded(){
@@ -400,49 +296,6 @@ View.OnClickListener{
             return;
         setEventInfo();
         setFabIcon();
-        if(eventCover.getVisibility() != View.VISIBLE && stripCover.getVisibility() != View.VISIBLE)
-            return;
-        final int duration = 200;
-        mTitleTextView.setAlpha(0.0f);
-        mTitleTextView.animate()
-                .alpha(1.0f)
-                .setDuration(duration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                    }
-                });
-        eventDescriptionContent.setAlpha(0.0f);
-        eventDescriptionContent.animate()
-                .alpha(1.0f)
-                .setDuration(duration)
-                .setListener(null);
-        eventStrip.setAlpha(0.0f);
-        eventStrip.animate()
-                .alpha(1.0f)
-                .setDuration(duration)
-                .setListener(null);
-        eventCover.animate()
-                .alpha(0.0f)
-                .setDuration(duration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        eventCover.setVisibility(View.GONE);
-                    }
-                });
-        stripCover.animate()
-                .alpha(0.0f)
-                .setDuration(duration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        stripCover.setVisibility(View.GONE);
-                    }
-                });
         mProgressBar.setVisibility(View.GONE);
     }
 }

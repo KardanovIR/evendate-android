@@ -9,16 +9,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/fragment_detail"
     android:fitsSystemWindows="true">
-    <!--<android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="true">-->
         <LinearLayout
             android:id="@+id/strip"
             android:orientation="horizontal"
@@ -392,37 +382,6 @@
     </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
-    <!-- background strip for cross-fading -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:background="?attr/colorPrimary"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
-    <!-- loader view for strip -->
-    <View
-        android:id="@+id/strip_cover"
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        tools:visibility="gone"/>
-    <View
-        android:id="@+id/cover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_below="@id/strip"
-        tools:visibility="gone"/>
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"

@@ -136,11 +136,6 @@ public class ReelFragment extends Fragment {
         });
         mAdapter = new EventsAdapter(getActivity(), type);
         mRecyclerView.setAdapter(mAdapter);
-
-        if(type != TypeFormat.organization.nativeInt ){
-            mEventLoader.getEvents();
-        }
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         /**
          * listener that let using refresh on top of the event list
@@ -169,6 +164,11 @@ public class ReelFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mEventLoader.getEvents();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -193,18 +193,18 @@ public class ReelFragment extends Fragment {
                 token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(getActivity()),
                         getString(R.string.account_type));
             } catch (Exception e){
-                Log.d(LOG_TAG, "Error with peeking token");
+                Log.e(LOG_TAG, "Error with peeking token");
                 e.fillInStackTrace();
                 //TODO
                 Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                onDownloaded();
+                onError();
                 return;
             }
             Call<EvendateServiceResponseArray<EventModel>> call;
             if(type == TypeFormat.favorites.nativeInt){
                 call = evendateService.favoritesEventData(token, 0, 1000);
             }else if(type == TypeFormat.organization.nativeInt){
-                call = evendateService.eventsData(token, 0, 1000, organizationId);
+                call = evendateService.eventsData(token, 0, 1000, organizationId, "future");
             }else{
                 if(mDate != null){
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -220,20 +220,21 @@ public class ReelFragment extends Fragment {
                                        Retrofit retrofit) {
                     if (response.isSuccess()) {
                         mAdapter.setEventList(response.body().getData());
+                        onDownloaded();
                     } else {
-                        Log.d(LOG_TAG, "Error with response with events");
+                        Log.e(LOG_TAG, "Error with response with events");
                         // error response, no access to resource?
+                        Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
+                        onError();
                     }
-                    Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                    onDownloaded();
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
                     // something went completely south (like no internet connection)
-                    Log.d("Error", t.getMessage());
+                    Log.e("Error", t.getMessage());
                     Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                    onDownloaded();
+                    onError();
                 }
             });
         }
@@ -260,9 +261,6 @@ public class ReelFragment extends Fragment {
         this.mDate = mDate;
         mEventLoader.getEvents();
     }
-    public void setRecyclerViewOnScrollListener(RecyclerView.OnScrollListener onScrollListener){
-        mRecyclerView.addOnScrollListener(onScrollListener);
-    }
 
     private void onDownloaded(){
         mSwipeRefreshLayout.setRefreshing(false);
@@ -271,6 +269,7 @@ public class ReelFragment extends Fragment {
             mDataListener.onEventsDataLoaded();
     }
     private void onError(){
-
+        mSwipeRefreshLayout.setRefreshing(false);
+        mProgressBar.setVisibility(View.GONE);
     }
 }

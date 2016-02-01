@@ -95,12 +95,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             finish();
             return;
         }
-        ContentResolver.addPeriodicSync(
-                EvendateSyncAdapter.getSyncAccount(this),
-                getString(R.string.content_authority),
-                Bundle.EMPTY,
-                EvendateSyncAdapter.SYNC_INTERVAL);
-        ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
+        //ContentResolver.addPeriodicSync(
+        //        EvendateSyncAdapter.getSyncAccount(this),
+        //        getString(R.string.content_authority),
+        //        Bundle.EMPTY,
+        //        EvendateSyncAdapter.SYNC_INTERVAL);
+        //ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
         //EvendateSyncAdapter.syncImmediately(this);
         // Start IntentService to register this application with GCM.
         Intent intent = new Intent(this, RegistrationGCMIntentService.class);
