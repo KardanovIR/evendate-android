@@ -78,4 +78,5 @@
     <string name="intro_manage">Manage notifications</string>
     <string name="intro_sync">Sync all devices</string>
     <string name="intro_done">Begin</string>
+    <string name="intro_skip">Skip</string>
 </resources>

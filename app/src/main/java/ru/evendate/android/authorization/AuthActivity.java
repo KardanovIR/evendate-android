@@ -2,7 +2,6 @@ package ru.evendate.android.authorization;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -108,5 +107,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

@@ -1,14 +1,10 @@
 package ru.evendate.android.ui;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -16,7 +12,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,20 +26,26 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.AbsctractLoader;
+import ru.evendate.android.loaders.EventLoader;
+import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateSyncAdapter;
-import ru.evendate.android.sync.ServerDataFetcher;
-import ru.evendate.android.sync.models.DataModel;
+import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.sync.models.EventFormatter;
 import ru.evendate.android.sync.models.EventModel;
 
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements View.OnClickListener{
+public class EventDetailFragment extends Fragment implements View.OnClickListener,
+        LoaderListener<EventModel>{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -69,8 +73,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private Uri mUri;
     private int eventId;
-    private EventModel mEventEntry;
     ProgressBar mProgressBar;
+    EventAdapter mAdapter;
+    EventLoader mEventLoader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,161 +128,164 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        EventDetailAsyncLoader eventDetailAsyncLoader = new EventDetailAsyncLoader();
-        eventDetailAsyncLoader.execute();
 
         mFAB.setOnClickListener(this);
 
         mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
+
+        mAdapter = new EventAdapter();
+        mEventLoader = new EventLoader(getActivity());
+        mEventLoader.setLoaderListener(this);
+        mEventLoader.getData(eventId);
         return rootView;
     }
 
-    private void setEventInfo(){
-        if(!isAdded())
-            return;
-        EventFormatter eventFormatter = new EventFormatter(getActivity());
-        mOrganizationTextView.setText(mEventEntry.getOrganizationName());
-        mDescriptionTextView.setText(mEventEntry.getDescription());
-        mTitleTextView.setText(mEventEntry.getTitle());
-        if(mEventEntry.getTitle().length() > 60)
-            mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        mPlaceTextView.setText(mEventEntry.getLocation());
-        if(mEventEntry.getLocation().length() > 30)
-            mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        mTagsTextView.setText(eventFormatter.formatTags(mEventEntry));
-        mLinkTextView.setText(mEventEntry.getDetailInfoUrl());
-        mParticipantCountTextView.setText(String.valueOf(mEventEntry.getLikedUsersCount()));
-        mTimeTextView.setText(eventFormatter.formatTime(mEventEntry));
-        mDayTextView.setText(eventFormatter.formatDay(mEventEntry));
-        mMonthTextView.setText(eventFormatter.formatMonth(mEventEntry));
-        mDateTextView.setText(eventFormatter.formatDate(mEventEntry));
+    private class EventAdapter{
+        private EventModel mEvent;
 
-        Picasso.with(getContext())
-                .load(mEventEntry.getImageHorizontalUrl())
-                .error(R.drawable.default_background)
-                .into(mEventImageView);
-        Picasso.with(getContext())
-                .load(mEventEntry.getOrganizationLogoUrl())
-                .error(R.mipmap.ic_launcher)
-                .into(mOrganizationIconView);
-        mLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openLink = new Intent(Intent.ACTION_VIEW);
-                openLink.setData(Uri.parse(mEventEntry.getDetailInfoUrl()));
-                startActivity(openLink);
-            }
-        });
+        public void setEvent(EventModel event) {
+            mEvent = event;
+        }
+
+        public EventModel getEvent() {
+            return mEvent;
+        }
+
+        private void setEventInfo(){
+            //prevent illegal state exception cause fragment not attached to
+            if(!isAdded())
+                return;
+            EventFormatter eventFormatter = new EventFormatter(getActivity());
+            mOrganizationTextView.setText(mEvent.getOrganizationName());
+            mDescriptionTextView.setText(mEvent.getDescription());
+            mTitleTextView.setText(mEvent.getTitle());
+            if(mEvent.getTitle().length() > 60)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            mPlaceTextView.setText(mEvent.getLocation());
+            if(mEvent.getLocation().length() > 30)
+                mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+            mTagsTextView.setText(eventFormatter.formatTags(mEvent));
+            mLinkTextView.setText(mEvent.getDetailInfoUrl());
+            mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
+            mTimeTextView.setText(eventFormatter.formatTime(mEvent));
+            mDayTextView.setText(eventFormatter.formatDay(mEvent));
+            mMonthTextView.setText(eventFormatter.formatMonth(mEvent));
+            mDateTextView.setText(eventFormatter.formatDate(mEvent));
+
+            Picasso.with(getContext())
+                    .load(mEvent.getImageHorizontalUrl())
+                    .error(R.drawable.default_background)
+                    .into(mEventImageView);
+            Picasso.with(getContext())
+                    .load(mEvent.getOrganizationLogoUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .into(mOrganizationIconView);
+            mLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent openLink = new Intent(Intent.ACTION_VIEW);
+                    openLink.setData(Uri.parse(mEvent.getDetailInfoUrl()));
+                    startActivity(openLink);
+                }
+            });
+        }
     }
 
     @Override
     public void onClick(View v) {
         if(v == mOrganizationIconView || v == mOrganizationTextView){
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
-            intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(mEventEntry.getOrganizationId())).build());
+            intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
             startActivity(intent);
         }
         if(v == mFAB) {
-            FavoriteAsyncTask favoriteAsyncTask = new FavoriteAsyncTask();
-            favoriteAsyncTask.execute();
-        }
-    }
-    private class EventDetailAsyncLoader extends AsyncTask<Void, Void, DataModel> {
-        @Override
-        protected DataModel doInBackground(Void... params) {
-
-            Account account = EvendateSyncAdapter.getSyncAccount(getContext());
-            String token = null;
-            try{
-                token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            if(token == null)
-                return null;
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            return ServerDataFetcher.getEventData(evendateService, token, eventId);
-        }
-
-        @Override
-        protected void onPostExecute(DataModel dataModel) {
-            mEventEntry = (EventModel)dataModel;
-            onLoaded();
+            LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent());
+            likeEventLoader.load();
         }
     }
 
     private void setFabIcon(){
-        if (mEventEntry.isFavorite()) {
+        if (mAdapter.getEvent().isFavorite()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
         } else {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_add_white));
         }
     }
-    public boolean favorite(){
-        Account account = EvendateSyncAdapter.getSyncAccount(getContext());
-        String token = null;
-        try{
-            token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if(token == null)
-            return false;
 
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        if(mEventEntry.isFavorite()){
-            return ServerDataFetcher.eventDeleteFavorite(evendateService, token, mEventEntry.getEntryId());
+    private class LikeEventLoader extends AbsctractLoader<Void> {
+        EventModel mEvent;
+        public LikeEventLoader(Context context, EventModel eventModel) {
+            super(context);
+            mEvent = eventModel;
         }
-        else{
-            return ServerDataFetcher.eventPostFavorite(evendateService, token, mEventEntry.getEntryId());
-        }
-    }
-    private class FavoriteAsyncTask extends AsyncTask<Void, Void, Boolean>{
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            ConnectivityManager cm =
-                    (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if(activeNetwork == null)
-                return false;
-            boolean isConnected = activeNetwork.isConnected();
-            //Send the user a message to let them know change was made
-            if (!isConnected){
-                return false;
+        public void load(){
+            Log.d(LOG_TAG, "performing like");
+            EvendateService evendateService = EvendateApiFactory.getEvendateService();
+            Call<EvendateServiceResponse> call;
+            if(mAdapter.getEvent().isFavorite()){
+                call = evendateService.eventDeleteFavorite(mEvent.getEntryId(), peekToken());
             }
-            return favorite();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if(!result){
-                Snackbar.make(mCoordinatorLayout, R.string.no_internet_connection, Snackbar.LENGTH_LONG).show();
+            else {
+                call = evendateService.eventPostFavorite(mEvent.getEntryId(), peekToken());
             }
-            else{
-                mEventEntry.setIsFavorite(!mEventEntry.isFavorite());
-                if(mEventEntry.isFavorite())
-                    mEventEntry.setLikedUsersCount(mEventEntry.getLikedUsersCount() + 1);
-                else{
-                    mEventEntry.setLikedUsersCount(mEventEntry.getLikedUsersCount() - 1);
+
+            call.enqueue(new Callback<EvendateServiceResponse>() {
+                @Override
+                public void onResponse(Response<EvendateServiceResponse> response,
+                                       Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        mAdapter.getEvent().setIsFavorite(!mEvent.isFavorite());
+                        if(mEvent.isFavorite()){
+                            mEvent.setLikedUsersCount(mEvent.getLikedUsersCount() + 1);
+                        }
+                        else{
+                            mEvent.setLikedUsersCount(mEvent.getLikedUsersCount() - 1);
+                        }
+                        if(mEvent.isFavorite())
+                            Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
+                        else
+                            Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
+                        mAdapter.setEventInfo();
+                        setFabIcon();
+                    } else {
+                        Log.e(LOG_TAG, "Error with response with like");
+                        mListener.onError();
+                    }
                 }
-                setEventInfo();
-                if(mEventEntry.isFavorite())
-                    Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
-                else
-                    Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
-                onLoaded();
-            }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.e("Error", t.getMessage());
+                    mListener.onError();
+                }
+            });
         }
     }
 
-    public void onLoaded(){
-        if(!isAdded())
-            return;
-        setEventInfo();
+    @Override
+    public void onLoaded(EventModel event) {
+        mAdapter.setEvent(event);
+        mAdapter.setEventInfo();
         setFabIcon();
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("ERROR !!");
+        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
+
+        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mEventLoader.getData(eventId);
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

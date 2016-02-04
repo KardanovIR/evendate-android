@@ -1,13 +1,8 @@
 package ru.evendate.android.ui;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -17,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +23,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import ru.evendate.android.R;
+import ru.evendate.android.loaders.AbsctractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateSyncAdapter;
-import ru.evendate.android.sync.ServerDataFetcher;
+import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.sync.models.EventModel;
 import ru.evendate.android.sync.models.FriendModel;
 import ru.evendate.android.sync.models.OrganizationModel;
@@ -104,31 +104,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         return rootView;
     }
 
-    public boolean subscript(){
-            Account account = EvendateSyncAdapter.getSyncAccount(getContext());
-            String token = null;
-            try{
-                token = AccountManager.get(getContext()).blockingGetAuthToken(account, getContext().getString(R.string.account_type), false);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            if(token == null)
-                return false;
-
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            if(mAdapter.getOrganizationModel().isSubscribed()){
-                if(ServerDataFetcher.organizationDeleteSubscription(evendateService, token, mAdapter.getOrganizationModel().getSubscriptionId()))
-                    mAdapter.getOrganizationModel().setSubscriptionId(null);
-            }
-            else{
-                OrganizationModel organizationModel = ServerDataFetcher.organizationPostSubscription(evendateService, token, organizationId);
-                if(organizationModel == null)
-                    return false;
-                mAdapter.getOrganizationModel().setSubscriptionId(organizationModel.getSubscriptionId());
-            }
-        return true;
-    }
-
     private void setFabIcon(){
         if(!isAdded())
             return;
@@ -140,47 +115,56 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_add_white));
         }
     }
-    private class SubscriptAsyncTask extends AsyncTask<Void, Void, Boolean>{
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            ConnectivityManager cm =
-                    (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if(activeNetwork == null)
-                return false;
-            boolean isConnected = activeNetwork.isConnected();
-            if (!isConnected){
-                return false;
-            }
-            return subscript();
+    private class SubOrganizationLoader extends AbsctractLoader<Void> {
+        OrganizationModel mOrganization;
+        public SubOrganizationLoader(Context context, OrganizationModel organizationModel) {
+            super(context);
+            mOrganization = organizationModel;
         }
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if(!result){
-                Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
+        public void execute(){
+            Log.d(LOG_TAG, "performing sub");
+            EvendateService evendateService = EvendateApiFactory.getEvendateService();
+            Call<EvendateServiceResponse> call;
+            if(mOrganization.isSubscribed()){
+                call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
+            } else {
+                call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
             }
-            else{
-                mAdapter.getOrganizationModel().setIsSubscribed(!mAdapter.getOrganizationModel().isSubscribed());
-                int count_change = mAdapter.getOrganizationModel().isSubscribed() ? 1 : -1;
-                mAdapter.getOrganizationModel().setSubscribedCount(mAdapter.getOrganizationModel().getSubscribedCount() + count_change);
-                mAdapter.setOrganizationInfo();
-                setFabIcon();
-                if(mAdapter.getOrganizationModel().isSubscribed())
-                    Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-                else
-                    Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
-            }
+
+            call.enqueue(new Callback<EvendateServiceResponse>() {
+                @Override
+                public void onResponse(Response<EvendateServiceResponse> response,
+                                       Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        mOrganization.setIsSubscribed(!mOrganization.isSubscribed());
+                        int count_change = mOrganization.isSubscribed() ? 1 : -1;
+                        mOrganization.setSubscribedCount(mOrganization.getSubscribedCount() + count_change);
+                        mAdapter.setOrganizationInfo();
+                        if(mOrganization.isSubscribed())
+                            Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+                        else
+                            Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
+                        setFabIcon();
+                    } else {
+                        Log.e(LOG_TAG, "Error with response with organization sub");
+                        mListener.onError();
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.e("Error", t.getMessage());
+                    mListener.onError();
+                }
+            });
         }
     }
-
     public void onClick(View v) {
         if(v == mFAB) {
-            SubscriptAsyncTask subscriptAsyncTask = new SubscriptAsyncTask();
-            subscriptAsyncTask.execute();
+            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(), mAdapter.getOrganizationModel());
+            subOrganizationLoader.execute();
         }
     }
 

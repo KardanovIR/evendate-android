@@ -52,4 +52,5 @@
     <string name="Loading_error_description">Возникла ошибка при загрузке данных. Проверьте подключение к сети</string>
     <string name="download_error">Произошла ошибка</string>
     <string name="loading_error">Ошибка</string>
+    <string name="intro_skip">Пропустить</string>
 </resources>

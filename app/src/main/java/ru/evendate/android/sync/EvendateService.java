@@ -82,7 +82,7 @@ public interface EvendateService {
             @Header("Authorization") String authorization);
 
     @POST("/api/subscriptions")
-    Call<EvendateServiceResponseAttr<OrganizationModel>> organizationPostSubscription(
+    Call<EvendateServiceResponse> organizationPostSubscription(
             @Query("organization_id") int organizationId,
             @Header("Authorization") String authorization
     );

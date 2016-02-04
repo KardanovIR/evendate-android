@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private Fragment mFragment;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final int AUTH_REQUEST = 0;
+    private final int INTRO_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,17 +191,14 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         Account account = EvendateSyncAdapter.getSyncAccount(this);
         if(account == null){
             Intent introIntent = new Intent(this, EvendateIntro.class);
-            startActivity(introIntent);
+            startActivityForResult(introIntent, INTRO_REQUEST);
         }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AUTH_REQUEST) {
+        if(requestCode == INTRO_REQUEST){
             if (resultCode == RESULT_CANCELED) {
                 finish();
-            }
-            if (resultCode == RESULT_OK){
-                mAccountAdapter.updateAccountMenu();
             }
         }
     }

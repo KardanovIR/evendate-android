@@ -141,20 +141,20 @@ public class ServerDataFetcher{
         }
         return null;
     }
-    public static OrganizationModel organizationPostSubscription(EvendateService evendateService, String basicAuth, int organizationId){
-        Call<EvendateServiceResponseAttr<OrganizationModel>> call =
-                evendateService.organizationPostSubscription(organizationId, basicAuth);
-        try{
-            Response<EvendateServiceResponseAttr<OrganizationModel>> response = call.execute();
-            if(response.isSuccess()){
-                return response.body().getData();
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-            postExceptionToTracker(e);
-        }
-        return null;
-    }
+    //public static OrganizationModel organizationPostSubscription(EvendateService evendateService, String basicAuth, int organizationId){
+    //    Call<EvendateServiceResponseAttr<OrganizationModel>> call =
+    //            evendateService.organizationPostSubscription(organizationId, basicAuth);
+    //    try{
+    //        Response<EvendateServiceResponseAttr<OrganizationModel>> response = call.execute();
+    //        if(response.isSuccess()){
+    //            return response.body().getData();
+    //        }
+    //    }catch (IOException e){
+    //        e.printStackTrace();
+    //        postExceptionToTracker(e);
+    //    }
+    //    return null;
+    //}
     public static boolean organizationDeleteSubscription(EvendateService evendateService, String basicAuth, int subscriptionId){
         Call<EvendateServiceResponse> call =
                 evendateService.organizationDeleteSubscription(subscriptionId, basicAuth);
