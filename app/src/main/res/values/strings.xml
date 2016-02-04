@@ -29,6 +29,9 @@
     <string name="progress_dialog_title">First synchronization</string>
     <string name="progress_dialog_message">Please, wait</string>
 
+    <string name="loading_error">Error</string>
+    <string name="Loading_error_description">Problem with loading data. Сheck internet connection</string>
+
     <!-- detail event -->
     <string name="event_participants">participants</string>
     <string name="event_organization">Organization</string>

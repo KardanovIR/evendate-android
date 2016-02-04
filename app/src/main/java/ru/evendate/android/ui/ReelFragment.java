@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,11 +32,10 @@ import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.EvendateSyncAdapter;
 import ru.evendate.android.sync.models.EventModel;
 
 /**
- * A placeholder fragment containing a reel
+ * fragment containing a reel
  * used in calendar, main pager, detail organization activities
  * contain recycle view with cards for event list
  */
@@ -73,6 +71,7 @@ public class ReelFragment extends Fragment {
     }
 
     private OnEventsDataLoadedListener mDataListener;
+    private ArrayList<OnRefreshListener> mRefreshListenerList;
 
 
     public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing){
@@ -98,6 +97,11 @@ public class ReelFragment extends Fragment {
 
     public void setDataListener(OnEventsDataLoadedListener dataListener) {
         this.mDataListener = dataListener;
+    }
+    public void setOnRefreshListener(OnRefreshListener refreshListener){
+        if(mRefreshListenerList == null)
+            mRefreshListenerList = new ArrayList<>();
+        mRefreshListenerList.add(refreshListener);
     }
 
     @Override
@@ -125,13 +129,12 @@ public class ReelFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
-                    Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    return;
-                }
-                //TODO
                 mEventLoader.getEvents();
+                if(mRefreshListenerList != null){
+                    for(OnRefreshListener listener : mRefreshListenerList){
+                        listener.onRefresh();
+                    }
+                }
             }
         });
         mAdapter = new EventsAdapter(getActivity(), type);
@@ -181,8 +184,6 @@ public class ReelFragment extends Fragment {
      */
     private class EventLoader{
         public void getEvents(){
-            if(!EvendateSyncAdapter.checkInternetConnection(getContext()))
-                Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_LONG).show();
             mSwipeRefreshLayout.setRefreshing(true);
             Log.d(LOG_TAG, "getting events");
             EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -195,8 +196,6 @@ public class ReelFragment extends Fragment {
             } catch (Exception e){
                 Log.e(LOG_TAG, "Error with peeking token");
                 e.fillInStackTrace();
-                //TODO
-                Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
                 onError();
                 return;
             }
@@ -223,17 +222,13 @@ public class ReelFragment extends Fragment {
                         onDownloaded();
                     } else {
                         Log.e(LOG_TAG, "Error with response with events");
-                        // error response, no access to resource?
-                        Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
                         onError();
                     }
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    // something went completely south (like no internet connection)
                     Log.e("Error", t.getMessage());
-                    Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
                     onError();
                 }
             });
@@ -249,6 +244,13 @@ public class ReelFragment extends Fragment {
      */
     interface OnEventsDataLoadedListener{
         void onEventsDataLoaded();
+    }
+
+    /**
+     *
+     */
+    interface OnRefreshListener{
+        void onRefresh();
     }
 
     /**

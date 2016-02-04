@@ -38,4 +38,7 @@ public class MainPagerFragment extends Fragment {
         super.onResume();
         mTabLayout.setupWithViewPager(mViewPager);
     }
+    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
+        mMainPagerAdapter.setOnRefreshListener(refreshListener);
+    }
 }

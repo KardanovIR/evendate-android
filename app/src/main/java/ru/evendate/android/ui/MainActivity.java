@@ -3,6 +3,7 @@ package ru.evendate.android.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,7 +30,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,30 +39,25 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.SubscriptionLoader;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 import ru.evendate.android.sync.models.OrganizationModel;
 
 
-public class MainActivity extends AppCompatActivity implements SubscriptionLoader.SubscriptionLoaderListener{
+public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<OrganizationModel>>,
+        ReelFragment.OnRefreshListener{
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
     private NavigationView mNavigationView;
+    private int checkedMenuItemId = R.id.reel;
 
     private SubscriptionsAdapter mSubscriptionAdapter;
     private AccountsAdapter mAccountAdapter;
@@ -134,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         mDrawerToggle.syncState();
     }
 
@@ -218,7 +215,24 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
 
     @Override
     public void onError() {
-        Toast.makeText(this, R.string.download_error, Toast.LENGTH_LONG).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("ERROR !!");
+        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
+
+        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mSubscriptionLoader.getSubscriptions();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onRefresh() {
+        mSubscriptionLoader.getSubscriptions();
     }
 
     /**
@@ -244,6 +258,8 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                         drawerLayout.closeDrawers();
                     }
+                    checkedMenuItemId = menuItem.getItemId();
+                    menuItem.setChecked(true);
                     return true;
                 }
                 case R.id.settings:
@@ -256,6 +272,8 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                         drawerLayout.closeDrawers();
                     }
+                    checkedMenuItemId = menuItem.getItemId();
+                    menuItem.setChecked(true);
                     return true;
                 }
                 case R.id.organizations:{
@@ -265,6 +283,8 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                         drawerLayout.closeDrawers();
                     }
+                    checkedMenuItemId = menuItem.getItemId();
+                    menuItem.setChecked(true);
                     return true;
                 }
                 case R.id.nav_add_account:
@@ -415,6 +435,7 @@ public class MainActivity extends AppCompatActivity implements SubscriptionLoade
                     menuIconTask.execute(sub.getLogoSmallUrl());
                 }
             }
+            mNavigationView.getMenu().findItem(checkedMenuItemId).setChecked(true);
         }
         public class MenuIconTask extends AsyncTask<String, Void, Bitmap> {
             MenuItem mMenuItem;

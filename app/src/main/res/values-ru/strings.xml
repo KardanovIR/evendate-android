@@ -49,4 +49,7 @@
     <string name="intro_share">Делись событиями с друзьями</string>
     <string name="intro_sync">Синхронизируйся со всеми устройствами</string>
     <string name="intro_manage">Управляй уведомлениями</string>
+    <string name="Loading_error_description">Возникла ошибка при загрузке данных. Проверьте подключение к сети</string>
+    <string name="download_error">Произошла ошибка</string>
+    <string name="loading_error">Ошибка</string>
 </resources>

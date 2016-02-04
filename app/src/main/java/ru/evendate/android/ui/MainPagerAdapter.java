@@ -11,8 +11,13 @@ import ru.evendate.android.R;
  * Created by Dmitry on 23.01.2016.
  */
 
-class MainPagerAdapter extends FragmentStatePagerAdapter {
+class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener{
     private Context mContext;
+    private ReelFragment.OnRefreshListener listener;
+
+    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
+        listener = refreshListener;
+    }
 
     public MainPagerAdapter(FragmentManager fragmentManager, Context context){
         super(fragmentManager);
@@ -23,11 +28,15 @@ class MainPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0: {
-                return ReelFragment.newInstance(ReelFragment.TypeFormat.feed.nativeInt, true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.feed.nativeInt, true);
+                fragment.setOnRefreshListener(this);
+                return fragment;
             }
             case 1: {
                 // we need only favorite events in this fragment
-                return ReelFragment.newInstance(ReelFragment.TypeFormat.favorites.nativeInt, true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.favorites.nativeInt, true);
+                fragment.setOnRefreshListener(this);
+                return fragment;
             }
             default:
                 throw new IllegalArgumentException("invalid page number");
@@ -49,5 +58,11 @@ class MainPagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        if(listener != null)
+            listener.onRefresh();
     }
 }

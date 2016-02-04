@@ -2,10 +2,8 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -16,30 +14,24 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseAttr;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 import ru.evendate.android.sync.ServerDataFetcher;
 import ru.evendate.android.sync.models.EventModel;
@@ -51,19 +43,18 @@ import ru.evendate.android.sync.models.OrganizationModelWithEvents;
  * Contain details of organization
  */
 public class OrganizationDetailFragment extends Fragment implements View.OnClickListener,
-        ReelFragment.OnEventsDataLoadedListener{
+        ReelFragment.OnEventsDataLoadedListener, LoaderListener<OrganizationModelWithEvents>{
     private final String LOG_TAG = "OrganizationFragment";
 
     ReelFragment mReelFragment;
     OrganizationAdapter mAdapter;
-    OrganizationLoader mOrganizationLoader = new OrganizationLoader();
+    OrganizationLoader mOrganizationLoader;
 
     private int organizationId = -1;
     public static final String URI = "uri";
     private Uri mUri;
 
     private CoordinatorLayout mCoordinatorLayout;
-    private AppBarLayout mAppBarLayout;
     private ImageView mOrganizationImageView;
     private ImageView mOrganizationIconView;
 
@@ -91,8 +82,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
-        mAppBarLayout = (AppBarLayout)rootView.findViewById(R.id.app_bar_layout);
-
+        // make status bar transparent and change it state when toolbar collapsed
+        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
         mEventCountView = (TextView)rootView.findViewById(R.id.organization_event_count);
         mSubscriptionCountView = (TextView)rootView.findViewById(R.id.organization_subscription_count);
         mFriendCountView = (TextView)rootView.findViewById(R.id.organization_friend_count);
@@ -104,33 +95,13 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
         mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
 
-        setupStatusBar();
         mAdapter = new OrganizationAdapter();
-        mOrganizationLoader.getOrganization();
+        mOrganizationLoader = new OrganizationLoader(getActivity());
+        mOrganizationLoader.setLoaderListener(this);
+        mOrganizationLoader.getOrganization(organizationId);
 
         mFAB.setOnClickListener(this);
         return rootView;
-    }
-
-    public void setupStatusBar(){
-        //make status bar transparent
-        //if (Build.VERSION.SDK_INT >= 21) {
-        //    // Set the status bar to dark-semi-transparentish
-        //    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-        //            WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //    mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-        //        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        //            if(verticalOffset == 0){
-        //                //TODO
-        //                //getActivity().getWindow().setFlags(WindowManager.LayoutParams.,
-        //                //        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //            }else{
-        //                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-        //                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //            }
-        //        }
-        //    });
-        //}
     }
 
     public boolean subscript(){
@@ -213,6 +184,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
     }
 
+    //TODO выпилить?
     @Override
     public void onEventsDataLoaded() {
         if(!isAdded())
@@ -257,66 +229,34 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     .into(mOrganizationIconView);
         }
     }
-    private class OrganizationLoader{
-        public void getOrganization(){
-            if(!EvendateSyncAdapter.checkInternetConnection(getContext()))
-                Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_LONG).show();
-            Log.d(LOG_TAG, "getting organization");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-            AccountManager accountManager = AccountManager.get(getActivity());
-            String token;
-            try {
-                token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(getActivity()),
-                        getString(R.string.account_type));
-            } catch (Exception e){
-                Log.d(LOG_TAG, "Error with peeking token");
-                e.fillInStackTrace();
-                //TODO
-                Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                onDownloaded();
-                return;
-            }
-            Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>>  call =
-                    evendateService.organizationWithEventsData(organizationId, token);
 
-            call.enqueue(new Callback<EvendateServiceResponseAttr<OrganizationModelWithEvents>>() {
-                @Override
-                public void onResponse(Response<EvendateServiceResponseAttr<OrganizationModelWithEvents>> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        mAdapter.setOrganizationModel(response.body().getData());
-                    } else {
-                        Log.d(LOG_TAG, "Error with response with events");
-                        // error response, no access to resource?
-                        Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                    }
-                    onDownloaded();
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    // something went completely south (like no internet connection)
-                    Log.d("Error", t.getMessage());
-                    Toast.makeText(getContext(), R.string.download_error, Toast.LENGTH_LONG).show();
-                    onDownloaded();
-                }
-            });
-        }
-    }
-
-    public void onDownloaded(){
+    public void onLoaded(OrganizationModelWithEvents subList){
+        mAdapter.setOrganizationModel(subList);
         mAdapter.setOrganizationInfo();
         setFabIcon();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
-        if(!EvendateSyncAdapter.checkInternetConnection(getContext())){
-            Snackbar.make(mCoordinatorLayout, R.string.subscription_fail_cause_network, Snackbar.LENGTH_LONG).show();
-            return;
-        }
-        else{
-            mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
-            mReelFragment.setDataListener(this);
-            fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
-        }
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
+        mReelFragment.setDataListener(this);
+        fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
+    }
+
+    @Override
+    public void onError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("ERROR !!");
+        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
+
+        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                mOrganizationLoader.getOrganization(organizationId);
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

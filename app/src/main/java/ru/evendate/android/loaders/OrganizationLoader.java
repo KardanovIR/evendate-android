@@ -4,8 +4,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -14,29 +12,27 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.sync.EvendateServiceResponseAttr;
+import ru.evendate.android.sync.models.OrganizationModelWithEvents;
 
 /**
- * Created by ds_gordeev on 01.02.2016.
- *//**
- * download subs from server
+ * Created by Dmitry on 02.02.2016.
  */
-public class SubscriptionLoader{
+public class OrganizationLoader{
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
     private Context mContext;
-    private LoaderListener<ArrayList<OrganizationModel>> mListener;
+    private LoaderListener<OrganizationModelWithEvents> mListener;
 
-    public SubscriptionLoader(Context context) {
+    public OrganizationLoader(Context context) {
         mContext = context;
     }
 
-    public void setSubscriptionLoaderListener(LoaderListener<ArrayList<OrganizationModel>> listener) {
+    public void setLoaderListener(LoaderListener<OrganizationModelWithEvents> listener) {
         this.mListener = listener;
     }
 
-    public void getSubscriptions(){
-        Log.d(LOG_TAG, "getting subs");
+    public void getOrganization(int organizationId){
+        Log.d(LOG_TAG, "getting organization");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         AccountManager accountManager = AccountManager.get(mContext);
@@ -50,21 +46,21 @@ public class SubscriptionLoader{
             mListener.onError();
             return;
         }
-        Call<EvendateServiceResponseArray<OrganizationModel>> call = evendateService.subscriptionData(token);
-        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationModel>>() {
+        Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> call =
+                evendateService.organizationWithEventsData(organizationId, token);
+
+        call.enqueue(new Callback<EvendateServiceResponseAttr<OrganizationModelWithEvents>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<OrganizationModel>> response,
+            public void onResponse(Response<EvendateServiceResponseAttr<OrganizationModelWithEvents>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData());
                 } else {
-                    // error response, no access to resource?
-                    Log.e(LOG_TAG, "Error with response with subs");
+                    Log.e(LOG_TAG, "Error with response with events");
                     mListener.onError();
                 }
             }
 
-            // something went completely south (like no internet connection)
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
