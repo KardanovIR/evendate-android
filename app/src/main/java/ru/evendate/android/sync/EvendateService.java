@@ -9,10 +9,10 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
 import ru.evendate.android.sync.models.OrganizationModel;
 import ru.evendate.android.sync.models.OrganizationModelWithEvents;
 import ru.evendate.android.sync.models.TagResponse;
+import ru.evendate.android.sync.models.UserModel;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -61,14 +61,14 @@ public interface EvendateService {
     );
 
     @GET("/api/users/friends")
-    Call<EvendateServiceResponseArray<FriendModel>> friendsData(
+    Call<EvendateServiceResponseArray<UserModel>> friendsData(
             @Header("Authorization") String authorization,
             @Query("page") int page,
             @Query("length") int length
     );
 
     @GET("/api/users/me")
-    Call<EvendateServiceResponseAttr<FriendModel>> meData(
+    Call<EvendateServiceResponseAttr<UserModel>> meData(
             @Header("Authorization") String authorization
     );
 

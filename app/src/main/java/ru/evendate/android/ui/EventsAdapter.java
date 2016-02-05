@@ -3,7 +3,6 @@ package ru.evendate.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -124,11 +123,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
 
         @Override
         public void onClick(View v) {
-            if(v instanceof CardView){
+            if(v == holderView){
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(type != ReelFragment.TypeFormat.organization.nativeInt)
-                    intent.putExtra(EventDetailActivity.IS_LOCAL, true);
                 mContext.startActivity(intent);
             }
         }

@@ -24,7 +24,7 @@ public class EventModel extends DataModel {
     @SerializedName("tags")
     ArrayList<TagModel> mTagList;
     @SerializedName("favorite_friends")
-    ArrayList<FriendModel> mFriendList;
+    ArrayList<UserModel> mFriendList;
     //"2015-10-26 00:00:00"
     @SerializedName("dates_range")
     ArrayList<String> mDataRangeList;
@@ -146,10 +146,10 @@ public class EventModel extends DataModel {
         return mTagList;
     }
 
-    public void setFriendList(ArrayList<FriendModel> mFriendList) {
+    public void setFriendList(ArrayList<UserModel> mFriendList) {
         this.mFriendList = mFriendList;
     }
-    public ArrayList<FriendModel> getFriendList() {
+    public ArrayList<UserModel> getFriendList() {
         return mFriendList;
     }
 

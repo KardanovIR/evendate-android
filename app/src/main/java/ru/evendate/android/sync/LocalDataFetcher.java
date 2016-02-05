@@ -14,12 +14,12 @@ import java.util.HashMap;
 
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.DataModel;
-import ru.evendate.android.sync.models.EventFriendModel;
 import ru.evendate.android.sync.models.EventModel;
 import ru.evendate.android.sync.models.EventTagModel;
-import ru.evendate.android.sync.models.FriendModel;
+import ru.evendate.android.sync.models.EventUserModel;
 import ru.evendate.android.sync.models.OrganizationModel;
 import ru.evendate.android.sync.models.TagModel;
+import ru.evendate.android.sync.models.UserModel;
 import ru.evendate.android.utils.Utils;
 
 /**
@@ -82,7 +82,7 @@ public class LocalDataFetcher {
         Cursor c = mContentResolver.query(uri, null, null, null, null);
         assert c != null;
         while (c.moveToNext()){
-            FriendModel entry = mMicroOrm.fromCursor(c, FriendModel.class);
+            UserModel entry = mMicroOrm.fromCursor(c, UserModel.class);
             resList.add(entry);
         }
         c.close();
@@ -128,15 +128,15 @@ public class LocalDataFetcher {
         c.close();
         return resList;
     }
-    public ArrayList<FriendModel> getEventFriendDataFromDB(int eventId){
-        ArrayList<FriendModel> resList = new ArrayList<>();
+    public ArrayList<UserModel> getEventFriendDataFromDB(int eventId){
+        ArrayList<UserModel> resList = new ArrayList<>();
 
         Uri uri = EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                 .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_USERS).build();
         Cursor c = mContentResolver.query(uri, null, null, null, null);
         assert c != null;
         while (c.moveToNext()){
-            EventFriendModel entry = mMicroOrm.fromCursor(c, EventFriendModel.class);
+            EventUserModel entry = mMicroOrm.fromCursor(c, EventUserModel.class);
             resList.add(entry);
         }
         c.close();

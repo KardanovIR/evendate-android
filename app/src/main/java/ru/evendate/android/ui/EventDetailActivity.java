@@ -10,8 +10,6 @@ import ru.evendate.android.R;
 
 public class EventDetailActivity extends AppCompatActivity {
     public Uri mUri;
-    public boolean isLocal;
-    public static final String IS_LOCAL = "is_local";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +19,6 @@ public class EventDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent != null){
             mUri = intent.getData();
-            isLocal = intent.getBooleanExtra(IS_LOCAL, false);
         }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

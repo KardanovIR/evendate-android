@@ -12,7 +12,7 @@ import ru.evendate.android.data.EvendateContract;
 /**
  * Created by Dmitry on 11.09.2015.
  */
-public class FriendModel extends DataModel {
+public class UserModel extends DataModel {
 
     @Column(EvendateContract.UserEntry.COLUMN_USER_ID)
     @SerializedName("id")
@@ -68,7 +68,7 @@ public class FriendModel extends DataModel {
         if (obj == null) return false;
         if (!(getClass() == obj.getClass())) return false;
         
-        FriendModel tmp = (FriendModel) obj;
+        UserModel tmp = (UserModel) obj;
         return (this.lastName.equals(tmp.lastName) &&
                 this.firstName.equals(tmp.firstName) &&
                 (this.middleName != null ? this.middleName.equals(tmp.middleName) : tmp.middleName == null) &&

@@ -13,8 +13,8 @@ import java.util.HashMap;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.DataModel;
 import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
 import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.sync.models.UserModel;
 import ru.evendate.android.utils.Utils;
 
 /**
@@ -127,17 +127,17 @@ public class ImageManager {
         }
         Log.i(LOG_TAG, "images sync ended");
     }
-    public void saveUserPhoto(FriendModel friendModel) throws IOException{
+    public void saveUserPhoto(UserModel userModel) throws IOException{
         try {
-            if(friendModel.getAvatarUrl() == null)
+            if(userModel.getAvatarUrl() == null)
                 return;
-            String urlStr = friendModel.getAvatarUrl();
+            String urlStr = userModel.getAvatarUrl();
             //cut off google params
             urlStr = urlStr.substring(0, urlStr.lastIndexOf("?"));
             String format = Utils.getFileExtension(urlStr);
             String filepath = "images" + "/user" + "." + format;
             format = Utils.normalizeBitmapFormat(format);
-            URL url = new URL(friendModel.getAvatarUrl());
+            URL url = new URL(userModel.getAvatarUrl());
             ImageServerLoader.loadImage(filepath, url, Bitmap.CompressFormat.valueOf(format));
         }catch (MalformedURLException e){
             Log.e(LOG_TAG, "error parsing image url");

@@ -30,7 +30,7 @@
     <string name="progress_dialog_message">Please, wait</string>
 
     <string name="loading_error">Error</string>
-    <string name="Loading_error_description">Problem with loading data. Сheck internet connection</string>
+    <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>

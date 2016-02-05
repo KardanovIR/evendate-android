@@ -18,7 +18,7 @@ import ru.evendate.android.data.EvendateContract.OrganizationEntry;
 public class OrganizationModel extends DataModel {
 
     @SerializedName("subscribed_friends")
-    ArrayList<FriendModel> mSubscribedUsersList;
+    ArrayList<UserModel> mSubscribedUsersList;
 
     @Column(OrganizationEntry.COLUMN_ORGANIZATION_ID)
     @SerializedName("id")
@@ -74,7 +74,7 @@ public class OrganizationModel extends DataModel {
     @SerializedName("timestamp_created_at")
     long createdAt;
 
-    public ArrayList<FriendModel> getSubscribedFriends() {
+    public ArrayList<UserModel> getSubscribedFriends() {
         return mSubscribedUsersList;
     }
 

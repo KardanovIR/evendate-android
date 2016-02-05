@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -28,6 +29,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.R;
+import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbsctractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
@@ -35,9 +37,9 @@ import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
 import ru.evendate.android.sync.models.OrganizationModel;
 import ru.evendate.android.sync.models.OrganizationModelWithEvents;
+import ru.evendate.android.sync.models.UserModel;
 
 /**
  * Contain details of organization
@@ -86,6 +88,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
         mEventCountView = (TextView)rootView.findViewById(R.id.organization_event_count);
         mSubscriptionCountView = (TextView)rootView.findViewById(R.id.organization_subscription_count);
+        mSubscriptionCountView.setOnClickListener(this);
         mFriendCountView = (TextView)rootView.findViewById(R.id.organization_friend_count);
         mFavoriteEventCountTextView = (TextView)rootView.findViewById(R.id.organization_favorite_event_count);
         mOrganizationNameTextView = (TextView)rootView.findViewById(R.id.organization_name);
@@ -166,6 +169,13 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(), mAdapter.getOrganizationModel());
             subOrganizationLoader.execute();
         }
+        if(v == mSubscriptionCountView){
+            Intent intent = new Intent(getContext(), UserListActivity.class);
+            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(mAdapter.getOrganizationModel().getEntryId())).build());
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.organization.nativeInt);
+            startActivity(intent);
+        }
     }
 
     //TODO выпилить?
@@ -178,7 +188,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         HashSet<Integer> friendSet = new HashSet<>();
         for(EventModel event : mReelFragment.getEventList()){
             favoriteCount += event.isFavorite() ? 1 : 0;
-            for(FriendModel friend : event.getFriendList())
+            for(UserModel friend : event.getFriendList())
             friendSet.add(friend.getEntryId());
         }
         String favoriteEvents = favoriteCount + " " + getResources().getString(R.string.favorite_events);
@@ -217,6 +227,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
     public void onLoaded(OrganizationModelWithEvents subList){
         mAdapter.setOrganizationModel(subList);
+        if(!isAdded())
+            return;
         mAdapter.setOrganizationInfo();
         setFabIcon();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
@@ -228,8 +240,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     @Override
     public void onError() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("ERROR !!");
-        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
+        builder.setTitle(getString(R.string.loading_error));
+        builder.setMessage(getString(R.string.loading_error_description));
 
         builder.setPositiveButton("Retry", new DialogInterface.OnClickListener()
         {

@@ -38,7 +38,7 @@ import ru.evendate.android.sync.merge.MergeStrategy;
 import ru.evendate.android.sync.merge.MergeWithoutDelete;
 import ru.evendate.android.sync.models.DataModel;
 import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
+import ru.evendate.android.sync.models.UserModel;
 @Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
@@ -126,7 +126,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
 
             //user info sync
-            FriendModel me = ServerDataFetcher.getMyData(evendateService, token);
+            UserModel me = ServerDataFetcher.getMyData(evendateService, token);
             if(me != null) {
                 SharedPreferences sPref = mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
                 SharedPreferences.Editor ed = sPref.edit();
@@ -159,7 +159,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             //users from events sync
             ArrayList<DataModel> localFriendList = localDataFetcher.getUserDataFromDB();
             for(DataModel e : eventList){
-                ArrayList<FriendModel> cloudFriendList = ((EventModel) e).getFriendList();
+                ArrayList<UserModel> cloudFriendList = ((EventModel) e).getFriendList();
                 ArrayList<DataModel> cloudFriendList2 = new ArrayList<>();
                 cloudFriendList2.addAll(cloudFriendList);
                 mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);

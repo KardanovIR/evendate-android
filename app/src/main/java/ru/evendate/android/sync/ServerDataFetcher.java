@@ -11,10 +11,10 @@ import retrofit.Response;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.sync.models.DataModel;
 import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
 import ru.evendate.android.sync.models.OrganizationModel;
 import ru.evendate.android.sync.models.OrganizationModelWithEvents;
 import ru.evendate.android.sync.models.TagResponse;
+import ru.evendate.android.sync.models.UserModel;
 
 /**
  * Отвечает за обработку полученных данных от retrofit
@@ -112,10 +112,10 @@ public class ServerDataFetcher{
         return null;
     }
     public static ArrayList<DataModel> getFriendsData(EvendateService evendateService, String basicAuth){
-        Call<EvendateServiceResponseArray<FriendModel>> call =
+        Call<EvendateServiceResponseArray<UserModel>> call =
                 evendateService.friendsData(basicAuth, EvendateSyncAdapter.PAGE, EvendateSyncAdapter.ENTRY_LIMIT);
         try{
-            Response<EvendateServiceResponseArray<FriendModel>> response = call.execute();
+            Response<EvendateServiceResponseArray<UserModel>> response = call.execute();
             if(response.isSuccess()){
                 ArrayList<DataModel> dataList = new ArrayList<>();
                 dataList.addAll(response.body().getData());
@@ -127,11 +127,11 @@ public class ServerDataFetcher{
         }
         return null;
     }
-    public static FriendModel getMyData(EvendateService evendateService, String basicAuth){
-        Call<EvendateServiceResponseAttr<FriendModel>> call =
+    public static UserModel getMyData(EvendateService evendateService, String basicAuth){
+        Call<EvendateServiceResponseAttr<UserModel>> call =
                 evendateService.meData(basicAuth);
         try{
-            Response<EvendateServiceResponseAttr<FriendModel>> response = call.execute();
+            Response<EvendateServiceResponseAttr<UserModel>> response = call.execute();
             if(response.isSuccess()){
                 return response.body().getData();
             }

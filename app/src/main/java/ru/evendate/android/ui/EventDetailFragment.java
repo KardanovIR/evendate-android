@@ -119,6 +119,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
         mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
         mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
+        mParticipantCountTextView.setOnClickListener(this);
 
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
         mOrganizationIconView.setOnClickListener(this);
@@ -203,6 +204,13 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent());
             likeEventLoader.load();
         }
+        if(v == mParticipantCountTextView){
+            Intent intent = new Intent(getContext(), UserListActivity.class);
+            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+            startActivity(intent);
+        }
     }
 
     private void setFabIcon(){
@@ -275,8 +283,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public void onError() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("ERROR !!");
-        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
+        builder.setTitle(getString(R.string.loading_error));
+        builder.setMessage(getString(R.string.loading_error_description));
 
         builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
             @Override
