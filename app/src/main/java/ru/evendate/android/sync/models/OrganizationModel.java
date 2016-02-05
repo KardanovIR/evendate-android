@@ -114,14 +114,6 @@ public class OrganizationModel extends DataModel {
         return isSubscribed;
     }
 
-    public void setIsSubscribed(boolean isSubscribed) {
-        this.isSubscribed = isSubscribed;
-    }
-
-    public void setSubscribedCount(int subscribedCount) {
-        this.subscribedCount = subscribedCount;
-    }
-
     public long getUpdatedAt() {
         return updatedAt;
     }
@@ -167,6 +159,10 @@ public class OrganizationModel extends DataModel {
         return this.organizationId;
     }
 
+    public void subscribe(){
+        isSubscribed = !isSubscribed;
+        subscribedCount += isSubscribed ? 1 : -1;
+    }
     public boolean equals(Object obj) {
         if (obj == this)
             return true;

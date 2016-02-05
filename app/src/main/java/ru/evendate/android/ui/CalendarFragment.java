@@ -160,6 +160,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
 
     @Override
     public void onEventsDataLoaded() {
+        if(!isAdded())
+            return;
         Log.i(LOG_TAG, "data loaded");
         //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));

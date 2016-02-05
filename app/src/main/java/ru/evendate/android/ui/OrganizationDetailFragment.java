@@ -108,8 +108,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
     private void setFabIcon(){
-        if(!isAdded())
-            return;
         if (mAdapter.getOrganizationModel().isSubscribed()) {
             //mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
             mFAB.setImageDrawable(getResources().getDrawable(R.mipmap.ic_done));
@@ -121,8 +119,11 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
     private class SubOrganizationLoader extends AbsctractLoader<Void> {
         OrganizationModel mOrganization;
-        public SubOrganizationLoader(Context context, OrganizationModel organizationModel) {
+        boolean subscribe;
+        public SubOrganizationLoader(Context context, OrganizationModel organizationModel,
+                                     boolean subscribe) {
             super(context);
+            this.subscribe = subscribe;
             mOrganization = organizationModel;
         }
 
@@ -130,7 +131,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             Log.d(LOG_TAG, "performing sub");
             EvendateService evendateService = EvendateApiFactory.getEvendateService();
             Call<EvendateServiceResponse> call;
-            if(mOrganization.isSubscribed()){
+            if(subscribe){
                 call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
             } else {
                 call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
@@ -141,15 +142,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 public void onResponse(Response<EvendateServiceResponse> response,
                                        Retrofit retrofit) {
                     if (response.isSuccess()) {
-                        mOrganization.setIsSubscribed(!mOrganization.isSubscribed());
-                        int count_change = mOrganization.isSubscribed() ? 1 : -1;
-                        mOrganization.setSubscribedCount(mOrganization.getSubscribedCount() + count_change);
-                        mAdapter.setOrganizationInfo();
-                        if(mOrganization.isSubscribed())
-                            Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-                        else
-                            Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
-                        setFabIcon();
+                        Log.d(LOG_TAG, "performed sub");
                     } else {
                         Log.e(LOG_TAG, "Error with response with organization sub");
                         mListener.onError();
@@ -165,9 +158,18 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
     }
     public void onClick(View v) {
+        if(mAdapter.getOrganizationModel() == null)
+            return;
+        SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
+                mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+        subOrganizationLoader.execute();
         if(v == mFAB) {
-            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(), mAdapter.getOrganizationModel());
-            subOrganizationLoader.execute();
+            mAdapter.getOrganizationModel().subscribe();
+            mAdapter.setOrganizationInfo();
+            if(mAdapter.getOrganizationModel().isSubscribed())
+                Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
+            else
+                Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
         if(v == mSubscriptionCountView){
             Intent intent = new Intent(getContext(), UserListActivity.class);
@@ -208,9 +210,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
 
         private void setOrganizationInfo(){
-            //prevent illegal state exception cause fragment not attached to
-            if(!isAdded())
-                return;
             mOrganizationNameTextView.setText(mOrganizationModel.getName());
             mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
             Picasso.with(getContext())
@@ -221,6 +220,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     .load(mOrganizationModel.getLogoSmallUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
+            setFabIcon();
         }
     }
 
@@ -239,20 +239,17 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
 
     @Override
     public void onError() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.loading_error));
-        builder.setMessage(getString(R.string.loading_error_description));
-
-        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                mOrganizationLoader.getOrganization(organizationId);
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
+        if(!isAdded())
+            return;
+        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        mOrganizationLoader.getOrganization(organizationId);
+                        dialog.dismiss();
+                    }
+                });
         dialog.show();
     }
 }

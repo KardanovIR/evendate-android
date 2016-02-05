@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
+    private boolean mDestroyed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +142,22 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         mSubscriptionLoader.getSubscriptions();
     }
 
+    /**
+     * Returns true if the final {@link #onDestroy()} call has been made
+     * on the Activity, so this instance is now dead.
+     * cause api 17 has not this method
+     */
+    @Override
+    public boolean isDestroyed() {
+        return mDestroyed;
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDestroyed = true;
+        super.onDestroy();
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -205,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     @Override
     public void onLoaded(ArrayList<OrganizationModel> subList) {
+        if(isDestroyed())
+            return;
         mSubscriptionAdapter.setSubscriptions(subList);
         if(!mAccountToggle.isChecked())
             setupActionMenu();
@@ -212,18 +231,15 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     @Override
     public void onError() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("ERROR !!");
-        builder.setMessage("Sorry there was an error getting data from the Internet.\nNetwork Unavailable!");
-
-        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+        if(!isDestroyed())
+            return;
+        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mSubscriptionLoader.getSubscriptions();
                 dialog.dismiss();
             }
         });
-        AlertDialog dialog = builder.create();
         dialog.show();
     }
 

@@ -189,11 +189,14 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     startActivity(openLink);
                 }
             });
+            setFabIcon();
         }
     }
 
     @Override
     public void onClick(View v) {
+        if(mAdapter.getEvent() == null)
+            return;
         if(v == mOrganizationIconView || v == mOrganizationTextView){
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
@@ -201,8 +204,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             startActivity(intent);
         }
         if(v == mFAB) {
-            LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent());
+            LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
+                    mAdapter.getEvent().isFavorite());
             likeEventLoader.load();
+            mAdapter.getEvent().favore();
+            if(mAdapter.getEvent().isFavorite())
+                Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
+            else
+                Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
+            mAdapter.setEventInfo();
         }
         if(v == mParticipantCountTextView){
             Intent intent = new Intent(getContext(), UserListActivity.class);
@@ -223,8 +233,10 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private class LikeEventLoader extends AbsctractLoader<Void> {
         EventModel mEvent;
-        public LikeEventLoader(Context context, EventModel eventModel) {
+        boolean favorite;
+        public LikeEventLoader(Context context, EventModel eventModel, boolean favorite) {
             super(context);
+            this.favorite = favorite;
             mEvent = eventModel;
         }
 
@@ -232,7 +244,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Log.d(LOG_TAG, "performing like");
             EvendateService evendateService = EvendateApiFactory.getEvendateService();
             Call<EvendateServiceResponse> call;
-            if(mAdapter.getEvent().isFavorite()){
+            if(favorite){
                 call = evendateService.eventDeleteFavorite(mEvent.getEntryId(), peekToken());
             }
             else {
@@ -244,19 +256,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 public void onResponse(Response<EvendateServiceResponse> response,
                                        Retrofit retrofit) {
                     if (response.isSuccess()) {
-                        mAdapter.getEvent().setIsFavorite(!mEvent.isFavorite());
-                        if(mEvent.isFavorite()){
-                            mEvent.setLikedUsersCount(mEvent.getLikedUsersCount() + 1);
-                        }
-                        else{
-                            mEvent.setLikedUsersCount(mEvent.getLikedUsersCount() - 1);
-                        }
-                        if(mEvent.isFavorite())
-                            Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
-                        else
-                            Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
-                        mAdapter.setEventInfo();
-                        setFabIcon();
+                        Log.d(LOG_TAG, "performed like");
                     } else {
                         Log.e(LOG_TAG, "Error with response with like");
                         mListener.onError();
@@ -274,6 +274,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onLoaded(EventModel event) {
+        if(!isAdded())
+            return;
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         setFabIcon();
@@ -282,18 +284,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onError() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.loading_error));
-        builder.setMessage(getString(R.string.loading_error_description));
-
-        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+        if(!isAdded())
+            return;
+        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mEventLoader.getData(eventId);
                 dialog.dismiss();
             }
         });
-        AlertDialog dialog = builder.create();
         dialog.show();
     }
 }

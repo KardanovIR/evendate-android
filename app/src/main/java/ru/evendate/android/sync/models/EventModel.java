@@ -256,6 +256,11 @@ public class EventModel extends DataModel {
         return firstDate;
     }
 
+    public void favore(){
+        isFavorite = !isFavorite;
+        likedUsersCount += isFavorite ? 1 : -1;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this)
