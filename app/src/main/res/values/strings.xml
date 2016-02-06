@@ -79,4 +79,9 @@
     <string name="intro_sync">Sync all devices</string>
     <string name="intro_done">Begin</string>
     <string name="intro_skip">Skip</string>
+
+    <!-- dialogs strings -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_check_organizations">Choose organization</string>
 </resources>
