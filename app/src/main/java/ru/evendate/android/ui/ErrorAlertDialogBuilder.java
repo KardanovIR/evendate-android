@@ -11,7 +11,7 @@ import ru.evendate.android.R;
  */
 public class ErrorAlertDialogBuilder{
     public static AlertDialog newInstance(Context context, DialogInterface.OnClickListener onClickListener){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.DialogCustom);
         builder.setTitle(context.getString(R.string.loading_error));
         builder.setMessage(context.getString(R.string.loading_error_description));
 

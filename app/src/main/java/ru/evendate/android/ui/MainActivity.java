@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     @Override
     public void onError() {
-        if(!isDestroyed())
+        if(isDestroyed())
             return;
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
