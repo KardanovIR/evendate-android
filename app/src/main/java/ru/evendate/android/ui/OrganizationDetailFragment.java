@@ -230,7 +230,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         if(!isAdded())
             return;
         mAdapter.setOrganizationInfo();
-        setFabIcon();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
         mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
         mReelFragment.setDataListener(this);

@@ -278,7 +278,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             return;
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
-        setFabIcon();
         mProgressBar.setVisibility(View.GONE);
     }
 
