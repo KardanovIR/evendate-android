@@ -56,4 +56,5 @@
     <string name="dialog_cancel">Отмена</string>
     <string name="dialog_check_organizations">Выберите организации</string>
     <string name="dialog_ok">ОК</string>
+    <string name="action_share">Поделиться</string>
 </resources>

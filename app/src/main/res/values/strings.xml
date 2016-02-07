@@ -41,6 +41,8 @@
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>
 
+    <string name="action_share">Share</string>
+
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
     <string name="organization_subscribers">subscribers</string>
