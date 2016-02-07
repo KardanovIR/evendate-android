@@ -15,6 +15,7 @@ import java.util.Date;
 
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.data.EvendateContract.EventEntry;
+import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.utils.Utils;
 
 /**
@@ -254,6 +255,10 @@ public class EventModel extends DataModel {
 
     public long getFirstDate() {
         return firstDate;
+    }
+
+    public String getUrl(){
+        return EvendateApiFactory.HOSTNAME + "event.php?id=" + eventId;
     }
 
     public void favore(){

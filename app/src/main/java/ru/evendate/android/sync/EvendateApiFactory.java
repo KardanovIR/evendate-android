@@ -13,6 +13,7 @@ import retrofit.Retrofit;
  * Created by Dmitry on 18.10.2015.
  */
 public class EvendateApiFactory {
+    public static final String HOSTNAME = "http://evendate.ru/";
 
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
@@ -33,7 +34,7 @@ public class EvendateApiFactory {
 
     @NonNull
     private static Retrofit getRetrofit(){
-        return new Retrofit.Builder().baseUrl("http://evendate.ru/")
+        return new Retrofit.Builder().baseUrl(HOSTNAME)
                 .addConverterFactory(GsonConverterFactory.create()
                 ).client(CLIENT).build();
     }
