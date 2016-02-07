@@ -11,10 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.EventFormatter;
@@ -126,6 +129,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
             if(v == holderView){
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
+
+                Tracker tracker = EvendateApplication.getTracker();
+                HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                        .setCategory(mContext.getString(R.string.stat_category_event))
+                        .setAction(mContext.getString(R.string.stat_action_view))
+                        .setLabel(Long.toString(id));
+                tracker.send(event.build());
                 mContext.startActivity(intent);
             }
         }

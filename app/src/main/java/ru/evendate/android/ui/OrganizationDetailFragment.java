@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
@@ -28,6 +30,7 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbsctractLoader;
@@ -164,12 +167,21 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
         subOrganizationLoader.execute();
         if(v == mFAB) {
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getActivity().getString(R.string.stat_category_organization))
+                    .setLabel((Long.toString(mAdapter.getOrganizationModel().getEntryId())));
             mAdapter.getOrganizationModel().subscribe();
-            mAdapter.setOrganizationInfo();
-            if(mAdapter.getOrganizationModel().isSubscribed())
+            if(mAdapter.getOrganizationModel().isSubscribed()){
+                event.setAction(getActivity().getString(R.string.stat_action_subscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-            else
+            }
+            else{
+                event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
+            }
+            tracker.send(event.build());
+            mAdapter.setOrganizationInfo();
         }
         if(v == mSubscriptionCountView){
             Intent intent = new Intent(getContext(), UserListActivity.class);

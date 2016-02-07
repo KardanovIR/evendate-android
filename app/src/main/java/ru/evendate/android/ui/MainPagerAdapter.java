@@ -60,6 +60,22 @@ class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment
         }
     }
 
+    /**
+     * return strings for statistics
+     * @param position int
+     * @return String
+     */
+    public String getPageLabel(int position){
+        switch (position){
+            case 0:
+                return mContext.getString(R.string.page_feed);
+            case 1:
+                return mContext.getString(R.string.page_favorite);
+            default:
+                return null;
+        }
+    }
+
     @Override
     public void onRefresh() {
         if(listener != null)

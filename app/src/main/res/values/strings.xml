@@ -84,4 +84,17 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_check_organizations">Choose organization</string>
+
+    <!-- strings for statistics -->
+    <string name="stat_category_event">Event</string>
+    <string name="stat_category_organization">Organization</string>
+    <string name="stat_action_view">View</string>
+    <string name="stat_action_notification">View by notification</string>
+    <string name="stat_action_like">like</string>
+    <string name="stat_action_dislike">Dislike</string>
+    <string name="stat_action_subscribe">Subscribe</string>
+    <string name="stat_action_unsubscribe">Unsubscribe</string>
+
+    <string name="stat_page_feed">Feed</string>
+    <string name="stat_page_favorite">Favorite</string>
 </resources>
