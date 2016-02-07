@@ -34,7 +34,7 @@ public class OrganizationFilterDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.DialogCustom);
         builder.setTitle(R.string.dialog_check_organizations)
                 .setMultiChoiceItems(
                         mItemsList.toArray(new String[mItemsList.size()]),
