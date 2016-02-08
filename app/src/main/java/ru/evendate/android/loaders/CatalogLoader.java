@@ -28,7 +28,7 @@ public class CatalogLoader extends AbsctractLoader<ArrayList<OrganizationType>>{
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<OrganizationType>> call =
-                evendateService.getCatalog(peekToken());
+                evendateService.getCatalog(peekToken(), OrganizationType.FIELDS_LIST);
 
         call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationType>>() {
             @Override

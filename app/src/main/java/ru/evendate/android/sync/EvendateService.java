@@ -135,7 +135,8 @@ public interface EvendateService {
      */
     @GET(API_PATH + "/organizations/types")
     Call<EvendateServiceResponseArray<OrganizationType>> getCatalog(
-            @Header("Authorization") String authorization
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
     );
 
     @PUT(API_PATH + "/users/me/devices")
