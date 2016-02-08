@@ -1,6 +1,5 @@
 package ru.evendate.android.loaders;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -8,26 +7,23 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import ru.evendate.android.EvendateAccountManager;
-import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseAttr;
-import ru.evendate.android.sync.models.OrganizationModelWithEvents;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.sync.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 02.02.2016.
  */
-public class OrganizationLoader{
+public class OrganizationLoader extends AbsctractLoader<OrganizationDetail>{
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
-    private Context mContext;
-    private LoaderListener<OrganizationModelWithEvents> mListener;
+    private LoaderListener<OrganizationDetail> mListener;
 
     public OrganizationLoader(Context context) {
-        mContext = context;
+        super(context);
     }
 
-    public void setLoaderListener(LoaderListener<OrganizationModelWithEvents> listener) {
+    public void setLoaderListener(LoaderListener<OrganizationDetail> listener) {
         this.mListener = listener;
     }
 
@@ -35,26 +31,15 @@ public class OrganizationLoader{
         Log.d(LOG_TAG, "getting organization");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        AccountManager accountManager = AccountManager.get(mContext);
-        String token;
-        try {
-            token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(mContext),
-                    mContext.getString(R.string.account_type));
-        } catch (Exception e){
-            Log.e(LOG_TAG, "Error with peeking token");
-            e.fillInStackTrace();
-            mListener.onError();
-            return;
-        }
-        Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> call =
-                evendateService.organizationWithEventsData(organizationId, token);
+        Call<EvendateServiceResponseArray<OrganizationDetail>> call =
+                evendateService.getOrganization(peekToken(), organizationId, OrganizationDetail.FIELDS_LIST);
 
-        call.enqueue(new Callback<EvendateServiceResponseAttr<OrganizationModelWithEvents>>() {
+        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationDetail>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseAttr<OrganizationModelWithEvents>> response,
+            public void onResponse(Response<EvendateServiceResponseArray<OrganizationDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    mListener.onLoaded(response.body().getData().get(0));
                 } else {
                     Log.e(LOG_TAG, "Error with response with events");
                     mListener.onError();

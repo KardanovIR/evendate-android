@@ -38,14 +38,14 @@ import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.models.EventFormatter;
+import ru.evendate.android.sync.models.EventDetail;
 import ru.evendate.android.sync.models.EventModel;
 
 /**
  * contain details of events
  */
 public class EventDetailFragment extends Fragment implements View.OnClickListener,
-        LoaderListener<EventModel>{
+        LoaderListener<EventDetail>{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -142,13 +142,13 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     private class EventAdapter{
-        private EventModel mEvent;
+        private EventDetail mEvent;
 
-        public void setEvent(EventModel event) {
+        public void setEvent(EventDetail event) {
             mEvent = event;
         }
 
-        public EventModel getEvent() {
+        public EventDetail getEvent() {
             return mEvent;
         }
 
@@ -156,7 +156,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             //prevent illegal state exception cause fragment not attached to
             if(!isAdded())
                 return;
-            EventFormatter eventFormatter = new EventFormatter(getActivity());
+            //TODO
+            //EventFormatter eventFormatter = new EventFormatter(getActivity());
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
             mTitleTextView.setText(mEvent.getTitle());
@@ -165,13 +166,13 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mPlaceTextView.setText(mEvent.getLocation());
             if(mEvent.getLocation().length() > 30)
                 mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            mTagsTextView.setText(eventFormatter.formatTags(mEvent));
+            //mTagsTextView.setText(eventFormatter.formatTags(mEvent));
             mLinkTextView.setText(mEvent.getDetailInfoUrl());
             mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
-            mTimeTextView.setText(eventFormatter.formatTime(mEvent));
-            mDayTextView.setText(eventFormatter.formatDay(mEvent));
-            mMonthTextView.setText(eventFormatter.formatMonth(mEvent));
-            mDateTextView.setText(eventFormatter.formatDate(mEvent));
+            //mTimeTextView.setText(eventFormatter.formatTime(mEvent));
+            //mDayTextView.setText(eventFormatter.formatDay(mEvent));
+            //mMonthTextView.setText(eventFormatter.formatMonth(mEvent));
+            //mDateTextView.setText(eventFormatter.formatDate(mEvent));
 
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
@@ -273,7 +274,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onLoaded(EventModel event) {
+    public void onLoaded(EventDetail event) {
         if(!isAdded())
             return;
         mAdapter.setEvent(event);

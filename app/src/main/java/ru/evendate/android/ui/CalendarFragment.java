@@ -1,17 +1,12 @@
 package ru.evendate.android.ui;
 
-import android.database.Cursor;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.text.TextPaint;
-import android.text.style.CharacterStyle;
+import android.support.v7.app.AlertDialog;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.UpdateAppearance;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,27 +23,26 @@ import com.prolificinteractive.materialcalendarview.format.TitleFormatter;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.lang.reflect.Method;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 import ru.evendate.android.R;
-import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.utils.Utils;
+import ru.evendate.android.loaders.DateCalendarLoader;
+import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.sync.models.DateCalendar;
 
 /**
  * Created by fj on 28.09.2015.
  */
-public class CalendarFragment extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor>,
-        ReelFragment.OnEventsDataLoadedListener, OnDateChangedListener{
+public class CalendarFragment extends Fragment  implements ReelFragment.OnEventsDataLoadedListener,
+        OnDateChangedListener{
     private final String LOG_TAG = CalendarFragment.class.getSimpleName();
     private MaterialCalendarView mCalendarView;
     private ReelFragment mReelFragment;
-    private EventDecorator mEventDecorator;
     private OneDayDecorator mOneDayDecorator;
     public SlidingUpPanelLayout mSlidingUpPanelLayout;
     private Date minimumDate;
@@ -57,7 +51,8 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     private TextView mEventCountTextView;
     private View mDragView;
 
-    final int DATES_LOADER_ID = 0;
+    private DateCalendarLoader mLoader;
+    private DateAdapter mAdapter;
 
     /**
      * change localize months in rus
@@ -99,7 +94,6 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         mCalendarView.addDecorator(mOneDayDecorator);
         mCalendarView.setShowOtherDates(true);
         mCalendarView.setTitleFormatter(new MyTitleFormatter());
-        //getLoaderManager().initLoader(DATES_LOADER_ID, null, this);
 
         mToggleButton = (ToggleButton)rootView.findViewById(R.id.calendar_button);
 
@@ -130,6 +124,32 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
 
             @Override
             public void onPanelHidden(View panel) {
+
+            }
+        });
+
+        mAdapter = new DateAdapter();
+        mLoader = new DateCalendarLoader(getActivity());
+        mLoader.setLoaderListener(new LoaderListener<ArrayList<DateCalendar>>() {
+            @Override
+            public void onLoaded(ArrayList<DateCalendar> subList) {
+                if(!isAdded())
+                    return;
+                mAdapter.setDateList(subList);
+                mAdapter.setDates();
+            }
+
+            @Override
+            public void onError() {
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mLoader.getData();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
 
             }
         });
@@ -191,20 +211,49 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         //    }
         //});
     }
-    public class EventDecorator implements DayViewDecorator {
+
+    class DateAdapter{
+        private ArrayList<DateCalendar> mDateList;
+
+        public ArrayList<DateCalendar> getDateList() {
+            return mDateList;
+        }
+        public void setDateList(ArrayList<DateCalendar> dateList) {
+            this.mDateList = dateList;
+        }
+        public void setDates(){
+            ArrayList<CalendarDay> activeDates = new ArrayList<>();
+            ArrayList<CalendarDay> favoritesDates = new ArrayList<>();
+            for (DateCalendar date : mDateList){
+                CalendarDay day = CalendarDay.from(new Date(date.getEventDate() * 1000));
+                if(date.getEventCount() != 0)
+                    activeDates.add(day);
+                if(date.getFavoredCount() != 0)
+                    favoritesDates.add(day);
+            }
+            EventActiveDecorator eventActiveDecorator = new EventActiveDecorator(activeDates);
+            EventFavoriteDecorator eventFavoriteDecorator = new EventFavoriteDecorator(favoritesDates);
+            mCalendarView.addDecorator(eventActiveDecorator);
+            mCalendarView.addDecorator(eventFavoriteDecorator);
+        }
+    }
+
+    /**
+     * decorate favorite events
+     */
+    private class EventFavoriteDecorator implements DayViewDecorator {
 
         private final int color;
-        private final HashMap<CalendarDay, Boolean> dates;
+        private final ArrayList<CalendarDay> dates;
 
-        public EventDecorator(HashMap<CalendarDay, Boolean> dates) {
+        public EventFavoriteDecorator(ArrayList<CalendarDay> dates) {
             this.color = getResources().getColor(R.color.accent);
             this.dates = dates;
         }
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return dates.keySet().contains(day) && dates.get(day) &&
-                    day.getDate().getTime() > minimumDate.getTime();
+            return dates.contains(day) && day.getDate().getTime() > minimumDate.getTime();
         }
 
         @Override
@@ -213,18 +262,21 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
             view.addSpan(new DotSpan(5, color));
         }
     }
-    public class EventActiveDecorator implements DayViewDecorator {
 
-        private final HashMap<CalendarDay, Boolean> dates;
+    /**
+     * decorate active date (with events)
+     */
+    private class EventActiveDecorator implements DayViewDecorator {
 
-        public EventActiveDecorator(HashMap<CalendarDay, Boolean> dates) {
+        private final ArrayList<CalendarDay> dates;
+
+        public EventActiveDecorator(ArrayList<CalendarDay> dates) {
             this.dates = dates;
         }
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return dates.keySet().contains(day) &&
-                    day.getDate().getTime() > minimumDate.getTime();
+            return dates.contains(day) && day.getDate().getTime() > minimumDate.getTime();
         }
 
         @Override
@@ -236,7 +288,7 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
     /**
      * decorate selected day
      */
-    public class OneDayDecorator implements DayViewDecorator {
+    private class OneDayDecorator implements DayViewDecorator {
 
         private CalendarDay date;
 
@@ -270,36 +322,10 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         }
     }
 
-    public void setActiveDays(HashMap<String, Boolean> datesList){
-        HashMap<CalendarDay, Boolean> dates = new HashMap<>();
-        for(String dateString : datesList.keySet()){
-            Date dateStamp;
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
-            dateStamp = Utils.formatDate(dateString, format);
-            if(dateStamp == null){
-                dateStamp = Utils.formatDate(dateString, format2);
-            }
-            if(dateStamp == null)
-                break;
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(dateStamp);
-            if(!dates.containsKey(CalendarDay.from(calendar)))
-                dates.put(CalendarDay.from(calendar), datesList.get(dateString));
-            else{
-                if(datesList.get(dateString))
-                    dates.remove(CalendarDay.from(calendar));
-                    dates.put(CalendarDay.from(calendar), true);
-            }
-        }
-
-        EventActiveDecorator eventActiveDecorator = new EventActiveDecorator(dates);
-        mCalendarView.addDecorator(eventActiveDecorator);
-        mEventDecorator = new EventDecorator(dates);
-        mCalendarView.addDecorator(mEventDecorator);
-    }
-    private static class PrimeDayDisableDecorator implements DayViewDecorator {
+    /**
+     * disable all day at the start of filling calendar
+     */
+    private class PrimeDayDisableDecorator implements DayViewDecorator {
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
@@ -310,42 +336,5 @@ public class CalendarFragment extends Fragment  implements LoaderManager.LoaderC
         public void decorate(DayViewFacade view) {
             view.setDaysDisabled(true);
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id){
-            case DATES_LOADER_ID:
-                return new CursorLoader(
-                        getActivity(),
-                        EvendateContract.BASE_CONTENT_URI.buildUpon().
-                                appendPath(EvendateContract.PATH_DATES).appendQueryParameter("with_favorites", "1").build(),
-                        null,
-                        null,
-                        null,
-                        null
-                );
-                default:
-                    throw new IllegalArgumentException("Unknown loader id: " + id);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        HashMap<String, Boolean> list = new HashMap<>();
-        while (data.moveToNext()){
-            String date = data.getString(data.getColumnIndex(EvendateContract.EventDateEntry.COLUMN_DATE));
-            boolean favorite = data.getInt(data.getColumnIndex(EvendateContract.EventEntry.COLUMN_IS_FAVORITE)) == 1;
-            if(list.get(date) == null || !list.get(date))
-                list.put(date, favorite);
-        }
-        setActiveDays(list);
-
-        list.clear();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

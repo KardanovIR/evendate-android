@@ -1,19 +1,9 @@
 package ru.evendate.android.sync.models;
 
-import android.content.Context;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
-import ru.evendate.android.R;
-import ru.evendate.android.utils.Utils;
-
 /**
  * Created by Dmitry on 04.12.2015.
  */
+/*
 public class EventFormatter {
     private Context mContext;
 
@@ -139,4 +129,4 @@ public class EventFormatter {
         }
         return tags;
     }
-}
+}*/

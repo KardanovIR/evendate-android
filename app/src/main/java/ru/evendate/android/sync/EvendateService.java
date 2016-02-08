@@ -8,107 +8,137 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import ru.evendate.android.sync.models.EventModel;
+import ru.evendate.android.sync.models.DateCalendar;
+import ru.evendate.android.sync.models.EventDetail;
+import ru.evendate.android.sync.models.OrganizationDetail;
 import ru.evendate.android.sync.models.OrganizationModel;
-import ru.evendate.android.sync.models.OrganizationModelWithEvents;
-import ru.evendate.android.sync.models.TagResponse;
-import ru.evendate.android.sync.models.UserModel;
+import ru.evendate.android.sync.models.OrganizationType;
 
 /**
  * Created by Dmitry on 18.10.2015.
  */
 public interface EvendateService {
+    String API_PATH = "/api/v1";
 
-    @GET("/api/organizations?with_subscriptions=true")
-    Call<EvendateServiceResponseArray<OrganizationModel>> organizationData(
-            @Header("Authorization") String authorization
-    );
+    //@GET("/api/tags")
+    //Call<EvendateServiceResponseAttr<TagResponse>> tagData(
+    //        @Header("Authorization") String authorization,
+    //        @Query("page") int page,
+    //        @Query("length") int length
+    //);
 
-    @GET("/api/tags")
-    Call<EvendateServiceResponseAttr<TagResponse>> tagData(
+    @GET(API_PATH + "/events/dates")
+    Call<EvendateServiceResponseArray<DateCalendar>> getCalendarDates(
             @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length
+            @Query("unique") boolean unique,
+            @Query("since") String since,
+            @Query("fields") String fields
     );
 
-    @GET("/api/organizations/{id}?with_events=true")
-    Call<EvendateServiceResponseAttr<OrganizationModelWithEvents>> organizationWithEventsData(
-            @Path("id") int organizationId,
-            @Header("Authorization") String authorization
-    );
-
-    @GET("/api/events/my")
-    Call<EvendateServiceResponseArray<EventModel>> eventsData(
+    /**
+     * Get feed event list
+     */
+    @GET(API_PATH + "/events/my")
+    Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length
-    );
-    @GET("/api/events/my")
-    Call<EvendateServiceResponseArray<EventModel>> eventsData(
-            @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length,
-            @Query("date") String date
+            @Query("future") boolean future
     );
 
-    @GET("/api/events")
-    Call<EvendateServiceResponseArray<EventModel>> eventsData(
-            @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length,
-            @Query("organization_id") int organizationId,
-            @Query("type") String type
-    );
-
-    @GET("/api/users/friends")
-    Call<EvendateServiceResponseArray<UserModel>> friendsData(
-            @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length
-    );
-
-    @GET("/api/users/me")
-    Call<EvendateServiceResponseAttr<UserModel>> meData(
-            @Header("Authorization") String authorization
-    );
-
-    @GET("/api/events/{id}")
-    Call<EvendateServiceResponseAttr<EventModel>> eventData(
+    /**
+     * Get concrete event
+     */
+    @GET(API_PATH + "/events/{id}")
+    Call<EvendateServiceResponseArray<EventDetail>> eventData(
             @Path("id") int eventId,
-            @Header("Authorization") String authorization);
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
+    );
 
-    @GET("/api/subscriptions/my")
-    Call<EvendateServiceResponseArray<OrganizationModel>> subscriptionData(
-            @Header("Authorization") String authorization);
-
-    @POST("/api/subscriptions")
-    Call<EvendateServiceResponse> organizationPostSubscription(
-            @Query("organization_id") int organizationId,
+    /**
+     * Get favorite event list
+     */
+    @GET(API_PATH + "/events/favorites")
+    Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization
     );
 
-    @DELETE("/api/subscriptions/{id}")
-    Call<EvendateServiceResponse> organizationDeleteSubscription(
-            @Path("id") int subscriptionId, @Header("Authorization") String authorization
-    );
-
-    @GET("/api/events/favorites")
-    Call<EvendateServiceResponseArray<EventModel>> favoritesEventData(
-            @Header("Authorization") String authorization,
-            @Query("page") int page,
-            @Query("length") int length
-    );
-    @POST("/api/events/favorites")
+    @POST(API_PATH + "/events/{id}/favorites")
     Call<EvendateServiceResponse> eventPostFavorite(
-            @Query("event_id") int eventId, @Header("Authorization") String authorization
+            @Query("id") int eventId, @Header("Authorization") String authorization
     );
 
-    @DELETE("/api/events/favorites/{id}")
+    @DELETE(API_PATH + "/events/{id}/favorites")
     Call<EvendateServiceResponse> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
 
-    @PUT("/api/users/device")
+    /**
+     * Get events in organization
+     */
+    @GET(API_PATH + "/events")
+    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("future") boolean future,
+            @Query("fields") String fields
+    );
+
+    /**
+     * Get events by date
+     */
+    @GET(API_PATH + "/events")
+    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("date") String date,
+            @Query("future") boolean future,
+            @Query("fields") String fields
+    );
+    //@GET("/api/users/friends")
+    //Call<EvendateServiceResponseArray<UserModel>> friendsData(
+    //        @Header("Authorization") String authorization,
+    //        @Query("page") int page,
+    //        @Query("length") int length
+    //);
+//
+    //@GET("/api/users/me")
+    //Call<EvendateServiceResponseAttr<UserModel>> meData(
+    //        @Header("Authorization") String authorization
+    //);
+
+    @GET(API_PATH + "/organizations/{id}")
+    Call<EvendateServiceResponseArray<OrganizationDetail>> getOrganization(
+            @Header("Authorization") String authorization,
+            @Path("id") int organizationId,
+            @Query("fields") String fields
+    );
+
+    /**
+     * Get subscriptions
+     */
+    @GET(API_PATH + "/organizations/subscriptions")
+    Call<EvendateServiceResponseArray<OrganizationModel>> getSubscriptions(
+            @Header("Authorization") String authorization
+    );
+    @POST(API_PATH + "/organizations/{id}/subscriptions")
+    Call<EvendateServiceResponse> organizationPostSubscription(
+            @Path("id") int organizationId,
+            @Header("Authorization") String authorization
+    );
+
+    @DELETE(API_PATH + "/organizations/{id}/subscriptions")
+    Call<EvendateServiceResponse> organizationDeleteSubscription(
+            @Path("id") int organizationId, @Header("Authorization") String authorization
+    );
+
+    /**
+     * Get feed event list
+     */
+    @GET(API_PATH + "/organizations/types")
+    Call<EvendateServiceResponseArray<OrganizationType>> getCatalog(
+            @Header("Authorization") String authorization
+    );
+
+    @PUT(API_PATH + "/users/me/devices")
     Call<EvendateServiceResponse> putDeviceToken(
             @Query("device_token") String deviceToken,
             @Query("client_type") String clientType,

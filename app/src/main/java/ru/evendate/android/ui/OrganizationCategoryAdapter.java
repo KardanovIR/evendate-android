@@ -11,9 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.sync.LocalDataFetcher;
-import ru.evendate.android.sync.models.DataModel;
-import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.sync.models.OrganizationType;
 
 /**
  * Created by Dmitry on 30.11.2015.
@@ -21,18 +19,18 @@ import ru.evendate.android.sync.models.OrganizationModel;
 public class OrganizationCategoryAdapter extends RecyclerView.Adapter<OrganizationCategoryAdapter.CategoryHolder>{
 
     Context mContext;
-    private ArrayList<String> mCategoryList;
+    private ArrayList<OrganizationType> mCategoryList;
 
     public OrganizationCategoryAdapter(Context context){
         this.mContext = context;
     }
 
-    public void setCategoryList(ArrayList<String> categoryList){
+    public void setCategoryList(ArrayList<OrganizationType> categoryList){
         mCategoryList = categoryList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<String> getCategoryList() {
+    public ArrayList<OrganizationType> getCategoryList() {
         return mCategoryList;
     }
 
@@ -46,22 +44,12 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
     public void onBindViewHolder(CategoryHolder holder, int position) {
         if(mCategoryList == null)
             return;
-        String category = mCategoryList.get(position);
+        String category = mCategoryList.get(position).getName();
         holder.mCategoryTextView.setText(category);
-
         holder.mAdapter = new OrganizationCatalogAdapter(mContext);
-
-        LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContext.getContentResolver(), mContext);
-        ArrayList<DataModel> list = localDataFetcher.getOrganizationDataFromDB(category);
-        ArrayList<OrganizationModel> organizationList = new ArrayList<>();
-        for(DataModel data: list){
-            organizationList.add((OrganizationModel)data);
-        }
-        holder.mAdapter.setOrganizationList(organizationList);
+        holder.mAdapter.setOrganizationList(mCategoryList.get(position).getOrganizations());
         holder.mContainer.setAdapter(holder.mAdapter);
         holder.mContainer.setLayoutManager(new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-
-
     }
 
     @Override

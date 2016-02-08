@@ -17,8 +17,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.EventFormatter;
-import ru.evendate.android.sync.models.EventModel;
+import ru.evendate.android.sync.models.EventDetail;
 
 /**
  * Created by Dmitry on 01.12.2015.
@@ -27,7 +26,7 @@ import ru.evendate.android.sync.models.EventModel;
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolder>{
 
     Context mContext;
-    private ArrayList<EventModel> mEventList;
+    private ArrayList<EventDetail> mEventList;
     int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
@@ -37,12 +36,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         this.type = type;
     }
 
-    public void setEventList(ArrayList<EventModel> eventList){
+    public void setEventList(ArrayList<EventDetail> eventList){
         mEventList = eventList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<EventModel> getEventList() {
+    public ArrayList<EventDetail> getEventList() {
         return mEventList;
     }
 
@@ -65,7 +64,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
     public void onBindViewHolder(EventHolder holder, int position) {
         if(mEventList == null)
             return;
-        EventModel eventEntry = mEventList.get(position);
+        EventDetail eventEntry = mEventList.get(position);
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if(type != ReelFragment.TypeFormat.favorites.nativeInt){
@@ -78,9 +77,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
-        EventFormatter eventFormatter = new EventFormatter(mContext);
-        String date = eventFormatter.formatDate(eventEntry) + "\n" + eventFormatter.formatTime(eventEntry);
-        holder.mDateTextView.setText(date);
+        //TODO
+        //EventFormatter eventFormatter = new EventFormatter(mContext);
+        //String date = eventFormatter.formatDate(eventEntry) + "\n" + eventFormatter.formatTime(eventEntry);
+        //holder.mDateTextView.setText(date);
         Picasso.with(mContext)
                 .load(type == ReelFragment.TypeFormat.favorites.nativeInt ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
                 .error(R.drawable.default_background)

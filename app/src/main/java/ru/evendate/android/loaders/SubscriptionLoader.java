@@ -50,7 +50,8 @@ public class SubscriptionLoader{
             mListener.onError();
             return;
         }
-        Call<EvendateServiceResponseArray<OrganizationModel>> call = evendateService.subscriptionData(token);
+        Call<EvendateServiceResponseArray<OrganizationModel>> call =
+                evendateService.getSubscriptions(token);
         call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationModel>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<OrganizationModel>> response,

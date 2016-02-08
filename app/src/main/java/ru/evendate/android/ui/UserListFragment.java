@@ -14,8 +14,8 @@ import ru.evendate.android.R;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
-import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.OrganizationModelWithEvents;
+import ru.evendate.android.sync.models.EventDetail;
+import ru.evendate.android.sync.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -78,10 +78,10 @@ public class UserListFragment extends Fragment{
     }
 
     private void loadOrganization(){
-        mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationModelWithEvents>() {
+        mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
             @Override
-            public void onLoaded(OrganizationModelWithEvents subList) {
-                mAdapter.setUserList(subList.getSubscribedFriends());
+            public void onLoaded(OrganizationDetail subList) {
+                mAdapter.setUserList(subList.getSubscribedUsersList());
             }
             @Override
             public void onError() {
@@ -92,10 +92,10 @@ public class UserListFragment extends Fragment{
     }
 
     private void loadEvent(){
-        mEventLoader.setLoaderListener(new LoaderListener<EventModel>() {
+        mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
             @Override
-            public void onLoaded(EventModel subList) {
-                mAdapter.setUserList(subList.getFriendList());
+            public void onLoaded(EventDetail subList) {
+                mAdapter.setUserList(subList.getUserList());
             }
             @Override
             public void onError() {

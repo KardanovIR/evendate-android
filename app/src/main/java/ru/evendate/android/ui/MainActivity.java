@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                             sub.getShortName());
                     menuItem.setVisible(false);
                     MenuIconTask menuIconTask = new MenuIconTask(mContext, menuItem);
-                    menuIconTask.execute(sub.getLogoSmallUrl());
+                    menuIconTask.execute(sub.getLogoUrl());
                 }
             }
             mNavigationView.getMenu().findItem(checkedMenuItemId).setChecked(true);

@@ -50,11 +50,12 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
             OrganizationModel organizationEntry = mOrganizationList.get(position);
             holder.id = organizationEntry.getEntryId();
             holder.mTitle.setText(organizationEntry.getShortName());
-            String subs = organizationEntry.getSubscribedCount() + " " +
-                    mContext.getResources().getString(R.string.organization_subscribers);
-            holder.mSubCounts.setText(subs);
+            //TODO
+            //String subs = organizationEntry.getSubscribedCount() + " " +
+            //        mContext.getResources().getString(R.string.organization_subscribers);
+            //holder.mSubCounts.setText(subs);
             Picasso.with(mContext)
-                    .load(organizationEntry.getLogoSmallUrl())
+                    .load(organizationEntry.getLogoUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mImageView);
         }

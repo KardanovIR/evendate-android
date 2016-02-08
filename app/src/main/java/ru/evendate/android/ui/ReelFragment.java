@@ -32,7 +32,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.EventModel;
+import ru.evendate.android.sync.models.EventDetail;
 
 /**
  * fragment containing a reel
@@ -199,23 +199,23 @@ public class ReelFragment extends Fragment {
                 onError();
                 return;
             }
-            Call<EvendateServiceResponseArray<EventModel>> call;
+            Call<EvendateServiceResponseArray<EventDetail>> call;
             if(type == TypeFormat.favorites.nativeInt){
-                call = evendateService.favoritesEventData(token, 0, 1000);
+                call = evendateService.getFavorite(token);
             }else if(type == TypeFormat.organization.nativeInt){
-                call = evendateService.eventsData(token, 0, 1000, organizationId, "future");
+                call = evendateService.getEvents(token, organizationId, true, EventDetail.FIELDS_LIST);
             }else{
                 if(mDate != null){
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    call = evendateService.eventsData(token, 0, 1000, dateFormat.format(mDate));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.getDefault());
+                    call = evendateService.getEvents(token, dateFormat.format(mDate), true, EventDetail.FIELDS_LIST);
                 }
                 else{
-                    call = evendateService.eventsData(token, 0, 1000);
+                    call = evendateService.getFeed(token, true);
                 }
             }
-            call.enqueue(new Callback<EvendateServiceResponseArray<EventModel>>() {
+            call.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {
                 @Override
-                public void onResponse(Response<EvendateServiceResponseArray<EventModel>> response,
+                public void onResponse(Response<EvendateServiceResponseArray<EventDetail>> response,
                                        Retrofit retrofit) {
                     if (response.isSuccess()) {
                         mAdapter.setEventList(response.body().getData());
@@ -235,7 +235,7 @@ public class ReelFragment extends Fragment {
         }
     }
 
-    public ArrayList<EventModel> getEventList() {
+    public ArrayList<EventDetail> getEventList() {
         return mAdapter.getEventList();
     }
 

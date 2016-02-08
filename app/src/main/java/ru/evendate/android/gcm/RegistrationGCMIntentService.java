@@ -14,11 +14,13 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
+import retrofit.Call;
+import retrofit.Response;
 import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.sync.EvendateSyncAdapter;
-import ru.evendate.android.sync.ServerDataFetcher;
 
 /**
  * Created by Dmitry on 29.11.2015.
@@ -87,12 +89,25 @@ public class RegistrationGCMIntentService extends IntentService {
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
-            ServerDataFetcher.putDeviceToken(evendateService, authToken, token);
+            putDeviceToken(evendateService, authToken, token);
         }catch (IOException|OperationCanceledException|AuthenticatorException e){
             e.printStackTrace();
         }
     }
 
+    public static boolean putDeviceToken(EvendateService evendateService, String basicAuth, String deviceToken){
+        Call<EvendateServiceResponse> call =
+                evendateService.putDeviceToken(deviceToken, "android", basicAuth);
+        try{
+            Response<EvendateServiceResponse> response = call.execute();
+            if(response.isSuccess()){
+                return true;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
     /**
      * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
      *

@@ -9,18 +9,19 @@ import android.support.v7.app.AlertDialog;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
+import ru.evendate.android.sync.models.OrganizationType;
 
 /**
  * Created by ds_gordeev on 05.02.2016.
  * contain list of categories that user choose
  */
 public class OrganizationFilterDialog extends DialogFragment {
-    private ArrayList<String> mItemsList;
+    private ArrayList<OrganizationType> mItemsList;
     private boolean[] mSelectedItems;
     private OnCategorySelectListener mCategorySelectListener;
 
 
-    public static OrganizationFilterDialog newInstance(ArrayList<String> itemsList,
+    public static OrganizationFilterDialog newInstance(ArrayList<OrganizationType> itemsList,
                                                        boolean[] selectedItems) {
         OrganizationFilterDialog fragment = new OrganizationFilterDialog();
         fragment.mItemsList = itemsList;
@@ -37,7 +38,7 @@ public class OrganizationFilterDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.DialogCustom);
         builder.setTitle(R.string.dialog_check_organizations)
                 .setMultiChoiceItems(
-                        mItemsList.toArray(new String[mItemsList.size()]),
+                        typeToStrings(),
                         mSelectedItems,
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
@@ -50,7 +51,7 @@ public class OrganizationFilterDialog extends DialogFragment {
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        if(mCategorySelectListener != null){
+                        if (mCategorySelectListener != null) {
                             mCategorySelectListener.onCategorySelected(mSelectedItems);
                         }
                     }
@@ -65,5 +66,12 @@ public class OrganizationFilterDialog extends DialogFragment {
     }
     interface OnCategorySelectListener{
         void onCategorySelected(boolean[] selectedItems);
+    }
+    private String[] typeToStrings(){
+        String[] stringArray = new String[mItemsList.size()];
+        for (int i = 0; i < mItemsList.size(); i++){
+            stringArray[i] = mItemsList.get(i).getName();
+        }
+        return stringArray;
     }
 }
