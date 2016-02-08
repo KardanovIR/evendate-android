@@ -3,6 +3,7 @@ package ru.evendate.android.ui;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ public class OrganizationCatalogFragment extends Fragment
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationType> mCategoryList;
+    private FloatingActionButton mFAB;
 
     @Nullable
     @Override
@@ -42,7 +44,6 @@ public class OrganizationCatalogFragment extends Fragment
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rootView.findViewById(R.id.button).setOnClickListener(this);
         mLoader = new CatalogLoader(getActivity());
         mLoader.setLoaderListener(new LoaderListener<ArrayList<OrganizationType>>() {
             @Override
@@ -66,22 +67,27 @@ public class OrganizationCatalogFragment extends Fragment
             }
         });
 
+        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
+        mFAB.setOnClickListener(this);
+        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
         mLoader.getData();
         return rootView;
     }
 
     @Override
     public void onClick(View v) {
-        if(mCategoryList == null)
-            return;
-        if(mSelectedItems == null){
-            mSelectedItems = new boolean[mCategoryList.size()];
-            Arrays.fill(mSelectedItems, Boolean.TRUE);
+        if(v == mFAB) {
+            if(mCategoryList == null)
+                return;
+            if(mSelectedItems == null){
+                mSelectedItems = new boolean[mCategoryList.size()];
+                Arrays.fill(mSelectedItems, Boolean.TRUE);
+            }
+            OrganizationFilterDialog dialog = OrganizationFilterDialog
+                    .newInstance(mCategoryList, mSelectedItems);
+            dialog.setCategorySelectListener(this);
+            dialog.show(getChildFragmentManager(), "OrganizationFilterDialog");
         }
-        OrganizationFilterDialog dialog = OrganizationFilterDialog
-                .newInstance(mCategoryList, mSelectedItems);
-        dialog.setCategorySelectListener(this);
-        dialog.show(getChildFragmentManager(), "OrganizationFilterDialog");
     }
 
     @Override
