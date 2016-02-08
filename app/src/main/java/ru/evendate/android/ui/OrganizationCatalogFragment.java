@@ -29,6 +29,7 @@ public class OrganizationCatalogFragment extends Fragment
     private CatalogLoader mLoader;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
+    private ArrayList<OrganizationType> mCategoryList;
 
     @Nullable
     @Override
@@ -46,6 +47,7 @@ public class OrganizationCatalogFragment extends Fragment
         mLoader.setLoaderListener(new LoaderListener<ArrayList<OrganizationType>>() {
             @Override
             public void onLoaded(ArrayList<OrganizationType> subList) {
+                mCategoryList = subList;
                 mAdapter.setCategoryList(subList);
             }
 
@@ -70,14 +72,14 @@ public class OrganizationCatalogFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-        if(mAdapter.getCategoryList() == null)
+        if(mCategoryList == null)
             return;
         if(mSelectedItems == null){
-            mSelectedItems = new boolean[mAdapter.getCategoryList().size()];
+            mSelectedItems = new boolean[mCategoryList.size()];
             Arrays.fill(mSelectedItems, Boolean.TRUE);
         }
         OrganizationFilterDialog dialog = OrganizationFilterDialog
-                .newInstance(mAdapter.getCategoryList(), mSelectedItems);
+                .newInstance(mCategoryList, mSelectedItems);
         dialog.setCategorySelectListener(this);
         dialog.show(getChildFragmentManager(), "OrganizationFilterDialog");
     }
@@ -85,9 +87,10 @@ public class OrganizationCatalogFragment extends Fragment
     @Override
     public void onCategorySelected(boolean[] itemsSelected) {
         ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
+        mSelectedItems = itemsSelected;
         for(int i = 0; i < itemsSelected.length; i++){
             if(itemsSelected[i])
-                newItemSelected.add(mAdapter.getCategoryList().get(i));
+                newItemSelected.add(mCategoryList.get(i));
         }
         mAdapter.setCategoryList(newItemSelected);
     }

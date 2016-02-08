@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class OrganizationDetail extends OrganizationModel {
     public static final String FIELDS_LIST = "description,backgroundMediumUrl,backgroundSmallUrl," +
-            "logoMediumUrl,logoSmallUrl,siteUrl,subscribedCount,isSubscribed,subscriptionId" +
+            "logoMediumUrl,logoSmallUrl,siteUrl,subscribedCount,isSubscribed,subscriptionId," +
             "subscribed,events";
 
     String description;

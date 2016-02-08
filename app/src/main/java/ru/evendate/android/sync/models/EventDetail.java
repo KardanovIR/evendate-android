@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class EventDetail extends EventModel {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
-            "organization_type_name,organization_type_name,organization_short_name,organization_img_url" +
-            "favored_users_count,description,detail_info_url,is_favorite" +
+            "organization_type_name,organization_type_name,organization_short_name,organization_img_url," +
+            "favored_users_count,description,detail_info_url,is_favorite," +
             "tags,dates,favored{fields:\"" + UserModel.FIELDS_LIST + "\"}";
 
     String location;
