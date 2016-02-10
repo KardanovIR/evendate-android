@@ -133,6 +133,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mFAB.setOnClickListener(this);
 
         mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
+        rootView.findViewById(R.id.event_participant_button).setOnClickListener(this);
 
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
@@ -215,7 +216,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
             mAdapter.setEventInfo();
         }
-        if(v == mParticipantCountTextView){
+        if(v.getId() == R.id.event_participant_button){
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());

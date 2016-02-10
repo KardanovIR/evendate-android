@@ -88,7 +88,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
         mEventCountView = (TextView)rootView.findViewById(R.id.organization_event_count);
         mSubscriptionCountView = (TextView)rootView.findViewById(R.id.organization_subscription_count);
-        mSubscriptionCountView.setOnClickListener(this);
+        rootView.findViewById(R.id.organization_subscribed_button).setOnClickListener(this);
         mFriendCountView = (TextView)rootView.findViewById(R.id.organization_friend_count);
         mFavoriteEventCountTextView = (TextView)rootView.findViewById(R.id.organization_favorite_event_count);
         mOrganizationNameTextView = (TextView)rootView.findViewById(R.id.organization_name);
@@ -171,7 +171,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             else
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
-        if(v == mSubscriptionCountView){
+        if(v.getId() == R.id.organization_subscribed_button){
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getOrganizationModel().getEntryId())).build());

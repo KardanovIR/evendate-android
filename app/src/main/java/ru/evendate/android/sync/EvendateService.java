@@ -41,7 +41,8 @@ public interface EvendateService {
     @GET(API_PATH + "/events/my")
     Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
-            @Query("future") boolean future
+            @Query("future") boolean future,
+            @Query("fields") String fields
     );
 
     /**
@@ -59,7 +60,8 @@ public interface EvendateService {
      */
     @GET(API_PATH + "/events/favorites")
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
-            @Header("Authorization") String authorization
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
     );
 
     @POST(API_PATH + "/events/{id}/favorites")

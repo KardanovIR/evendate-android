@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.View;
 
 import ru.evendate.android.R;
 
@@ -30,6 +33,10 @@ public class UserListActivity extends AppCompatActivity {
                 mUserListFragment = UserListFragment.newInstance(type, id);
             }
         }
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
         fragmentManager.beginTransaction().replace(R.id.main_content, mUserListFragment).commit();
     }
 }

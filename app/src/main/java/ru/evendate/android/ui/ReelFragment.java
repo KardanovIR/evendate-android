@@ -201,7 +201,7 @@ public class ReelFragment extends Fragment {
             }
             Call<EvendateServiceResponseArray<EventDetail>> call;
             if(type == TypeFormat.favorites.nativeInt){
-                call = evendateService.getFavorite(token);
+                call = evendateService.getFavorite(token, EventDetail.FIELDS_LIST);
             }else if(type == TypeFormat.organization.nativeInt){
                 call = evendateService.getEvents(token, organizationId, true, EventDetail.FIELDS_LIST);
             }else{
@@ -210,7 +210,7 @@ public class ReelFragment extends Fragment {
                     call = evendateService.getEvents(token, dateFormat.format(mDate), true, EventDetail.FIELDS_LIST);
                 }
                 else{
-                    call = evendateService.getFeed(token, true);
+                    call = evendateService.getFeed(token, true, EventDetail.FIELDS_LIST);
                 }
             }
             call.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {

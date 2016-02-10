@@ -2,14 +2,17 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
@@ -21,6 +24,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +43,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ru.evendate.android.BuildConfig;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private ToggleButton mAccountToggle;
 
     private Fragment mFragment;
+    private Toolbar mToolbar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
@@ -111,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                 drawerLayout.openDrawer(Gravity.LEFT);
             }
         });
+        mToolbar = toolbar;
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
@@ -273,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                     }
                     checkedMenuItemId = menuItem.getItemId();
                     menuItem.setChecked(true);
+                    if (Build.VERSION.SDK_INT >= 21)
+                        mToolbar.setElevation(0f);
                     return true;
                 }
                 case R.id.settings:
@@ -287,6 +296,10 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                     }
                     checkedMenuItemId = menuItem.getItemId();
                     menuItem.setChecked(true);
+                    // Converts 4 dip into its equivalent px
+                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+                    if (Build.VERSION.SDK_INT >= 21)
+                        mToolbar.setElevation(px);
                     return true;
                 }
                 case R.id.organizations:{
@@ -298,6 +311,10 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                     }
                     checkedMenuItemId = menuItem.getItemId();
                     menuItem.setChecked(true);
+                    // Converts 4 dip into its equivalent px
+                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+                    if (Build.VERSION.SDK_INT >= 21)
+                        mToolbar.setElevation(px);
                     return true;
                 }
                 case R.id.nav_add_account:

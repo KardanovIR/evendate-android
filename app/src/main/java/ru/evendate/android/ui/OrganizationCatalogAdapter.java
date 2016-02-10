@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.sync.models.OrganizationDetail;
 import ru.evendate.android.sync.models.OrganizationModel;
 
 /**
@@ -26,14 +27,14 @@ import ru.evendate.android.sync.models.OrganizationModel;
 public class OrganizationCatalogAdapter extends RecyclerView.Adapter<OrganizationCatalogAdapter.OrganizationHolder>{
 
     Context mContext;
-    ArrayList<OrganizationModel> mOrganizationList;
+    ArrayList<OrganizationDetail> mOrganizationList;
     private Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
     public OrganizationCatalogAdapter(Context context){
         this.mContext = context;
     }
 
-    public void setOrganizationList(ArrayList<OrganizationModel> organizationList){
+    public void setOrganizationList(ArrayList<OrganizationDetail> organizationList){
         mOrganizationList = organizationList;
         notifyDataSetChanged();
     }
@@ -47,13 +48,12 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
     @Override
     public void onBindViewHolder(OrganizationHolder holder, int position) {
         if (mOrganizationList != null) {
-            OrganizationModel organizationEntry = mOrganizationList.get(position);
+            OrganizationDetail organizationEntry = mOrganizationList.get(position);
             holder.id = organizationEntry.getEntryId();
             holder.mTitle.setText(organizationEntry.getShortName());
-            //TODO
-            //String subs = organizationEntry.getSubscribedCount() + " " +
-            //        mContext.getResources().getString(R.string.organization_subscribers);
-            //holder.mSubCounts.setText(subs);
+            String subs = organizationEntry.getSubscribedCount() + " " +
+                    mContext.getResources().getString(R.string.organization_subscribers);
+            holder.mSubCounts.setText(subs);
             Picasso.with(mContext)
                     .load(organizationEntry.getLogoUrl())
                     .error(R.mipmap.ic_launcher)
