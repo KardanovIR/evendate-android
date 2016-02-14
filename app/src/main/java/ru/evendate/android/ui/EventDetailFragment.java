@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +40,7 @@ import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.sync.models.EventDetail;
+import ru.evendate.android.sync.models.EventFormatter;
 import ru.evendate.android.sync.models.EventModel;
 
 /**
@@ -158,7 +160,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             if(!isAdded())
                 return;
             //TODO
-            //EventFormatter eventFormatter = new EventFormatter(getActivity());
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
             mTitleTextView.setText(mEvent.getTitle());
@@ -167,13 +168,13 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mPlaceTextView.setText(mEvent.getLocation());
             if(mEvent.getLocation().length() > 30)
                 mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            //mTagsTextView.setText(eventFormatter.formatTags(mEvent));
+            mTagsTextView.setText(EventFormatter.formatTags(mEvent));
             mLinkTextView.setText(mEvent.getDetailInfoUrl());
             mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
             //mTimeTextView.setText(eventFormatter.formatTime(mEvent));
-            //mDayTextView.setText(eventFormatter.formatDay(mEvent));
-            //mMonthTextView.setText(eventFormatter.formatMonth(mEvent));
-            //mDateTextView.setText(eventFormatter.formatDate(mEvent));
+            //mDayTextView.setText(mEvent.getDataList().get(0).getDay());
+            //mMonthTextView.setText(mEvent.getDataList().get(0).getMonth());
+            //mDateTextView.setText(EventFormatter.formatDate(mEvent));
 
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
@@ -208,6 +209,17 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         if(v == mFAB) {
             LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
                     mAdapter.getEvent().isFavorite());
+            likeEventLoader.setLoaderListener(new LoaderListener<Void>() {
+                @Override
+                public void onLoaded(Void subList) {
+
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                }
+            });
             likeEventLoader.load();
             mAdapter.getEvent().favore();
             if(mAdapter.getEvent().isFavorite())

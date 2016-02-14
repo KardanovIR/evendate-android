@@ -66,7 +66,7 @@ public interface EvendateService {
 
     @POST(API_PATH + "/events/{id}/favorites")
     Call<EvendateServiceResponse> eventPostFavorite(
-            @Query("id") int eventId, @Header("Authorization") String authorization
+            @Path("id") int eventId, @Header("Authorization") String authorization
     );
 
     @DELETE(API_PATH + "/events/{id}/favorites")

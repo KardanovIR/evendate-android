@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -162,6 +163,17 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
                 mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+        subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+            @Override
+            public void onLoaded(Void subList) {
+
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+            }
+        });
         subOrganizationLoader.execute();
         if(v == mFAB) {
             mAdapter.getOrganizationModel().subscribe();
@@ -187,7 +199,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
         int favoriteCount = 0;
-        HashSet<Integer> friendSet = new HashSet<>();
         for(EventDetail event : mReelFragment.getEventList()){
             favoriteCount += event.isFavorite() ? 1 : 0;
         }

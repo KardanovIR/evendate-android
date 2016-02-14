@@ -77,9 +77,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
-        //TODO
-        //EventFormatter eventFormatter = new EventFormatter(mContext);
-        //String date = eventFormatter.formatDate(eventEntry) + "\n" + eventFormatter.formatTime(eventEntry);
+        //String date = EventFormatter.formatDate(eventEntry) + "\n";
         //holder.mDateTextView.setText(date);
         Picasso.with(mContext)
                 .load(type == ReelFragment.TypeFormat.favorites.nativeInt ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())

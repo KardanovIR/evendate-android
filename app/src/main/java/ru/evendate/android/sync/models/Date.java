@@ -9,6 +9,10 @@ public class Date extends DataModel{
     @SerializedName("event_date")
     long eventDate;
 
+    public Date(long eventDate) {
+        this.eventDate = eventDate;
+    }
+
     public long getEventDate() {
         return eventDate;
     }

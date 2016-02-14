@@ -1,125 +1,95 @@
 package ru.evendate.android.sync.models;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by Dmitry on 04.12.2015.
  */
-/*
+
 public class EventFormatter {
-    private Context mContext;
-
-    public EventFormatter(Context context) {
-        mContext = context;
-    }
-
-    public String formatDay(EventModel event){
-        Date date = event.getActialDate();
-        return formatDay(date);
-    }
-    private String formatDay(Date date){
-        DateFormat dateFormat = new SimpleDateFormat("d", Locale.getDefault());
-        if(date == null)
-            return null;
-        String day = dateFormat.format(date);
-        //if(day.substring(0, 1).equals("0"))
-        //    day = day.substring(1);
-        return day;
-    }
-    public String formatMonth(EventModel event) {
-        Date date = event.getActialDate();
-        DateFormat dateFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
-        if(date == null)
-            return null;
-        return dateFormat.format(date);
-    }
-    public String formatDate(EventModel event) {
+    public static String formatDate(EventDetail event) {
         //10-13, 15, 20-31 december; 23 january
-        //TODO ой говнокод
-        String resDate = "";
-        String currentMonth = null;
-        String currentDates = "";
-        String month = null;
-        Date prevDate = null;
-        Calendar calendar = Calendar.getInstance();
-        DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
-        boolean isInterval = false;
-        for(String date : event.getDataRangeList()){
-            Date parsedDate = parseDate(date);
-            if(date == null)
-                break;
-            month = monthFormat.format(parsedDate);
-            if(currentMonth == null)
-                currentMonth = month;
-            if(prevDate != null){
-                calendar.setTime(parsedDate);
-                calendar.add(Calendar.DATE, -1);
-                if(calendar.getTime().equals(prevDate)
-                        && month.equals(monthFormat.format(prevDate))){
-                    isInterval = true;
-                    prevDate = parsedDate;
-                    continue;
-                }
-                else{
-                    if(isInterval){
-                            currentDates += "-" + formatDay(prevDate);
-                        isInterval = false;
+        String firstDay = "";
+        String firstMonth = "";
+        String curDay = "";
+        String curMonth = "";
+        String prevDay = "";
+        String prevMonth = "";
+        String resStr = "";
+        String curStr = "";
+        for(Date date : event.getDataList()){
+            if(firstDay.equals("")){
+                firstDay = formatDay(date);
+                firstMonth = formatMonth(date);
+                curDay = firstDay;
+                curMonth = firstMonth;
+                curStr = curDay;
+                continue;
+            }
+            prevDay = curDay;
+            prevMonth = curMonth;
+            curDay = formatDay(date);
+            curMonth = formatMonth(date);
+            if(Integer.parseInt(curDay) - 1 != Integer.parseInt(prevDay)){
+                resStr += curStr;
+                curStr = "";
+                if(Integer.parseInt(prevDay) == Integer.parseInt(firstDay)){
+                    if(!firstMonth.equals(prevMonth)){
+                        resStr += " " + prevMonth;
+                        curStr = "; ";
+                    }
+                    else{
+                        curStr += ", ";
                     }
                 }
-            }
-            if(!month.equals(currentMonth)){
-                if(!resDate.equals(""))
-                    resDate += "; " + currentDates + " " + currentMonth;
-                else
-                    resDate += currentDates + " " + currentMonth;
-                currentMonth = month;
-                currentDates = "";
-            }
-            if(currentDates.equals(""))
-                currentDates += formatDay(parsedDate);
-            else{
-                if(!isInterval)
-                    currentDates += ", " + formatDay(parsedDate);
-            }
-            prevDate = parsedDate;
-        }
-        if(month != null){
-            if(!resDate.equals(""))
-                resDate += "; " + currentDates + " " + currentMonth;
-            else
-                if(isInterval){
-                    currentDates += "-" + formatDay(prevDate);
-                    resDate += currentDates + " " + currentMonth;
+                else if(Integer.parseInt(prevDay) - 1 != Integer.parseInt(firstDay)){
+                    if(!firstMonth.equals(prevMonth)){
+                        resStr += "-" + prevDay + " " + prevMonth;
+                        curStr = "; ";
+                    }
+                    else{
+                        resStr += "-" + prevDay;
+                        curStr = ", ";
+                    }
+                }else {
+                    if(!firstMonth.equals(prevMonth)) {
+                        resStr += ", " + prevDay + " " + prevMonth;
+                        curStr = "; ";
+                    }else{
+                        resStr += ", " + prevDay;
+                        curStr = ", ";
+                    }
                 }
-                else
-                    resDate += currentDates + " " + currentMonth;
+                firstDay = curDay;
+                firstMonth = curMonth;
+                curStr += curDay;
+            }
         }
-        return resDate;
-    }
-    public Date parseDate(String date){
-        Date dateStamp;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
-        dateStamp = Utils.formatDate(date, format);
-        if(dateStamp == null){
-            dateStamp = Utils.formatDate(date, format2);
+        if(!prevDay.equals("") && Integer.parseInt(prevDay) == Integer.parseInt(firstDay)){
+            if(!curMonth.equals(prevMonth)){
+                resStr += " " + prevMonth + "; ";
+                resStr += curDay + " " + curMonth;
+            }
+            else{
+                resStr += curDay + " " + curMonth + "; ";
+            }
         }
-        return dateStamp;
-    }
-    public String formatTime(EventModel event) {
-        String time;
-        if(event.isFullDay())
-            time = mContext.getResources().getString(R.string.event_all_day);
-        else{
-            //cut off seconds
-            //TODO temporary
-            time = "";
-            if(event.getBeginTime() != null && event.getEndTime() != null)
-                time = event.getBeginTime().substring(0, 5) + " - " + event.getEndTime().substring(0, 5);
-            else if(event.getBeginTime() != null)
-                time = event.getBeginTime().substring(0, 5);
+        else if(!prevDay.equals("") &&
+                Integer.parseInt(prevDay) - 1 != Integer.parseInt(firstDay)){
+            if(!curMonth.equals(prevMonth)){
+                resStr += " " + prevMonth + "; " + curDay + " " + curMonth;
+            }
+            else{
+                resStr += "-" + curDay + " " + curMonth;
+            }
+        }else {
+                resStr += curStr + " " + curMonth;
         }
-        return time;
+        return resStr;
     }
-    public String formatTags(EventModel event){
+    public static String formatTags(EventDetail event){
         String tags = null;
         for(TagModel tag : event.getTagList()){
             if(tags == null)
@@ -129,4 +99,13 @@ public class EventFormatter {
         }
         return tags;
     }
-}*/
+    public static String formatMonth(Date date){
+        DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
+        return monthFormat.format(new java.util.Date(date.getEventDate() * 1000));
+    }
+    public static String formatDay(Date date){
+        DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
+        return dayFormat.format(new java.util.Date(date.getEventDate() * 1000));
+    }
+
+}
