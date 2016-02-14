@@ -2,6 +2,7 @@ package ru.evendate.android.sync.models;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Locale;
 public class EventFormatter {
     public static String formatDate(EventDetail event) {
         //10-13, 15, 20-31 december; 23 january
+        Collections.sort(event.getDataList());
         String firstDay = "";
         String firstMonth = "";
         String curDay = "";
@@ -36,7 +38,7 @@ public class EventFormatter {
                 resStr += curStr;
                 curStr = "";
                 if(Integer.parseInt(prevDay) == Integer.parseInt(firstDay)){
-                    if(!firstMonth.equals(prevMonth)){
+                    if(!firstMonth.equals(curMonth)){
                         resStr += " " + prevMonth;
                         curStr = "; ";
                     }
@@ -45,7 +47,7 @@ public class EventFormatter {
                     }
                 }
                 else if(Integer.parseInt(prevDay) - 1 != Integer.parseInt(firstDay)){
-                    if(!firstMonth.equals(prevMonth)){
+                    if(!firstMonth.equals(curMonth)){
                         resStr += "-" + prevDay + " " + prevMonth;
                         curStr = "; ";
                     }
@@ -67,24 +69,27 @@ public class EventFormatter {
                 curStr += curDay;
             }
         }
-        if(!prevDay.equals("") && Integer.parseInt(prevDay) == Integer.parseInt(firstDay)){
-            if(!curMonth.equals(prevMonth)){
+        if(!prevDay.equals("") && Integer.parseInt(curDay) == Integer.parseInt(firstDay)){
+            if(!curMonth.equals(firstMonth)){
                 resStr += " " + prevMonth + "; ";
                 resStr += curDay + " " + curMonth;
             }
             else{
-                resStr += curDay + " " + curMonth + "; ";
+                resStr += curStr + " " + curMonth;
             }
         }
         else if(!prevDay.equals("") &&
-                Integer.parseInt(prevDay) - 1 != Integer.parseInt(firstDay)){
-            if(!curMonth.equals(prevMonth)){
+                Integer.parseInt(curDay) - 1 != Integer.parseInt(firstDay)){
+            if(!curMonth.equals(firstMonth)){
                 resStr += " " + prevMonth + "; " + curDay + " " + curMonth;
             }
             else{
-                resStr += "-" + curDay + " " + curMonth;
+                resStr += curStr + "-" + curDay + " " + curMonth;
             }
         }else {
+            if(Integer.parseInt(curDay) - 1 == Integer.parseInt(firstDay))
+                resStr += curStr + ", " + curDay + " " + curMonth;
+            else
                 resStr += curStr + " " + curMonth;
         }
         return resStr;
@@ -100,12 +105,17 @@ public class EventFormatter {
         return tags;
     }
     public static String formatMonth(Date date){
+        return formatMonth(date.getEventDate());
+    }
+    public static String formatMonth(long date){
         DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
-        return monthFormat.format(new java.util.Date(date.getEventDate() * 1000));
+        return monthFormat.format(new java.util.Date(date * 1000));
     }
     public static String formatDay(Date date){
-        DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
-        return dayFormat.format(new java.util.Date(date.getEventDate() * 1000));
+        return formatDay(date.getEventDate());
     }
-
+    public static String formatDay(long date){
+        DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
+        return dayFormat.format(new java.util.Date(date * 1000));
+    }
 }

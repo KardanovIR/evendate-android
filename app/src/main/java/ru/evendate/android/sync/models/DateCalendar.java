@@ -12,10 +12,6 @@ public class DateCalendar extends Date {
     @SerializedName("favored_count")
     long favoredCount;
 
-    public DateCalendar(long eventDate) {
-        super(eventDate);
-    }
-
     public long getEventCount() {
         return eventCount;
     }

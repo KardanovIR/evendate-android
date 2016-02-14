@@ -33,7 +33,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbsctractLoader;
+import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.sync.EvendateApiFactory;
@@ -172,9 +172,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mLinkTextView.setText(mEvent.getDetailInfoUrl());
             mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
             //mTimeTextView.setText(eventFormatter.formatTime(mEvent));
-            //mDayTextView.setText(mEvent.getDataList().get(0).getDay());
-            //mMonthTextView.setText(mEvent.getDataList().get(0).getMonth());
-            //mDateTextView.setText(EventFormatter.formatDate(mEvent));
+            mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
+            mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
+            mDateTextView.setText(EventFormatter.formatDate(mEvent));
 
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
@@ -245,7 +245,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private class LikeEventLoader extends AbsctractLoader<Void> {
+    private class LikeEventLoader extends AbstractLoader<Void> {
         EventModel mEvent;
         boolean favorite;
         public LikeEventLoader(Context context, EventModel eventModel, boolean favorite) {

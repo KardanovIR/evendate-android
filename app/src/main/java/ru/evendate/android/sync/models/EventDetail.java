@@ -11,7 +11,7 @@ public class EventDetail extends EventModel {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
             "organization_type_name,organization_type_name,organization_short_name,organization_logo_large_url," +
             "favored_users_count,description,detail_info_url,is_favorite," +
-            "tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
+            "dates,tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
 
     String location;
     double latitude;

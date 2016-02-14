@@ -1,7 +1,6 @@
 package ru.evendate.android;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import org.mockito.Mockito;
 
@@ -19,10 +18,14 @@ import static org.mockito.Mockito.when;
 public class EventFormatterTest extends AndroidTestCase {
     //TODO Work only on ru device
     public void testFormatDate(){
-        Log.d("EventFormatter", EventFormatter.formatDate(getEventDetail(0)));
+        //Log.d("EventFormatter", EventFormatter.formatDate(getEventDetail(0)));
         assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDate(getEventDetail(0)));
         assertEquals("1 декабря", EventFormatter.formatDate(getEventDetail(1)));
         assertEquals("27 ноября; 1 декабря", EventFormatter.formatDate(getEventDetail(2)));
+        assertEquals("25-29 февраля; 1-10 марта", EventFormatter.formatDate(getEventDetail(3)));
+        assertEquals("1-10 марта", EventFormatter.formatDate(getEventDetail(4)));
+        assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDate(getEventDetail(5)));
+        assertEquals("13, 14 февраля", EventFormatter.formatDate(getEventDetail(6)));
     }
     public static EventDetail getEventDetail(int num){
         EventDetail event = Mockito.mock(EventDetail.class);
@@ -33,7 +36,9 @@ public class EventFormatterTest extends AndroidTestCase {
     private static ArrayList<Date> getDates(int num){
         ArrayList<Date> dateList = new ArrayList<>();
         for(long date : getIntDates(num)){
-            dateList.add(new Date(date));
+            Date dateModel = Mockito.mock(Date.class);
+            when(dateModel.getEventDate()).thenReturn(date);
+            dateList.add(dateModel);
         }
         return dateList;
     }
@@ -66,6 +71,59 @@ public class EventFormatterTest extends AndroidTestCase {
                 long[] str = {
                         1448582400,
                         1448928000
+                };
+                return str;
+            }
+            case 3:{
+                long[] str = {
+                        1456358400,
+                        1456444800,
+                        1456531200,
+                        1456617600,
+                        1456704000,
+                        1456790400,
+                        1456876800,
+                        1456963200,
+                        1457049600,
+                        1457136000,
+                        1457222400,
+                        1457308800,
+                        1457395200,
+                        1457481600,
+                        1457568000
+
+                };
+                return str;
+            }
+            case 4:{
+                long[] str = {
+                        1456790400,
+                        1456876800,
+                        1456963200,
+                        1457049600,
+                        1457136000,
+                        1457222400,
+                        1457308800,
+                        1457395200,
+                        1457481600,
+                        1457568000
+
+                };
+                return str;
+            }
+            case 5:{
+                long[] str = {
+                        1446508800,
+                        1448928000,
+                        1449014400,
+                        1449100800
+                };
+                return str;
+            }
+            case 6:{
+                long[] str = {
+                        1455321600,
+                        1455408000
                 };
                 return str;
             }

@@ -2,13 +2,11 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -43,7 +41,6 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ru.evendate.android.BuildConfig;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
@@ -90,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
         mSubscriptionAdapter = new SubscriptionsAdapter(this);
         mSubscriptionLoader = new SubscriptionLoader(this);
-        mSubscriptionLoader.setSubscriptionLoaderListener(this);
+        mSubscriptionLoader.setLoaderListener(this);
         mAccountAdapter = new AccountsAdapter(this);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
@@ -130,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         mAccountToggle.setOnCheckedChangeListener(new ToggleAccountOnCheckedChangeListener());
         checkPlayServices();
 
+        checkAccount();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mFragment = new MainPagerFragment();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
@@ -138,14 +136,12 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         mDrawerToggle.syncState();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkAccount();
         mSubscriptionLoader.getSubscriptions();
     }
 

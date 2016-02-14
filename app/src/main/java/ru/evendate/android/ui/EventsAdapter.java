@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.EventDetail;
+import ru.evendate.android.sync.models.EventFormatter;
 
 /**
  * Created by Dmitry on 01.12.2015.
@@ -77,8 +78,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
-        //String date = EventFormatter.formatDate(eventEntry) + "\n";
-        //holder.mDateTextView.setText(date);
+        String date = EventFormatter.formatDate(eventEntry);
+        holder.mDateTextView.setText(date);
         Picasso.with(mContext)
                 .load(type == ReelFragment.TypeFormat.favorites.nativeInt ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
                 .error(R.drawable.default_background)

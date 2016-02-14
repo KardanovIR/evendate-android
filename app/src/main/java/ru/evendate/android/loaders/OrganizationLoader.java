@@ -15,7 +15,7 @@ import ru.evendate.android.sync.models.OrganizationDetail;
 /**
  * Created by Dmitry on 02.02.2016.
  */
-public class OrganizationLoader extends AbsctractLoader<OrganizationDetail>{
+public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
     private LoaderListener<OrganizationDetail> mListener;
 
@@ -41,6 +41,8 @@ public class OrganizationLoader extends AbsctractLoader<OrganizationDetail>{
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData().get(0));
                 } else {
+                    if(response.code() == 401)
+                        invalidateToken();
                     Log.e(LOG_TAG, "Error with response with events");
                     mListener.onError();
                 }

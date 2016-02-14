@@ -31,7 +31,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbsctractLoader;
+import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.sync.EvendateApiFactory;
@@ -118,7 +118,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
     }
 
-    private class SubOrganizationLoader extends AbsctractLoader<Void> {
+    private class SubOrganizationLoader extends AbstractLoader<Void> {
         OrganizationModel mOrganization;
         boolean subscribe;
         public SubOrganizationLoader(Context context, OrganizationModel organizationModel,
