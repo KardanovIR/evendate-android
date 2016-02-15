@@ -1,6 +1,7 @@
 package ru.evendate.android.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -81,12 +81,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder>{
         @Override
         public void onClick(View v) {
             if(v == holderView){
-                Toast.makeText(mContext, String.valueOf(id), Toast.LENGTH_SHORT).show();
-                //Intent intent = new Intent(mContext, EventDetailActivity.class);
-                //intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                //if(type != ReelFragment.TypeFormat.organization.nativeInt)
-                //    intent.putExtra(EventDetailActivity.IS_LOCAL, true);
-                //mContext.startActivity(intent);
+                Intent intent = new Intent(mContext, UserProfileActivity.class);
+                intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
+                mContext.startActivity(intent);
             }
         }
 

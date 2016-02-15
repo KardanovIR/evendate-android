@@ -13,6 +13,7 @@ import ru.evendate.android.sync.models.EventDetail;
 import ru.evendate.android.sync.models.OrganizationDetail;
 import ru.evendate.android.sync.models.OrganizationModel;
 import ru.evendate.android.sync.models.OrganizationType;
+import ru.evendate.android.sync.models.UserDetail;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -95,13 +96,13 @@ public interface EvendateService {
             @Query("future") boolean future,
             @Query("fields") String fields
     );
-    //@GET("/api/users/friends")
-    //Call<EvendateServiceResponseArray<UserModel>> friendsData(
-    //        @Header("Authorization") String authorization,
-    //        @Query("page") int page,
-    //        @Query("length") int length
-    //);
-//
+    @GET(API_PATH + "/users/{id}")
+    Call<EvendateServiceResponseAttr<UserDetail>> getUser(
+            @Header("Authorization") String authorization,
+            @Path("id") int userId,
+            @Query("fields") String fields
+    );
+
     //@GET("/api/users/me")
     //Call<EvendateServiceResponseAttr<UserModel>> meData(
     //        @Header("Authorization") String authorization

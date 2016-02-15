@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/UserCard"
+    android:layout_height="90dp"
+    android:layout_width="match_parent">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:id="@+id/item_user_sub_organization_logo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:contentDescription="user_image"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/default_background"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_user_sub_organization_name"
+        tools:text="Гуушечка"
+        android:textColor="#FF000000"
+        android:textSize="22sp"
+        android:textIsSelectable="false"
+        android:layout_alignParentTop="false"
+        android:layout_toRightOf="@+id/user_item_image"
+        android:layout_toEndOf="@+id/user_item_image"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_centerVertical="true" />
+</RelativeLayout>
