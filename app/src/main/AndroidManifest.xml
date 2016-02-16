@@ -119,7 +119,8 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.EvendateIntro"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
 
         <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices -->

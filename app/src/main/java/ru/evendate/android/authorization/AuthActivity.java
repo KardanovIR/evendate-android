@@ -11,8 +11,8 @@ import android.view.View;
 import ru.evendate.android.R;
 import ru.evendate.android.gcm.RegistrationGCMIntentService;
 import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateSyncAdapter;
+import ru.evendate.android.ui.MainActivity;
 
 /**
  * Created by fj on 14.09.2015.
@@ -108,6 +108,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         startService(intent);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
+        //TODO ссаный костыль
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

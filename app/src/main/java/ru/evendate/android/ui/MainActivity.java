@@ -77,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private final int INTRO_REQUEST = 1;
     private boolean mDestroyed = false;
 
+    AlertDialog mAlertDialog;
+    SharedPreferences mSharedPreferences = null;
+    final String APP_PREF = "evendate_pref";
+    final String FIRST_RUN = "first_run";
+    boolean isFirstRun = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +136,13 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         checkAccount();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mFragment = new MainPagerFragment();
-        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
+        mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
+        if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
+            isFirstRun = true;
+            mSharedPreferences.edit().putBoolean(FIRST_RUN, false).apply();
+        }
+        else
+            fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
     }
 
     @Override
@@ -142,7 +154,8 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     @Override
     protected void onResume() {
         super.onResume();
-        mSubscriptionLoader.getSubscriptions();
+        if(!isFirstRun)
+            mSubscriptionLoader.getSubscriptions();
     }
 
     /**
@@ -236,16 +249,22 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     public void onError() {
         if(isDestroyed())
             return;
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
+        mAlertDialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mSubscriptionLoader.getSubscriptions();
-                dialog.dismiss();
+                mAlertDialog.dismiss();
             }
         });
-        dialog.show();
+        mAlertDialog.show();
     }
-
+    @Override
+    public void onStop()
+    {
+        if(mAlertDialog != null)
+            mAlertDialog.cancel();
+        super.onStop();
+    }
     @Override
     public void onRefresh() {
         mSubscriptionLoader.getSubscriptions();
