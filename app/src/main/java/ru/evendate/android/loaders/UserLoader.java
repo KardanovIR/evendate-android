@@ -9,7 +9,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseAttr;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.sync.models.UserDetail;
 
 /**
@@ -25,14 +25,14 @@ public class UserLoader extends AbstractLoader<UserDetail> {
         Log.d(LOG_TAG, "getting user");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseAttr<UserDetail>> call =
+        Call<EvendateServiceResponseArray<UserDetail>> call =
                 evendateService.getUser(peekToken(), userId, UserDetail.FIELDS_LIST);
-        call.enqueue(new Callback<EvendateServiceResponseAttr<UserDetail>>() {
+        call.enqueue(new Callback<EvendateServiceResponseArray<UserDetail>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseAttr<UserDetail>> response,
+            public void onResponse(Response<EvendateServiceResponseArray<UserDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    mListener.onLoaded(response.body().getData().get(0));
                 } else {
                     if(response.code() == 401)
                         invalidateToken();

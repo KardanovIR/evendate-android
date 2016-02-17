@@ -45,8 +45,8 @@ public class UserProfileFragment extends Fragment implements LoaderListener<User
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_profile, container, false);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
-        mUserImageView = (ImageView)rootView.findViewById(R.id.user_image);
-        mUserNameTextView = (TextView)rootView.findViewById(R.id.user_name);
+        //mUserImageView = (ImageView)rootView.findViewById(R.id.user_image);
+        //mUserNameTextView = (TextView)rootView.findViewById(R.id.user_name);
         mAdapter = new SubscriptionsAdapter(getActivity());
         mUserAdapter = new UserAdapter();
         mRecyclerView.setAdapter(mAdapter);

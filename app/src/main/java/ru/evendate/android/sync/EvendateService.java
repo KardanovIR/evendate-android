@@ -97,7 +97,7 @@ public interface EvendateService {
             @Query("fields") String fields
     );
     @GET(API_PATH + "/users/{id}")
-    Call<EvendateServiceResponseAttr<UserDetail>> getUser(
+    Call<EvendateServiceResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
             @Query("fields") String fields
