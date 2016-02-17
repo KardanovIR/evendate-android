@@ -29,15 +29,11 @@ public class MainPagerFragment extends Fragment {
         mViewPager.setAdapter(mMainPagerAdapter);
 
         mTabLayout = (TabLayout)rootView.findViewById(R.id.tabs);
+        mTabLayout.setupWithViewPager(mViewPager);
 
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mTabLayout.setupWithViewPager(mViewPager);
-    }
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
         mMainPagerAdapter.setOnRefreshListener(refreshListener);
     }
