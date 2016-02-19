@@ -31,11 +31,11 @@ public class OrganizationDetail extends OrganizationModel {
     Integer subscriptionId;
 
     @SerializedName("subscribed")
-    ArrayList<UserModel> mSubscribedUsersList;
+    ArrayList<UserDetail> mSubscribedUsersList;
     @SerializedName("events")
     ArrayList<EventModel> mEventsList;
 
-    public ArrayList<UserModel> getSubscribedUsersList() {
+    public ArrayList<UserDetail> getSubscribedUsersList() {
         return mSubscribedUsersList;
     }
     public String getDescription() {

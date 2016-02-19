@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.sync.models.UserDetail;
 import ru.evendate.android.sync.models.UserModel;
+import ru.evendate.android.ui.UserProfileActivity;
 
 /**
  * Created by Dmitry on 04.02.2016.

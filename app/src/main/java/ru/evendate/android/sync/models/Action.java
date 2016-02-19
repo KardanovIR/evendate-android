@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by ds_gordeev on 17.02.2016.
  */
 public class Action extends DataModel {
-    public static final String FIELDS_LIST = "name";
+    public static final String FIELDS_LIST = "name,created_at";
 
     @SerializedName("stat_type_id")
     long statTypeId;
@@ -20,6 +20,8 @@ public class Action extends DataModel {
     String entity;
 
     String name;
+    @SerializedName("created_at")
+    long createdAt;
 
     @Override
     public int getEntryId() {
@@ -48,5 +50,9 @@ public class Action extends DataModel {
 
     public String getName() {
         return name;
+    }
+
+    public long getDate() {
+        return createdAt;
     }
 }

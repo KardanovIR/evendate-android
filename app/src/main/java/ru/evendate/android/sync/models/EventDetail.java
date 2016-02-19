@@ -37,14 +37,14 @@ public class EventDetail extends EventModel {
     @SerializedName("dates")
     ArrayList<Date> dateList;
     @SerializedName("favored")
-    ArrayList<UserModel> userList;
+    ArrayList<UserDetail> userList;
 
 
     public ArrayList<TagModel> getTagList() {
         return tagList;
     }
 
-    public ArrayList<UserModel> getUserList() {
+    public ArrayList<UserDetail> getUserList() {
         return userList;
     }
 

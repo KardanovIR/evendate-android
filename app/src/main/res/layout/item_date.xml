@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        tools:text="21 января"
+        android:id="@+id/date_text_view"
+        android:layout_margin="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#000000" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/date_text_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>

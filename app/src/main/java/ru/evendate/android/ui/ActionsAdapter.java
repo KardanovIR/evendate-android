@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.AbstractAdapter;
 import ru.evendate.android.sync.models.Action;
 
 /**

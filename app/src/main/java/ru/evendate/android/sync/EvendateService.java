@@ -8,6 +8,7 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import ru.evendate.android.sync.models.Action;
 import ru.evendate.android.sync.models.DateCalendar;
 import ru.evendate.android.sync.models.EventDetail;
 import ru.evendate.android.sync.models.OrganizationDetail;
@@ -147,5 +148,12 @@ public interface EvendateService {
             @Query("device_token") String deviceToken,
             @Query("client_type") String clientType,
             @Header("Authorization") String authorization
+    );
+
+    @PUT(API_PATH + "/users/{id}/actions")
+    Call<EvendateServiceResponseArray<Action>> getActions(
+            @Header("Authorization") String authorization,
+            @Path("id") int userId,
+            @Query("fields") String fields
     );
 }

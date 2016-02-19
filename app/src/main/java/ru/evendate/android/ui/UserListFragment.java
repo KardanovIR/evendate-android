@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
@@ -81,7 +82,7 @@ public class UserListFragment extends Fragment{
         mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
             @Override
             public void onLoaded(OrganizationDetail subList) {
-                mAdapter.setUserList(subList.getSubscribedUsersList());
+                mAdapter.setList(subList.getSubscribedUsersList());
             }
             @Override
             public void onError() {
@@ -95,7 +96,7 @@ public class UserListFragment extends Fragment{
         mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
             @Override
             public void onLoaded(EventDetail subList) {
-                mAdapter.setUserList(subList.getUserList());
+                mAdapter.setList(subList.getUserList());
             }
             @Override
             public void onError() {

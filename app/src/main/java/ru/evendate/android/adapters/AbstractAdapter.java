@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
