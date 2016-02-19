@@ -15,8 +15,8 @@ import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 04.02.2016.

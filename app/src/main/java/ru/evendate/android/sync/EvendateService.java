@@ -8,13 +8,13 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import ru.evendate.android.sync.models.Action;
-import ru.evendate.android.sync.models.DateCalendar;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
-import ru.evendate.android.sync.models.OrganizationType;
-import ru.evendate.android.sync.models.UserDetail;
+import ru.evendate.android.models.Action;
+import ru.evendate.android.models.DateCalendar;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by Dmitry on 18.10.2015.

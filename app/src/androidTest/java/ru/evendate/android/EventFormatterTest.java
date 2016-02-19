@@ -6,9 +6,9 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.sync.models.Date;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.EventFormatter;
+import ru.evendate.android.models.Date;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFormatter;
 
 import static org.mockito.Mockito.when;
 

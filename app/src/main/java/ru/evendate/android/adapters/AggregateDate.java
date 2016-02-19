@@ -5,11 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
-public class AgregateDate<T> {
+public class AggregateDate<T> {
     long date;
     private ArrayList<T> mList;
 
-    public AgregateDate(long date) {
+    public AggregateDate(long date) {
         this.date = date;
     }
 

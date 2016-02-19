@@ -29,10 +29,10 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.EventDetail;
 
 /**
  * fragment containing a reel

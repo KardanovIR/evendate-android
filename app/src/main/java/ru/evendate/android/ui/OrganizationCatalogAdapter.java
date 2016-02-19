@@ -17,8 +17,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 01.12.2015.

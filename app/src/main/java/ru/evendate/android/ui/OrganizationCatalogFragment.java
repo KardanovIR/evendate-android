@@ -18,7 +18,7 @@ import java.util.Arrays;
 import ru.evendate.android.R;
 import ru.evendate.android.loaders.CatalogLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.sync.models.OrganizationType;
+import ru.evendate.android.models.OrganizationType;
 
 /**
  * Created by Dmitry on 28.01.2016.

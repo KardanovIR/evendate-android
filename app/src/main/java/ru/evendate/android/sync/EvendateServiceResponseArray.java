@@ -2,7 +2,7 @@ package ru.evendate.android.sync;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.sync.models.DataModel;
+import ru.evendate.android.models.DataModel;
 
 /**
  * Created by Дмитрий on 02.11.2015.

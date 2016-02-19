@@ -36,12 +36,12 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventModel;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.EventFormatter;
-import ru.evendate.android.sync.models.EventModel;
 
 /**
  * contain details of events

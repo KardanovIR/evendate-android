@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.UserDetail;
-import ru.evendate.android.sync.models.UserModel;
+import ru.evendate.android.models.UserDetail;
+import ru.evendate.android.models.UserModel;
 import ru.evendate.android.ui.UserProfileActivity;
 
 /**

@@ -5,14 +5,14 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import ru.evendate.android.R;
-import ru.evendate.android.sync.models.Action;
-import ru.evendate.android.sync.models.EventFormatter;
+import ru.evendate.android.models.Action;
+import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.ui.ActionsAdapter;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
-public class DatesAdapter extends AbstractAdapter<AgregateDate<Action>, DateHolder> {
+public class DatesAdapter extends AbstractAdapter<AggregateDate<Action>, DateHolder> {
 
     public DatesAdapter(Context context) {
         super(context);
@@ -27,7 +27,7 @@ public class DatesAdapter extends AbstractAdapter<AgregateDate<Action>, DateHold
     public void onBindViewHolder(DateHolder holder, int position) {
         if(getList() == null)
             return;
-        AgregateDate<Action> entry = getList().get(position);
+        AggregateDate<Action> entry = getList().get(position);
         String date = EventFormatter.formatDay(entry.getDate()) + " " +
                 EventFormatter.formatMonth(entry.getDate());
         holder.mDateTextView.setText(date);

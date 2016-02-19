@@ -1,4 +1,4 @@
-package ru.evendate.android.sync.models;
+package ru.evendate.android.models;
 
 import java.util.ArrayList;
 

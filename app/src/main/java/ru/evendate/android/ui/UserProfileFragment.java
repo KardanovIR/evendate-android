@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
 import ru.evendate.android.R;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.UserLoader;
-import ru.evendate.android.sync.models.UserDetail;
+import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by Dmitry on 15.02.2015.

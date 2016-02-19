@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.sync.models.OrganizationType;
+import ru.evendate.android.models.OrganizationType;
 
 /**
  * Created by ds_gordeev on 05.02.2016.

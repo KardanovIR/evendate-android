@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AbstractAdapter;
-import ru.evendate.android.sync.models.Action;
+import ru.evendate.android.models.Action;
 
 /**
  * Created by ds_gordeev on 17.02.2016.

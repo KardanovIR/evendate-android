@@ -34,13 +34,13 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.UserModel;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
-import ru.evendate.android.sync.models.UserModel;
 
 /**
  * Contain details of organization

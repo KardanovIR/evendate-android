@@ -33,7 +33,7 @@ import java.util.Locale;
 import ru.evendate.android.R;
 import ru.evendate.android.loaders.DateCalendarLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.sync.models.DateCalendar;
+import ru.evendate.android.models.DateCalendar;
 
 /**
  * Created by fj on 28.09.2015.

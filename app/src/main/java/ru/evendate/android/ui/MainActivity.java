@@ -47,8 +47,8 @@ import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.SubscriptionLoader;
+import ru.evendate.android.models.OrganizationModel;
 import ru.evendate.android.sync.EvendateSyncAdapter;
-import ru.evendate.android.sync.models.OrganizationModel;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<OrganizationModel>>,

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
