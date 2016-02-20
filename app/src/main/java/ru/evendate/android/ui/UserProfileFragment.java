@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.SubscriptionsAdapter;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.UserLoader;
 import ru.evendate.android.models.UserDetail;

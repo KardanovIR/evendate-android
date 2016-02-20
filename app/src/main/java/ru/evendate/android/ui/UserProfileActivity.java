@@ -10,21 +10,26 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import java.util.ArrayList;
+
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.DatesAdapter;
+import ru.evendate.android.loaders.ActionLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.UserLoader;
+import ru.evendate.android.models.Action;
+import ru.evendate.android.models.ActionConverter;
 import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoaderListener<UserDetail> {
+public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<Action>> {
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
     private RecyclerView mRecyclerView;
-    SubscriptionsAdapter mAdapter;
-    UserLoader mLoader;
+    DatesAdapter mAdapter;
+    ActionLoader mLoader;
     UserAdapter mUserAdapter;
 
     //ImageView mUserImageView;
@@ -45,18 +50,18 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         //mUserImageView = (ImageView)findViewById(R.id.user_image);
         //mUserNameTextView = (TextView)findViewById(R.id.user_name);
-        mAdapter = new SubscriptionsAdapter(this);
+        mAdapter = new DatesAdapter(this);
         mUserAdapter = new UserAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mLoader = new UserLoader(this);
+        mLoader = new ActionLoader(this);
         mLoader.setLoaderListener(this);
         mLoader.getData(userId);
     }
     @Override
-    public void onLoaded(UserDetail user) {
-        mAdapter.setSubscriptionList(user.getSubscriptions());
-        mUserAdapter.setUser(user);
+    public void onLoaded(ArrayList<Action> list) {
+        mAdapter.setList(ActionConverter.convertActions(list));
+        //mUserAdapter.setUser(user);
     }
 
     @Override

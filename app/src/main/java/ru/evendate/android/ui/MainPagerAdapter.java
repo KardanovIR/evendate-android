@@ -28,13 +28,13 @@ class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment
     public Fragment getItem(int position) {
         switch (position){
             case 0: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.feed.nativeInt, true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FEED.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }
             case 1: {
                 // we need only favorite events in this fragment
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.favorites.nativeInt, true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FAVORITES.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }

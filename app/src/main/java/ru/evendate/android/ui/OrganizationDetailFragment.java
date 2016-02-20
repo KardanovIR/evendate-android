@@ -245,7 +245,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mAdapter.setOrganizationInfo();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.ORGANIZATION.type(), organizationId, false);
         mReelFragment.setDataListener(this);
         fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
     }

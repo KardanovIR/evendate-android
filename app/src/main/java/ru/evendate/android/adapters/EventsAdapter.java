@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,8 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.ReelFragment;
 
 /**
  * Created by Dmitry on 01.12.2015.
@@ -49,11 +51,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
     @Override
     public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutItemId;
-        if(type == ReelFragment.TypeFormat.organization.nativeInt){
+        if(type == ReelFragment.TypeFormat.ORGANIZATION.type()){
             layoutItemId = R.layout.reel_item;
-        } else if(type == ReelFragment.TypeFormat.favorites.nativeInt){
+        } else if(type == ReelFragment.TypeFormat.FAVORITES.type()){
             layoutItemId = R.layout.reel_favorite_item;
-        } else if(type == ReelFragment.TypeFormat.calendar.nativeInt){
+        } else if(type == ReelFragment.TypeFormat.CALENDAR.type()){
             layoutItemId = R.layout.reel_item;
         } else{
             layoutItemId = R.layout.reel_item;
@@ -68,20 +70,20 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         EventDetail eventEntry = mEventList.get(position);
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
-        if(type != ReelFragment.TypeFormat.favorites.nativeInt){
+        if(type != ReelFragment.TypeFormat.FAVORITES.type()){
             if(eventEntry.getTitle().length() > 60)
                 holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             else
                 holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         }
         holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
-        if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.favorites.nativeInt){
+        if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type()){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
         String date = EventFormatter.formatDate(eventEntry);
         holder.mDateTextView.setText(date);
         Picasso.with(mContext)
-                .load(type == ReelFragment.TypeFormat.favorites.nativeInt ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
+                .load(type == ReelFragment.TypeFormat.FAVORITES.type() ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
                 .error(R.drawable.default_background)
                 .into(holder.mEventImageView);
     }

@@ -9,13 +9,15 @@ import ru.evendate.android.adapters.AggregateDate;
  * Created by ds_gordeev on 19.02.2016.
  */
 public class ActionConverter {
-    public ArrayList<AggregateDate<Action>> convertActions(ArrayList<Action> actionList){
+    public static ArrayList<AggregateDate<Action>> convertActions(ArrayList<Action> actionList){
         HashMap<Long, ArrayList<Action>> map = new HashMap<>();
         for (Action action: actionList) {
-            ArrayList<Action> actionMapList = map.get(action.getDate());
+            //we want one date for one day
+            long date = action.getDate() - (action.getDate() % 86400);
+            ArrayList<Action> actionMapList = map.get(date);
             if(actionMapList == null){
                 actionMapList = new ArrayList<>();
-                map.put(action.getDate(), actionMapList);
+                map.put(date, actionMapList);
             }
             actionMapList.add(action);
         }

@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.ui.OrganizationDetailActivity;
 
 /**
  * Created by ds_gordeev on 15.02.2016.

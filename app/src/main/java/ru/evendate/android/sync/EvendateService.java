@@ -150,7 +150,7 @@ public interface EvendateService {
             @Header("Authorization") String authorization
     );
 
-    @PUT(API_PATH + "/users/{id}/actions")
+    @GET(API_PATH + "/users/{id}/actions")
     Call<EvendateServiceResponseArray<Action>> getActions(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
