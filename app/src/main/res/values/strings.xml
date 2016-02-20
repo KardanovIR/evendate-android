@@ -94,6 +94,7 @@
     <string name="stat_action_dislike" translatable="false">Dislike</string>
     <string name="stat_action_subscribe" translatable="false">Subscribe</string>
     <string name="stat_action_unsubscribe" translatable="false">Unsubscribe</string>
+    <string name="stat_action_click_on_link" translatable="false">Click on link</string>
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>

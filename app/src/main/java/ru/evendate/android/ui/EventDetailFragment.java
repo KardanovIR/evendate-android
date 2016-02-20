@@ -189,6 +189,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 public void onClick(View v) {
                     Intent openLink = new Intent(Intent.ACTION_VIEW);
                     openLink.setData(Uri.parse(mEvent.getDetailInfoUrl()));
+                    Tracker tracker = EvendateApplication.getTracker();
+                    HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.stat_category_event))
+                            .setAction(getString(R.string.stat_action_click_on_link))
+                            .setLabel(mUri.getLastPathSegment());
+                    tracker.send(event.build());
                     startActivity(openLink);
                 }
             });
