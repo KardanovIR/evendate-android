@@ -4,11 +4,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
@@ -30,8 +35,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private UserPagerAdapter mUserPagerAdapter;
     private TabLayout mTabLayout;
 
-    //ImageView mUserImageView;
-    //TextView mUserNameTextView;
+    private ImageView mUserImageView;
+    private CollapsingToolbarLayout mCollapsingToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +46,16 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        //make status bar transparent
+        ((AppBarLayout)findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(this));
+
         Intent intent = getIntent();
         if(intent != null){
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
         }
+        mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
+        mUserImageView = (ImageView)findViewById(R.id.user_avatar);
+
         mLoader = new UserLoader(this);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
@@ -85,14 +96,12 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         }
 
         private void setUserInfo(){
-            //prevent illegal state exception cause fragment not attached to
-            String userName = mUserDetail.getLastName() + " " + mUserDetail.getFirstName();
-            //mUserNameTextView.setText(userName);
-
-            //Picasso.with(getBaseContext())
-            //        .load(mUserDetail.getAvatarUrl())
-            //        .error(R.drawable.default_background)
-            //        .into(mUserImageView);
+            String userName = mUserDetail.getFirstName() + " " + mUserDetail.getLastName();
+            mCollapsingToolbar.setTitle(userName);
+            Picasso.with(getBaseContext())
+                    .load(mUserDetail.getAvatarUrl())
+                    .error(R.drawable.default_background)
+                    .into(mUserImageView);
         }
     }
 }

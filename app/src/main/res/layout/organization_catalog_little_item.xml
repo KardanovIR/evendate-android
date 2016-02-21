@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
     style="@style/EventCard">
@@ -29,23 +29,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/item_title"
-        android:text="Title"
+        tools:text="Гуушечка"
         android:textColor="#FF000000"
         android:textSize="16sp"
         android:textIsSelectable="false"
         android:layout_toRightOf="@+id/icon_frame"
         android:layout_toEndOf="@+id/icon_frame"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/organization_item_subs"
-        android:text="subs"
+        tools:text="ТЫСЯЧИ подписчиков"
         android:textColor="#FF000000"
         android:textSize="14sp"
         android:textIsSelectable="false"

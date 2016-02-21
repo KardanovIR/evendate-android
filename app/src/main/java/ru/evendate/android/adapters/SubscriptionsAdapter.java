@@ -7,13 +7,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationDetail;
@@ -56,7 +56,7 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
         holder.id = subEntry.getEntryId();
         holder.mOrganizationNameTextView.setText(subEntry.getName());
         Picasso.with(mContext)
-                .load(subEntry.getLogoSmallUrl())
+                .load(subEntry.getLogoUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mOrganizationLogoImageView);
     }
@@ -71,13 +71,13 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
     public class SubscriptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public TextView mOrganizationNameTextView;
-        public CircleImageView mOrganizationLogoImageView;
+        public ImageView mOrganizationLogoImageView;
         public int id;
 
         public SubscriptionHolder(View itemView){
             super(itemView);
             holderView = itemView;
-            mOrganizationLogoImageView = (CircleImageView)itemView.findViewById(R.id.item_user_sub_organization_logo);
+            mOrganizationLogoImageView = (ImageView)itemView.findViewById(R.id.item_user_sub_organization_logo);
             mOrganizationNameTextView = (TextView)itemView.findViewById(R.id.item_user_sub_organization_name);
             holderView.setOnClickListener(this);
         }
