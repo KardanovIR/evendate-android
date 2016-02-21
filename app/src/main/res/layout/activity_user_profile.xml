@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:fitsSystemWindows="true"
+            app:elevation="0dp"
             >
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -28,7 +29,8 @@
                 app:expandedTitleMarginBottom="24dp"
                 app:expandedTitleTextAppearance="@style/TextAppearance.CollapsingToolbar"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:toolbarId="@id/toolbar">
+                app:toolbarId="@id/toolbar"
+                android:elevation="4dp">
                 <ImageView
                     android:id="@+id/user_avatar"
                     android:layout_width="match_parent"
@@ -62,12 +64,22 @@
                 app:tabIndicatorHeight="4dp"
                 />
         </android.support.design.widget.AppBarLayout>
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                />
+            <!-- shadow don't appear when collapsing toolbar expanded. Oh, f*cking sup library -->
+            <View android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/appbar_dropshadow"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
     <include layout="@layout/nav_drawer_layout" />
 </android.support.v4.widget.DrawerLayout>
