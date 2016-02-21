@@ -11,7 +11,7 @@ import ru.evendate.android.R;
  * Created by Dmitry on 23.01.2016.
  */
 
-class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener{
+public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener{
     private Context mContext;
     private ReelFragment.OnRefreshListener listener;
 

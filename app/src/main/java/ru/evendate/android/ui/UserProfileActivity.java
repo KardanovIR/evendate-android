@@ -4,33 +4,31 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
-import java.util.ArrayList;
-
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.DatesAdapter;
-import ru.evendate.android.loaders.ActionLoader;
+import ru.evendate.android.adapters.UserPagerAdapter;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.models.Action;
-import ru.evendate.android.models.ActionConverter;
+import ru.evendate.android.loaders.UserLoader;
 import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<Action>> {
+public class UserProfileActivity extends AppCompatActivity implements LoaderListener<UserDetail> {
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
-    private RecyclerView mRecyclerView;
-    DatesAdapter mAdapter;
-    ActionLoader mLoader;
     UserAdapter mUserAdapter;
+    UserLoader mLoader;
+
+    private ViewPager mViewPager;
+    private UserPagerAdapter mUserPagerAdapter;
+    private TabLayout mTabLayout;
 
     //ImageView mUserImageView;
     //TextView mUserNameTextView;
@@ -47,21 +45,20 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         if(intent != null){
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
         }
-        mRecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        //mUserImageView = (ImageView)findViewById(R.id.user_image);
-        //mUserNameTextView = (TextView)findViewById(R.id.user_name);
-        mAdapter = new DatesAdapter(this);
-        mUserAdapter = new UserAdapter();
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mLoader = new ActionLoader(this);
+        mLoader = new UserLoader(this);
         mLoader.setLoaderListener(this);
+        mUserAdapter = new UserAdapter();
         mLoader.getData(userId);
+        mViewPager = (ViewPager)findViewById(R.id.pager);
+        mTabLayout = (TabLayout)findViewById(R.id.tabs);
     }
+
     @Override
-    public void onLoaded(ArrayList<Action> list) {
-        mAdapter.setList(ActionConverter.convertActions(list));
-        //mUserAdapter.setUser(user);
+    public void onLoaded(UserDetail user) {
+        mUserAdapter.setUser(user);
+        mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, user);
+        mViewPager.setAdapter(mUserPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
