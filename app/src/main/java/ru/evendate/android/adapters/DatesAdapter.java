@@ -9,15 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.evendate.android.R;
-import ru.evendate.android.models.Action;
-import ru.evendate.android.models.ActionSorter;
+import ru.evendate.android.models.ActionType;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
-public class DatesAdapter extends AbstractAdapter<AggregateDate<Action>, DatesAdapter.DateHolder> {
+public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, DatesAdapter.DateHolder> {
 
     public DatesAdapter(Context context) {
         super(context);
@@ -32,23 +31,23 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<Action>, DatesAd
     public void onBindViewHolder(DateHolder holder, int position) {
         if(getList() == null)
             return;
-        AggregateDate<Action> entry = getList().get(position);
+        AggregateDate<ActionType> entry = getList().get(position);
         String date = EventFormatter.formatDay(entry.getDate()) + " " +
                 EventFormatter.formatMonth(entry.getDate());
         holder.mDateTextView.setText(date);
-        holder.mActionsAdapter = new ActionsAdapter(mContext);
+        holder.mActionsAdapter = new ActionTypesAdapter(mContext);
         holder.recyclerView.setLayoutManager(
                 new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
                         LinearLayoutManager.VERTICAL, false));
         holder.recyclerView.setAdapter(holder.mActionsAdapter);
-        holder.mActionsAdapter.setList(ActionSorter.sortActions(entry.getList()));
+        holder.mActionsAdapter.setList(entry.getList());
         holder.recyclerView.setNestedScrollingEnabled(false);
     }
     public class DateHolder extends RecyclerView.ViewHolder {
         public View holderView;
         public RecyclerView recyclerView;
         public TextView mDateTextView;
-        public ActionsAdapter mActionsAdapter;
+        public ActionTypesAdapter mActionsAdapter;
 
         public DateHolder(View itemView){
             super(itemView);

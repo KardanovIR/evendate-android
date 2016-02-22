@@ -29,7 +29,7 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
     @Override
     public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new UserHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.user_list_item, parent, false));
+                .inflate(R.layout.item_user_list, parent, false));
     }
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {

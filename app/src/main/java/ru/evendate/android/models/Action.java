@@ -1,18 +1,35 @@
 package ru.evendate.android.models;
 
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
+
+import ru.evendate.android.data.EvendateContract;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
-public class Action extends DataModel {
+public class Action extends DataModel implements ActionTarget, Comparable<Action>{
     public static final String FIELDS_LIST = "name,created_at,event,organization,user{fields:'" + UserModel.FIELDS_LIST + "'}";
 
-    public static final int ACTION_LIKE = 5;
-    public static final int ACTION_DISLIKE = 4;
-    public static final int ACTION_SUBSCRIBE = 3;
-    public static final int ACTION_UNSUBSCRIBE = 6;
+    public enum Type {
+        ACTION_LIKE         (5),
+        ACTION_DISLIKE      (4),
+        ACTION_SUBSCRIBE    (3),
+        ACTION_UNSUBSCRIBE  (6),
+        ACTION_VIEW_EVENT   (2),
+        ACTION_VIEW_ORGANIZATION    (1),
+        ACTION_VIEW_EVENT_INFO    (7);
 
+        final int type;
+        Type(int type) {
+            this.type = type;
+        }
+
+        public int type() {
+            return type;
+        }
+    }
     @SerializedName("stat_type_id")
     long statTypeId;
     @SerializedName("organization_id")
@@ -75,5 +92,50 @@ public class Action extends DataModel {
 
     public UserModel getUser() {
         return user;
+    }
+
+    @Override
+    public String getTargetName() {
+        if(statTypeId == Type.ACTION_DISLIKE.type()|| statTypeId == Type.ACTION_LIKE.type())
+            return event.getTitle();
+        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+            return organization.getShortName();
+        else
+            return null;
+    }
+
+    @Override
+    public Uri getTargetUri() {
+        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
+            return EvendateContract.EventEntry.getContentUri(event.getEntryId());
+        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+            return EvendateContract.OrganizationEntry.getContentUri(organization.getEntryId());
+        else
+            return null;
+    }
+
+    @Override
+    public String getTargetImageLink() {
+        Type type = Type.valueOf(String.valueOf(statTypeId));
+        if(type == Type.ACTION_DISLIKE || type == Type.ACTION_LIKE)
+            return getEvent().getImageHorizontalUrl();
+        else if(type == Type.ACTION_SUBSCRIBE || type == Type.ACTION_UNSUBSCRIBE)
+            return organization.getLogoUrl();
+        else
+            return null;
+    }
+
+    @Override
+    public int getTargetType() {
+        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
+            return ActionTarget.TYPE_EVENT;
+        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+            return ActionTarget.TYPE_ORGANIZATION;
+        return 0;
+    }
+
+    @Override
+    public int compareTo(Action another) {
+        return createdAt > another.createdAt ? 1 : createdAt == another.createdAt ? 0 : -1;
     }
 }

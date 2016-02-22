@@ -1,19 +1,23 @@
 package ru.evendate.android.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import ru.evendate.android.R;
+import ru.evendate.android.models.ActionTarget;
+import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.OrganizationDetailActivity;
 
 /**
  * Created by Dmitry on 20.02.2016.
  */
-public class ActionTargetsAdapter extends AbstractAdapter<Long, ActionTargetsAdapter.ActionTargetHolder> {
+public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTargetsAdapter.ActionTargetHolder> {
 
     public ActionTargetsAdapter(Context context) {
         super(context);
@@ -29,15 +33,17 @@ public class ActionTargetsAdapter extends AbstractAdapter<Long, ActionTargetsAda
     public void onBindViewHolder(ActionTargetHolder holder, int position) {
         if (getList() == null)
             return;
-        Long id = getList().get(position);
-        holder.id = id;
-        holder.mNameTextView.setText(String.valueOf(id));
+        ActionTarget action = getList().get(position);
+        holder.mNameTextView.setText(action.getTargetName());
+        holder.mUri = action.getTargetUri();
+        holder.type = action.getTargetType();
     }
 
     public class ActionTargetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public TextView mNameTextView;
-        public long id;
+        public Uri mUri;
+        public int type;
 
         public ActionTargetHolder(View itemView) {
             super(itemView);
@@ -49,10 +55,13 @@ public class ActionTargetsAdapter extends AbstractAdapter<Long, ActionTargetsAda
         @Override
         public void onClick(View v) {
             if (v == holderView) {
-                Toast.makeText(mContext, String.valueOf(id), Toast.LENGTH_SHORT).show();
-            //    Intent intent = new Intent(mContext, UserProfileActivity.class);
-            //    intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
-            //    mContext.startActivity(intent);
+                Intent intent;
+                if(type == ActionTarget.TYPE_EVENT)
+                    intent = new Intent(mContext, EventDetailActivity.class);
+                else
+                    intent = new Intent(mContext, OrganizationDetailActivity.class);
+                intent.setData(mUri);
+                mContext.startActivity(intent);
             }
         }
 

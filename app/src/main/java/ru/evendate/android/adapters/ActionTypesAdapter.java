@@ -9,26 +9,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.evendate.android.R;
+import ru.evendate.android.models.ActionType;
 import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
-public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionHolder> {
+public class ActionTypesAdapter extends RecyclerView.Adapter<ActionTypesAdapter.ActionHolder> {
     protected Context mContext;
-    private HashMap<Long, ArrayList<Long>> mList;
+    private ArrayList<ActionType> mList;
 
-    public ActionsAdapter(Context context){
+    public ActionTypesAdapter(Context context){
         this.mContext = context;
     }
-    public void setList(HashMap<Long, ArrayList<Long>> list){
+    public void setList(ArrayList<ActionType> list){
         mList = list;
         notifyDataSetChanged();
     }
-    public HashMap<Long, ArrayList<Long>> getList(){
+    public ArrayList<ActionType> getList(){
         return mList;
     }
     @Override
@@ -47,17 +47,14 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionHo
     public void onBindViewHolder(ActionHolder holder, int position) {
         if(getList() == null)
             return;
-        //ToDo position
-        ArrayList<Long> keyList = new ArrayList<>();
-        keyList.addAll(getList().keySet());
-        ArrayList<Long> entry = getList().get(keyList.get(position));
-        holder.mActionTextView.setText("action");
+        ActionType type = getList().get(position);
+        holder.mActionTextView.setText(type.getTypeName());
         holder.mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
         holder.recyclerView.setLayoutManager(
                 new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
                         LinearLayoutManager.VERTICAL, false));
         holder.recyclerView.setAdapter(holder.mActionTargetsAdapter);
-        holder.mActionTargetsAdapter.setList(entry);
+        holder.mActionTargetsAdapter.setList(type.getTargetList());
         holder.recyclerView.setNestedScrollingEnabled(false);
     }
     public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
