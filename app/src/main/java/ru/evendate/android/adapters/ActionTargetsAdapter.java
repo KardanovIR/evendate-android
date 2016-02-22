@@ -7,7 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionTarget;
@@ -26,7 +29,16 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
     @Override
     public ActionTargetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ActionTargetHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_action_target, parent, false));
+                .inflate(viewType, parent, false));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        int type = getList().get(position).getTargetType();
+        if(type == ActionTarget.TYPE_EVENT)
+            return R.layout.item_action_target_event;
+        else
+            return R.layout.item_action_target_org;
     }
 
     @Override
@@ -37,11 +49,16 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
         holder.mNameTextView.setText(action.getTargetName());
         holder.mUri = action.getTargetUri();
         holder.type = action.getTargetType();
+        Picasso.with(mContext)
+                .load(action.getTargetImageLink())
+                .error(R.mipmap.ic_launcher)
+                .into(holder.mImageView);
     }
 
     public class ActionTargetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public TextView mNameTextView;
+        public ImageView mImageView;
         public Uri mUri;
         public int type;
 
@@ -49,6 +66,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
             super(itemView);
             holderView = itemView;
             mNameTextView = (TextView) itemView.findViewById(R.id.action_target_text_view);
+            mImageView = (ImageView) itemView.findViewById(R.id.action_target_image) ;
             holderView.setOnClickListener(this);
         }
 

@@ -22,7 +22,7 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="8dp"
             app:expandedTitleMarginStart="8dp"
-            app:expandedTitleMarginBottom="12dp"
+            app:expandedTitleMarginBottom="8dp"
             app:expandedTitleGravity="bottom|center_horizontal"
             app:expandedTitleTextAppearance="@style/TextAppearance.CollapsingToolbar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"

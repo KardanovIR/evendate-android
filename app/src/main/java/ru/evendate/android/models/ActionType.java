@@ -1,6 +1,10 @@
 package ru.evendate.android.models;
 
+import android.content.Context;
+
 import java.util.ArrayList;
+
+import ru.evendate.android.R;
 
 /**
  * Created by Dmitry on 22.02.2016.
@@ -22,15 +26,15 @@ public class ActionType{
         return type;
     }
 
-    public String getTypeName() {
+    public String getTypeName(Context context) {
         if(type == Action.Type.ACTION_DISLIKE.type())
-            return "dislike";
+            return context.getString(R.string.action_dislike);
         if(type == Action.Type.ACTION_LIKE.type())
-            return "like";
+            return context.getString(R.string.action_like);
         if(type == Action.Type.ACTION_SUBSCRIBE.type())
-            return "subscribe";
+            return context.getString(R.string.action_subscribe);
         if(type == Action.Type.ACTION_UNSUBSCRIBE.type())
-            return "unsubscribe";
+            return context.getString(R.string.action_unsubscribe);
         return null;
     }
 

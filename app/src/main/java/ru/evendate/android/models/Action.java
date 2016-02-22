@@ -116,10 +116,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
 
     @Override
     public String getTargetImageLink() {
-        Type type = Type.valueOf(String.valueOf(statTypeId));
-        if(type == Type.ACTION_DISLIKE || type == Type.ACTION_LIKE)
+        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return getEvent().getImageHorizontalUrl();
-        else if(type == Type.ACTION_SUBSCRIBE || type == Type.ACTION_UNSUBSCRIBE)
+        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return organization.getLogoUrl();
         else
             return null;

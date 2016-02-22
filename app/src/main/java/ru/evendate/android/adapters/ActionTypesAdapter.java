@@ -8,8 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
 import ru.evendate.android.ui.OrganizationCatalogAdapter;
@@ -17,25 +18,10 @@ import ru.evendate.android.ui.OrganizationCatalogAdapter;
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
-public class ActionTypesAdapter extends RecyclerView.Adapter<ActionTypesAdapter.ActionHolder> {
-    protected Context mContext;
-    private ArrayList<ActionType> mList;
+public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
 
     public ActionTypesAdapter(Context context){
-        this.mContext = context;
-    }
-    public void setList(ArrayList<ActionType> list){
-        mList = list;
-        notifyDataSetChanged();
-    }
-    public ArrayList<ActionType> getList(){
-        return mList;
-    }
-    @Override
-    public int getItemCount() {
-        if(mList == null)
-            return 0;
-        return mList.size();
+        super(context);
     }
 
     @Override
@@ -48,7 +34,14 @@ public class ActionTypesAdapter extends RecyclerView.Adapter<ActionTypesAdapter.
         if(getList() == null)
             return;
         ActionType type = getList().get(position);
-        holder.mActionTextView.setText(type.getTypeName());
+        holder.mActionTextView.setText(type.getTypeName(mContext));
+        String name = type.getUser().getFirstName() + " " + type.getUser().getLastName();
+        holder.mUserNameTextView.setText(name);
+        Picasso.with(mContext)
+                .load(type.getUser().getAvatarUrl())
+                .error(R.mipmap.ic_launcher)
+                .into(holder.mAvatarView);
+
         holder.mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
         holder.recyclerView.setLayoutManager(
                 new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
@@ -60,6 +53,8 @@ public class ActionTypesAdapter extends RecyclerView.Adapter<ActionTypesAdapter.
     public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public TextView mActionTextView;
+        public TextView mUserNameTextView;
+        public CircleImageView mAvatarView;
         public RecyclerView recyclerView;
         public ActionTargetsAdapter mActionTargetsAdapter;
 
@@ -67,7 +62,9 @@ public class ActionTypesAdapter extends RecyclerView.Adapter<ActionTypesAdapter.
             super(itemView);
             holderView = itemView;
             recyclerView = (RecyclerView)itemView.findViewById(R.id.recycler_view);
-            mActionTextView = (TextView)itemView.findViewById(R.id.action);
+            mActionTextView = (TextView)itemView.findViewById(R.id.action_description);
+            mUserNameTextView = (TextView)itemView.findViewById(R.id.user_name);
+            mAvatarView = (CircleImageView)itemView.findViewById(R.id.user_avatar);
             holderView.setOnClickListener(this);
         }
 
