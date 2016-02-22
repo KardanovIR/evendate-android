@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:src="@drawable/clock"
+            android:src="@drawable/evendate_logo"
             android:id="@+id/organization_icon" />
     </FrameLayout>
     <TextView
