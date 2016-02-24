@@ -33,6 +33,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -43,6 +45,7 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbstractLoader;
@@ -203,6 +206,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 public void onClick(View v) {
                     Intent openLink = new Intent(Intent.ACTION_VIEW);
                     openLink.setData(Uri.parse(mEvent.getDetailInfoUrl()));
+                    Tracker tracker = EvendateApplication.getTracker();
+                    HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.stat_category_event))
+                            .setAction(getString(R.string.stat_action_click_on_link))
+                            .setLabel(mUri.getLastPathSegment());
+                    tracker.send(event.build());
                     startActivity(openLink);
                 }
             });
@@ -218,9 +227,22 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
+
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getActivity().getString(R.string.stat_category_organization))
+                    .setAction(getActivity().getString(R.string.stat_action_view))
+                    .setLabel((Long.toString(mAdapter.getEvent().getOrganizationId())));
+            tracker.send(event.build());
+
             startActivity(intent);
         }
         if(v == mFAB) {
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getActivity().getString(R.string.stat_category_event))
+                    .setLabel((Long.toString(mAdapter.getEvent().getEntryId())));
+
             LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
                     mAdapter.getEvent().isFavorite());
             likeEventLoader.setLoaderListener(new LoaderListener<Void>() {
@@ -236,10 +258,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             });
             likeEventLoader.load();
             mAdapter.getEvent().favore();
-            if(mAdapter.getEvent().isFavorite())
+            if(mAdapter.getEvent().isFavorite()){
+                event.setAction(getActivity().getString(R.string.stat_action_like));
                 Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
-            else
+            }
+            else{
+                event.setAction(getActivity().getString(R.string.stat_action_dislike));
                 Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
+            }
+            tracker.send(event.build());
             mAdapter.setEventInfo();
         }
         if(v.getId() == R.id.event_participant_button){

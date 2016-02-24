@@ -18,7 +18,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
@@ -114,10 +117,18 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 return;
             mAdapter.getOrganizationModel().subscribe();
             mAdapter.setOrganizationInfo();
-            if(mAdapter.getOrganizationModel().isSubscribed())
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getActivity().getString(R.string.stat_category_organization))
+                    .setLabel((Long.toString(mAdapter.getOrganizationModel().getEntryId())));
+            if(mAdapter.getOrganizationModel().isSubscribed()){
+                event.setAction(getActivity().getString(R.string.stat_action_subscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-            else
+            }
+            else{
+                event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
+            }
             SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
                     mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
             subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
@@ -131,6 +142,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
                 }
             });
+            tracker.send(event.build());
             subOrganizationLoader.execute();
         }
         if(v.getId() == R.id.organization_subscribed_button){
@@ -170,6 +182,12 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         private void setOrganizationInfo(){
             mOrganizationNameTextView.setText(mOrganizationModel.getName());
             mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
+            HashSet<UserModel> friendSet = new HashSet<>();
+            for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
+                if(user.is_friend())
+                    friendSet.add(user);
+            }
+            mFriendCountView.setText(String.valueOf(friendSet.size()));
             HashSet<UserModel> friendSet = new HashSet<>();
             for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
                 if(user.is_friend())

@@ -34,6 +34,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.picasso.Picasso;
@@ -41,6 +43,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
@@ -348,6 +351,13 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                 default:
                     if(!mAccountToggle.isChecked()){
                         //open organization from subs
+                        Tracker tracker = EvendateApplication.getTracker();
+                        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                                .setCategory(mContext.getString(R.string.stat_category_organization))
+                                .setAction(mContext.getString(R.string.stat_action_view))
+                                .setLabel(Long.toString(menuItem.getItemId()));
+                        tracker.send(event.build());
+
                         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                                 .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
