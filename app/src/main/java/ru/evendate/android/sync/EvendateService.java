@@ -63,6 +63,7 @@ public interface EvendateService {
     @GET(API_PATH + "/events/favorites")
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization,
+            @Query("future") boolean future,
             @Query("fields") String fields
     );
 
@@ -104,10 +105,11 @@ public interface EvendateService {
             @Query("fields") String fields
     );
 
-    //@GET("/api/users/me")
-    //Call<EvendateServiceResponseAttr<UserModel>> meData(
-    //        @Header("Authorization") String authorization
-    //);
+    @GET(API_PATH + "/users/me")
+    Call<EvendateServiceResponseArray<UserDetail>> getMe(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
+    );
 
     @GET(API_PATH + "/organizations/{id}")
     Call<EvendateServiceResponseArray<OrganizationDetail>> getOrganization(

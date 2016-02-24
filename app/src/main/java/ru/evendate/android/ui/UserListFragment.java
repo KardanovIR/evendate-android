@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -76,6 +77,24 @@ public class UserListFragment extends Fragment{
         else
             loadOrganization();
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(TYPE, type);
+        outState.putInt(EVENT_ID, eventId);
+        outState.putInt(ORGANIZATION_ID, organizationId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState == null)
+            return;
+        type = savedInstanceState.getInt(TYPE);
+        eventId = savedInstanceState.getInt(EVENT_ID);
+        organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
     }
 
     private void loadOrganization(){

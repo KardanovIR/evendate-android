@@ -1,6 +1,5 @@
 package ru.evendate.android.ui;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,22 +23,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
+import ru.evendate.android.loaders.SubOrganizationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationModel;
 import ru.evendate.android.models.UserModel;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
 
 /**
  * Contain details of organization
@@ -118,70 +108,30 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
     }
 
-    private class SubOrganizationLoader extends AbstractLoader<Void> {
-        OrganizationModel mOrganization;
-        boolean subscribe;
-        public SubOrganizationLoader(Context context, OrganizationModel organizationModel,
-                                     boolean subscribe) {
-            super(context);
-            this.subscribe = subscribe;
-            mOrganization = organizationModel;
-        }
-
-        public void execute(){
-            Log.d(LOG_TAG, "performing sub");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            Call<EvendateServiceResponse> call;
-            if(subscribe){
-                call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
-            } else {
-                call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
-            }
-
-            call.enqueue(new Callback<EvendateServiceResponse>() {
-                @Override
-                public void onResponse(Response<EvendateServiceResponse> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        Log.d(LOG_TAG, "performed sub");
-                    } else {
-                        Log.e(LOG_TAG, "Error with response with organization sub");
-                        mListener.onError();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.e("Error", t.getMessage());
-                    mListener.onError();
-                }
-            });
-        }
-    }
     public void onClick(View v) {
-        if(mAdapter.getOrganizationModel() == null)
-            return;
-        SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
-        subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
-            @Override
-            public void onLoaded(Void subList) {
-
-            }
-
-            @Override
-            public void onError() {
-                Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        subOrganizationLoader.execute();
         if(v == mFAB) {
+            if(mAdapter.getOrganizationModel() == null)
+                return;
             mAdapter.getOrganizationModel().subscribe();
             mAdapter.setOrganizationInfo();
             if(mAdapter.getOrganizationModel().isSubscribed())
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
             else
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
+            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
+                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+                @Override
+                public void onLoaded(Void subList) {
+
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                }
+            });
+            subOrganizationLoader.execute();
         }
         if(v.getId() == R.id.organization_subscribed_button){
             Intent intent = new Intent(getContext(), UserListActivity.class);

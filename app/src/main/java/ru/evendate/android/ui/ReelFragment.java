@@ -206,7 +206,7 @@ public class ReelFragment extends Fragment {
             }
             Call<EvendateServiceResponseArray<EventDetail>> call;
             if(type == TypeFormat.FAVORITES.type()){
-                call = evendateService.getFavorite(token, EventDetail.FIELDS_LIST);
+                call = evendateService.getFavorite(token, true, EventDetail.FIELDS_LIST);
             }else if(type == TypeFormat.ORGANIZATION.type()){
                 call = evendateService.getEvents(token, organizationId, true, EventDetail.FIELDS_LIST);
             }else{
@@ -266,7 +266,6 @@ public class ReelFragment extends Fragment {
         if(type != TypeFormat.CALENDAR.type())
             return;
         this.mDate = mDate;
-        mEventLoader.getEvents();
     }
 
     private void onDownloaded(){

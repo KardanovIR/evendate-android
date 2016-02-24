@@ -1,9 +1,14 @@
 package ru.evendate.android.models;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Locale;
+
+import ru.evendate.android.EvendateApplication;
 
 /**
  * Created by Dmitry on 04.12.2015.
@@ -12,6 +17,15 @@ import java.util.Locale;
 public class EventFormatter {
     public static String formatDate(EventDetail event) {
         //10-13, 15, 20-31 december; 23 january
+        if(event.getDataList().size() == 0){
+            //no dates -> error at server
+            Tracker tracker = EvendateApplication.getTracker();
+            tracker.send(new HitBuilders.ExceptionBuilder()
+                    .setDescription("No dates for event. Id: " + event.getEntryId())
+                    .setFatal(false)
+                    .build());
+            return "";
+        }
         Collections.sort(event.getDataList());
         String firstDay = "";
         String firstMonth = "";

@@ -46,8 +46,10 @@ import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
 import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
@@ -62,8 +64,10 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private int checkedMenuItemId = R.id.reel;
 
     private SubscriptionsAdapter mSubscriptionAdapter;
-    private AccountsAdapter mAccountAdapter;
+    private AccountAdapter mAccountAdapter;
+    private AccountsAdapter mAccountsAdapter;
     private SubscriptionLoader mSubscriptionLoader;
+    private MeLoader mMeLoader;
     /**
      * false -> action menu
      * true -> account menu
@@ -87,8 +91,21 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
         mSubscriptionAdapter = new SubscriptionsAdapter(this);
         mSubscriptionLoader = new SubscriptionLoader(this);
+        mMeLoader = new MeLoader(this);
         mSubscriptionLoader.setLoaderListener(this);
-        mAccountAdapter = new AccountsAdapter(this);
+        mMeLoader.setLoaderListener(new LoaderListener<UserDetail>() {
+            @Override
+            public void onLoaded(UserDetail user) {
+                mAccountAdapter.setAccountInfo(user);
+            }
+
+            @Override
+            public void onError() {
+                mAccountAdapter.setAccountInfoOffline();
+            }
+        });
+        mAccountsAdapter = new AccountsAdapter(this);
+        mAccountAdapter = new AccountAdapter(this);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
 
@@ -118,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
-        setAccountInfo();
 
 
         mAccountToggle = (ToggleButton)mNavigationView.getHeaderView(0).findViewById(R.id.account_view_icon_button);
@@ -143,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     protected void onResume() {
         super.onResume();
         mSubscriptionLoader.getSubscriptions();
+        mMeLoader.getData();
     }
 
     /**
@@ -167,24 +184,6 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    private void setAccountInfo(){
-        RelativeLayout header = (RelativeLayout)mNavigationView.getHeaderView(0);
-        TextView email = (TextView)header.findViewById(R.id.email);
-        ImageView avatar = (ImageView)header.findViewById(R.id.avatar);
-        TextView username = (TextView)header.findViewById(R.id.username);
-        SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
-        String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
-        String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
-
-        email.setText(account_name);
-        username.setText(first_name + " " + last_name);
-
-        Picasso.with(this)
-                .load(sPref.getString(EvendateSyncAdapter.AVATAR_URL, null))
-                .error(R.mipmap.ic_launcher)
-                .into(avatar);
-    }
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
@@ -343,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                         //ed.putString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, account_name);
                         //ed.apply();
                         //setAccountInfo();
-                        mAccountAdapter.updateAccountMenu();
+                        mAccountsAdapter.updateAccountMenu();
                     }
                     drawerLayout.closeDrawers();
                     return true;
@@ -379,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private void setupAccountMenu(){
         mNavigationView.getMenu().clear();
         mNavigationView.inflateMenu(R.menu.drawer_accounts);
-        mAccountAdapter.updateAccountMenu();
+        mAccountsAdapter.updateAccountMenu();
         mAccountToggle.setChecked(true);
     }
     private void setupActionMenu(){
@@ -492,5 +491,56 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         }
     }
 
+    private class AccountAdapter{
+        private Context mContext;
+        RelativeLayout header;
+        TextView email;
+        ImageView avatar;
+        TextView username;
 
+        public AccountAdapter(Context context) {
+            mContext = context;
+        }
+        private void init(){
+            header = (RelativeLayout)mNavigationView.getHeaderView(0);
+            email = (TextView)header.findViewById(R.id.email);
+            avatar = (ImageView)header.findViewById(R.id.avatar);
+            username = (TextView)header.findViewById(R.id.username);
+        }
+        public void setAccountInfo(UserDetail user){
+            init();
+            SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+            String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+            email.setText(account_name);
+            String name = user.getFirstName() + " " + user.getLastName();
+            username.setText(name);
+
+            Picasso.with(mContext)
+                    .load(user.getAvatarUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .into(avatar);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString(EvendateSyncAdapter.FIRST_NAME, user.getFirstName());
+            ed.putString(EvendateSyncAdapter.AVATAR_URL, user.getAvatarUrl());
+            ed.putString(EvendateSyncAdapter.LAST_NAME, user.getLastName());
+            ed.apply();
+        }
+        public void setAccountInfoOffline(){
+            init();
+
+            SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+            String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+            String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
+            String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
+            String name = first_name + " " + last_name;
+            init();
+            email.setText(account_name);
+            username.setText(name);
+
+            Picasso.with(mContext)
+                    .load(sPref.getString(EvendateSyncAdapter.AVATAR_URL, null))
+                    .error(R.mipmap.ic_launcher)
+                    .into(avatar);
+        }
+    }
 }

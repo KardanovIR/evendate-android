@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -27,6 +28,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
+    public static final String USER_ID = "user_id";
     UserAdapter mUserAdapter;
     UserLoader mLoader;
 
@@ -61,6 +63,18 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mLoader.getData(userId);
         mViewPager = (ViewPager)findViewById(R.id.pager);
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt(USER_ID, userId);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        userId = savedInstanceState.getInt(USER_ID);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
