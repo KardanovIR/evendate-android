@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -26,6 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
@@ -182,12 +182,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         private void setOrganizationInfo(){
             mOrganizationNameTextView.setText(mOrganizationModel.getName());
             mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
-            HashSet<UserModel> friendSet = new HashSet<>();
-            for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
-                if(user.is_friend())
-                    friendSet.add(user);
-            }
-            mFriendCountView.setText(String.valueOf(friendSet.size()));
             HashSet<UserModel> friendSet = new HashSet<>();
             for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
                 if(user.is_friend())
