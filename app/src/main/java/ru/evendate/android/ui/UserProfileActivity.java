@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -11,7 +12,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
@@ -38,6 +41,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
 
     private ImageView mUserImageView;
     private CollapsingToolbarLayout mCollapsingToolbar;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,11 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mLoader.getData(userId);
         mViewPager = (ViewPager)findViewById(R.id.pager);
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
+
+        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -83,14 +92,17 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, user);
         mViewPager.setAdapter(mUserPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onError() {
+        mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mLoader.getData(userId);
+                mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
         });

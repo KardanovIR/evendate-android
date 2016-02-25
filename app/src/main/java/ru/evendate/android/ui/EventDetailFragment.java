@@ -17,7 +17,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -83,7 +82,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private TextView mMonthTextView;
     private TextView mDayTextView;
-    private TextView mTimeTextView;
+    //private TextView mTimeTextView;
     private TextView mParticipantCountTextView;
 
     private FrameLayout mLink;
@@ -94,15 +93,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     EventAdapter mAdapter;
     EventLoader mEventLoader;
 
-    ShareActionProvider mShareActionProvider;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
     }
-
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -136,9 +132,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
         mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
-        mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
+        //mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
         mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
-        mParticipantCountTextView.setOnClickListener(this);
 
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
         mOrganizationIconView.setOnClickListener(this);
@@ -278,6 +273,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setFabIcon(){
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
@@ -340,7 +336,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.putExtra(Intent.EXTRA_TEXT, mAdapter.getEvent().getTitle() + "\n\n" +
                         mAdapter.getEvent().getDescription() + "\n" +
-                        mAdapter.getEvent().getDetailInfoUrl());
+                        ConstructUrl());
                 shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
                 shareIntent.setType("image/*");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -381,6 +377,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         }
         return bmpUri;
     }
+
+    public String ConstructUrl(){
+        final String base = EvendateApiFactory.HOST_NAME + "/event.php?id=";
+        return base + mAdapter.getEvent().getEntryId();
+    }
+
     @Override
     public void onLoaded(EventDetail event) {
         if(!isAdded())
@@ -394,10 +396,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public void onError() {
         if(!isAdded())
             return;
+        mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mEventLoader.getData(eventId);
+                mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
         });

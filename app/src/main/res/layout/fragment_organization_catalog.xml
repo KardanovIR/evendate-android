@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,7 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/organization_category_item"/>
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchorGravity="center|top"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         app:layout_anchor="@+id/recyclerView"

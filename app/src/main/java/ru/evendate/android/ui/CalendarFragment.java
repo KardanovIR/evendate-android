@@ -165,6 +165,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         mReelFragment.setDataListener(this);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
+        mLoader.getData();
     }
 
     @Override

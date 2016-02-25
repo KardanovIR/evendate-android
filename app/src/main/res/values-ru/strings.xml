@@ -63,4 +63,5 @@
     <string name="action_like">Добавил в избранное события</string>
     <string name="action_subscribe">Подписался на организации</string>
     <string name="action_unsubscribe">Отписался от организаций</string>
+    <string name="loading_retry">Повторить</string>
 </resources>

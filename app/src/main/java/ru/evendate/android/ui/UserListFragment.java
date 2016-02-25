@@ -1,6 +1,7 @@
 package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UsersAdapter;
@@ -35,6 +37,7 @@ public class UserListFragment extends Fragment{
     private int type = 0;
     private int organizationId;
     private int eventId;
+    private ProgressBar mProgressBar;
 
     public enum TypeFormat {
         event                (0),
@@ -45,6 +48,7 @@ public class UserListFragment extends Fragment{
         }
         final int nativeInt;
     }
+
     public static UserListFragment newInstance(int type, int id){
         UserListFragment userListFragment = new UserListFragment();
         userListFragment.type = type;
@@ -76,6 +80,11 @@ public class UserListFragment extends Fragment{
             loadEvent();
         else
             loadOrganization();
+
+        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
 
@@ -102,10 +111,20 @@ public class UserListFragment extends Fragment{
             @Override
             public void onLoaded(OrganizationDetail subList) {
                 mAdapter.setList(subList.getSubscribedUsersList());
+                mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
-                buildAlertDialog().show();
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mOrganizationLoader.getOrganization(organizationId);
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                mProgressBar.setVisibility(View.GONE);
             }
         });
         mOrganizationLoader.getOrganization(organizationId);
@@ -116,28 +135,23 @@ public class UserListFragment extends Fragment{
             @Override
             public void onLoaded(EventDetail subList) {
                 mAdapter.setList(subList.getUserList());
+                mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
-                buildAlertDialog().show();
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mEventLoader.getData(eventId);
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                mProgressBar.setVisibility(View.GONE);
             }
         });
         mEventLoader.getData(eventId);
-    }
-
-    public AlertDialog buildAlertDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.loading_error));
-        builder.setMessage(getString(R.string.loading_error_description));
-
-        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mOrganizationLoader.getOrganization(organizationId);
-                dialog.dismiss();
-            }
-        });
-        return builder.create();
     }
 
 }

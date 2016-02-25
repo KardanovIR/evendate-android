@@ -31,6 +31,7 @@
 
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
+    <string name="loading_retry">Retry</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
