@@ -186,6 +186,9 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         if(!isAdded())
             return;
         Log.i(LOG_TAG, "data loaded");
+        //TODO нужно как-то изящнее это сделать
+        if(mReelFragment.getEventList() == null)
+            return;
         //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
