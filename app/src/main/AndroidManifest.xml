@@ -72,11 +72,13 @@
             android:name=".authorization.AuthActivity"
             android:screenOrientation="portrait"/>
 
+        <!--
         <provider
             android:name=".data.EvendateProvider"
             android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true"/>
+        -->
 
         <service
             android:name=".authorization.EvendateAuthenticatorService"
