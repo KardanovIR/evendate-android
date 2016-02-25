@@ -177,6 +177,8 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDate(date.getDate());
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
 
     @Override
