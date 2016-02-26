@@ -16,8 +16,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
 import ru.evendate.android.loaders.LoaderListener;
@@ -72,6 +75,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        setupStat();
     }
 
     @Override
@@ -128,5 +132,22 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                     .error(R.drawable.default_background)
                     .into(mUserImageView);
         }
+    }
+
+    private void setupStat(){
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            @Override
+            public void onPageSelected(int position) {
+                Tracker tracker = EvendateApplication.getTracker();
+                tracker.setScreenName("User Profile Screen ~" +
+                        mUserPagerAdapter.getPageLabel(position));
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
     }
 }

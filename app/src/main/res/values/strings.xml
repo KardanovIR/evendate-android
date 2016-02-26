@@ -101,6 +101,8 @@
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
+    <string name="stat_page_actions" translatable="false">Actions</string>
+    <string name="stat_page_subscriptions" translatable="false">Subscriptions</string>
 
     <!-- user profile strings -->
     <string name="tab_subscriptions">Subscriptions</string>

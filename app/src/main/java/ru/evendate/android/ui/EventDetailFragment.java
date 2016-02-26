@@ -222,14 +222,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
-
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getActivity().getString(R.string.stat_category_organization))
-                    .setAction(getActivity().getString(R.string.stat_action_view))
-                    .setLabel((Long.toString(mAdapter.getEvent().getOrganizationId())));
-            tracker.send(event.build());
-
             startActivity(intent);
         }
         if(v == mFAB) {
