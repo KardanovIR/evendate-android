@@ -322,12 +322,41 @@
                     android:maxHeight="30dp"
                     android:ellipsize="end"/>
             </FrameLayout>
+            <RelativeLayout
+                android:id="@+id/event_tags_content2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/event_tags_content"
+                android:layout_alignLeft="@+id/event_description"
+                android:layout_alignStart="@+id/event_description"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+                <TextView
+                    android:id="@+id/tagHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/event_tags"
+                    android:layout_gravity="start|top"
+                    android:textSize="16sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="8dp" />
+                    <ru.evendate.android.views.TagsView
+                        android:id="@+id/tag_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tagHeader"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+            </RelativeLayout>
             <View
                 android:id="@+id/separator_3"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#AAAAAA"
-                android:layout_below="@+id/event_tags_content" />
+                android:layout_below="@+id/event_tags_content2" />
 
             <FrameLayout
                 android:id="@+id/event_link_content"

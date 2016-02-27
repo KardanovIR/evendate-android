@@ -56,6 +56,7 @@ import ru.evendate.android.models.EventModel;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.views.TagsView;
 
 /**
  * contain details of events
@@ -78,6 +79,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     private TextView mDateTextView;
     private TextView mPlaceTextView;
     private TextView mTagsTextView;
+    private TagsView mTagsView;
     private TextView mLinkTextView;
 
     private TextView mMonthTextView;
@@ -128,6 +130,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mDateTextView = (TextView)rootView.findViewById(R.id.event_date);
         mPlaceTextView = (TextView)rootView.findViewById(R.id.event_place);
         mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
+        mTagsView = (TagsView)rootView.findViewById(R.id.tag_layout);
         mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
 
         mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
@@ -187,7 +190,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
             mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
             mDateTextView.setText(EventFormatter.formatDate(mEvent));
-
+            mTagsView.setTags(mEvent.getTagList());
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
