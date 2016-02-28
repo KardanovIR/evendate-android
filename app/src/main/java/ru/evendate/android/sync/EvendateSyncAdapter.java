@@ -8,13 +8,10 @@ package ru.evendate.android.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.net.ConnectivityManager;
@@ -22,24 +19,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.EvendateAuthenticator;
-import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.merge.MergeEventProps;
-import ru.evendate.android.sync.merge.MergeSimple;
-import ru.evendate.android.sync.merge.MergeStrategy;
-import ru.evendate.android.sync.merge.MergeWithoutDelete;
-import ru.evendate.android.sync.models.DataModel;
-import ru.evendate.android.sync.models.EventModel;
-import ru.evendate.android.sync.models.FriendModel;
-
+@Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
 
@@ -110,102 +92,6 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
             SyncResult syncResult) {
 
         Log.i(LOG_TAG, "SYNC_STARTED");
-        if(!checkInternetConnection(mContext) || account == null)
-            return;
-        AccountManager accountManager = AccountManager.get(mContext);
-        ArrayList<DataModel> cloudList;
-        ArrayList<DataModel> localList;
-        LocalDataFetcher localDataFetcher = new LocalDataFetcher(mContentResolver, mContext);
-        MergeStrategy merger = new MergeSimple(mContentResolver);
-        MergeStrategy mergerSoft = new MergeWithoutDelete(mContentResolver);
-
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        //ImageManager imageManager = new ImageManager(localDataFetcher);
-        //ImageServerLoader.init(mContext);
-        try {
-            String token = accountManager.blockingGetAuthToken(account, mContext.getString(R.string.account_type), false);
-
-            //user info sync
-            FriendModel me = ServerDataFetcher.getMyData(evendateService, token);
-            if(me != null) {
-                SharedPreferences sPref = mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-                SharedPreferences.Editor ed = sPref.edit();
-                ed.putString(FIRST_NAME, me.getFirstName());
-                ed.putString(LAST_NAME, me.getLastName());
-                ed.putString(AVATAR_URL, me.getAvatarUrl());
-                ed.apply();
-                //imageManager.saveUserPhoto(me);
-            }
-            //organizations sync
-            ArrayList<DataModel> organizationList = ServerDataFetcher.getOrganizationData(evendateService, token);
-            ArrayList<DataModel> localOrganizationList = localDataFetcher.getOrganizationDataFromDB();
-            merger.mergeData(EvendateContract.OrganizationEntry.CONTENT_URI, organizationList, localOrganizationList);
-
-            //tags sync
-            cloudList = ServerDataFetcher.getTagData(evendateService, token);
-            localList = localDataFetcher.getTagsDataFromDB();
-            merger.mergeData(EvendateContract.TagEntry.CONTENT_URI, cloudList, localList);
-
-            //friends sync
-            cloudList = ServerDataFetcher.getFriendsData(evendateService, token);
-            localList = localDataFetcher.getUserDataFromDB();
-            mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudList, localList);
-
-            //events sync
-            ArrayList<DataModel> eventList = ServerDataFetcher.getEventsData(evendateService, token);
-            ArrayList<DataModel> localEventList = localDataFetcher.getEventDataFromDB();
-            merger.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
-
-            //users from events sync
-            ArrayList<DataModel> localFriendList = localDataFetcher.getUserDataFromDB();
-            for(DataModel e : eventList){
-                ArrayList<FriendModel> cloudFriendList = ((EventModel) e).getFriendList();
-                ArrayList<DataModel> cloudFriendList2 = new ArrayList<>();
-                cloudFriendList2.addAll(cloudFriendList);
-                mergerSoft.mergeData(EvendateContract.UserEntry.CONTENT_URI, cloudFriendList2, localFriendList);
-            }
-            //reload after updating
-            localEventList = localDataFetcher.getEventDataFromDB();
-            for(DataModel e : localEventList){
-                ((EventModel)e).setFriendList(localDataFetcher.getEventFriendDataFromDB(e.getEntryId()));
-                ((EventModel)e).setTagList(localDataFetcher.getEventTagDataFromDB(e.getEntryId()));
-                ((EventModel)e).setDataRangeList(localDataFetcher.getEventDatesDataFromDB(e.getEntryId(), false));
-            }
-            //sync links between users, tags and events
-            MergeStrategy mergerEventProps = new MergeEventProps(mContentResolver);
-            mergerEventProps.mergeData(EvendateContract.EventEntry.CONTENT_URI, eventList, localEventList);
-
-            //images sync
-            //imageManager.updateOrganizationsLogos(organizationList);
-            //imageManager.updateOrganizationsImages(organizationList);
-            //imageManager.updateEventImages(eventList);
-
-        }catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-
-            Tracker t = EvendateApplication.getTracker();
-            t.send(new HitBuilders.ExceptionBuilder()
-                    .setDescription(e.getMessage() + "\n" + e.getStackTrace()[1])
-                    .setFatal(false)
-                    .build());
-        }catch (OperationCanceledException|AuthenticatorException e){
-            String description = "problem with getting token";
-            Log.e(LOG_TAG, description);
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-
-            Tracker t = EvendateApplication.getTracker();
-            t.send(new HitBuilders.ExceptionBuilder()
-                    .setDescription(description + "\n" + e.getMessage())
-                    .setFatal(false)
-                    .build());
-        }finally {
-            Log.i(LOG_TAG, "SYNC_ENDED");
-            Intent i = new Intent(SYNC_FINISHED);
-            mContext.sendBroadcast(i);
-            isSyncRunning = false;
-        }
     }
 
     /**
@@ -241,7 +127,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
         Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
-            Log.e("SYNC", "No Accounts");
+            Log.e(LOG_TAG, "get account: No Accounts");
             return null;
         }
         for(Account account : accounts){

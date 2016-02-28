@@ -9,16 +9,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/fragment_detail"
     android:fitsSystemWindows="true">
-    <!--<android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="true">-->
         <LinearLayout
             android:id="@+id/strip"
             android:orientation="horizontal"
@@ -31,27 +21,28 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
                 <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:id="@+id/event_participant_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textColor="@color/text_primary"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:id="@+id/event_participant_count"
-                    tools:text="1" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/event_participants"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:gravity="center" />
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_primary"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:id="@+id/event_participant_count"
+                        tools:text="1" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="@string/event_participants"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:gravity="center" />
                 </LinearLayout>
                 <View
                     android:layout_width="1dp"
@@ -392,37 +383,6 @@
     </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
-    <!-- background strip for cross-fading -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:background="?attr/colorPrimary"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
-    <!-- loader view for strip -->
-    <View
-        android:id="@+id/strip_cover"
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        tools:visibility="gone"/>
-    <View
-        android:id="@+id/cover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_below="@id/strip"
-        tools:visibility="gone"/>
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"

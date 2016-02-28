@@ -18,13 +18,9 @@ public class EvendateApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         analytics = GoogleAnalytics.getInstance(this);
-        tracker = analytics.newTracker("UA-69300084-2");
-        //final int versionCode = BuildConfigHelper.VERSION_CODE;
+        tracker = analytics.newTracker(R.xml.tracker_config);
         tracker.enableAdvertisingIdCollection(true);
-        tracker.enableAutoActivityTracking(true);
-        tracker.enableExceptionReporting(true);
-        tracker.setSessionTimeout(300);
-        tracker.set("&av", BuildConfig.VERSION_NAME);
+        tracker.setAppVersion(BuildConfig.VERSION_NAME);
         if (BuildConfig.DEBUG)
             analytics.setDryRun(true);
     }

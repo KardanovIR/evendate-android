@@ -2,7 +2,6 @@ package ru.evendate.android.authorization;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,7 +10,9 @@ import android.view.View;
 
 import ru.evendate.android.R;
 import ru.evendate.android.gcm.RegistrationGCMIntentService;
+import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateSyncAdapter;
+import ru.evendate.android.ui.MainActivity;
 
 /**
  * Created by fj on 14.09.2015.
@@ -19,9 +20,9 @@ import ru.evendate.android.sync.EvendateSyncAdapter;
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
-    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,offline,nohttps&redirect_uri=http://evendate.ru/vkOauthDone.php?mobile=true&response_type=code";
-    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=code&scope=public_profile,email,user_friends&display=popup&redirect_uri=http://evendate.ru/fbOauthDone.php?mobile=true";
-    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=http://evendate.ru/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,offline,nohttps&redirect_uri=" + EvendateApiFactory.HOST_NAME + "/vkOauthDone.php?mobile=true&response_type=code";
+    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=code&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + EvendateApiFactory.HOST_NAME + "/fbOauthDone.php?mobile=true";
+    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + EvendateApiFactory.HOST_NAME + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
 
     static public String URL_KEY = "url";
 
@@ -34,6 +35,14 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.auth_container, fragment)
                 .commit();
+
+        final AccountManager am = AccountManager.get(this);
+        // TODO change account
+        // temporary we remove function to change accounts
+        // delete old account
+        Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        if(oldAccount != null)
+            am.removeAccount(oldAccount, null, null);
     }
 
 
@@ -62,6 +71,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onTokenReceived(Account account, String password, String token) {
 
         final AccountManager am = AccountManager.get(this);
+
         final Bundle result = new Bundle();
         if (am.addAccountExplicitly(account, password, new Bundle())) {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
@@ -80,22 +90,32 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             ed.apply();
 
         } else {
+            Log.i(LOG_TAG, "cannot add account");
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
+            return;
         }
-        ContentResolver.addPeriodicSync(
-                EvendateSyncAdapter.getSyncAccount(this),
-                getString(R.string.content_authority),
-                Bundle.EMPTY,
-                EvendateSyncAdapter.SYNC_INTERVAL);
-        ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
+        //ContentResolver.addPeriodicSync(
+        //        EvendateSyncAdapter.getSyncAccount(this),
+        //        getString(R.string.content_authority),
+        //        Bundle.EMPTY,
+        //        EvendateSyncAdapter.SYNC_INTERVAL);
+        //ContentResolver.setSyncAutomatically(EvendateSyncAdapter.getSyncAccount(this), getString(R.string.content_authority), true);
         //EvendateSyncAdapter.syncImmediately(this);
         // Start IntentService to register this application with GCM.
         Intent intent = new Intent(this, RegistrationGCMIntentService.class);
         startService(intent);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
+        //TODO ссаный костыль
+        startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

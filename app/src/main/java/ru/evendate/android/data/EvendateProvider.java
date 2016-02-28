@@ -43,7 +43,7 @@ public class EvendateProvider extends ContentProvider {
 
     @Override
     public boolean onCreate(){
-        mEvendateDBHelper = new EvendateDBHelper(getContext());
+        //mEvendateDBHelper = new EvendateDBHelper(getContext());
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
                 EvendateContract.PATH_ORGANIZATIONS + "/#", ORGANIZATION_ID);
         mUriMatcher.addURI(EvendateContract.CONTENT_AUTHORITY,
