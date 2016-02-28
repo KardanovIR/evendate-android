@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -92,6 +95,26 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     ProgressBar mProgressBar;
     EventAdapter mAdapter;
     EventLoader mEventLoader;
+
+    final Target target = new Target() {
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if(bitmap == null)
+                return;
+            mEventImageView.setImageBitmap(bitmap);
+            palette(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            return;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -191,7 +214,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
-                    .into(mEventImageView);
+                    .into(target);
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
@@ -406,5 +429,18 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             }
         });
         dialog.show();
+    }
+
+    public void palette(Bitmap bitmap){
+        if(bitmap == null)
+            return;
+        Palette palette = Palette.generate(bitmap);
+        int vibrant = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
+        int vibrantDark = Color.argb(255, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
+        getActivity().findViewById(R.id.strip).setBackgroundColor(vibrant);
+        getActivity().findViewById(R.id.event_header).setBackgroundColor(vibrantDark);
+        ((CollapsingToolbarLayout)getActivity().findViewById(R.id.collapsing_toolbar)).setContentScrimColor(vibrant);
+        //mTitleTextView.setTextColor(mutedDarkSwatch.getTitleTextColor());
+
     }
 }
