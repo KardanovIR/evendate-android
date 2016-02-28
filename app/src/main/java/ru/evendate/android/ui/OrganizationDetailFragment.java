@@ -115,6 +115,19 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         if(v == mFAB) {
             if(mAdapter.getOrganizationModel() == null)
                 return;
+            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
+                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+                @Override
+                public void onLoaded(Void subList) {
+
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                }
+            });
             mAdapter.getOrganizationModel().subscribe();
             mAdapter.setOrganizationInfo();
             Tracker tracker = EvendateApplication.getTracker();
@@ -129,19 +142,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
             }
-            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
-            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
-                @Override
-                public void onLoaded(Void subList) {
-
-                }
-
-                @Override
-                public void onError() {
-                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-                }
-            });
             tracker.send(event.build());
             subOrganizationLoader.execute();
         }
