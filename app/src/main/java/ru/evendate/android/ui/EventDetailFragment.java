@@ -57,6 +57,7 @@ import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
 import ru.evendate.android.views.TagsView;
+import ru.evendate.android.views.UserFavoritedCard;
 
 /**
  * contain details of events
@@ -86,6 +87,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     private TextView mDayTextView;
     //private TextView mTimeTextView;
     private TextView mParticipantCountTextView;
+
+    private UserFavoritedCard mUserFavoritedCard;
 
     private FrameLayout mLink;
 
@@ -152,6 +155,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
         rootView.findViewById(R.id.event_participant_button).setOnClickListener(this);
 
+        mUserFavoritedCard = (UserFavoritedCard)rootView.findViewById(R.id.users);
+
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
@@ -214,6 +219,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 }
             });
             setFabIcon();
+            mUserFavoritedCard.setUsers(mEvent.getUserList());
         }
     }
 
