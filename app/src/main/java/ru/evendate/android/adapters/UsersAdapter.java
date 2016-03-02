@@ -1,55 +1,41 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.UserModel;
+import ru.evendate.android.models.UserDetail;
+import ru.evendate.android.models.UserModel;
+import ru.evendate.android.ui.UserProfileActivity;
 
 /**
  * Created by Dmitry on 04.02.2016.
  */
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder>{
+public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserHolder> {
 
-    Context mContext;
-    private ArrayList<UserModel> mUserList;
-    public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
-
-    public UsersAdapter(Context context){
-        this.mContext = context;
+    public UsersAdapter(Context context) {
+        super(context);
     }
 
-    public void setUserList(ArrayList<UserModel> userList){
-        mUserList = userList;
-        notifyDataSetChanged();
-    }
-
-    public ArrayList<UserModel> getUserList() {
-        return mUserList;
-    }
     @Override
     public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new UserHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.user_list_item, parent, false));
+                .inflate(R.layout.item_user_list, parent, false));
     }
-
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {
-        if(mUserList == null)
+        if(getList() == null)
             return;
-        UserModel userEntry = mUserList.get(position);
+        UserModel userEntry = getList().get(position);
         holder.id = userEntry.getEntryId();
         String name = userEntry.getLastName() + " " + userEntry.getFirstName();
         holder.mNameTextView.setText(name);
@@ -57,12 +43,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder>{
                 .load(userEntry.getAvatarUrl())
                 .error(R.drawable.default_background)
                 .into(holder.mUserImageView);
-    }
-    @Override
-    public int getItemCount() {
-        if(mUserList == null)
-            return 0;
-        return mUserList.size();
     }
     public class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
@@ -81,12 +61,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder>{
         @Override
         public void onClick(View v) {
             if(v == holderView){
-                Toast.makeText(mContext, String.valueOf(id), Toast.LENGTH_SHORT).show();
-                //Intent intent = new Intent(mContext, EventDetailActivity.class);
-                //intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                //if(type != ReelFragment.TypeFormat.organization.nativeInt)
-                //    intent.putExtra(EventDetailActivity.IS_LOCAL, true);
-                //mContext.startActivity(intent);
+                Intent intent = new Intent(mContext, UserProfileActivity.class);
+                intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
+                mContext.startActivity(intent);
             }
         }
 

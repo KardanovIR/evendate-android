@@ -2,20 +2,22 @@ package ru.evendate.android.loaders;
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.authorization.AuthActivity;
 
 /**
  * Created by Dmitry on 04.02.2016.
  */
-public abstract class AbsctractLoader<D> {
-    private final String LOG_TAG = AbsctractLoader.class.getSimpleName();
+public abstract class AbstractLoader<D> {
+    private final String LOG_TAG = AbstractLoader.class.getSimpleName();
     protected Context mContext;
     protected LoaderListener<D> mListener;
 
-    public AbsctractLoader(Context context) {
+    public AbstractLoader(Context context) {
         mContext = context;
     }
     public void setLoaderListener(LoaderListener<D> listener) {
@@ -32,6 +34,13 @@ public abstract class AbsctractLoader<D> {
             e.fillInStackTrace();
             mListener.onError();
         }
+        if(token == null){
+            mContext.startActivity(new Intent(mContext, AuthActivity.class));
+        }
         return token;
+    }
+    protected void invalidateToken(){
+        AccountManager accountManager = AccountManager.get(mContext);
+        accountManager.invalidateAuthToken(mContext.getString(R.string.account_type), peekToken());
     }
 }

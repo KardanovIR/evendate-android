@@ -31,6 +31,7 @@
 
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
+    <string name="loading_retry">Retry</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
@@ -40,6 +41,8 @@
     <string name="event_place">Place</string>
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>
+
+    <string name="action_share">Share</string>
 
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
@@ -84,4 +87,27 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_check_organizations">Choose organization</string>
+
+    <!-- strings for statistics -->
+    <string name="stat_category_event" translatable="false">Event</string>
+    <string name="stat_category_organization" translatable="false">Organization</string>
+    <string name="stat_action_view" translatable="false">View</string>
+    <string name="stat_action_notification" translatable="false">View by notification</string>
+    <string name="stat_action_like" translatable="false">Like</string>
+    <string name="stat_action_dislike" translatable="false">Dislike</string>
+    <string name="stat_action_subscribe" translatable="false">Subscribe</string>
+    <string name="stat_action_unsubscribe" translatable="false">Unsubscribe</string>
+    <string name="stat_action_click_on_link" translatable="false">Click on link</string>
+
+    <string name="stat_page_feed" translatable="false">Feed</string>
+    <string name="stat_page_favorite" translatable="false">Favorite</string>
+
+    <!-- user profile strings -->
+    <string name="tab_subscriptions">Subscriptions</string>
+    <string name="tab_actions">Activity</string>
+
+    <string name="action_subscribe">Subscribe to organizations</string>
+    <string name="action_unsubscribe">Unsubscribe from organizations</string>
+    <string name="action_like">Added events to favorites</string>
+    <string name="action_dislike">Remove events from favorites</string>
 </resources>

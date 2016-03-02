@@ -8,11 +8,13 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import ru.evendate.android.sync.models.DateCalendar;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
-import ru.evendate.android.sync.models.OrganizationType;
+import ru.evendate.android.models.Action;
+import ru.evendate.android.models.DateCalendar;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -61,12 +63,13 @@ public interface EvendateService {
     @GET(API_PATH + "/events/favorites")
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization,
+            @Query("future") boolean future,
             @Query("fields") String fields
     );
 
     @POST(API_PATH + "/events/{id}/favorites")
     Call<EvendateServiceResponse> eventPostFavorite(
-            @Query("id") int eventId, @Header("Authorization") String authorization
+            @Path("id") int eventId, @Header("Authorization") String authorization
     );
 
     @DELETE(API_PATH + "/events/{id}/favorites")
@@ -95,17 +98,18 @@ public interface EvendateService {
             @Query("future") boolean future,
             @Query("fields") String fields
     );
-    //@GET("/api/users/friends")
-    //Call<EvendateServiceResponseArray<UserModel>> friendsData(
-    //        @Header("Authorization") String authorization,
-    //        @Query("page") int page,
-    //        @Query("length") int length
-    //);
-//
-    //@GET("/api/users/me")
-    //Call<EvendateServiceResponseAttr<UserModel>> meData(
-    //        @Header("Authorization") String authorization
-    //);
+    @GET(API_PATH + "/users/{id}")
+    Call<EvendateServiceResponseArray<UserDetail>> getUser(
+            @Header("Authorization") String authorization,
+            @Path("id") int userId,
+            @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/users/me")
+    Call<EvendateServiceResponseArray<UserDetail>> getMe(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
+    );
 
     @GET(API_PATH + "/organizations/{id}")
     Call<EvendateServiceResponseArray<OrganizationDetail>> getOrganization(
@@ -146,5 +150,12 @@ public interface EvendateService {
             @Query("device_token") String deviceToken,
             @Query("client_type") String clientType,
             @Header("Authorization") String authorization
+    );
+
+    @GET(API_PATH + "/users/{id}/actions")
+    Call<EvendateServiceResponseArray<Action>> getActions(
+            @Header("Authorization") String authorization,
+            @Path("id") int userId,
+            @Query("fields") String fields
     );
 }

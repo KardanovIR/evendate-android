@@ -1,6 +1,5 @@
 package ru.evendate.android.ui;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,33 +12,28 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbsctractLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
-import ru.evendate.android.sync.models.UserModel;
+import ru.evendate.android.loaders.SubOrganizationLoader;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.UserModel;
 
 /**
  * Contain details of organization
@@ -117,59 +111,39 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         }
     }
 
-    private class SubOrganizationLoader extends AbsctractLoader<Void> {
-        OrganizationModel mOrganization;
-        boolean subscribe;
-        public SubOrganizationLoader(Context context, OrganizationModel organizationModel,
-                                     boolean subscribe) {
-            super(context);
-            this.subscribe = subscribe;
-            mOrganization = organizationModel;
-        }
-
-        public void execute(){
-            Log.d(LOG_TAG, "performing sub");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            Call<EvendateServiceResponse> call;
-            if(subscribe){
-                call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
-            } else {
-                call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
-            }
-
-            call.enqueue(new Callback<EvendateServiceResponse>() {
+    public void onClick(View v) {
+        if(v == mFAB) {
+            if(mAdapter.getOrganizationModel() == null)
+                return;
+            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
+                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
                 @Override
-                public void onResponse(Response<EvendateServiceResponse> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        Log.d(LOG_TAG, "performed sub");
-                    } else {
-                        Log.e(LOG_TAG, "Error with response with organization sub");
-                        mListener.onError();
-                    }
+                public void onLoaded(Void subList) {
+
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
-                    Log.e("Error", t.getMessage());
-                    mListener.onError();
+                public void onError() {
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-    }
-    public void onClick(View v) {
-        if(mAdapter.getOrganizationModel() == null)
-            return;
-        SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
-        subOrganizationLoader.execute();
-        if(v == mFAB) {
             mAdapter.getOrganizationModel().subscribe();
             mAdapter.setOrganizationInfo();
-            if(mAdapter.getOrganizationModel().isSubscribed())
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getActivity().getString(R.string.stat_category_organization))
+                    .setLabel((Long.toString(mAdapter.getOrganizationModel().getEntryId())));
+            if(mAdapter.getOrganizationModel().isSubscribed()){
+                event.setAction(getActivity().getString(R.string.stat_action_subscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-            else
+            }
+            else{
+                event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
+            }
+            tracker.send(event.build());
+            subOrganizationLoader.execute();
         }
         if(v.getId() == R.id.organization_subscribed_button){
             Intent intent = new Intent(getContext(), UserListActivity.class);
@@ -187,7 +161,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
         int favoriteCount = 0;
-        HashSet<Integer> friendSet = new HashSet<>();
         for(EventDetail event : mReelFragment.getEventList()){
             favoriteCount += event.isFavorite() ? 1 : 0;
         }
@@ -234,7 +207,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mAdapter.setOrganizationInfo();
         android.support.v4.app.FragmentManager fragmentManager = getChildFragmentManager();
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.organization.nativeInt, organizationId, false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.ORGANIZATION.type(), organizationId, false);
         mReelFragment.setDataListener(this);
         fragmentManager.beginTransaction().replace(R.id.organization_container, mReelFragment).commit();
     }

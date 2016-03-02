@@ -13,15 +13,15 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.DateCalendar;
 
 /**
  * Created by Dmitry on 08.02.2016.
  */
-public class DateCalendarLoader extends AbsctractLoader<ArrayList<DateCalendar>>{
+public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> {
     private final String LOG_TAG = DateCalendarLoader.class.getSimpleName();
 
     public DateCalendarLoader(Context context) {
@@ -43,6 +43,8 @@ public class DateCalendarLoader extends AbsctractLoader<ArrayList<DateCalendar>>
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData());
                 } else {
+                    if(response.code() == 401)
+                        invalidateToken();
                     Log.e(LOG_TAG, "Error with response with calendar dates");
                     mListener.onError();
                 }

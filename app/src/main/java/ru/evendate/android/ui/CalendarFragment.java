@@ -33,7 +33,7 @@ import java.util.Locale;
 import ru.evendate.android.R;
 import ru.evendate.android.loaders.DateCalendarLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.sync.models.DateCalendar;
+import ru.evendate.android.models.DateCalendar;
 
 /**
  * Created by fj on 28.09.2015.
@@ -160,22 +160,25 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         super.onResume();
 
         mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt,
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.CALENDAR.type(),
                 mCalendarView.getSelectedDate().getDate(), false);
         mReelFragment.setDataListener(this);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
+        mLoader.getData();
     }
 
     @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.calendar.nativeInt, date.getDate(), false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.CALENDAR.type(), date.getDate(), false);
         mReelFragment.setDataListener(this);
         mCalendarView.removeDecorator(mOneDayDecorator);
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDate(date.getDate());
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
 
     @Override
@@ -183,6 +186,9 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         if(!isAdded())
             return;
         Log.i(LOG_TAG, "data loaded");
+        //TODO нужно как-то изящнее это сделать
+        if(mReelFragment.getEventList() == null)
+            return;
         //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());

@@ -1,7 +1,9 @@
 package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,13 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
-import ru.evendate.android.sync.models.EventDetail;
-import ru.evendate.android.sync.models.OrganizationDetail;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -33,6 +37,7 @@ public class UserListFragment extends Fragment{
     private int type = 0;
     private int organizationId;
     private int eventId;
+    private ProgressBar mProgressBar;
 
     public enum TypeFormat {
         event                (0),
@@ -43,6 +48,7 @@ public class UserListFragment extends Fragment{
         }
         final int nativeInt;
     }
+
     public static UserListFragment newInstance(int type, int id){
         UserListFragment userListFragment = new UserListFragment();
         userListFragment.type = type;
@@ -74,18 +80,51 @@ public class UserListFragment extends Fragment{
             loadEvent();
         else
             loadOrganization();
+
+        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(TYPE, type);
+        outState.putInt(EVENT_ID, eventId);
+        outState.putInt(ORGANIZATION_ID, organizationId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState == null)
+            return;
+        type = savedInstanceState.getInt(TYPE);
+        eventId = savedInstanceState.getInt(EVENT_ID);
+        organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
     }
 
     private void loadOrganization(){
         mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
             @Override
             public void onLoaded(OrganizationDetail subList) {
-                mAdapter.setUserList(subList.getSubscribedUsersList());
+                mAdapter.setList(subList.getSubscribedUsersList());
+                mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
-                buildAlertDialog().show();
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mOrganizationLoader.getOrganization(organizationId);
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                mProgressBar.setVisibility(View.GONE);
             }
         });
         mOrganizationLoader.getOrganization(organizationId);
@@ -95,29 +134,24 @@ public class UserListFragment extends Fragment{
         mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
             @Override
             public void onLoaded(EventDetail subList) {
-                mAdapter.setUserList(subList.getUserList());
+                mAdapter.setList(subList.getUserList());
+                mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
-                buildAlertDialog().show();
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mEventLoader.getData(eventId);
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                mProgressBar.setVisibility(View.GONE);
             }
         });
         mEventLoader.getData(eventId);
-    }
-
-    public AlertDialog buildAlertDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.loading_error));
-        builder.setMessage(getString(R.string.loading_error_description));
-
-        builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mOrganizationLoader.getOrganization(organizationId);
-                dialog.dismiss();
-            }
-        });
-        return builder.create();
     }
 
 }

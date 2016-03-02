@@ -7,15 +7,15 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.EventDetail;
 
 /**
  * Created by Dmitry on 04.02.2016.
  */
-public class EventLoader extends AbsctractLoader<EventDetail>{
+public class EventLoader extends AbstractLoader<EventDetail> {
     private final String LOG_TAG = EventLoader.class.getSimpleName();
 
     public EventLoader(Context context) {
@@ -36,6 +36,8 @@ public class EventLoader extends AbsctractLoader<EventDetail>{
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData().get(0));
                 } else {
+                    if(response.code() == 401)
+                        invalidateToken();
                     Log.e(LOG_TAG, "Error with response with events");
                     mListener.onError();
                 }

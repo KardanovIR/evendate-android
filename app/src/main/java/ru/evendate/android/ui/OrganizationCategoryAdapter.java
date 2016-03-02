@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.sync.models.OrganizationType;
+import ru.evendate.android.models.OrganizationType;
 
 /**
  * Created by Dmitry on 30.11.2015.

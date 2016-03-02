@@ -29,10 +29,11 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.EventsAdapter;
+import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.EventDetail;
 
 /**
  * fragment containing a reel
@@ -58,16 +59,20 @@ public class ReelFragment extends Fragment {
     private Date mDate;
 
     public enum TypeFormat {
-        feed                (0),
-        favorites           (1),
-        organization        (2),
+        FEED            (0),
+        FAVORITES       (1),
+        ORGANIZATION    (2),
         //organizationSubscribed  (3),
-        calendar  (4);
+        CALENDAR        (4);
 
-        TypeFormat(int nativeInt) {
-            this.nativeInt = nativeInt;
+        final int type;
+        TypeFormat(int type) {
+            this.type = type;
         }
-        final int nativeInt;
+
+        public int type() {
+            return type;
+        }
     }
 
     private OnEventsDataLoadedListener mDataListener;
@@ -200,9 +205,9 @@ public class ReelFragment extends Fragment {
                 return;
             }
             Call<EvendateServiceResponseArray<EventDetail>> call;
-            if(type == TypeFormat.favorites.nativeInt){
-                call = evendateService.getFavorite(token, EventDetail.FIELDS_LIST);
-            }else if(type == TypeFormat.organization.nativeInt){
+            if(type == TypeFormat.FAVORITES.type()){
+                call = evendateService.getFavorite(token, true, EventDetail.FIELDS_LIST);
+            }else if(type == TypeFormat.ORGANIZATION.type()){
                 call = evendateService.getEvents(token, organizationId, true, EventDetail.FIELDS_LIST);
             }else{
                 if(mDate != null){
@@ -258,10 +263,9 @@ public class ReelFragment extends Fragment {
      * @param mDate
      */
     public void setDate(Date mDate) {
-        if(type != TypeFormat.calendar.nativeInt)
+        if(type != TypeFormat.CALENDAR.type())
             return;
         this.mDate = mDate;
-        mEventLoader.getEvents();
     }
 
     private void onDownloaded(){

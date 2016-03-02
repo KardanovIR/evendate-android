@@ -2,13 +2,11 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -36,6 +34,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.picasso.Picasso;
@@ -43,15 +43,17 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ru.evendate.android.BuildConfig;
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
+import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
-import ru.evendate.android.sync.models.OrganizationModel;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<OrganizationModel>>,
@@ -65,8 +67,10 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private int checkedMenuItemId = R.id.reel;
 
     private SubscriptionsAdapter mSubscriptionAdapter;
-    private AccountsAdapter mAccountAdapter;
+    private AccountAdapter mAccountAdapter;
+    private AccountsAdapter mAccountsAdapter;
     private SubscriptionLoader mSubscriptionLoader;
+    private MeLoader mMeLoader;
     /**
      * false -> action menu
      * true -> account menu
@@ -80,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private final int INTRO_REQUEST = 1;
     private boolean mDestroyed = false;
 
+    AlertDialog mAlertDialog;
+    SharedPreferences mSharedPreferences = null;
+    final String APP_PREF = "evendate_pref";
+    final String FIRST_RUN = "first_run";
+    boolean isFirstRun = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,8 +100,21 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
         mSubscriptionAdapter = new SubscriptionsAdapter(this);
         mSubscriptionLoader = new SubscriptionLoader(this);
-        mSubscriptionLoader.setSubscriptionLoaderListener(this);
-        mAccountAdapter = new AccountsAdapter(this);
+        mMeLoader = new MeLoader(this);
+        mSubscriptionLoader.setLoaderListener(this);
+        mMeLoader.setLoaderListener(new LoaderListener<UserDetail>() {
+            @Override
+            public void onLoaded(UserDetail user) {
+                mAccountAdapter.setAccountInfo(user);
+            }
+
+            @Override
+            public void onError() {
+                mAccountAdapter.setAccountInfoOffline();
+            }
+        });
+        mAccountsAdapter = new AccountsAdapter(this);
+        mAccountAdapter = new AccountAdapter(this);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
 
@@ -121,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
-        setAccountInfo();
 
 
         mAccountToggle = (ToggleButton)mNavigationView.getHeaderView(0).findViewById(R.id.account_view_icon_button);
@@ -130,23 +152,31 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         mAccountToggle.setOnCheckedChangeListener(new ToggleAccountOnCheckedChangeListener());
         checkPlayServices();
 
+        checkAccount();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mFragment = new MainPagerFragment();
-        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
+        mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
+        if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
+            isFirstRun = true;
+            mSharedPreferences.edit().putBoolean(FIRST_RUN, false).apply();
+        }
+        else
+            fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         mDrawerToggle.syncState();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkAccount();
-        mSubscriptionLoader.getSubscriptions();
+        if(!isFirstRun){
+            mSubscriptionLoader.getSubscriptions();
+            mMeLoader.getData();
+        }
     }
 
     /**
@@ -171,24 +201,6 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    private void setAccountInfo(){
-        RelativeLayout header = (RelativeLayout)mNavigationView.getHeaderView(0);
-        TextView email = (TextView)header.findViewById(R.id.email);
-        ImageView avatar = (ImageView)header.findViewById(R.id.avatar);
-        TextView username = (TextView)header.findViewById(R.id.username);
-        SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
-        String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
-        String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
-
-        email.setText(account_name);
-        username.setText(first_name + " " + last_name);
-
-        Picasso.with(this)
-                .load(sPref.getString(EvendateSyncAdapter.AVATAR_URL, null))
-                .error(R.mipmap.ic_launcher)
-                .into(avatar);
-    }
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
@@ -240,16 +252,22 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     public void onError() {
         if(isDestroyed())
             return;
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
+        mAlertDialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mSubscriptionLoader.getSubscriptions();
-                dialog.dismiss();
+                mAlertDialog.dismiss();
             }
         });
-        dialog.show();
+        mAlertDialog.show();
     }
-
+    @Override
+    public void onStop()
+    {
+        if(mAlertDialog != null)
+            mAlertDialog.cancel();
+        super.onStop();
+    }
     @Override
     public void onRefresh() {
         mSubscriptionLoader.getSubscriptions();
@@ -333,6 +351,13 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                 default:
                     if(!mAccountToggle.isChecked()){
                         //open organization from subs
+                        Tracker tracker = EvendateApplication.getTracker();
+                        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                                .setCategory(mContext.getString(R.string.stat_category_organization))
+                                .setAction(mContext.getString(R.string.stat_action_view))
+                                .setLabel(Long.toString(menuItem.getItemId()));
+                        tracker.send(event.build());
+
                         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                                 .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
@@ -347,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                         //ed.putString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, account_name);
                         //ed.apply();
                         //setAccountInfo();
-                        mAccountAdapter.updateAccountMenu();
+                        mAccountsAdapter.updateAccountMenu();
                     }
                     drawerLayout.closeDrawers();
                     return true;
@@ -383,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private void setupAccountMenu(){
         mNavigationView.getMenu().clear();
         mNavigationView.inflateMenu(R.menu.drawer_accounts);
-        mAccountAdapter.updateAccountMenu();
+        mAccountsAdapter.updateAccountMenu();
         mAccountToggle.setChecked(true);
     }
     private void setupActionMenu(){
@@ -496,5 +521,56 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         }
     }
 
+    private class AccountAdapter{
+        private Context mContext;
+        RelativeLayout header;
+        TextView email;
+        ImageView avatar;
+        TextView username;
 
+        public AccountAdapter(Context context) {
+            mContext = context;
+        }
+        private void init(){
+            header = (RelativeLayout)mNavigationView.getHeaderView(0);
+            email = (TextView)header.findViewById(R.id.email);
+            avatar = (ImageView)header.findViewById(R.id.avatar);
+            username = (TextView)header.findViewById(R.id.username);
+        }
+        public void setAccountInfo(UserDetail user){
+            init();
+            SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+            String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+            email.setText(account_name);
+            String name = user.getFirstName() + " " + user.getLastName();
+            username.setText(name);
+
+            Picasso.with(mContext)
+                    .load(user.getAvatarUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .into(avatar);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString(EvendateSyncAdapter.FIRST_NAME, user.getFirstName());
+            ed.putString(EvendateSyncAdapter.AVATAR_URL, user.getAvatarUrl());
+            ed.putString(EvendateSyncAdapter.LAST_NAME, user.getLastName());
+            ed.apply();
+        }
+        public void setAccountInfoOffline(){
+            init();
+
+            SharedPreferences sPref = getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+            String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+            String first_name = sPref.getString(EvendateSyncAdapter.FIRST_NAME, null);
+            String last_name = sPref.getString(EvendateSyncAdapter.LAST_NAME, null);
+            String name = first_name + " " + last_name;
+            init();
+            email.setText(account_name);
+            username.setText(name);
+
+            Picasso.with(mContext)
+                    .load(sPref.getString(EvendateSyncAdapter.AVATAR_URL, null))
+                    .error(R.mipmap.ic_launcher)
+                    .into(avatar);
+        }
+    }
 }

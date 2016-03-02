@@ -4,15 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!--
  The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but are recommended.
     -->
+    <!--
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    -->
     <!-- permissions for sync -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -44,6 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
         <activity
             android:name=".ui.AddEventActivity"
             android:parentActivityName=".ui.MainActivity"
@@ -52,9 +54,11 @@
             android:name=".ui.CroppActivity"
             android:screenOrientation="portrait" />
 
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <!--
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
@@ -63,15 +67,19 @@
             android:name=".ui.MapsActivity"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait"/>
+        -->
         <activity
             android:name=".authorization.AuthActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"/>
 
+        <!--
         <provider
             android:name=".data.EvendateProvider"
             android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true"/>
+        -->
 
         <service
             android:name=".authorization.EvendateAuthenticatorService"
@@ -117,9 +125,14 @@
         <activity android:name=".ui.UserListActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.UserProfileActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.EvendateIntro"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
 
         <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices -->

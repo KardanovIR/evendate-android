@@ -13,6 +13,8 @@ import ru.evendate.android.authorization.AuthActivity;
  * Created by Dmitry on 14.12.2015.
  */
 public class EvendateIntro extends AppIntro {
+    private final int AUTH_REQUEST = 1;
+
     @Override
     public void init(Bundle savedInstanceState) {
 
@@ -45,7 +47,7 @@ public class EvendateIntro extends AppIntro {
 
     @Override
     public void onDonePressed() {
-        startActivity(new Intent(this, AuthActivity.class));
+        startActivityForResult(new Intent(this, AuthActivity.class), AUTH_REQUEST);
     }
 
     @Override
@@ -56,5 +58,16 @@ public class EvendateIntro extends AppIntro {
     @Override
     public void onSlideChanged() {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == AUTH_REQUEST){
+            if (resultCode == RESULT_OK) {
+                setResult(RESULT_OK);
+                finish();
+            }
+            setResult(RESULT_CANCELED);
+        }
     }
 }

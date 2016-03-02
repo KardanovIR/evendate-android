@@ -9,15 +9,15 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import ru.evendate.android.models.OrganizationType;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
-import ru.evendate.android.sync.models.OrganizationType;
 
 /**
  * Created by Dmitry on 08.02.2016.
  */
-public class CatalogLoader extends AbsctractLoader<ArrayList<OrganizationType>>{
+public class CatalogLoader extends AbstractLoader<ArrayList<OrganizationType>> {
     private final String LOG_TAG = CatalogLoader.class.getSimpleName();
 
     public CatalogLoader(Context context) {
@@ -37,6 +37,8 @@ public class CatalogLoader extends AbsctractLoader<ArrayList<OrganizationType>>{
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData());
                 } else {
+                    if(response.code() == 401)
+                        invalidateToken();
                     Log.e(LOG_TAG, "Error with response with catalog");
                     mListener.onError();
                 }

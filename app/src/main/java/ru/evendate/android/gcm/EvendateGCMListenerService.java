@@ -76,6 +76,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
         private void sendNotification(String message, int eventId, String logoUrl) {
             Intent intent = new Intent(this, EventDetailActivity.class);
             intent.setData(EvendateContract.EventEntry.getContentUri(eventId));
+            intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                     PendingIntent.FLAG_ONE_SHOT);

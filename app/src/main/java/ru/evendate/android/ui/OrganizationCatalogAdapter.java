@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.sync.models.OrganizationDetail;
-import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Created by Dmitry on 01.12.2015.
@@ -93,6 +95,14 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
             if(v.equals(mItem)){
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
+
+                Tracker tracker = EvendateApplication.getTracker();
+                HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                        .setCategory(mContext.getString(R.string.stat_category_organization))
+                        .setAction(mContext.getString(R.string.stat_action_view))
+                        .setLabel((Long.toString(id)));
+                tracker.send(event.build());
+
                 mContext.startActivity(intent);
             }
         }

@@ -1,4 +1,4 @@
-package ru.evendate.android.sync.models;
+package ru.evendate.android.models;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -11,7 +11,7 @@ public class EventDetail extends EventModel {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
             "organization_type_name,organization_type_name,organization_short_name,organization_logo_large_url," +
             "favored_users_count,description,detail_info_url,is_favorite," +
-            "tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
+            "dates,tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
 
     String location;
     double latitude;
@@ -37,14 +37,14 @@ public class EventDetail extends EventModel {
     @SerializedName("dates")
     ArrayList<Date> dateList;
     @SerializedName("favored")
-    ArrayList<UserModel> userList;
+    ArrayList<UserDetail> userList;
 
 
     public ArrayList<TagModel> getTagList() {
         return tagList;
     }
 
-    public ArrayList<UserModel> getUserList() {
+    public ArrayList<UserDetail> getUserList() {
         return userList;
     }
 
