@@ -5,7 +5,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/window_reel_background">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -13,15 +14,19 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:fitsSystemWindows="true"
-        app:elevation="0dp"
         >
-        <android.support.design.widget.CollapsingToolbarLayout
+        <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="246dp"
+            android:layout_height="248dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary"
-            app:titleEnabled="false"
+            app:titleEnabled="true"
+            app:expandedTitleMarginEnd="40dp"
+            app:expandedTitleMarginStart="40dp"
+            app:expandedTitleMarginBottom="64dp"
+            app:expandedTitleGravity="bottom|center_horizontal"
+            app:expandedTitleTextAppearance="@style/TextAppearance.CollapsingToolbar"
             android:fitsSystemWindows="true"
             app:toolbarId="@id/toolbar">
             <ImageView
@@ -32,13 +37,14 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 android:paddingBottom="?attr/actionBarSize"/>
-            <!--<View
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/gradient_top"
+                android:background="@drawable/gradient_event"
                 android:paddingBottom="?attr/actionBarSize"
-                app:layout_collapseMode="none"/>-->
+                app:layout_collapseMode="none"/>
             <FrameLayout
+                android:id="@+id/event_organization_container"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
@@ -53,15 +59,15 @@
                         app:civ_border_width="0dp"
                         android:src="#FFFFFF"/>
                     <ImageView
+                        android:id="@+id/event_organization_icon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="8dp"
-                        android:id="@+id/event_organization_icon" />
+                        android:padding="8dp" />
                 </FrameLayout>
                 <TextView
-                    android:id="@+id/event_name"
+                    android:id="@+id/event_organization_name"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:textColor="#fff"
                     android:layout_marginLeft="72dp"
                     android:layout_marginStart="72dp"
@@ -69,27 +75,29 @@
                     android:paddingBottom="4dp"
                     android:paddingRight="8dp"
                     android:paddingEnd="8dp"
-                    tools:text="Очередной тренинг"
+                    tools:text="Очередной организатор тренингов"
                     android:textSize="16sp"
                     android:paddingLeft="8dp"
                     android:paddingStart="8dp"
-                    android:textIsSelectable="false" />
+                    android:textIsSelectable="false"
+                    android:layout_gravity="center_vertical" />
             </FrameLayout>
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:textColorSecondary="#FFFFFF"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"
                 app:titleTextColor="#fff"
                 />
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
-        <include layout="@layout/fragment_detail_content"/>
+    <include layout="@layout/fragment_detail_content"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:layout_anchor="@+id/strip"
+        app:layout_anchor="@+id/event_organization_container"
         app:layout_anchorGravity="end|bottom|right"
         android:clickable="true"
         android:layout_height="wrap_content"

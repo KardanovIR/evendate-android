@@ -1,427 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nested_scroll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:fitsSystemWindows="true">
-        <LinearLayout
-            android:id="@+id/strip"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:background="?attr/colorPrimary"
-            android:layout_centerHorizontal="true"
-            android:elevation="4dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
-                <LinearLayout
-                    android:id="@+id/event_participant_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_primary"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:id="@+id/event_participant_count"
-                        tools:text="1" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="@string/event_participants"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp"
-                        android:gravity="center" />
-                </LinearLayout>
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="#FFF"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp" />
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/event_day"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_primary"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        tools:text="1" />
-                    <TextView
-                        android:id="@+id/event_month"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp"
-                        android:gravity="center"
-                        tools:text="month" />
-                </LinearLayout>
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="#FFF"
-                    android:textSize="12sp"
-                    android:gravity="center"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/text_primary"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:id="@+id/event_time"
-                        tools:text="1" />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center" />
-                </LinearLayout>
-        </LinearLayout>
-    <!--</android.support.v7.widget.Toolbar>-->
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/scroll"
+    <LinearLayout
+        android:id="@+id/event_tags_content2"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_below="@id/strip"
-        android:clipToPadding="false"
-        >
-
-        <RelativeLayout
-            android:id="@+id/event_description_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+        <ru.evendate.android.views.UserFavoritedCard
+            android:id="@+id/user_card"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar2"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:paddingTop="40dp"
-            android:paddingBottom="16dp"
-            android:paddingRight="16dp"
-            android:paddingLeft="16dp" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/event_organization"
-                android:id="@+id/event_organization_header"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textSize="18sp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text_color_black"
-                android:id="@+id/event_organization"
-                android:layout_below="@+id/event_organization_header"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="16dp"
-                android:textSize="16sp"
-                tools:text="Dream Academy"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/event_description"
-                android:id="@+id/event_description_header"
-                android:layout_below="@+id/event_organization"
-                android:layout_alignLeft="@+id/event_organization"
-                android:layout_alignStart="@+id/event_organization"
-                android:textSize="18sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text_color_black"
-                android:id="@+id/event_description"
-                android:layout_below="@+id/event_description_header"
-                android:layout_alignLeft="@+id/event_description_header"
-                android:layout_alignStart="@+id/event_description_header"
-                android:layout_marginBottom="12dp"
-                android:textSize="16sp"
-                tools:text="Для Топ-менеджеров крупных предприятий, собственников бизнеса и всех…"/>
-            <View
+            android:layout_height="wrap_content"
+            style="@style/EventDescriptionCard"/>
+        <android.support.v7.widget.CardView
+            android:id="@+id/event_place_card"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-                android:background="#AAAAAA"
-                android:layout_below="@+id/event_description"
-                android:id="@+id/separator_0" />
-
-            <FrameLayout
-                android:id="@+id/event_date_content"
+            android:layout_height="wrap_content"
+            style="@style/EventDescriptionCard">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/separator_0"
-                android:layout_alignLeft="@+id/event_description"
-                android:layout_alignStart="@+id/event_description"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:id="@+id/event_date_icon"
-                    android:padding="8dp"
-                    android:src="@drawable/calendar_icon" />
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/event_place_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Г. Москва, Берсеневская набережная 5, ст1"
+                    android:layout_below="@+id/textView3"
+                    android:layout_alignLeft="@+id/textView3"
+                    android:layout_alignStart="@+id/textView3"
+                    android:textSize="14sp"
+                    android:textColor="#de000000" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/event_date"
-                    android:id="@+id/event_date_header"
-                    android:layout_gravity="start|top"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="16sp"/>
+                    android:text="Место"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:id="@+id/textView3"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="16dp" />
 
                 <TextView
+                    android:id="@+id/event_place_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    tools:text="date"
-                    android:textColor="@color/text_color_black"
-                    android:id="@+id/event_date"
-                    android:layout_gravity="start|bottom"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="12sp"
-                    android:maxHeight="30dp"
-                    android:ellipsize="end"/>
-            </FrameLayout>
-            <View
+                    android:text="ПОКАЗАТЬ НА КАРТЕ"
+                    android:textColor="#ff5f9e"
+                    android:textSize="13sp"
+                    android:layout_below="@+id/event_place_text"
+                    android:layout_centerHorizontal="true"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:layout_marginTop="4dp" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/event_description_card"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-                android:background="#AAAAAA"
-                android:layout_below="@+id/event_date_content"
-                android:id="@+id/separator_1" />
-
-            <FrameLayout
-                android:id="@+id/event_place_content"
+            android:layout_height="wrap_content"
+            style="@style/EventDescriptionCard">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/separator_1"
-                android:layout_alignLeft="@+id/separator_1"
-                android:layout_alignStart="@+id/separator_1"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:id="@+id/event_place_icon"
-                    android:padding="8dp"
-                    android:src="@drawable/place"
-                    android:alpha="0.54" />
-
+                android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/event_place"
-                    android:id="@+id/event_place_header"
-                    android:layout_gravity="start|top"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="16sp"/>
-
+                    android:text="Описание"
+                    android:id="@+id/textView4"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="10dp" />
                 <TextView
+                    android:id="@+id/event_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    tools:text="Place"
-                    android:textColor="@color/text_color_black"
-                    android:id="@+id/event_place"
-                    android:layout_gravity="start|bottom"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="12sp"
-                    android:maxHeight="30dp"
-                    android:ellipsize="end"/>
-            </FrameLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#AAAAAA"
-                android:layout_below="@+id/event_place_content"
-                android:id="@+id/separator_2" />
-
-            <FrameLayout
-                android:id="@+id/event_tags_content"
+                    tools:text="ГЭС-2 — мёртвый участок между Болотной площадью и «Красным Октябрём» со сваленным за забором строительным мусором. К 2019 году здесь должен появиться новый московский арт-центр. Он мог бы стать очередным, если бы за переосмысление территории не взялась мировая звезда архитектуры, автор парижского Центра Помпиду Ренцо Пьяно. На месте одной из старейших столичных гидроэлектростанций, которая поставляла электричество для московских трамваев, появится лес. Пока непонятно, как он уместится на террито"
+                    android:layout_below="@+id/textView4"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textColor="#de000000"
+                    android:textSize="13sp"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/tag_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EventDescriptionCard">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/separator_2"
-                android:layout_alignLeft="@+id/event_description"
-                android:layout_alignStart="@+id/event_description"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:id="@+id/event_tag_icon"
-                    android:padding="8dp"
-                    android:src="@mipmap/ic_local_offer_black"
-                    android:alpha="0.54" />
-
+                android:orientation="vertical"
+                android:padding="16dp">
                 <TextView
+                    android:id="@+id/tagHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/event_tags"
-                    android:id="@+id/event_tags_header"
                     android:layout_gravity="start|top"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp" />
+                <ru.evendate.android.views.TagsView
+                    android:id="@+id/tag_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    tools:text="Medium Text"
-                    android:textColor="@color/text_color_black"
-                    android:id="@+id/event_tags"
-                    android:layout_gravity="start|bottom"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="12sp"
-                    android:maxHeight="30dp"
-                    android:ellipsize="end"/>
-            </FrameLayout>
-            <RelativeLayout
-                android:id="@+id/event_tags_content2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/event_tags_content"
-                android:layout_alignLeft="@+id/event_description"
-                android:layout_alignStart="@+id/event_description"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-                    <TextView
-                        android:id="@+id/tagHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="@string/event_tags"
-                        android:layout_gravity="start|top"
-                        android:textSize="16sp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_margin="8dp" />
-                    <ru.evendate.android.views.TagsView
-                        android:id="@+id/tag_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tagHeader"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true" />
-                    <ru.evendate.android.views.UserFavoritedCard
-                        android:id="@+id/users"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-            </RelativeLayout>
-            <View
-                android:id="@+id/separator_3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#AAAAAA"
-                android:layout_below="@+id/event_tags_content2" />
-
+                    android:minHeight="20dp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/event_link_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EventDescriptionCard">
             <FrameLayout
-                android:id="@+id/event_link_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/separator_3"
-                android:layout_alignLeft="@+id/event_description"
-                android:layout_alignStart="@+id/event_description"
-                android:foreground="?attr/selectableItemBackground"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:id="@+id/event_link_icon"
-                    android:padding="8dp"
-                    android:src="@mipmap/ic_open_in_new_black"
-                    android:alpha="0.54" />
-
+                android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/event_link"
-                    android:id="@+id/event_link_header"
-                    android:layout_gravity="start|top"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    tools:text="MOAR"
-                    android:textColor="@color/text_color_black"
-                    android:id="@+id/event_link"
-                    android:layout_gravity="start|bottom"
-                    android:layout_marginLeft="64dp"
-                    android:layout_marginStart="64dp"
-                    android:textSize="12sp"
-                    android:maxHeight="30dp"
-                    android:ellipsize="end"/>
+                    android:layout_height="match_parent"
+                    android:text="ПЕРЕЙТИ К СТРАНИЦЕ МЕРОПРИЯТИЯ"
+                    android:textColor="#5379b8"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="24dp"
+                    android:layout_gravity="center_horizontal" />
             </FrameLayout>
+        </android.support.v7.widget.CardView>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:layout_centerHorizontal="true" />
 
-            <View
-                android:id="@+id/separator_4"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#AAAAAA"
-                android:layout_above="@+id/event_link_content" />
-    </RelativeLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        android:layout_below="@id/strip"
-        android:layout_centerHorizontal="true" />
-</RelativeLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

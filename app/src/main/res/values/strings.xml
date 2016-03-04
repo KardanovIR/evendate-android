@@ -44,6 +44,10 @@
 
     <string name="action_share">Share</string>
 
+    <string name="event_word_users_and">users and</string>
+    <string name="event_word_friends_add">friends added to favorite</string>
+    <string name="event_users_all">ALL</string>
+
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
     <string name="organization_subscribers">subscribers</string>

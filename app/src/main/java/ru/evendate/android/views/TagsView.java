@@ -42,6 +42,8 @@ public class TagsView extends ViewGroup{
     private void initTags(){
         if(mTags == null)
             return;
+        if(getChildCount() != 0)
+            removeViewsInLayout(0, getChildCount());
         for (TagModel tag : mTags){
             TagView tagView = new TagView(getContext());
             tagView.setText(tag.getName());

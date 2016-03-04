@@ -63,4 +63,5 @@ dependencies {
     androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
+    compile 'net.opacapp:multiline-collapsingtoolbar:1.0.0'
 }

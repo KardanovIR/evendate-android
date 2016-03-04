@@ -105,7 +105,6 @@
 
         <activity
             android:name=".ui.EventDetailActivity"
-            android:label="@string/title_activity_detail"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
             <meta-data

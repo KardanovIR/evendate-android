@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,14 +18,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,6 +32,8 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,8 +50,8 @@ import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventModel;
+import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
@@ -68,7 +67,14 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private EventDetailActivity mEventDetailActivity;
 
+    private Uri mUri;
+    private int eventId;
+    private ProgressBar mProgressBar;
+    private EventAdapter mAdapter;
+    private EventLoader mEventLoader;
+
     private CoordinatorLayout mCoordinatorLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFAB;
 
     private ImageView mEventImageView;
@@ -76,33 +82,21 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private TextView mOrganizationTextView;
     private TextView mDescriptionTextView;
-    private TextView mTitleTextView;
-    private TextView mDateTextView;
-    private TextView mPlaceTextView;
-    private TextView mTagsTextView;
-    private TagsView mTagsView;
-    private TextView mLinkTextView;
+    //private TextView mTitleTextView;
+    private View mPlaceButtonView;
+    private TextView mPlacePlaceTextView;
+    private View mLinkCard;
 
-    private TextView mMonthTextView;
-    private TextView mDayTextView;
-    //private TextView mTimeTextView;
-    private TextView mParticipantCountTextView;
+    private TagsView mTagsView;
 
     private UserFavoritedCard mUserFavoritedCard;
-
-    private FrameLayout mLink;
-
-    private Uri mUri;
-    private int eventId;
-    ProgressBar mProgressBar;
-    EventAdapter mAdapter;
-    EventLoader mEventLoader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
     }
+
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,27 +116,42 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         //make status bar transparent
         ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
+        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset > 0){
+                    //TODO move to behavior?
+                    //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+                    //lp.setAnchorId(View.NO_ID);
+                    //mFAB.setLayoutParams(lp);
+                    //lp.gravity = Gravity.BOTTOM | Gravity.END;
+                    //mFAB.setLayoutParams(lp);
+                }
+                else{
+                    //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+                    //lp.setAnchorId(R.id.event_organization_container);
+                    //mFAB.setLayoutParams(lp);
+                    //lp.gravity = Gravity.NO_GRAVITY;
+                    //mFAB.setLayoutParams(lp);
+                }
+            }
+        });
 
-        CollapsingToolbarLayout collapsingToolbarLayout;
-        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
-        mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+
+        mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization_name);
         mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
-        mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
-        mDateTextView = (TextView)rootView.findViewById(R.id.event_date);
-        mPlaceTextView = (TextView)rootView.findViewById(R.id.event_place);
-        mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
+        //mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
+        mPlaceButtonView = rootView.findViewById(R.id.event_place_button);
+        mPlacePlaceTextView = (TextView)rootView.findViewById(R.id.event_place_text);
+        mPlaceButtonView.setOnClickListener(this);
         mTagsView = (TagsView)rootView.findViewById(R.id.tag_layout);
-        mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
-
-        mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
-        mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
-        //mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
-        mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
+        mLinkCard = rootView.findViewById(R.id.event_link_card);
+        mLinkCard.setOnClickListener(this);
+        rootView.findViewById(R.id.event_organization_container).setOnClickListener(this);
 
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
-        mOrganizationIconView.setOnClickListener(this);
         mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
 
         mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
@@ -152,10 +161,17 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         mFAB.setOnClickListener(this);
 
-        mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
-        rootView.findViewById(R.id.event_participant_button).setOnClickListener(this);
-
-        mUserFavoritedCard = (UserFavoritedCard)rootView.findViewById(R.id.users);
+        mUserFavoritedCard = (UserFavoritedCard)rootView.findViewById(R.id.user_card);
+        mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserListActivity.class);
+                intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                        .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+                intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+                startActivity(intent);
+            }
+        });
 
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
@@ -182,19 +198,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             //TODO
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
-            mTitleTextView.setText(mEvent.getTitle());
-            if(mEvent.getTitle().length() > 60)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            mPlaceTextView.setText(mEvent.getLocation());
-            if(mEvent.getLocation().length() > 30)
-                mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            mTagsTextView.setText(EventFormatter.formatTags(mEvent));
-            mLinkTextView.setText(mEvent.getDetailInfoUrl());
-            mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
-            //mTimeTextView.setText(eventFormatter.formatTime(mEvent));
-            mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
-            mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
-            mDateTextView.setText(EventFormatter.formatDate(mEvent));
+            //mTitleTextView.setText(mEvent.getTitle());
+            mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
@@ -204,20 +209,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
-            mLink.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent openLink = new Intent(Intent.ACTION_VIEW);
-                    openLink.setData(Uri.parse(mEvent.getDetailInfoUrl()));
-                    Tracker tracker = EvendateApplication.getTracker();
-                    HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                            .setCategory(getString(R.string.stat_category_event))
-                            .setAction(getString(R.string.stat_action_click_on_link))
-                            .setLabel(mUri.getLastPathSegment());
-                    tracker.send(event.build());
-                    startActivity(openLink);
-                }
-            });
+            mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
+            mCollapsingToolbarLayout.setTitle(mEvent.getTitle());
             setFabIcon();
             mUserFavoritedCard.setUsers(mEvent.getUserList());
         }
@@ -227,7 +220,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         if(mAdapter.getEvent() == null)
             return;
-        if(v == mOrganizationIconView || v == mOrganizationTextView){
+        if(v.getId() == R.id.event_organization_container){
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
@@ -273,12 +266,23 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             tracker.send(event.build());
             mAdapter.setEventInfo();
         }
-        if(v.getId() == R.id.event_participant_button){
-            Intent intent = new Intent(getContext(), UserListActivity.class);
-            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
-            startActivity(intent);
+        if(v.getId() == R.id.event_link_card && mAdapter.getEvent() != null){
+            Intent openLink = new Intent(Intent.ACTION_VIEW);
+            openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_event))
+                    .setAction(getString(R.string.stat_action_click_on_link))
+                    .setLabel(mUri.getLastPathSegment());
+            tracker.send(event.build());
+            startActivity(openLink);
+        }
+        if(v.getId() == R.id.event_place_button){
+            Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
+                    "," + mAdapter.getEvent().getLongitude() + "?q="+ mAdapter.mEvent.getLocation());
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
         }
     }
 
