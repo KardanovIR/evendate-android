@@ -1,7 +1,12 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -16,28 +21,37 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.sync.models.OrganizationModel;
+import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.SubscriptionLoader;
+import ru.evendate.android.models.OrganizationModel;
 
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class EvendateDrawer{
+public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationModel>> {
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
-
+    private SubscriptionLoader mSubscriptionLoader;
+    ArrayList<OrganizationModel> mSubscriptions;
+    final int REEL_IDENTIFIER = 1;
+    final int CALENDAR_IDENTIFIER = 2;
+    final int ORGANIZATION_IDENTIFIER = 3;
 
     PrimaryDrawerItem reel_item = new PrimaryDrawerItem().withName(R.string.reel)
-            .withIcon(R.drawable.event_icon);
+            .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem calendar_item = new PrimaryDrawerItem().withName(R.string.calendar)
-            .withIcon(R.drawable.calendar_icon);
+            .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem organizations_item = new PrimaryDrawerItem().withName(R.string.organizations)
-            .withIcon(R.drawable.organization_icon);
+            .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
     //PrimaryDrawerItem item = new PrimaryDrawerItem().withName(R.string.reel);
     //PrimaryDrawerItem item = new PrimaryDrawerItem().withName(R.string.reel);
 
-    protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader) {
+    protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, Context context) {
         mDrawer = drawer;
         mAccountHeader = accountHeader;
+        mSubscriptionLoader = new SubscriptionLoader(context);
+        mSubscriptionLoader.setLoaderListener(this);
+        mSubscriptionLoader.getSubscriptions();
     }
 
     public static EvendateDrawer newInstance(Activity context){
@@ -67,11 +81,14 @@ public class EvendateDrawer{
                     }
                 })
                 .build();
-
         result.withActivity(context)
                 .withAccountHeader(headerResult);
-        EvendateDrawer drawer =  new EvendateDrawer(result.build(), headerResult);
+        EvendateDrawer drawer =  new EvendateDrawer(result.build(), headerResult, context);
         drawer.setupMenu();
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            drawer.getDrawer().getDrawerLayout().setFitsSystemWindows(false);
+        }
         return drawer;
     }
     public void setupMenu(){
@@ -86,10 +103,10 @@ public class EvendateDrawer{
     public AccountHeader getAccountHeader(){
         return mAccountHeader;
     }
-    public void updateSubs(ArrayList<OrganizationModel> subList){
+    private void updateSubs(){
         setupMenu();
-        for (OrganizationModel detail: subList) {
-            mDrawer.addItem(new ProfileDrawerItem().withName(detail.getName()).withIcon(detail.getLogoUrl()));
+        for (OrganizationModel detail: mSubscriptions) {
+            mDrawer.addItem(new SubscriptionDrawerItem().withName(detail.getName()).withIcon(detail.getLogoUrl()));
         }
     }
 
@@ -97,8 +114,39 @@ public class EvendateDrawer{
             implements Drawer.OnDrawerItemClickListener{
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            switch (drawerItem.getIdentifier()){
+                case REEL_IDENTIFIER:{
+
+                }
+            }
             return false;
         }
+    }
+
+    protected Drawer getDrawer(){
+        return mDrawer;
+    }
+    @Override
+    public void onLoaded(ArrayList<OrganizationModel> subList) {
+        mSubscriptions = subList;
+        updateSubs();
+    }
+
+    public void update(){
+        mSubscriptionLoader.getSubscriptions();
+    }
+    @Override
+    public void onError() {
+        //if(isDestroyed())
+        //    return;
+        //mAlertDialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
+        //    @Override
+        //    public void onClick(DialogInterface dialog, int which) {
+        //        mSubscriptionLoader.getSubscriptions();
+        //        mAlertDialog.dismiss();
+        //    }
+        //});
+        //mAlertDialog.show();
     }
     /*
     private class MainNavigationItemSelectedListener

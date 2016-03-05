@@ -93,6 +93,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     EventAdapter mAdapter;
     EventLoader mEventLoader;
 
+    EvendateDrawer mDrawer;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +118,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mProgressBar.setVisibility(View.VISIBLE);
 
         //make status bar transparent
-        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
+        //((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
 
         CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
@@ -153,6 +155,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
         mEventLoader.getData(eventId);
+        mDrawer = EvendateDrawer.newInstance(getActivity());
         return rootView;
     }
 
