@@ -81,8 +81,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     //private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private ScrollView mScrollView;
     private Toolbar mToolbar;
-    private View mEventImageMask;
-    @Bind(R.id.event_organization_mask) View mEventOrganizationMask;
+    @Bind(R.id.event_mask) View mEventMask;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
     ObjectAnimator mTitleAppearAnimation;
@@ -154,7 +153,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         //});
         mScrollView = ((ScrollView)rootView.findViewById(R.id.scroll_view));
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
-        mEventImageMask = rootView.findViewById(R.id.event_image_mask);
         mToolbarTitle.setAlpha(0f);
         mScrollView.post(new Runnable(){
         @Override
@@ -190,8 +188,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     color = Color.argb(
                             (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
                             Color.red(color), Color.green(color), Color.blue(color));
-                    mEventImageMask.setBackgroundColor(color);
-                    mEventOrganizationMask.setBackgroundColor(color);
+                    mEventMask.setBackgroundColor(color);
                 }});
         }});
 

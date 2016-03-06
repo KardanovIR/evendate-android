@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    android:background="@color/window_reel_background">
         <ru.evendate.android.views.UserFavoritedCard
             android:id="@+id/user_card"
             android:layout_width="match_parent"
