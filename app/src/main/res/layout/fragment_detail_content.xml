@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nested_scroll"
+    android:id="@+id/event_tags_content2"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:fitsSystemWindows="true">
-    <LinearLayout
-        android:id="@+id/event_tags_content2"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
         <ru.evendate.android.views.UserFavoritedCard
             android:id="@+id/user_card"
             android:layout_width="match_parent"
@@ -152,4 +144,3 @@
             android:layout_centerHorizontal="true" />
 
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>

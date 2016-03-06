@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -41,6 +42,10 @@ public class UserFavoritedCard extends CardView {
         mLinearLayout = (LinearLayout)rootView.findViewById(R.id.user_container);
         mAllTextView = (TextView)rootView.findViewById(R.id.all_users);
         mTitleTextView = (TextView)rootView.findViewById(R.id.title);
+        if(isInEditMode()){
+            mockup();
+            return;
+        }
         mAllTextView.setText(context.getString(R.string.event_users_all));
     }
 
@@ -77,7 +82,26 @@ public class UserFavoritedCard extends CardView {
             if(i > userLimit - 1)
                 break;
             CircleImageView circleImageView = new CircleImageView(getContext());
+            circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Picasso.with(getContext()).load(mUsers.get(i).getAvatarUrl()).into(circleImageView);
+            circleImageView.setMinimumWidth(mLinearLayout.getHeight());
+            mLinearLayout.addView(circleImageView, lp);
+        }
+    }
+    private void mockup(){
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
+                MarginLayoutParams.MATCH_PARENT);
+        Resources r = getContext().getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                4,
+                r.getDisplayMetrics()
+        );
+        lp.setMargins(0, 0, px, 0);
+        for(int i = 0; i < userLimit; i++){
+            CircleImageView circleImageView = new CircleImageView(getContext());
+            circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            circleImageView.setImageResource(R.drawable.butterfly);
             circleImageView.setMinimumWidth(mLinearLayout.getHeight());
             mLinearLayout.addView(circleImageView, lp);
         }

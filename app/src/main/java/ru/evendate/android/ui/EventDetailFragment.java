@@ -1,9 +1,11 @@
 package ru.evendate.android.ui;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,8 +26,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,12 +37,12 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
-import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -74,7 +78,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     private EventLoader mEventLoader;
 
     private CoordinatorLayout mCoordinatorLayout;
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    //private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private ScrollView mScrollView;
+    private Toolbar mToolbar;
+    private View mEventImageMask;
+    @Bind(R.id.event_organization_mask) View mEventOrganizationMask;
+    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
     private FloatingActionButton mFAB;
 
     private ImageView mEventImageView;
@@ -82,7 +94,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private TextView mOrganizationTextView;
     private TextView mDescriptionTextView;
-    //private TextView mTitleTextView;
+    @Bind(R.id.event_title) TextView mTitleTextView;
     private View mPlaceButtonView;
     private TextView mPlacePlaceTextView;
     private View mLinkCard;
@@ -102,12 +114,16 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
-        mEventDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        mToolbar.setTitle("");
+        mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -115,30 +131,71 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mProgressBar.setVisibility(View.VISIBLE);
 
         //make status bar transparent
-        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
-        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (verticalOffset > 0){
-                    //TODO move to behavior?
-                    //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
-                    //lp.setAnchorId(View.NO_ID);
-                    //mFAB.setLayoutParams(lp);
-                    //lp.gravity = Gravity.BOTTOM | Gravity.END;
-                    //mFAB.setLayoutParams(lp);
-                }
-                else{
-                    //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
-                    //lp.setAnchorId(R.id.event_organization_container);
-                    //mFAB.setLayoutParams(lp);
-                    //lp.gravity = Gravity.NO_GRAVITY;
-                    //mFAB.setLayoutParams(lp);
-                }
-            }
-        });
+        //((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
+        //((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        //    @Override
+        //    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        //        if (verticalOffset > 0){
+        //            //TODO move to behavior?
+        //            //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+        //            //lp.setAnchorId(View.NO_ID);
+        //            //mFAB.setLayoutParams(lp);
+        //            //lp.gravity = Gravity.BOTTOM | Gravity.END;
+        //            //mFAB.setLayoutParams(lp);
+        //        }
+        //        else{
+        //            //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+        //            //lp.setAnchorId(R.id.event_organization_container);
+        //            //mFAB.setLayoutParams(lp);
+        //            //lp.gravity = Gravity.NO_GRAVITY;
+        //            //mFAB.setLayoutParams(lp);
+        //        }
+        //    }
+        //});
+        mScrollView = ((ScrollView)rootView.findViewById(R.id.scroll_view));
+        mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
+        mEventImageMask = rootView.findViewById(R.id.event_image_mask);
+        mToolbarTitle.setAlpha(0f);
+        mScrollView.post(new Runnable(){
+        @Override
+        public void run() {
+            ViewTreeObserver observer = mScrollView.getViewTreeObserver();
+            observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener(){
 
+                @Override
+                public void onScrollChanged() {
+                    if(mScrollView.getScrollY() >= mEventImageView.getHeight()){
+                        mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+                        mAppBarLayout.setTargetElevation(24.0f);
+                        if(mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
+                            mTitleDisappearAnimation.cancel();
+                        if(mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()){
+                            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha", mToolbarTitle.getAlpha(), 1f);
+                            mTitleAppearAnimation.setDuration(200);
+                            mTitleAppearAnimation.start();
+                        }
+                    }
+                    else{
+                        mToolbar.setBackgroundColor(Color.TRANSPARENT);
+                        mAppBarLayout.setTargetElevation(0.0f);
+                        if(mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
+                            mTitleAppearAnimation.cancel();
+                        if(mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
+                            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha", mToolbarTitle.getAlpha(), 0f);
+                            mTitleDisappearAnimation.setDuration(200);
+                            mTitleDisappearAnimation.start();
+                        }
+                    }
+                    int color = getResources().getColor(R.color.primary);
+                    color = Color.argb(
+                            (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
+                            Color.red(color), Color.green(color), Color.blue(color));
+                    mEventImageMask.setBackgroundColor(color);
+                    mEventOrganizationMask.setBackgroundColor(color);
+                }});
+        }});
 
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+        //mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
         mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization_name);
         mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
@@ -198,7 +255,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             //TODO
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
-            //mTitleTextView.setText(mEvent.getTitle());
+            mTitleTextView.setText(mEvent.getTitle());
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
             Picasso.with(getContext())
@@ -210,7 +267,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
-            mCollapsingToolbarLayout.setTitle(mEvent.getTitle());
+            mToolbarTitle.setText(mEvent.getTitle());
             setFabIcon();
             mUserFavoritedCard.setUsers(mEvent.getUserList());
         }

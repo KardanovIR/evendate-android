@@ -28,7 +28,7 @@
 
     <color name="icons_color">#717171</color>
 
-    //Colors for icons
+    <!--Colors for icons -->
     <color name="vk_color">#4d7aa3</color>
     <color name="fb_color">#415fa8</color>
     <color name="gplus_color">#d95333</color>
