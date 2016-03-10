@@ -13,4 +13,5 @@
     <screenName name="ru.evendate.android.OrganizationDetailActivity">Organization Screen</screenName>
     <screenName name="ru.evendate.android.UserListActivity">User List Screen</screenName>
     <screenName name="ru.evendate.android.EvendateIntro">Intro Screen</screenName>
+    <screenName name="ru.evendate.android.ui.UserProfileActivity">User Profile Screen</screenName>
 </resources>
