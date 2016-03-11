@@ -7,11 +7,11 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class EventDetail extends EventModel {
+public class EventDetail extends Event implements EventFeed{
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
-            "organization_type_name,organization_type_name,organization_short_name,organization_logo_large_url," +
+            "organization_type_name,organization_short_name,organization_logo_large_url," +
             "favored_users_count,description,detail_info_url,is_favorite," +
-            "dates,tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
+            "dates,tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
     String location;
     double latitude;
@@ -33,14 +33,14 @@ public class EventDetail extends EventModel {
     boolean isFavorite;
 
     @SerializedName("tags")
-    ArrayList<TagModel> tagList;
+    ArrayList<Tag> tagList;
     @SerializedName("dates")
     ArrayList<Date> dateList;
     @SerializedName("favored")
     ArrayList<UserDetail> userList;
 
 
-    public ArrayList<TagModel> getTagList() {
+    public ArrayList<Tag> getTagList() {
         return tagList;
     }
 

@@ -28,7 +28,7 @@ public class ActionLoader extends AbstractLoader<ArrayList<Action>> {
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<Action>> call =
-                evendateService.getActions(peekToken(), userId, Action.FIELDS_LIST);
+                evendateService.getActions(peekToken(), userId, Action.FIELDS_LIST, Action.ORDER_BY);
 
         call.enqueue(new Callback<EvendateServiceResponseArray<Action>>() {
             @Override

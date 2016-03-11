@@ -11,8 +11,8 @@ import retrofit.http.Query;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
 import ru.evendate.android.models.UserDetail;
 
@@ -112,7 +112,7 @@ public interface EvendateService {
     );
 
     @GET(API_PATH + "/organizations/{id}")
-    Call<EvendateServiceResponseArray<OrganizationDetail>> getOrganization(
+    Call<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("fields") String fields
@@ -122,7 +122,7 @@ public interface EvendateService {
      * Get subscriptions
      */
     @GET(API_PATH + "/organizations/subscriptions")
-    Call<EvendateServiceResponseArray<OrganizationModel>> getSubscriptions(
+    Call<EvendateServiceResponseArray<Organization>> getSubscriptions(
             @Header("Authorization") String authorization
     );
     @POST(API_PATH + "/organizations/{id}/subscriptions")
@@ -156,6 +156,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<Action>> getActions(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy
     );
 }

@@ -50,9 +50,9 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.EventModel;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
@@ -275,12 +275,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     private class LikeEventLoader extends AbstractLoader<Void> {
-        EventModel mEvent;
+        Event mEvent;
         boolean favorite;
-        public LikeEventLoader(Context context, EventModel eventModel, boolean favorite) {
+        public LikeEventLoader(Context context, Event event, boolean favorite) {
             super(context);
             this.favorite = favorite;
-            mEvent = eventModel;
+            mEvent = event;
         }
 
         public void load(){

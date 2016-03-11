@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
@@ -29,7 +30,7 @@ import ru.evendate.android.ui.ReelFragment;
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolder>{
 
     Context mContext;
-    private ArrayList<EventDetail> mEventList;
+    private ArrayList<EventFeed> mEventList;
     int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
@@ -39,12 +40,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         this.type = type;
     }
 
-    public void setEventList(ArrayList<EventDetail> eventList){
+    public void setEventList(ArrayList<EventFeed> eventList){
         mEventList = eventList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<EventDetail> getEventList() {
+    public ArrayList<EventFeed> getEventList() {
         return mEventList;
     }
 
@@ -67,7 +68,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
     public void onBindViewHolder(EventHolder holder, int position) {
         if(mEventList == null)
             return;
-        EventDetail eventEntry = mEventList.get(position);
+        EventFeed eventEntry = mEventList.get(position);
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if(type != ReelFragment.TypeFormat.FAVORITES.type()){
@@ -80,7 +81,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type()){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
-        String date = EventFormatter.formatDate(eventEntry);
+        String date = EventFormatter.formatDate((EventDetail)eventEntry);
         holder.mDateTextView.setText(date);
         Picasso.with(mContext)
                 .load(type == ReelFragment.TypeFormat.FAVORITES.type() ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())

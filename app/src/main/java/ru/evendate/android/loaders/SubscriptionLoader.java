@@ -9,7 +9,7 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
@@ -18,7 +18,7 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  * Created by ds_gordeev on 01.02.2016.
  * download subs from server
  */
-public class SubscriptionLoader extends AbstractLoader<ArrayList<OrganizationModel>> {
+public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
 
     public SubscriptionLoader(Context context) {
@@ -28,11 +28,11 @@ public class SubscriptionLoader extends AbstractLoader<ArrayList<OrganizationMod
         Log.d(LOG_TAG, "getting subs");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<OrganizationModel>> call =
+        Call<EvendateServiceResponseArray<Organization>> call =
                 evendateService.getSubscriptions(peekToken());
-        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationModel>>() {
+        call.enqueue(new Callback<EvendateServiceResponseArray<Organization>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<OrganizationModel>> response,
+            public void onResponse(Response<EvendateServiceResponseArray<Organization>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData());

@@ -48,12 +48,12 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<OrganizationModel>>,
+public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<Organization>>,
         ReelFragment.OnRefreshListener{
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     }
 
     @Override
-    public void onLoaded(ArrayList<OrganizationModel> subList) {
+    public void onLoaded(ArrayList<Organization> subList) {
         if(isDestroyed())
             return;
         mSubscriptionAdapter.setSubscriptions(subList);
@@ -455,12 +455,12 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private class SubscriptionsAdapter{
         private Context mContext;
         private SubMenu mOrganizationMenu;
-        private ArrayList<OrganizationModel> mSubscriptions;
+        private ArrayList<Organization> mSubscriptions;
 
         public SubscriptionsAdapter(Context context) {
             mContext = context;
         }
-        public void setSubscriptions(ArrayList<OrganizationModel> subs){
+        public void setSubscriptions(ArrayList<Organization> subs){
             mSubscriptions = subs;
         }
         public void updateSubscriptionMenu(){
@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                     .addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
             mNavigationView.setItemIconTintList(null);
             if(mSubscriptions != null){
-                for(OrganizationModel sub : mSubscriptions){
+                for(Organization sub : mSubscriptions){
                     MenuItem menuItem = mOrganizationMenu.add(0, sub.getEntryId(), 0,
                             sub.getShortName());
                     menuItem.setVisible(false);

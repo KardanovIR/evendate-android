@@ -31,9 +31,10 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.loaders.SubOrganizationLoader;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFeed;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.UserModel;
+import ru.evendate.android.models.User;
 
 /**
  * Contain details of organization
@@ -122,7 +123,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             if(mAdapter.getOrganizationModel() == null)
                 return;
             SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+                    (Organization)mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
             subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
                 @Override
                 public void onLoaded(Void subList) {
@@ -167,7 +168,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
         int favoriteCount = 0;
-        for(EventDetail event : mReelFragment.getEventList()){
+        for(EventFeed event : mReelFragment.getEventList()){
             favoriteCount += event.isFavorite() ? 1 : 0;
         }
         String favoriteEvents = favoriteCount + " " + getResources().getString(R.string.favorite_events);
@@ -188,18 +189,18 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         private void setOrganizationInfo(){
             mOrganizationNameTextView.setText(mOrganizationModel.getName());
             mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
-            HashSet<UserModel> friendSet = new HashSet<>();
-            for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
+            HashSet<User> friendSet = new HashSet<>();
+            for(User user : mOrganizationModel.getSubscribedUsersList()){
                 if(user.is_friend())
                     friendSet.add(user);
             }
             mFriendCountView.setText(String.valueOf(friendSet.size()));
             Picasso.with(getContext())
-                    .load(mOrganizationModel.getBackgroundMediumUrl())
+                    .load(mOrganizationModel.getBackgroundUrl())
                     .error(R.drawable.default_background)
                     .into(mOrganizationImageView);
             Picasso.with(getContext())
-                    .load(mOrganizationModel.getLogoSmallUrl())
+                    .load(mOrganizationModel.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
             setFabIcon();
@@ -207,8 +208,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
 
-    public void onLoaded(OrganizationDetail subList){
-        mAdapter.setOrganizationModel(subList);
+    public void onLoaded(OrganizationDetail organization){
+        mAdapter.setOrganizationModel(organization);
         if(!isAdded())
             return;
         mAdapter.setOrganizationInfo();

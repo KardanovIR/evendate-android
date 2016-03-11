@@ -7,7 +7,7 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
@@ -18,13 +18,13 @@ import ru.evendate.android.sync.EvendateServiceResponse;
  */
 public class SubOrganizationLoader extends AbstractLoader<Void> {
     private final String LOG_TAG = SubOrganizationLoader.class.getSimpleName();
-    OrganizationModel mOrganization;
+    Organization mOrganization;
     boolean subscribe;
-    public SubOrganizationLoader(Context context, OrganizationModel organizationModel,
+    public SubOrganizationLoader(Context context, Organization organization,
                                  boolean subscribe) {
         super(context);
         this.subscribe = subscribe;
-        mOrganization = organizationModel;
+        mOrganization = organization;
     }
 
     public void execute(){

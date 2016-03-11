@@ -8,6 +8,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
@@ -17,7 +18,6 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  */
 public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
-    private LoaderListener<OrganizationDetail> mListener;
 
     public OrganizationLoader(Context context) {
         super(context);
@@ -31,12 +31,12 @@ public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
         Log.d(LOG_TAG, "getting organization");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<OrganizationDetail>> call =
+        Call<EvendateServiceResponseArray<OrganizationFull>> call =
                 evendateService.getOrganization(peekToken(), organizationId, OrganizationDetail.FIELDS_LIST);
 
-        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationDetail>>() {
+        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationFull>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<OrganizationDetail>> response,
+            public void onResponse(Response<EvendateServiceResponseArray<OrganizationFull>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     mListener.onLoaded(response.body().getData().get(0));
