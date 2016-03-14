@@ -57,8 +57,8 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
             call = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST);
         }else{
             if(mDate != null){
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.getDefault());
-                call = evendateService.getEvents(peekToken(), dateFormat.format(mDate), true, EventFeed.FIELDS_LIST);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                call = evendateService.getFeed(peekToken(), dateFormat.format(mDate), true, EventFeed.FIELDS_LIST);
             }
             else{
                 call = evendateService.getFeed(peekToken(), true, EventFeed.FIELDS_LIST);
@@ -71,7 +71,6 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
             public void onResponse(Response<EvendateServiceResponseArray<EventDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-
                     onLoaded(new ArrayList<EventFeed>(response.body().getData()));
                 } else {
                     Log.e(LOG_TAG, "Error with response with events");

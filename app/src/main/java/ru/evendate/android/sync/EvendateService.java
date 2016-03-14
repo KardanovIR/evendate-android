@@ -33,6 +33,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<DateCalendar>> getCalendarDates(
             @Header("Authorization") String authorization,
             @Query("unique") boolean unique,
+            //@Query("my") boolean my,
             @Query("since") String since,
             @Query("fields") String fields
     );
@@ -89,10 +90,10 @@ public interface EvendateService {
     );
 
     /**
-     * Get events by date
+     * Get feed events by date
      */
-    @GET(API_PATH + "/events")
-    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+    @GET(API_PATH + "/events/my")
+    Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("date") String date,
             @Query("future") boolean future,

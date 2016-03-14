@@ -31,7 +31,7 @@ public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> 
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Calendar c = Calendar.getInstance();
         Call<EvendateServiceResponseArray<DateCalendar>> call =
                 evendateService.getCalendarDates(peekToken(), true, dateFormat.format(c.getTime()),
@@ -54,7 +54,7 @@ public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> 
 
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
+                Log.e(LOG_TAG, t.getMessage());
                 onError();
             }
         });

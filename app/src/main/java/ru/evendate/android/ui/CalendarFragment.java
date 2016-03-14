@@ -141,6 +141,8 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
 
             @Override
             public void onError() {
+                if(!isAdded())
+                    return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                         new DialogInterface.OnClickListener() {
                     @Override
