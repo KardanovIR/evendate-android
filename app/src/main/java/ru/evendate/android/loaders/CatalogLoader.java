@@ -25,29 +25,31 @@ public class CatalogLoader extends AbstractLoader<ArrayList<OrganizationType>> {
     }
     public void getData(){
         Log.d(LOG_TAG, "getting catalog");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<OrganizationType>> call =
                 evendateService.getCatalog(peekToken(), OrganizationType.FIELDS_LIST);
+        mCall = call;
 
         call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationType>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<OrganizationType>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    onLoaded(response.body().getData());
                 } else {
                     if(response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with catalog");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
-                mListener.onError();
+                onError();
             }
         });
     }

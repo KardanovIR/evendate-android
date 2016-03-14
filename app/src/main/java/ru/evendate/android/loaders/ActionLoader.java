@@ -25,29 +25,31 @@ public class ActionLoader extends AbstractLoader<ArrayList<Action>> {
     }
     public void getData(int userId){
         Log.d(LOG_TAG, "getting actions");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<Action>> call =
                 evendateService.getActions(peekToken(), userId, Action.FIELDS_LIST, Action.ORDER_BY);
+        mCall = call;
 
         call.enqueue(new Callback<EvendateServiceResponseArray<Action>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<Action>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    onLoaded(response.body().getData());
                 } else {
                     if(response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with actions");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
-                mListener.onError();
+                onError();
             }
         });
     }

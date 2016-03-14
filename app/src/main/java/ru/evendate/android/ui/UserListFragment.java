@@ -74,12 +74,10 @@ public class UserListFragment extends Fragment{
         mAdapter = new UsersAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mOrganizationLoader = new OrganizationLoader(getActivity());
-        mEventLoader = new EventLoader(getActivity());
         if (type == TypeFormat.event.nativeInt)
-            loadEvent();
+            mEventLoader = new EventLoader(getActivity());
         else
-            loadOrganization();
+            mOrganizationLoader = new OrganizationLoader(getActivity());
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -154,4 +152,21 @@ public class UserListFragment extends Fragment{
         mEventLoader.getData(eventId);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (type == TypeFormat.event.nativeInt)
+            loadEvent();
+        else
+            loadOrganization();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (type == TypeFormat.event.nativeInt)
+            mEventLoader.cancel();
+        else
+            mOrganizationLoader.cancel();
+    }
 }

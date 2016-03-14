@@ -102,7 +102,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         mAdapter = new OrganizationAdapter();
         mOrganizationLoader = new OrganizationLoader(getActivity());
         mOrganizationLoader.setLoaderListener(this);
-        mOrganizationLoader.getOrganization(organizationId);
 
         mFAB.setOnClickListener(this);
         return rootView;
@@ -233,5 +232,17 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     }
                 });
         dialog.show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mOrganizationLoader.getOrganization(organizationId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mOrganizationLoader.cancel();
     }
 }

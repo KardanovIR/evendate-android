@@ -23,35 +23,33 @@ public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
         super(context);
     }
 
-    public void setLoaderListener(LoaderListener<OrganizationDetail> listener) {
-        this.mListener = listener;
-    }
-
     public void getOrganization(int organizationId){
         Log.d(LOG_TAG, "getting organization");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<OrganizationFull>> call =
                 evendateService.getOrganization(peekToken(), organizationId, OrganizationDetail.FIELDS_LIST);
+        mCall = call;
 
         call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationFull>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<OrganizationFull>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData().get(0));
+                    onLoaded(response.body().getData().get(0));
                 } else {
                     if(response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with events");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
-                mListener.onError();
+                onError();
             }
         });
     }

@@ -26,22 +26,25 @@ public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> 
     }
     public void getSubscriptions(){
         Log.d(LOG_TAG, "getting subs");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<Organization>> call =
                 evendateService.getSubscriptions(peekToken());
+        mCall = call;
+
         call.enqueue(new Callback<EvendateServiceResponseArray<Organization>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<Organization>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    onLoaded(response.body().getData());
                 } else {
                     if(response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with subs");
-                    mListener.onError();
+                    onError();
                 }
             }
 
@@ -49,7 +52,7 @@ public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> 
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
-                mListener.onError();
+                onError();
             }
         });
     }

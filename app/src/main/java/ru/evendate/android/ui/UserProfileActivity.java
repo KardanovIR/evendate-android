@@ -67,7 +67,6 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mLoader = new UserLoader(this);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
-        mLoader.getData(userId);
         mViewPager = (ViewPager)findViewById(R.id.pager);
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
 
@@ -148,6 +147,17 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mLoader.getData(userId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mLoader.cancel();
     }
 }

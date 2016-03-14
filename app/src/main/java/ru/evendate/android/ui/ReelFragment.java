@@ -178,13 +178,6 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         mEventLoader.setLoaderListener(this);
     }
     @Override
-    public void onResume() {
-        super.onResume();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mEventLoader.getData();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(TYPE, type);
@@ -229,5 +222,19 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     public void onError(){
         mSwipeRefreshLayout.setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventLoader.getData();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mSwipeRefreshLayout.setRefreshing(false);
+        mEventLoader.cancel();
     }
 }

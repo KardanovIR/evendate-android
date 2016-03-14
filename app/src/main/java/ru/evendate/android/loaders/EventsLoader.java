@@ -47,6 +47,7 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
 
     public void getData(){
         Log.d(LOG_TAG, "getting events");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<EventDetail>> call;
@@ -63,23 +64,25 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
                 call = evendateService.getFeed(peekToken(), true, EventFeed.FIELDS_LIST);
             }
         }
+        mCall = call;
+
         call.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<EventDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
 
-                    mListener.onLoaded(new ArrayList<EventFeed>(response.body().getData()));
+                    onLoaded(new ArrayList<EventFeed>(response.body().getData()));
                 } else {
                     Log.e(LOG_TAG, "Error with response with events");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.e("Error", t.getMessage());
-                mListener.onError();
+                onError();
             }
         });
     }
