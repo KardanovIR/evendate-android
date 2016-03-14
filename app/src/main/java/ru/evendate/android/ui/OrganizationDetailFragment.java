@@ -62,6 +62,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     private TextView mOrganizationNameTextView;
 
     private FloatingActionButton mFAB;
+    EvendateDrawer mDrawer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,6 +99,9 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         mOrganizationLoader.getOrganization(organizationId);
 
         mFAB.setOnClickListener(this);
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         return rootView;
     }
 

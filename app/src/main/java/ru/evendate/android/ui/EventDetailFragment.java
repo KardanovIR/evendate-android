@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -156,6 +155,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mEventLoader.setLoaderListener(this);
         mEventLoader.getData(eventId);
         mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         return rootView;
     }
 
