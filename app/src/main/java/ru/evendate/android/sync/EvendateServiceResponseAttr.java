@@ -1,11 +1,11 @@
 package ru.evendate.android.sync;
 
-import ru.evendate.android.sync.models.ResponseData;
+import ru.evendate.android.models.DataModel;
 
 /**
  * Created by Дмитрий on 02.11.2015.
  */
-public class EvendateServiceResponseAttr<DataType extends ResponseData> extends EvendateServiceResponse {
+public class EvendateServiceResponseAttr<DataType extends DataModel> extends EvendateServiceResponse {
     private DataType data;
 
     public DataType getData() {

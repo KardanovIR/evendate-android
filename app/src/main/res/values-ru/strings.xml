@@ -47,6 +47,21 @@
     <string name="intro_interests">Узнай, что интересно твоим друзьям</string>
     <string name="intro_miss">Не пропусти важное событие</string>
     <string name="intro_share">Делись событиями с друзьями</string>
-    <string name="intro_sync">Синхронизируйся со всем устройствами</string>
+    <string name="intro_sync">Синхронизируйся со всеми устройствами</string>
     <string name="intro_manage">Управляй уведомлениями</string>
+    <string name="loading_error_description">Возникла ошибка при загрузке данных. Проверьте подключение к сети</string>
+    <string name="download_error">Произошла ошибка</string>
+    <string name="loading_error">Ошибка</string>
+    <string name="intro_skip">Пропустить</string>
+    <string name="dialog_cancel">Отмена</string>
+    <string name="dialog_check_organizations">Выберите организации</string>
+    <string name="dialog_ok">ОК</string>
+    <string name="action_share">Поделиться</string>
+    <string name="tab_actions">Активность</string>
+    <string name="tab_subscriptions">Подписки</string>
+    <string name="action_dislike">Удалил из ибранного события</string>
+    <string name="action_like">Добавил в избранное события</string>
+    <string name="action_subscribe">Подписался на организации</string>
+    <string name="action_unsubscribe">Отписался от организаций</string>
+    <string name="loading_retry">Повторить</string>
 </resources>

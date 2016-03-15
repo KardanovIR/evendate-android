@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -37,6 +38,12 @@ public class WebAuthFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mWebView = (WebView)rootView.findViewById(R.id.auth_web_view);
+        if (savedInstanceState != null)
+            mWebView.restoreState(savedInstanceState);
+        else{
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+        }
         mWebView.setWebViewClient(new MyWebViewClient());
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -46,6 +53,12 @@ public class WebAuthFragment extends Fragment {
             mUrl = bundle.getString(AuthActivity.URL_KEY);
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mWebView.saveState(outState);
     }
 
     @Override

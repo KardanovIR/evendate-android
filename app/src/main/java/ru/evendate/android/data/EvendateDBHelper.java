@@ -146,13 +146,13 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
                 ") ON CONFLICT REPLACE " +
                 " );";
 
-        sqLiteDatabase.execSQL(SQL_CREATE_ORGANIZATIONS_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_DATES_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_TAGS_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TAGS_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_USERS_EVENT_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_ORGANIZATIONS_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_DATES_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_TAGS_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TAGS_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
+        //sqLiteDatabase.execSQL(SQL_CREATE_USERS_EVENT_TABLE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {

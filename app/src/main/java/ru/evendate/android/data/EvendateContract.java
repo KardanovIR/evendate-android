@@ -92,6 +92,10 @@ public class EvendateContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/organization";
 
+        public static Uri getContentUri(int organizationId){
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build();
+        }
+
         public static final String TABLE_NAME = "organizations";
 
         public static final String COLUMN_ORGANIZATION_ID = "organization_id";

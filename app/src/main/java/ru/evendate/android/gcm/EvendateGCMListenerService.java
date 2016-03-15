@@ -16,9 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
-import ru.evendate.android.EventDetailActivity;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.ui.EventDetailActivity;
 
 /**
  * Created by Dmitry on 29.11.2015.
@@ -76,8 +76,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
         private void sendNotification(String message, int eventId, String logoUrl) {
             Intent intent = new Intent(this, EventDetailActivity.class);
             intent.setData(EvendateContract.EventEntry.getContentUri(eventId));
-            //TODO local?
-            intent.putExtra(EventDetailActivity.IS_LOCAL, false);
+            intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                     PendingIntent.FLAG_ONE_SHOT);
