@@ -11,10 +11,10 @@ import ru.evendate.android.R;
  */
 public class ActionType{
     private long type;
-    private UserModel mUser;
+    private User mUser;
     private ArrayList<ActionTarget> mTargetList;
 
-    public static ActionType newInstance(long type, UserModel user){
+    public static ActionType newInstance(long type, User user){
         ActionType actionType = new ActionType();
         actionType.type = type;
         actionType.mUser = user;
@@ -38,7 +38,7 @@ public class ActionType{
         return null;
     }
 
-    public UserModel getUser() {
+    public User getUser() {
         return mUser;
     }
 

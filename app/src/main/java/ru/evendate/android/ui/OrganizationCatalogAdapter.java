@@ -11,16 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationSubscription;
 
 /**
  * Created by Dmitry on 01.12.2015.
@@ -29,14 +26,14 @@ import ru.evendate.android.models.OrganizationDetail;
 public class OrganizationCatalogAdapter extends RecyclerView.Adapter<OrganizationCatalogAdapter.OrganizationHolder>{
 
     Context mContext;
-    ArrayList<OrganizationDetail> mOrganizationList;
+    ArrayList<OrganizationSubscription> mOrganizationList;
     private Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
     public OrganizationCatalogAdapter(Context context){
         this.mContext = context;
     }
 
-    public void setOrganizationList(ArrayList<OrganizationDetail> organizationList){
+    public void setOrganizationList(ArrayList<OrganizationSubscription> organizationList){
         mOrganizationList = organizationList;
         notifyDataSetChanged();
     }
@@ -50,14 +47,14 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
     @Override
     public void onBindViewHolder(OrganizationHolder holder, int position) {
         if (mOrganizationList != null) {
-            OrganizationDetail organizationEntry = mOrganizationList.get(position);
+            OrganizationSubscription organizationEntry = mOrganizationList.get(position);
             holder.id = organizationEntry.getEntryId();
             holder.mTitle.setText(organizationEntry.getShortName());
             String subs = organizationEntry.getSubscribedCount() + " " +
                     mContext.getResources().getString(R.string.organization_subscribers);
             holder.mSubCounts.setText(subs);
             Picasso.with(mContext)
-                    .load(organizationEntry.getLogoUrl())
+                    .load(organizationEntry.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mImageView);
         }
@@ -95,14 +92,6 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
             if(v.equals(mItem)){
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-
-                Tracker tracker = EvendateApplication.getTracker();
-                HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                        .setCategory(mContext.getString(R.string.stat_category_organization))
-                        .setAction(mContext.getString(R.string.stat_action_view))
-                        .setLabel((Long.toString(id)));
-                tracker.send(event.build());
-
                 mContext.startActivity(intent);
             }
         }

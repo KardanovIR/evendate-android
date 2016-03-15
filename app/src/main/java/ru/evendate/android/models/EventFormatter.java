@@ -110,7 +110,7 @@ public class EventFormatter {
     }
     public static String formatTags(EventDetail event){
         String tags = null;
-        for(TagModel tag : event.getTagList()){
+        for(Tag tag : event.getTagList()){
             if(tags == null)
                 tags = tag.getName();
             else

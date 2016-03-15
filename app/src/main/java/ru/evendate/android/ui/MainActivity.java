@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -21,10 +23,17 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.MeLoader;
+import ru.evendate.android.loaders.SubscriptionLoader;
+import ru.evendate.android.models.Organization;
+import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
@@ -34,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     private Fragment mFragment;
     private Toolbar mToolbar;
+    private AppBarLayout mAppBar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
@@ -63,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_menu_white);
         mToolbar = toolbar;
+        mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
 
         //mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         //mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));

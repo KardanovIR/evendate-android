@@ -1,6 +1,5 @@
 package ru.evendate.android.ui;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,7 +16,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,22 +37,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
+import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.EventModel;
 import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
 
 /**
  * contain details of events
@@ -226,14 +217,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
-
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getActivity().getString(R.string.stat_category_organization))
-                    .setAction(getActivity().getString(R.string.stat_action_view))
-                    .setLabel((Long.toString(mAdapter.getEvent().getOrganizationId())));
-            tracker.send(event.build());
-
             startActivity(intent);
         }
         if(v == mFAB) {
@@ -286,46 +269,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private class LikeEventLoader extends AbstractLoader<Void> {
-        EventModel mEvent;
-        boolean favorite;
-        public LikeEventLoader(Context context, EventModel eventModel, boolean favorite) {
-            super(context);
-            this.favorite = favorite;
-            mEvent = eventModel;
-        }
-
-        public void load(){
-            Log.d(LOG_TAG, "performing like");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            Call<EvendateServiceResponse> call;
-            if(favorite){
-                call = evendateService.eventDeleteFavorite(mEvent.getEntryId(), peekToken());
-            }
-            else {
-                call = evendateService.eventPostFavorite(mEvent.getEntryId(), peekToken());
-            }
-
-            call.enqueue(new Callback<EvendateServiceResponse>() {
-                @Override
-                public void onResponse(Response<EvendateServiceResponse> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        Log.d(LOG_TAG, "performed like");
-                    } else {
-                        Log.e(LOG_TAG, "Error with response with like");
-                        mListener.onError();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.e("Error", t.getMessage());
-                    mListener.onError();
-                }
-            });
-        }
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -410,5 +353,16 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             }
         });
         dialog.show();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        mEventLoader.getData(eventId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mEventLoader.cancel();
     }
 }

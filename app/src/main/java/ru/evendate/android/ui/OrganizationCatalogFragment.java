@@ -76,7 +76,6 @@ public class OrganizationCatalogFragment extends Fragment
         mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
         mFAB.setOnClickListener(this);
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
-        mLoader.getData();
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
@@ -109,5 +108,17 @@ public class OrganizationCatalogFragment extends Fragment
                 newItemSelected.add(mCategoryList.get(i));
         }
         mAdapter.setCategoryList(newItemSelected);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mLoader.getData();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mLoader.cancel();
     }
 }
