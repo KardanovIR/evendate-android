@@ -33,7 +33,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<DateCalendar>> getCalendarDates(
             @Header("Authorization") String authorization,
             @Query("unique") boolean unique,
-            //@Query("my") boolean my,
+            @Query("my") boolean my,
             @Query("since") String since,
             @Query("fields") String fields
     );

@@ -73,7 +73,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private TextView mMonthTextView;
     private TextView mDayTextView;
-    //private TextView mTimeTextView;
+    private TextView mTimeTextView;
     private TextView mParticipantCountTextView;
 
     private FrameLayout mLink;
@@ -123,7 +123,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
         mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
-        //mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
+        mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
         mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
 
         mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
@@ -173,7 +173,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mTagsTextView.setText(EventFormatter.formatTags(mEvent));
             mLinkTextView.setText(mEvent.getDetailInfoUrl());
             mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
-            //mTimeTextView.setText(eventFormatter.formatTime(mEvent));
+            mTimeTextView.setText(EventFormatter.formatTime(mEvent.getFirstDate()));
             mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
             mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
             mDateTextView.setText(EventFormatter.formatDate(mEvent));

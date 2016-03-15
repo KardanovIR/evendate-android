@@ -61,11 +61,4 @@ public class MainPagerFragment extends Fragment {
         });
 
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Build.VERSION.SDK_INT >= 21)
-            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
-    }
 }
