@@ -187,6 +187,9 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     public ArrayList<EventFeed> getEventList() {
         return mAdapter.getEventList();
     }
+    public EventsAdapter getAdapter(){
+        return mAdapter;
+    }
 
     /**
      * notify about finishing a download

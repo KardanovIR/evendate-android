@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -106,15 +107,15 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
             @Override
             public void onPanelCollapsed(View panel) {
                 mToggleButton.setChecked(false);
-                //if (Build.VERSION.SDK_INT >= 21)
-                    //Toolbar.setElevation(4.0f);
+                if (Build.VERSION.SDK_INT >= 21)
+                    getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
                 mToggleButton.setChecked(true);
-                //if (Build.VERSION.SDK_INT >= 21)
-                    //Toolbar.setElevation(0.0f);
+                if (Build.VERSION.SDK_INT >= 21)
+                    getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
             }
 
             @Override
@@ -188,7 +189,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
             return;
         Log.i(LOG_TAG, "data loaded");
         //TODO нужно как-то изящнее это сделать
-        if(mReelFragment.getEventList() == null)
+        if(mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
             return;
         //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
@@ -347,12 +348,16 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
     @Override
     public void onStart() {
         super.onStart();
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
         mLoader.getData();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
         mLoader.cancel();
     }
 }

@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -36,6 +37,8 @@ public class MainPagerFragment extends Fragment {
         mTabLayout.setupWithViewPager(mViewPager);
         setupStat();
 
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
         return rootView;
     }
 
@@ -57,5 +60,12 @@ public class MainPagerFragment extends Fragment {
             public void onPageScrollStateChanged(int state) {}
         });
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
     }
 }

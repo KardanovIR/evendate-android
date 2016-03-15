@@ -108,11 +108,15 @@ public class UserListFragment extends Fragment{
         mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
             @Override
             public void onLoaded(OrganizationDetail subList) {
+                if(!isAdded())
+                    return;
                 mAdapter.setList(subList.getSubscribedUsersList());
                 mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
+                if(!isAdded())
+                    return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -132,11 +136,15 @@ public class UserListFragment extends Fragment{
         mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
             @Override
             public void onLoaded(EventDetail subList) {
+                if(!isAdded())
+                    return;
                 mAdapter.setList(subList.getUserList());
                 mProgressBar.setVisibility(View.GONE);
             }
             @Override
             public void onError() {
+                if(!isAdded())
+                    return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

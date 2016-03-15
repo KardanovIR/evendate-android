@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     private Fragment mFragment;
     private Toolbar mToolbar;
+    private AppBarLayout mAppBar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
             }
         });
         mToolbar = toolbar;
+        mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
