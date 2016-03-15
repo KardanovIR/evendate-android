@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import ru.evendate.android.R;
 import ru.evendate.android.models.Date;
+import ru.evendate.android.models.EventFormatter;
 
 /**
  * Created by Dmitry on 04.03.2016.
@@ -44,5 +45,13 @@ public class DatetimeView extends LinearLayout {
 
     public void setDate(Date date){
         mDate = date;
+        mTimeView.setText(EventFormatter.formatTime(mDate));
+        mDateView.setText(EventFormatter.formatDate(mDate));
+    }
+    public void setDate(long date){
+        if(!isInEditMode())
+            throw new IllegalArgumentException("Only for using in edit mode");
+        mTimeView.setText(EventFormatter.formatTime(date));
+        mDateView.setText(EventFormatter.formatDate(date));
     }
 }

@@ -132,4 +132,17 @@ public class EventFormatter {
         DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
         return dayFormat.format(new java.util.Date(date * 1000));
     }
+    public static String formatTime(Date date){
+        return formatTime(date.getEventDate());
+    }
+    public static String formatTime(long date){
+        DateFormat dayFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        return dayFormat.format(new java.util.Date(date * 1000));
+    }
+    public static String formatDate(Date date){
+        return formatDay(date.getEventDate()) + " " + formatMonth(date.getEventDate());
+    }
+    public static String formatDate(long date){
+        return formatDay(date) + " " + formatMonth(date);
+    }
 }
