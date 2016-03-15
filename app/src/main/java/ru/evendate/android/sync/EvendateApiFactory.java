@@ -17,7 +17,7 @@ public class EvendateApiFactory {
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
-    public static final String HOST_NAME = "http://test.evendate.ru";
+    public static final String HOST_NAME = "http://evendate.ru";
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
