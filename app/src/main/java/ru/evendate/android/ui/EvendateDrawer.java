@@ -21,17 +21,17 @@ import ru.evendate.android.R;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationModel>> {
+public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private SubscriptionLoader mSubscriptionLoader;
-    ArrayList<OrganizationModel> mSubscriptions;
+    ArrayList<Organization> mSubscriptions;
     private MeLoader mMeLoader;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
@@ -53,7 +53,6 @@ public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationMode
         mAccountHeader = accountHeader;
         mSubscriptionLoader = new SubscriptionLoader(context);
         mSubscriptionLoader.setLoaderListener(this);
-        mSubscriptionLoader.getSubscriptions();
         mMeLoader = new MeLoader(context);
         mMeLoader.setLoaderListener(new LoaderListener<UserDetail>() {
             @Override
@@ -70,7 +69,6 @@ public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationMode
 
             }
         });
-        mMeLoader.getData();
     }
 
     public static EvendateDrawer newInstance(Activity context){
@@ -119,7 +117,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationMode
     }
     private void updateSubs(){
         setupMenu();
-        for (OrganizationModel detail: mSubscriptions) {
+        for (Organization detail: mSubscriptions) {
             mDrawer.addItem(new SubscriptionDrawerItem().withName(detail.getName())
                     .withIcon(detail.getLogoUrl()).withTag(detail).withSelectable(false));
         }
@@ -129,7 +127,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationMode
         return mDrawer;
     }
     @Override
-    public void onLoaded(ArrayList<OrganizationModel> subList) {
+    public void onLoaded(ArrayList<Organization> subList) {
         mSubscriptions = subList;
         updateSubs();
     }
@@ -149,5 +147,13 @@ public class EvendateDrawer implements LoaderListener<ArrayList<OrganizationMode
         //    }
         //});
         //mAlertDialog.show();
+    }
+    public void cancel(){
+        mMeLoader.cancel();
+        mSubscriptionLoader.cancel();
+    }
+    public void start(){
+        mSubscriptionLoader.getSubscriptions();
+        mMeLoader.getData();
     }
 }

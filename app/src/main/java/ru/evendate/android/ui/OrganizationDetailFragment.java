@@ -244,11 +244,13 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     public void onStart() {
         super.onStart();
         mOrganizationLoader.getOrganization(organizationId);
+        mDrawer.start();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mOrganizationLoader.cancel();
+        mDrawer.cancel();
     }
 }

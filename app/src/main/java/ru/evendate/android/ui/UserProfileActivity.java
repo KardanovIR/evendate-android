@@ -157,11 +157,13 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     public void onStart() {
         super.onStart();
         mLoader.getData(userId);
+        mDrawer.start();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mLoader.cancel();
+        mDrawer.cancel();
     }
 }

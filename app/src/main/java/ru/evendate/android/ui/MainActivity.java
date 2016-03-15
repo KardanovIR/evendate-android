@@ -8,10 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,17 +21,10 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.MeLoader;
-import ru.evendate.android.loaders.SubscriptionLoader;
 import ru.evendate.android.models.Organization;
-import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
@@ -49,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private final int INTRO_REQUEST = 1;
     private boolean mDestroyed = false;
 
-    AlertDialog mAlertDialog;
     SharedPreferences mSharedPreferences = null;
     final String APP_PREF = "evendate_pref";
     final String FIRST_RUN = "first_run";
@@ -169,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     @Override
     public void onRefresh() {
+        mDrawer.update();
     }
 
     /**
@@ -235,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     break;
                 default:{
                         //open organization from subs
-                        int id = ((OrganizationModel)drawerItem.getTag()).getEntryId();
+                        int id = ((Organization)drawerItem.getTag()).getEntryId();
                         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                                 .buildUpon().appendPath(Long.toString(id)).build());
@@ -245,5 +236,17 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             mDrawer.getDrawer().closeDrawer();
             return true;
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mDrawer.cancel();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.start();
     }
 }

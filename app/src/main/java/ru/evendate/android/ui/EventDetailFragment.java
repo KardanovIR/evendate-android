@@ -358,11 +358,13 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         mEventLoader.getData(eventId);
+        mDrawer.start();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mEventLoader.cancel();
+        mDrawer.cancel();
     }
 }

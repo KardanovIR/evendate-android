@@ -12,7 +12,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 
 /**
  * Created by ds_gordeev on 14.03.2016.
@@ -66,7 +66,7 @@ public class NavigationItemSelectedListener
                 break;
             default:{
                 //open organization from subs
-                int id = ((OrganizationModel)drawerItem.getTag()).getEntryId();
+                int id = ((Organization)drawerItem.getTag()).getEntryId();
                 Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                 detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                         .buildUpon().appendPath(Long.toString(id)).build());
