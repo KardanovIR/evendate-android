@@ -152,6 +152,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             subOrganizationLoader.execute();
         }
         if(v.getId() == R.id.organization_subscribed_button){
+            if(mAdapter.getOrganizationModel() == null)
+                return;
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getOrganizationModel().getEntryId())).build());
