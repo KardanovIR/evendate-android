@@ -27,7 +27,7 @@ public class StatusBarColorChanger implements AppBarLayout.OnOffsetChangedListen
             if(Math.abs(verticalOffset) + actionBarHeight > appBarLayout.getTotalScrollRange()){
                 mContext.getWindow().setStatusBarColor(Color.TRANSPARENT);
             }else{
-                mContext.getWindow().setStatusBarColor(mContext.getColor(R.color.black_translucent));
+                mContext.getWindow().setStatusBarColor(mContext.getResources().getColor(R.color.black_translucent));
             }
         }
     }

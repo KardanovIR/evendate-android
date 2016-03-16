@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 11.09.2015.
  */
-public class UserModel extends DataModel {
+public class User extends DataModel {
     public static final String FIELDS_LIST = "is_friend,type,link";
     
     @SerializedName("id")

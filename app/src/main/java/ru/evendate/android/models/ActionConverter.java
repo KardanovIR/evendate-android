@@ -11,7 +11,7 @@ import ru.evendate.android.adapters.AggregateDate;
  */
 public class ActionConverter {
     /**
-     * sort by date abd convert actions
+     * sort by date actions
      */
     public static ArrayList<AggregateDate<ActionType>> convertActions(ArrayList<Action> actionList){
         HashMap<Long, ArrayList<Action>> map = new HashMap<>();

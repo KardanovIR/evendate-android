@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 11.09.2015.
  */
-public class TagModel extends DataModel {
+public class Tag extends DataModel {
     @SerializedName("id")
     int tagId;
     String name;

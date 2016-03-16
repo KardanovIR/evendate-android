@@ -28,32 +28,34 @@ public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> 
         super(context);
     }public void getData(){
         Log.d(LOG_TAG, "getting calendar dates");
+        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Calendar c = Calendar.getInstance();
         Call<EvendateServiceResponseArray<DateCalendar>> call =
-                evendateService.getCalendarDates(peekToken(), true, dateFormat.format(c.getTime()),
+                evendateService.getCalendarDates(peekToken(), true, true, dateFormat.format(c.getTime()),
                         DateCalendar.FIELDS_LIST);
+        mCall = call;
 
         call.enqueue(new Callback<EvendateServiceResponseArray<DateCalendar>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<DateCalendar>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    onLoaded(response.body().getData());
                 } else {
                     if(response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with calendar dates");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
-                mListener.onError();
+                Log.e(LOG_TAG, t.getMessage());
+                onError();
             }
         });
     }

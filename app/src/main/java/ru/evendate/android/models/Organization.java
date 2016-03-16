@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 11.09.2015.
  */
-public class OrganizationModel extends DataModel {
+public class Organization extends DataModel {
 
     @SerializedName("id")
     int organizationId;

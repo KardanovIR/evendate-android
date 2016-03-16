@@ -4,49 +4,38 @@ package ru.evendate.android.ui;
  * Created by Dmitry on 23.09.2015.
  */
 
-import android.accounts.AccountManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.EventsAdapter;
-import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.loaders.EventsLoader;
+import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.models.EventFeed;
 
 /**
  * fragment containing a reel
  * used in calendar, main pager, detail organization activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment {
+public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>>{
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
 
     private EventsAdapter mAdapter;
-    EventLoader mEventLoader = new EventLoader();
+    EventsLoader mEventLoader;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
@@ -134,7 +123,7 @@ public class ReelFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mEventLoader.getEvents();
+                mEventLoader.getData();
                 if(mRefreshListenerList != null){
                     for(OnRefreshListener listener : mRefreshListenerList){
                         listener.onRefresh();
@@ -169,79 +158,37 @@ public class ReelFragment extends Fragment {
                     mSwipeRefreshLayout.setEnabled(enable);
             }
         });
+        initLoader();
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mEventLoader.getEvents();
+    private void initLoader(){
+        if(type == TypeFormat.FEED.type){
+            mEventLoader = new EventsLoader(getActivity(), type);
+        }
+        else if(type == TypeFormat.ORGANIZATION.type){
+            mEventLoader = new EventsLoader(getActivity(), type, organizationId);
+        }
+        else if(type == TypeFormat.CALENDAR.type){
+            mEventLoader = new EventsLoader(getActivity(), type, mDate);
+        }
+        else if(type == TypeFormat.FAVORITES.type){
+            mEventLoader = new EventsLoader(getActivity(), type);
+        }
+        mEventLoader.setLoaderListener(this);
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(TYPE, type);
     }
 
-    /**
-     * downloading events from server
-     */
-    private class EventLoader{
-        public void getEvents(){
-            mSwipeRefreshLayout.setRefreshing(true);
-            Log.d(LOG_TAG, "getting events");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-            AccountManager accountManager = AccountManager.get(getActivity());
-            String token;
-            try {
-                token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(getActivity()),
-                        getString(R.string.account_type));
-            } catch (Exception e){
-                Log.e(LOG_TAG, "Error with peeking token");
-                e.fillInStackTrace();
-                onError();
-                return;
-            }
-            Call<EvendateServiceResponseArray<EventDetail>> call;
-            if(type == TypeFormat.FAVORITES.type()){
-                call = evendateService.getFavorite(token, true, EventDetail.FIELDS_LIST);
-            }else if(type == TypeFormat.ORGANIZATION.type()){
-                call = evendateService.getEvents(token, organizationId, true, EventDetail.FIELDS_LIST);
-            }else{
-                if(mDate != null){
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.getDefault());
-                    call = evendateService.getEvents(token, dateFormat.format(mDate), true, EventDetail.FIELDS_LIST);
-                }
-                else{
-                    call = evendateService.getFeed(token, true, EventDetail.FIELDS_LIST);
-                }
-            }
-            call.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {
-                @Override
-                public void onResponse(Response<EvendateServiceResponseArray<EventDetail>> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        mAdapter.setEventList(response.body().getData());
-                        onDownloaded();
-                    } else {
-                        Log.e(LOG_TAG, "Error with response with events");
-                        onError();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.e("Error", t.getMessage());
-                    onError();
-                }
-            });
-        }
-    }
-
-    public ArrayList<EventDetail> getEventList() {
+    public ArrayList<EventFeed> getEventList() {
         return mAdapter.getEventList();
+    }
+    public EventsAdapter getAdapter(){
+        return mAdapter;
     }
 
     /**
@@ -268,14 +215,29 @@ public class ReelFragment extends Fragment {
         this.mDate = mDate;
     }
 
-    private void onDownloaded(){
+    public void onLoaded(ArrayList<EventFeed> eventList){
         mSwipeRefreshLayout.setRefreshing(false);
+        mAdapter.setEventList(eventList);
         mProgressBar.setVisibility(View.GONE);
         if(mDataListener != null)
             mDataListener.onEventsDataLoaded();
     }
-    private void onError(){
+    public void onError(){
         mSwipeRefreshLayout.setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventLoader.getData();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mSwipeRefreshLayout.setRefreshing(false);
+        mEventLoader.cancel();
     }
 }

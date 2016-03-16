@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 13.09.2015.
  */
-public class EventModel extends DataModel {
+public class Event extends DataModel {
 
     @SerializedName("id")
     int eventId;

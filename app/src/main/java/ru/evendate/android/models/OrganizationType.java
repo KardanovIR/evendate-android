@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by Dmitry on 08.02.2016.
  */
 public class OrganizationType extends DataModel {
-    public static final String FIELDS_LIST = "organizations{fields:'" + OrganizationDetail.FIELDS_LIST + "'}";
+    public static final String FIELDS_LIST = "organizations{fields:'" + OrganizationSubscription.FIELDS_LIST +  "'}";
 
     @SerializedName("id")
     int typeId;
@@ -16,7 +16,7 @@ public class OrganizationType extends DataModel {
     @SerializedName("order_position")
     String orderPosition;
 
-    ArrayList<OrganizationDetail> organizations;
+    ArrayList<OrganizationFull> organizations;
 
     @Override
     public int getEntryId() {
@@ -28,7 +28,7 @@ public class OrganizationType extends DataModel {
     public String getOrderPosition() {
         return orderPosition;
     }
-    public ArrayList<OrganizationDetail> getOrganizations() {
-        return organizations;
+    public ArrayList<OrganizationSubscription> getOrganizations() {
+        return new ArrayList<OrganizationSubscription>(organizations);
     }
 }
