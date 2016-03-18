@@ -24,7 +24,7 @@ public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
     }
 
     public void getOrganization(int organizationId){
-        Log.d(LOG_TAG, "getting organization");
+        Log.d(LOG_TAG, "getting organization " + organizationId);
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 

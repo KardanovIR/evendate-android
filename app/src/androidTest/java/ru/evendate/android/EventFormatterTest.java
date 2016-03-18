@@ -6,7 +6,7 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.models.Date;
+import ru.evendate.android.models.DateFull;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 
@@ -29,14 +29,14 @@ public class EventFormatterTest extends AndroidTestCase {
     }
     public static EventDetail getEventDetail(int num){
         EventDetail event = Mockito.mock(EventDetail.class);
-        ArrayList<Date> dates = getDates(num);
-        when(event.getDataList()).thenReturn(dates);
+        ArrayList<DateFull> dates = getDates(num);
+        when(event.getDateList()).thenReturn(dates);
         return event;
     }
-    private static ArrayList<Date> getDates(int num){
-        ArrayList<Date> dateList = new ArrayList<>();
+    private static ArrayList<DateFull> getDates(int num){
+        ArrayList<DateFull> dateList = new ArrayList<>();
         for(long date : getIntDates(num)){
-            Date dateModel = Mockito.mock(Date.class);
+            DateFull dateModel = Mockito.mock(DateFull.class);
             when(dateModel.getEventDate()).thenReturn(date);
             dateList.add(dateModel);
         }

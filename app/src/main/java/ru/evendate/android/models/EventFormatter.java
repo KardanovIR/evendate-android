@@ -17,7 +17,7 @@ import ru.evendate.android.EvendateApplication;
 public class EventFormatter {
     public static String formatDate(EventDetail event) {
         //10-13, 15, 20-31 december; 23 january
-        if(event.getDataList().size() == 0){
+        if(event.getDateList().size() == 0){
             //no dates -> error at server
             Tracker tracker = EvendateApplication.getTracker();
             tracker.send(new HitBuilders.ExceptionBuilder()
@@ -26,7 +26,7 @@ public class EventFormatter {
                     .build());
             return "";
         }
-        Collections.sort(event.getDataList());
+        Collections.sort(event.getDateList());
         String firstDay = "";
         String firstMonth = "";
         String curDay = "";
@@ -35,7 +35,7 @@ public class EventFormatter {
         String prevMonth = "";
         String resStr = "";
         String curStr = "";
-        for(Date date : event.getDataList()){
+        for(Date date : event.getDateList()){
             if(firstDay.equals("")){
                 firstDay = formatDay(date);
                 firstMonth = formatMonth(date);
@@ -136,8 +136,11 @@ public class EventFormatter {
         return formatTime(date.getEventDate());
     }
     public static String formatTime(long date){
-        DateFormat dayFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        DateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return dayFormat.format(new java.util.Date(date * 1000));
+    }
+    public static String formatTime(String date){
+        return date.substring(0, date.lastIndexOf(":"));
     }
     public static String formatDate(Date date){
         return formatDay(date.getEventDate()) + " " + formatMonth(date.getEventDate());

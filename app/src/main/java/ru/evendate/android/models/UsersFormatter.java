@@ -12,7 +12,7 @@ import ru.evendate.android.R;
 public class UsersFormatter {
     public static String formatUsers(Context c, ArrayList<UserDetail> users){
         int friend_count = 0;
-        for (UserModel user : users) {
+        for (User user : users) {
             if(user.is_friend())
                 friend_count++;
         }

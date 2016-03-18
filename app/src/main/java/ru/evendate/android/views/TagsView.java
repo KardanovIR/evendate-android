@@ -12,14 +12,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.models.TagModel;
+import ru.evendate.android.models.Tag;
 
 /**
  * Created by Dmitry on 27.02.2016.
  */
 @SuppressWarnings("unused")
 public class TagsView extends ViewGroup{
-    private ArrayList<TagModel> mTags;
+    private ArrayList<Tag> mTags;
 
     public TagsView(Context context) {
         super(context);
@@ -29,13 +29,13 @@ public class TagsView extends ViewGroup{
         super(context, attrs);
     }
 
-    public void setTags(ArrayList<TagModel> tags){
+    public void setTags(ArrayList<Tag> tags){
         mTags = tags;
         initTags();
         invalidate();
     }
 
-    public ArrayList<TagModel> getTags(){
+    public ArrayList<Tag> getTags(){
         return mTags;
     }
 
@@ -44,7 +44,7 @@ public class TagsView extends ViewGroup{
             return;
         if(getChildCount() != 0)
             removeViewsInLayout(0, getChildCount());
-        for (TagModel tag : mTags){
+        for (Tag tag : mTags){
             TagView tagView = new TagView(getContext());
             tagView.setText(tag.getName());
             addView(tagView);
