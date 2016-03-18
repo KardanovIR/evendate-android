@@ -24,6 +24,7 @@ public class MainPagerFragment extends Fragment {
     private MainPagerAdapter mMainPagerAdapter;
 
     private TabLayout mTabLayout;
+    private ReelFragment.OnRefreshListener mRefreshListener;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,6 +32,8 @@ public class MainPagerFragment extends Fragment {
 
         mViewPager = (ViewPager)rootView.findViewById(R.id.pager);
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), getActivity());
+        if(mRefreshListener != null)
+            mMainPagerAdapter.setOnRefreshListener(mRefreshListener);
         mViewPager.setAdapter(mMainPagerAdapter);
 
         mTabLayout = (TabLayout)rootView.findViewById(R.id.tabs);
@@ -43,7 +46,9 @@ public class MainPagerFragment extends Fragment {
     }
 
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
-        mMainPagerAdapter.setOnRefreshListener(refreshListener);
+        mRefreshListener = refreshListener;
+        if(mMainPagerAdapter != null)
+            mMainPagerAdapter.setOnRefreshListener(refreshListener);
     }
     private void setupStat(){
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.View;
 
@@ -18,6 +19,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
+import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
@@ -57,9 +59,14 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         mMeLoader.setLoaderListener(new LoaderListener<UserDetail>() {
             @Override
             public void onLoaded(UserDetail user) {
+                SharedPreferences sPref =
+                        mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+                String accountName = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+
+                getAccountHeader().clear();
                 getAccountHeader().addProfiles(
                         new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
-                                //.withEmail()
+                                .withEmail(accountName)
                                 .withIcon(user.getAvatarUrl())
                 );
             }
@@ -92,6 +99,9 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                         return false;
                     }
                 })
+                .withAlternativeProfileHeaderSwitching(false)
+                .withOnlySmallProfileImagesVisible(false)
+                .withProfileImagesClickable(false)
                 .build();
         result.withActivity(context)
                 .withAccountHeader(headerResult);

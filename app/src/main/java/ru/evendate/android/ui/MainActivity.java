@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             switch (savedInstanceState.getInt(TYPE)){
                 case REEL:
                     mFragment = new MainPagerFragment();
+                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
                     break;
                 case CALENDAR:
                     mFragment = new CalendarFragment();
@@ -85,9 +86,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     break;
                 default:
                     mFragment = new MainPagerFragment();
+                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
             }
         }else{
             mFragment = new MainPagerFragment();
+            ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
