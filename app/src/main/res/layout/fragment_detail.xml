@@ -105,14 +105,15 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <include layout="@layout/fragment_detail_content"/>
                 <ProgressBar
                     android:id="@+id/progressBar"
                     style="?android:attr/progressBarStyleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    android:progressDrawable="@drawable/circular_progress_bar" />
-                <include layout="@layout/fragment_detail_content"/>
+                    android:progressDrawable="@drawable/circular_progress_bar"
+                    android:layout_gravity="center_horizontal" />
             </FrameLayout>
         </LinearLayout>
     </ScrollView>
