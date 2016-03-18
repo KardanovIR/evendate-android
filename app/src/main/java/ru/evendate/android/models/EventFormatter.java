@@ -136,7 +136,7 @@ public class EventFormatter {
         return formatTime(date.getEventDate());
     }
     public static String formatTime(long date){
-        DateFormat dayFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        DateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return dayFormat.format(new java.util.Date(date * 1000));
     }
 }

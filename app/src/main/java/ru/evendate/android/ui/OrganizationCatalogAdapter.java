@@ -54,7 +54,7 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
                     mContext.getResources().getString(R.string.organization_subscribers);
             holder.mSubCounts.setText(subs);
             Picasso.with(mContext)
-                    .load(organizationEntry.getLogoMediumUrl())
+                    .load(organizationEntry.getLogoSmallUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mImageView);
         }

@@ -173,7 +173,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mTagsTextView.setText(EventFormatter.formatTags(mEvent));
             mLinkTextView.setText(mEvent.getDetailInfoUrl());
             mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
-            mTimeTextView.setText(EventFormatter.formatTime(mEvent.getFirstDate()));
+            //mTimeTextView.setText(EventFormatter.formatTime(mEvent.getFirstDate()));
             mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
             mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
             mDateTextView.setText(EventFormatter.formatDate(mEvent));
