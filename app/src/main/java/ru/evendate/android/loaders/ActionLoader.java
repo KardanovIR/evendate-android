@@ -48,7 +48,7 @@ public class ActionLoader extends AbstractLoader<ArrayList<Action>> {
 
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
+                Log.e(LOG_TAG, t.getMessage());
                 onError();
             }
         });

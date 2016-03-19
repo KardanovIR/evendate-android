@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.ui.OrganizationDetailActivity;
 
 /**
@@ -25,7 +25,7 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
 public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.SubscriptionHolder>{
 
     Context mContext;
-    private ArrayList<OrganizationFull> mSubscriptionList;
+    private ArrayList<OrganizationSubscription> mSubscriptionList;
     public static Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
 
@@ -33,12 +33,12 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
         this.mContext = context;
     }
 
-    public void setSubscriptionList(ArrayList<OrganizationFull> subscriptionList){
+    public void setSubscriptionList(ArrayList<OrganizationSubscription> subscriptionList){
         mSubscriptionList = subscriptionList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<OrganizationFull> getSubscriptionList() {
+    public ArrayList<OrganizationSubscription> getSubscriptionList() {
         return mSubscriptionList;
     }
 
@@ -52,11 +52,11 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
     public void onBindViewHolder(SubscriptionHolder holder, int position) {
         if(mSubscriptionList == null)
             return;
-        OrganizationFull subEntry = mSubscriptionList.get(position);
+        OrganizationSubscription subEntry = mSubscriptionList.get(position);
         holder.id = subEntry.getEntryId();
         holder.mOrganizationNameTextView.setText(subEntry.getName());
         Picasso.with(mContext)
-                .load(subEntry.getLogoUrl())
+                .load(subEntry.getLogoSmallUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mOrganizationLogoImageView);
     }

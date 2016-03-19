@@ -159,6 +159,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
             }
         });
         initLoader();
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventLoader.getData();
         return rootView;
     }
 
@@ -228,16 +230,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mEventLoader.getData();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mSwipeRefreshLayout.setRefreshing(false);
+    public void onDestroy() {
+        super.onDestroy();
         mEventLoader.cancel();
     }
 }
