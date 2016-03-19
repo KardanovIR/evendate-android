@@ -104,6 +104,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         mOrganizationLoader.setLoaderListener(this);
 
         mFAB.setOnClickListener(this);
+        mOrganizationLoader.getOrganization(organizationId);
         return rootView;
     }
 
@@ -237,14 +238,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mOrganizationLoader.getOrganization(organizationId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         mOrganizationLoader.cancel();
     }
 }

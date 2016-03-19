@@ -80,6 +80,7 @@ public class OrganizationCatalogFragment extends Fragment
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        mLoader.getData();
         return rootView;
     }
 
@@ -111,14 +112,8 @@ public class OrganizationCatalogFragment extends Fragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mLoader.getData();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         mLoader.cancel();
     }
 }

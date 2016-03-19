@@ -192,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     @Override
     protected void onDestroy() {
         mDestroyed = true;
+        if(mAlertDialog != null)
+            mAlertDialog.cancel();
         super.onDestroy();
     }
 
@@ -261,13 +263,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
         });
         mAlertDialog.show();
     }
-    @Override
-    public void onStop()
-    {
-        if(mAlertDialog != null)
-            mAlertDialog.cancel();
-        super.onStop();
-    }
+
     @Override
     public void onRefresh() {
         mSubscriptionLoader.getSubscriptions();

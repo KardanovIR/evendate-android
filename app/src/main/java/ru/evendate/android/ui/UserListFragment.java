@@ -83,6 +83,10 @@ public class UserListFragment extends Fragment{
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        if (type == TypeFormat.event.nativeInt)
+            loadEvent();
+        else
+            loadOrganization();
         return rootView;
     }
 
@@ -161,17 +165,8 @@ public class UserListFragment extends Fragment{
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (type == TypeFormat.event.nativeInt)
-            loadEvent();
-        else
-            loadOrganization();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         if (type == TypeFormat.event.nativeInt)
             mEventLoader.cancel();
         else

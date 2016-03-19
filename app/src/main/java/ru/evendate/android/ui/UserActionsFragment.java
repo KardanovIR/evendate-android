@@ -55,6 +55,7 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        mLoader.getData(userId);
         return rootView;
     }
     @Override
@@ -79,16 +80,8 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.getData(userId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mProgressBar.setVisibility(View.GONE);
+    public void onDestroy() {
+        super.onDestroy();
         mLoader.cancel();
     }
 }

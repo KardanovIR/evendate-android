@@ -17,6 +17,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -143,6 +144,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
+        mEventLoader.getData(eventId);
         return rootView;
     }
 
@@ -349,15 +351,11 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         });
         dialog.show();
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        mEventLoader.getData(eventId);
-    }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "onDestroy");
         mEventLoader.cancel();
     }
 }
