@@ -24,7 +24,7 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
  */
 public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.SubscriptionHolder>{
 
-    Context mContext;
+    private Context mContext;
     private ArrayList<OrganizationSubscription> mSubscriptionList;
     public static Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 

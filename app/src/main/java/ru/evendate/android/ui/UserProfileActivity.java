@@ -35,8 +35,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    UserAdapter mUserAdapter;
-    UserLoader mLoader;
+    private UserAdapter mUserAdapter;
+    private UserLoader mLoader;
 
     private ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;

@@ -29,9 +29,9 @@ import ru.evendate.android.ui.ReelFragment;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolder>{
 
-    Context mContext;
+    private Context mContext;
     private ArrayList<EventFeed> mEventList;
-    int type;
+    private int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 

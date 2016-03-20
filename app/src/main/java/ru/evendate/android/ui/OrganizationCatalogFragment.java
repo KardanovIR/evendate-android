@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.OrganizationCategoryAdapter;
 import ru.evendate.android.loaders.CatalogLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.OrganizationType;

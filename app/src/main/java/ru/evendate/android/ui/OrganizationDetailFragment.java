@@ -43,9 +43,9 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         ReelFragment.OnEventsDataLoadedListener, LoaderListener<OrganizationDetail>{
     private final String LOG_TAG = "OrganizationFragment";
 
-    ReelFragment mReelFragment;
-    OrganizationAdapter mAdapter;
-    OrganizationLoader mOrganizationLoader;
+    private ReelFragment mReelFragment;
+    private OrganizationAdapter mAdapter;
+    private OrganizationLoader mOrganizationLoader;
 
     private int organizationId = -1;
     public static final String URI = "uri";

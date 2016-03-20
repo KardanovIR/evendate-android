@@ -81,9 +81,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private Uri mUri;
     private int eventId;
-    ProgressBar mProgressBar;
-    EventAdapter mAdapter;
-    EventLoader mEventLoader;
+    private ProgressBar mProgressBar;
+    private EventAdapter mAdapter;
+    private EventLoader mEventLoader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

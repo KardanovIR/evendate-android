@@ -45,7 +45,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
     private MaterialCalendarView mCalendarView;
     private ReelFragment mReelFragment;
     private OneDayDecorator mOneDayDecorator;
-    public SlidingUpPanelLayout mSlidingUpPanelLayout;
+    private SlidingUpPanelLayout mSlidingUpPanelLayout;
     private Date minimumDate;
     private ToggleButton mToggleButton;
     private TextView mSelectedDateTextView;

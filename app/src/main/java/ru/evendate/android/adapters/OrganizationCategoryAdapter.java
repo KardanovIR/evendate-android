@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +18,7 @@ import ru.evendate.android.models.OrganizationType;
  */
 public class OrganizationCategoryAdapter extends RecyclerView.Adapter<OrganizationCategoryAdapter.CategoryHolder>{
 
-    Context mContext;
+    private Context mContext;
     private ArrayList<OrganizationType> mCategoryList;
 
     public OrganizationCategoryAdapter(Context context){
@@ -49,7 +49,10 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
         holder.mAdapter = new OrganizationCatalogAdapter(mContext);
         holder.mAdapter.setOrganizationList(mCategoryList.get(position).getOrganizations());
         holder.mContainer.setAdapter(holder.mAdapter);
-        holder.mContainer.setLayoutManager(new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        WrapLinearLayoutManager manager =
+                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        manager.setAutoMeasureEnabled(false);
+        holder.mContainer.setLayoutManager(manager);
     }
 
     @Override

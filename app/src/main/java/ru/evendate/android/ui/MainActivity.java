@@ -56,8 +56,7 @@ import ru.evendate.android.sync.EvendateSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<Organization>>,
         ReelFragment.OnRefreshListener{
-
-    final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
@@ -83,11 +82,11 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private final int INTRO_REQUEST = 1;
     private boolean mDestroyed = false;
 
-    AlertDialog mAlertDialog;
-    SharedPreferences mSharedPreferences = null;
-    final String APP_PREF = "evendate_pref";
-    final String FIRST_RUN = "first_run";
-    boolean isFirstRun = false;
+    private AlertDialog mAlertDialog;
+    private SharedPreferences mSharedPreferences = null;
+    public final String APP_PREF = "evendate_pref";
+    public final String FIRST_RUN = "first_run";
+    public boolean isFirstRun = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
