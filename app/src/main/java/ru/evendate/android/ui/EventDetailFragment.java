@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
@@ -18,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,6 +157,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         //});
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         mToolbarTitle.setAlpha(0f);
+        if (Build.VERSION.SDK_INT >= 21)
+            mAppBarLayout.setElevation(0);
         mScrollView.post(new Runnable(){
         @Override
         public void run() {
@@ -168,9 +172,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                         if(mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
                             mTitleDisappearAnimation.cancel();
                         if(mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()){
-                            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha", mToolbarTitle.getAlpha(), 1f);
+                            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                    mToolbarTitle.getAlpha(), 1f);
                             mTitleAppearAnimation.setDuration(200);
                             mTitleAppearAnimation.start();
+                            if (Build.VERSION.SDK_INT >= 21){
+                                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                                        getResources().getDisplayMetrics());
+                                mAppBarLayout.setElevation(px);
+                            }
                         }
                     }
                     else{
@@ -178,9 +188,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                         if(mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
                             mTitleAppearAnimation.cancel();
                         if(mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
-                            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha", mToolbarTitle.getAlpha(), 0f);
+                            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                    mToolbarTitle.getAlpha(), 0f);
                             mTitleDisappearAnimation.setDuration(200);
                             mTitleDisappearAnimation.start();
+                            if (Build.VERSION.SDK_INT >= 21)
+                                mAppBarLayout.setElevation(0);
                         }
                     }
                     int color = getResources().getColor(R.color.primary);
@@ -191,8 +204,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     mEventOrganizationMask.setBackgroundColor(color);
                 }});
         }});
-
-        //mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
