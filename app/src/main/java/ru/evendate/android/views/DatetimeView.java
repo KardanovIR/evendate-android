@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import ru.evendate.android.R;
 import ru.evendate.android.models.Date;
+import ru.evendate.android.models.DateFull;
+import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.sync.EvendateApiFactory;
 
 /**
  * Created by Dmitry on 04.03.2016.
@@ -18,7 +21,7 @@ import ru.evendate.android.models.Date;
 public class DatetimeView extends LinearLayout {
     private TextView mDateView;
     private TextView mTimeView;
-    private Date mDate;
+    private DateFull mDate;
 
     public DatetimeView(Context context) {
         this(context, null);
@@ -42,7 +45,16 @@ public class DatetimeView extends LinearLayout {
         mTimeView = (TextView) findViewById(R.id.time);
     }
 
-    public void setDate(Date date){
+    public void setDate(DateFull date){
         mDate = date;
+        String endTime = mDate.getEndTime();
+        mTimeView.setText(EventFormatter.formatTime(mDate.getStartTime()) + (endTime != null ? " - " + EventFormatter.formatTime(mDate.getEndTime()) : ""));
+        mDateView.setText(EventFormatter.formatDate(mDate));
+    }
+    public void setDate(long date){
+        if(!isInEditMode())
+            throw new IllegalArgumentException("Only for using in edit mode");
+        mTimeView.setText(EventFormatter.formatTime(date) + " - " + EventFormatter.formatTime(date));
+        mDateView.setText(EventFormatter.formatDate(date));
     }
 }

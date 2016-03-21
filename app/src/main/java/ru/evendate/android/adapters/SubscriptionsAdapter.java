@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.ui.OrganizationDetailActivity;
 
 /**
@@ -25,7 +25,7 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
 public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.SubscriptionHolder>{
 
     Context mContext;
-    private ArrayList<OrganizationDetail> mSubscriptionList;
+    private ArrayList<OrganizationFull> mSubscriptionList;
     public static Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
 
@@ -33,12 +33,12 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
         this.mContext = context;
     }
 
-    public void setSubscriptionList(ArrayList<OrganizationDetail> subscriptionList){
+    public void setSubscriptionList(ArrayList<OrganizationFull> subscriptionList){
         mSubscriptionList = subscriptionList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<OrganizationDetail> getSubscriptionList() {
+    public ArrayList<OrganizationFull> getSubscriptionList() {
         return mSubscriptionList;
     }
 
@@ -52,7 +52,7 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
     public void onBindViewHolder(SubscriptionHolder holder, int position) {
         if(mSubscriptionList == null)
             return;
-        OrganizationDetail subEntry = mSubscriptionList.get(position);
+        OrganizationFull subEntry = mSubscriptionList.get(position);
         holder.id = subEntry.getEntryId();
         holder.mOrganizationNameTextView.setText(subEntry.getName());
         Picasso.with(mContext)

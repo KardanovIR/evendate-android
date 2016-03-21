@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
-import ru.evendate.android.models.UserModel;
 import ru.evendate.android.ui.UserProfileActivity;
 
 /**
@@ -35,7 +35,7 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
     public void onBindViewHolder(UserHolder holder, int position) {
         if(getList() == null)
             return;
-        UserModel userEntry = getList().get(position);
+        User userEntry = getList().get(position);
         holder.id = userEntry.getEntryId();
         String name = userEntry.getLastName() + " " + userEntry.getFirstName();
         holder.mNameTextView.setText(name);

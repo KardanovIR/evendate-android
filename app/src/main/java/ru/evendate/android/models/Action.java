@@ -10,7 +10,8 @@ import ru.evendate.android.data.EvendateContract;
  * Created by ds_gordeev on 17.02.2016.
  */
 public class Action extends DataModel implements ActionTarget, Comparable<Action>{
-    public static final String FIELDS_LIST = "name,created_at,event,organization,user{fields:'" + UserModel.FIELDS_LIST + "'}";
+    public static final String FIELDS_LIST = "name,created_at,event,organization,user{fields:'" + User.FIELDS_LIST + "'}";
+    public static final String ORDER_BY = "-created_at";
 
     public enum Type {
         ACTION_LIKE         (5),
@@ -45,9 +46,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     @SerializedName("created_at")
     long createdAt;
 
-    EventModel event;
-    OrganizationModel organization;
-    UserModel user;
+    Event event;
+    Organization organization;
+    User user;
 
     @Override
     public int getEntryId() {
@@ -82,15 +83,15 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
         return createdAt;
     }
 
-    public EventModel getEvent() {
+    public Event getEvent() {
         return event;
     }
 
-    public OrganizationModel getOrganization() {
+    public Organization getOrganization() {
         return organization;
     }
 
-    public UserModel getUser() {
+    public User getUser() {
         return user;
     }
 

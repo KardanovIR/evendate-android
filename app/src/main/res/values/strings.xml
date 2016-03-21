@@ -48,6 +48,22 @@
     <string name="event_word_friends_add">friends added to favorite</string>
     <string name="event_users_all">ALL</string>
 
+    <string name="event_free">Free</string>
+    <string name="event_price_from">From</string>
+    <string name="event_registration_till">Till</string>
+    <string name="event_registration_not_required">Not required</string>
+
+    <string name="event_show_on_map">SHOW ON MAP</string>
+    <string name="event_go_to_page">GO TO EVENT PAGE</string>
+
+    <!-- dates view -->
+    <string name="dates_view_date_label">Date</string>
+    <string name="dates_view_time_label">Time</string>
+    <string name="dates_view_more">MORE</string>
+    <!-- user favorite card -->
+    <string name="user_card_all">ALL</string>
+
+
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
     <string name="organization_subscribers">subscribers</string>
@@ -105,6 +121,8 @@
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
+    <string name="stat_page_actions" translatable="false">Actions</string>
+    <string name="stat_page_subscriptions" translatable="false">Subscriptions</string>
 
     <!-- user profile strings -->
     <string name="tab_subscriptions">Subscriptions</string>

@@ -53,4 +53,20 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter{
                 return null;
         }
     }
+
+    /**
+     * return strings for statistics
+     * @param position int
+     * @return String
+     */
+    public String getPageLabel(int position){
+        switch (position){
+            case 0:
+                return mContext.getString(R.string.stat_page_actions);
+            case 1:
+                return mContext.getString(R.string.stat_page_subscriptions);
+            default:
+                return null;
+        }
+    }
 }

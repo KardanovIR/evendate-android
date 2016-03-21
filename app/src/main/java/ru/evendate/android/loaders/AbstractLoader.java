@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import retrofit.Call;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
@@ -15,7 +16,9 @@ import ru.evendate.android.authorization.AuthActivity;
 public abstract class AbstractLoader<D> {
     private final String LOG_TAG = AbstractLoader.class.getSimpleName();
     protected Context mContext;
-    protected LoaderListener<D> mListener;
+    private LoaderListener<D> mListener;
+    protected Call mCall;
+    private boolean isCanceled;
 
     public AbstractLoader(Context context) {
         mContext = context;
@@ -42,5 +45,22 @@ public abstract class AbstractLoader<D> {
     protected void invalidateToken(){
         AccountManager accountManager = AccountManager.get(mContext);
         accountManager.invalidateAuthToken(mContext.getString(R.string.account_type), peekToken());
+    }
+
+    protected void onStartLoading(){
+        isCanceled = false;
+    }
+    public void cancel(){
+        if(mCall == null)
+            return;
+        mCall.cancel();
+    }
+    protected void onError(){
+        if(!isCanceled)
+            mListener.onError();
+    }
+    protected void onLoaded(D data){
+        isCanceled = true;
+        mListener.onLoaded(data);
     }
 }

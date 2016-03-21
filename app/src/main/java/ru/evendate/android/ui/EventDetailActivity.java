@@ -26,15 +26,18 @@ public class EventDetailActivity extends AppCompatActivity {
         if(intent != null){
             mUri = intent.getData();
             Bundle intent_extras = getIntent().getExtras();
+
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_event))
+                    .setLabel(mUri.getLastPathSegment());
             if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
                     intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
-                Tracker tracker = EvendateApplication.getTracker();
-                HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                        .setCategory(getString(R.string.stat_category_event))
-                        .setAction(getString(R.string.stat_action_notification))
-                        .setLabel(mUri.getLastPathSegment());
-                tracker.send(event.build());
+                event.setAction(getString(R.string.stat_action_notification));
+            }else{
+                event.setAction(getString(R.string.stat_action_view));
             }
+            tracker.send(event.build());
         }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

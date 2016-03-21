@@ -31,9 +31,10 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.loaders.SubOrganizationLoader;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFeed;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.UserModel;
+import ru.evendate.android.models.User;
 
 /**
  * Contain details of organization
@@ -75,6 +76,12 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         if(args != null){
             mUri = Uri.parse(args.getString(URI));
             organizationId = Integer.parseInt(mUri.getLastPathSegment());
+            Tracker tracker = EvendateApplication.getTracker();
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_organization))
+                    .setAction(getString(R.string.stat_action_view))
+                    .setLabel(Long.toString(organizationId));
+            tracker.send(event.build());
         }
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
@@ -95,7 +102,6 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         mAdapter = new OrganizationAdapter();
         mOrganizationLoader = new OrganizationLoader(getActivity());
         mOrganizationLoader.setLoaderListener(this);
-        mOrganizationLoader.getOrganization(organizationId);
 
         mFAB.setOnClickListener(this);
         return rootView;
@@ -115,6 +121,19 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         if(v == mFAB) {
             if(mAdapter.getOrganizationModel() == null)
                 return;
+            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
+                    (Organization)mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
+            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+                @Override
+                public void onLoaded(Void subList) {
+
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                }
+            });
             mAdapter.getOrganizationModel().subscribe();
             mAdapter.setOrganizationInfo();
             Tracker tracker = EvendateApplication.getTracker();
@@ -129,23 +148,12 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                 event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
                 Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
             }
-            SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                    mAdapter.getOrganizationModel(), mAdapter.getOrganizationModel().isSubscribed());
-            subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
-                @Override
-                public void onLoaded(Void subList) {
-
-                }
-
-                @Override
-                public void onError() {
-                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-                }
-            });
             tracker.send(event.build());
             subOrganizationLoader.execute();
         }
         if(v.getId() == R.id.organization_subscribed_button){
+            if(mAdapter.getOrganizationModel() == null)
+                return;
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getOrganizationModel().getEntryId())).build());
@@ -161,7 +169,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
             return;
         mEventCountView.setText(String.valueOf(mReelFragment.getEventList().size()));
         int favoriteCount = 0;
-        for(EventDetail event : mReelFragment.getEventList()){
+        for(EventFeed event : mReelFragment.getEventList()){
             favoriteCount += event.isFavorite() ? 1 : 0;
         }
         String favoriteEvents = favoriteCount + " " + getResources().getString(R.string.favorite_events);
@@ -182,18 +190,18 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         private void setOrganizationInfo(){
             mOrganizationNameTextView.setText(mOrganizationModel.getName());
             mSubscriptionCountView.setText(String.valueOf(mOrganizationModel.getSubscribedCount()));
-            HashSet<UserModel> friendSet = new HashSet<>();
-            for(UserModel user : mOrganizationModel.getSubscribedUsersList()){
+            HashSet<User> friendSet = new HashSet<>();
+            for(User user : mOrganizationModel.getSubscribedUsersList()){
                 if(user.is_friend())
                     friendSet.add(user);
             }
             mFriendCountView.setText(String.valueOf(friendSet.size()));
             Picasso.with(getContext())
-                    .load(mOrganizationModel.getBackgroundMediumUrl())
+                    .load(mOrganizationModel.getBackgroundUrl())
                     .error(R.drawable.default_background)
                     .into(mOrganizationImageView);
             Picasso.with(getContext())
-                    .load(mOrganizationModel.getLogoSmallUrl())
+                    .load(mOrganizationModel.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
             setFabIcon();
@@ -201,8 +209,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
 
-    public void onLoaded(OrganizationDetail subList){
-        mAdapter.setOrganizationModel(subList);
+    public void onLoaded(OrganizationDetail organization){
+        mAdapter.setOrganizationModel(organization);
         if(!isAdded())
             return;
         mAdapter.setOrganizationInfo();
@@ -226,5 +234,17 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
                     }
                 });
         dialog.show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mOrganizationLoader.getOrganization(organizationId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mOrganizationLoader.cancel();
     }
 }

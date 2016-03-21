@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,8 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.picasso.Picasso;
@@ -43,7 +42,6 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
@@ -51,12 +49,12 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<OrganizationModel>>,
+public class MainActivity extends AppCompatActivity implements LoaderListener<ArrayList<Organization>>,
         ReelFragment.OnRefreshListener{
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -79,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
 
     private Fragment mFragment;
     private Toolbar mToolbar;
+    private AppBarLayout mAppBar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
@@ -141,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
             }
         });
         mToolbar = toolbar;
+        mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     }
 
     @Override
-    public void onLoaded(ArrayList<OrganizationModel> subList) {
+    public void onLoaded(ArrayList<Organization> subList) {
         if(isDestroyed())
             return;
         mSubscriptionAdapter.setSubscriptions(subList);
@@ -351,13 +351,6 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                 default:
                     if(!mAccountToggle.isChecked()){
                         //open organization from subs
-                        Tracker tracker = EvendateApplication.getTracker();
-                        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                                .setCategory(mContext.getString(R.string.stat_category_organization))
-                                .setAction(mContext.getString(R.string.stat_action_view))
-                                .setLabel(Long.toString(menuItem.getItemId()));
-                        tracker.send(event.build());
-
                         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
                         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                                 .buildUpon().appendPath(Long.toString(menuItem.getItemId())).build());
@@ -465,12 +458,12 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
     private class SubscriptionsAdapter{
         private Context mContext;
         private SubMenu mOrganizationMenu;
-        private ArrayList<OrganizationModel> mSubscriptions;
+        private ArrayList<Organization> mSubscriptions;
 
         public SubscriptionsAdapter(Context context) {
             mContext = context;
         }
-        public void setSubscriptions(ArrayList<OrganizationModel> subs){
+        public void setSubscriptions(ArrayList<Organization> subs){
             mSubscriptions = subs;
         }
         public void updateSubscriptionMenu(){
@@ -482,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements LoaderListener<Ar
                     .addSubMenu(R.id.nav_organizations, 0, 0, R.string.subscriptions);
             mNavigationView.setItemIconTintList(null);
             if(mSubscriptions != null){
-                for(OrganizationModel sub : mSubscriptions){
+                for(Organization sub : mSubscriptions){
                     MenuItem menuItem = mOrganizationMenu.add(0, sub.getEntryId(), 0,
                             sub.getShortName());
                     menuItem.setVisible(false);

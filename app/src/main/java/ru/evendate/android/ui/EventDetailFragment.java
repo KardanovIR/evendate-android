@@ -1,7 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,7 +18,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,23 +40,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import butterknife.OnClick;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.AbstractLoader;
 import ru.evendate.android.loaders.EventLoader;
+import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.EventModel;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.TagsView;
 import ru.evendate.android.views.UserFavoritedCard;
 
@@ -79,28 +73,37 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private CoordinatorLayout mCoordinatorLayout;
     //private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private ScrollView mScrollView;
-    private Toolbar mToolbar;
-    @Bind(R.id.event_mask) View mEventMask;
+    @Bind(R.id.scroll_view) ScrollView mScrollView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.event_image_mask) View mEventImageMask;
+    @Bind(R.id.event_organization_mask) View mEventOrganizationMask;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
     ObjectAnimator mTitleAppearAnimation;
     ObjectAnimator mTitleDisappearAnimation;
-    private FloatingActionButton mFAB;
+    @Bind(R.id.fab) FloatingActionButton mFAB;
 
-    private ImageView mEventImageView;
-    private ImageView mOrganizationIconView;
-
-    private TextView mOrganizationTextView;
-    private TextView mDescriptionTextView;
+    @Bind(R.id.event_image) ImageView mEventImageView;
+    @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
+    @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
+    @Bind(R.id.event_description) TextView mDescriptionTextView;
     @Bind(R.id.event_title) TextView mTitleTextView;
-    private View mPlaceButtonView;
-    private TextView mPlacePlaceTextView;
-    private View mLinkCard;
+    @Bind(R.id.event_place_button) View mPlaceButtonView;
+    @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
+    @Bind(R.id.event_link_card) View mLinkCard;
 
-    private TagsView mTagsView;
+    @Bind(R.id.tag_layout) TagsView mTagsView;
+    @Bind(R.id.event_price_card) android.support.v7.widget.CardView mPriceCard;
+    @Bind(R.id.event_price) TextView mPriceTextView;
+    @Bind(R.id.event_registration) TextView mRegistrationTextView;
+    @Bind(R.id.event_dates) DatesView mDatesView;
 
-    private UserFavoritedCard mUserFavoritedCard;
+    @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+
+    @BindString(R.string.event_free) String eventFreeLabel;
+    @BindString(R.string.event_price_from) String eventPriceFromLabel;
+    @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
+    @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,7 +121,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -151,7 +153,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         //        }
         //    }
         //});
-        mScrollView = ((ScrollView)rootView.findViewById(R.id.scroll_view));
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         mToolbarTitle.setAlpha(0f);
         mScrollView.post(new Runnable(){
@@ -194,28 +195,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         //mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
-        mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization_name);
-        mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
-        //mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
-        mPlaceButtonView = rootView.findViewById(R.id.event_place_button);
-        mPlacePlaceTextView = (TextView)rootView.findViewById(R.id.event_place_text);
-        mPlaceButtonView.setOnClickListener(this);
-        mTagsView = (TagsView)rootView.findViewById(R.id.tag_layout);
-        mLinkCard = rootView.findViewById(R.id.event_link_card);
-        mLinkCard.setOnClickListener(this);
-        rootView.findViewById(R.id.event_organization_container).setOnClickListener(this);
-
-        mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
-        mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
-
-        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
-
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
-        mFAB.setOnClickListener(this);
-
-        mUserFavoritedCard = (UserFavoritedCard)rootView.findViewById(R.id.user_card);
         mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,7 +212,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
-        mEventLoader.getData(eventId);
         return rootView;
     }
 
@@ -267,9 +248,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mToolbarTitle.setText(mEvent.getTitle());
             setFabIcon();
             mUserFavoritedCard.setUsers(mEvent.getUserList());
+            mDatesView.setDates(mEvent.getDateList());
+            mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
+                    (eventPriceFromLabel + " " + mEvent.getMinPrice()));
+            mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
+                eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
         }
     }
 
+    @OnClick({R.id.event_place_button, R.id.event_link_card, R.id.event_organization_container, R.id.fab})
     @Override
     public void onClick(View v) {
         if(mAdapter.getEvent() == null)
@@ -278,14 +265,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
-
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getActivity().getString(R.string.stat_category_organization))
-                    .setAction(getActivity().getString(R.string.stat_action_view))
-                    .setLabel((Long.toString(mAdapter.getEvent().getOrganizationId())));
-            tracker.send(event.build());
-
             startActivity(intent);
         }
         if(v == mFAB) {
@@ -323,12 +302,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         if(v.getId() == R.id.event_link_card && mAdapter.getEvent() != null){
             Intent openLink = new Intent(Intent.ACTION_VIEW);
             openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getString(R.string.stat_category_event))
-                    .setAction(getString(R.string.stat_action_click_on_link))
-                    .setLabel(mUri.getLastPathSegment());
-            tracker.send(event.build());
             startActivity(openLink);
         }
         if(v.getId() == R.id.event_place_button){
@@ -349,46 +322,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private class LikeEventLoader extends AbstractLoader<Void> {
-        EventModel mEvent;
-        boolean favorite;
-        public LikeEventLoader(Context context, EventModel eventModel, boolean favorite) {
-            super(context);
-            this.favorite = favorite;
-            mEvent = eventModel;
-        }
-
-        public void load(){
-            Log.d(LOG_TAG, "performing like");
-            EvendateService evendateService = EvendateApiFactory.getEvendateService();
-            Call<EvendateServiceResponse> call;
-            if(favorite){
-                call = evendateService.eventDeleteFavorite(mEvent.getEntryId(), peekToken());
-            }
-            else {
-                call = evendateService.eventPostFavorite(mEvent.getEntryId(), peekToken());
-            }
-
-            call.enqueue(new Callback<EvendateServiceResponse>() {
-                @Override
-                public void onResponse(Response<EvendateServiceResponse> response,
-                                       Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        Log.d(LOG_TAG, "performed like");
-                    } else {
-                        Log.e(LOG_TAG, "Error with response with like");
-                        mListener.onError();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.e("Error", t.getMessage());
-                    mListener.onError();
-                }
-            });
-        }
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -473,5 +406,16 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             }
         });
         dialog.show();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        mEventLoader.getData(eventId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mEventLoader.cancel();
     }
 }
