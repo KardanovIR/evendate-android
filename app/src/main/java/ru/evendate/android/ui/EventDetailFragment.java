@@ -165,7 +165,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 public void onScrollChanged() {
                     if(mScrollView.getScrollY() >= mEventImageView.getHeight()){
                         mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-                        mAppBarLayout.setTargetElevation(24.0f);
                         if(mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
                             mTitleDisappearAnimation.cancel();
                         if(mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()){
@@ -176,7 +175,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     }
                     else{
                         mToolbar.setBackgroundColor(Color.TRANSPARENT);
-                        mAppBarLayout.setTargetElevation(0.0f);
                         if(mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
                             mTitleAppearAnimation.cancel();
                         if(mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
@@ -189,7 +187,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     color = Color.argb(
                             (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
                             Color.red(color), Color.green(color), Color.blue(color));
-                    mEventMask.setBackgroundColor(color);
+                    mEventImageMask.setBackgroundColor(color);
+                    mEventOrganizationMask.setBackgroundColor(color);
                 }});
         }});
 
