@@ -89,7 +89,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                scrollOffset = Math.abs(recyclerView.getScrollY());
+                scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
+                setImageViewY();
             }
         });
         mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
