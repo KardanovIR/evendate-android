@@ -7,11 +7,11 @@
     <bool name="ga_anonymizeIp">false</bool>
     <bool name="ga_reportUncaughtExceptions">true</bool>
 
-    <screenName name="ru.evendate.android.MainActivity">Main Screen</screenName>
-    <screenName name="ru.evendate.android.AuthActivity">Auth Screen</screenName>
-    <screenName name="ru.evendate.android.EventDetailActivity">Event Screen</screenName>
-    <screenName name="ru.evendate.android.OrganizationDetailActivity">Organization Screen</screenName>
-    <screenName name="ru.evendate.android.UserListActivity">User List Screen</screenName>
-    <screenName name="ru.evendate.android.EvendateIntro">Intro Screen</screenName>
+    <screenName name="ru.evendate.android.ui.MainActivity">Main Screen</screenName>
+    <screenName name="ru.evendate.android.ui.AuthActivity">Auth Screen</screenName>
+    <screenName name="ru.evendate.android.ui.EventDetailActivity">Event Screen</screenName>
+    <screenName name="ru.evendate.android.ui.OrganizationDetailActivity">Organization Screen</screenName>
+    <screenName name="ru.evendate.android.ui.UserListActivity">User List Screen</screenName>
+    <screenName name="ru.evendate.android.ui.EvendateIntro">Intro Screen</screenName>
     <screenName name="ru.evendate.android.ui.UserProfileActivity">User Profile Screen</screenName>
 </resources>

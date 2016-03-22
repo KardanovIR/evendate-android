@@ -13,7 +13,6 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
-import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
@@ -43,9 +42,10 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
                 .into(holder.mAvatarView);
 
         holder.mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
-        holder.recyclerView.setLayoutManager(
-                new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
-                        LinearLayoutManager.VERTICAL, false));
+        WrapLinearLayoutManager manager =
+                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        manager.setAutoMeasureEnabled(false);
+        holder.recyclerView.setLayoutManager(manager);
         holder.recyclerView.setAdapter(holder.mActionTargetsAdapter);
         holder.mActionTargetsAdapter.setList(type.getTargetList());
         holder.recyclerView.setNestedScrollingEnabled(false);

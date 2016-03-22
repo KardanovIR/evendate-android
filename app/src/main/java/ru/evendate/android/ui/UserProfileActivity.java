@@ -35,8 +35,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    UserAdapter mUserAdapter;
-    UserLoader mLoader;
+    private UserAdapter mUserAdapter;
+    private UserLoader mLoader;
 
     private ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
@@ -75,6 +75,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         setupStat();
+        mLoader.getData(userId);
     }
 
     @Override
@@ -150,14 +151,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mLoader.getData(userId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         mLoader.cancel();
     }
 }

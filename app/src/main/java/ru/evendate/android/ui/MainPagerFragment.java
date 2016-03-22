@@ -15,6 +15,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.MainPagerAdapter;
 
 /**
  * Created by Dmitry on 23.01.2016.

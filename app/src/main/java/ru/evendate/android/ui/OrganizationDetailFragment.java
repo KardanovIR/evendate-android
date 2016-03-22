@@ -43,9 +43,9 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         ReelFragment.OnEventsDataLoadedListener, LoaderListener<OrganizationDetail>{
     private final String LOG_TAG = "OrganizationFragment";
 
-    ReelFragment mReelFragment;
-    OrganizationAdapter mAdapter;
-    OrganizationLoader mOrganizationLoader;
+    private ReelFragment mReelFragment;
+    private OrganizationAdapter mAdapter;
+    private OrganizationLoader mOrganizationLoader;
 
     private int organizationId = -1;
     public static final String URI = "uri";
@@ -104,6 +104,7 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
         mOrganizationLoader.setLoaderListener(this);
 
         mFAB.setOnClickListener(this);
+        mOrganizationLoader.getOrganization(organizationId);
         return rootView;
     }
 
@@ -237,14 +238,8 @@ public class OrganizationDetailFragment extends Fragment implements View.OnClick
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mOrganizationLoader.getOrganization(organizationId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         mOrganizationLoader.cancel();
     }
 }

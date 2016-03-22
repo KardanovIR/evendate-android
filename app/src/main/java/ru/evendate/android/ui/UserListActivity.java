@@ -13,7 +13,7 @@ import ru.evendate.android.R;
  * Created by Dmitry on 04.02.2016.
  */
 public class UserListActivity extends AppCompatActivity {
-    UserListFragment mUserListFragment;
+    private UserListFragment mUserListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
