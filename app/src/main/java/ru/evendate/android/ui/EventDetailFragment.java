@@ -164,7 +164,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         public void run() {
             ViewTreeObserver observer = mScrollView.getViewTreeObserver();
             observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener(){
-
                 @Override
                 public void onScrollChanged() {
                     if(mScrollView.getScrollY() >= mEventImageView.getHeight()){

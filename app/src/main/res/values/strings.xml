@@ -70,6 +70,9 @@
     <string name="organization_friends">friends</string>
     <string name="favorite_events">favorite events</string>
 
+    <string name="event_word_and">and</string>
+    <string name="event_word_friends">friend</string>
+
     <!-- strings for sign in -->
     <string name="sing_in_description">Sing in via social network</string>
     <string name="sing_in_vk">Vkontakte</string>

@@ -10,6 +10,7 @@
     <color name="text_primary">#FFFFFF</color>
     <color name="window_background">#FFFFFF</color>
     <color name="window_reel_background">#EEEEEE</color>
+    <color name="translucent">#00000000</color>
 
 
     <color name="background_color">#ff819ab7</color>

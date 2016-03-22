@@ -33,7 +33,7 @@
             android:paddingRight="20dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp" />
-        <LinearLayout
+        <ru.evendate.android.views.UsersView
             android:id="@+id/user_container"
             android:layout_width="match_parent"
             android:layout_height="40dp"

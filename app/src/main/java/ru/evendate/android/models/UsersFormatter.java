@@ -19,4 +19,13 @@ public class UsersFormatter {
         return users.size() + " " + c.getString(R.string.event_word_users_and)
                 + " " + friend_count + " " + c.getString(R.string.event_word_friends_add);
     }
+    public static String formatUsers(Context c, OrganizationDetail organization){
+        int friend_count = 0;
+        for (User user : organization.getSubscribedUsersList()) {
+            if(user.is_friend())
+                friend_count++;
+        }
+        return organization.getSubscribedUsersList().size() + " " + c.getString(R.string.event_word_and)
+                + " " + friend_count + " " + c.getString(R.string.event_word_friends);
+    }
 }
