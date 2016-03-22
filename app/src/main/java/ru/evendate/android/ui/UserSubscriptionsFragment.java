@@ -18,7 +18,7 @@ import ru.evendate.android.models.UserDetail;
 public class UserSubscriptionsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    SubscriptionsAdapter mAdapter;
+    private SubscriptionsAdapter mAdapter;
     private UserDetail mUser;
 
     public static UserSubscriptionsFragment newInstance(UserDetail user){

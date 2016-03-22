@@ -41,8 +41,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         OrganizationEventsAdapter.OrganizationCardController {
     private final String LOG_TAG = "OrganizationFragment";
 
-    OrganizationEventsAdapter mAdapter;
-    OrganizationLoader mOrganizationLoader;
+    private OrganizationEventsAdapter mAdapter;
+    private OrganizationLoader mOrganizationLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private int organizationId = -1;
@@ -99,6 +99,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                 setImageViewY();
             }
         });
+        mOrganizationLoader.getOrganization(organizationId);
         return rootView;
     }
 
@@ -186,14 +187,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mOrganizationLoader.getOrganization(organizationId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         mOrganizationLoader.cancel();
     }
 }

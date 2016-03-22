@@ -48,7 +48,7 @@ public class UserLoader extends AbstractLoader<UserDetail> {
             // something went completely south (like no internet connection)
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
+                Log.e(LOG_TAG, t.getMessage());
                 onError();
             }
         });

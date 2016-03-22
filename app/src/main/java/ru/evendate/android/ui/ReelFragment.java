@@ -35,7 +35,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     private android.support.v7.widget.RecyclerView mRecyclerView;
 
     private EventsAdapter mAdapter;
-    EventsLoader mEventLoader;
+    private EventsLoader mEventLoader;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
@@ -154,6 +154,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
             }
         });
         initLoader();
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventLoader.getData();
         return rootView;
     }
 
@@ -189,14 +191,14 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     /**
      * notify about finishing a download
      */
-    interface OnEventsDataLoadedListener{
+    public interface OnEventsDataLoadedListener{
         void onEventsDataLoaded();
     }
 
     /**
      *
      */
-    interface OnRefreshListener{
+    public interface OnRefreshListener{
         void onRefresh();
     }
 
@@ -223,16 +225,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mEventLoader.getData();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mSwipeRefreshLayout.setRefreshing(false);
+    public void onDestroy() {
+        super.onDestroy();
         mEventLoader.cancel();
     }
 }

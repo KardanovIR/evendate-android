@@ -28,12 +28,12 @@ public class UserListFragment extends Fragment{
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
-    OrganizationLoader mOrganizationLoader;
-    EventLoader mEventLoader;
+    private OrganizationLoader mOrganizationLoader;
+    private EventLoader mEventLoader;
     private UsersAdapter mAdapter;
-    static final String TYPE = "type";
-    static final String EVENT_ID = "event_id";
-    static final String ORGANIZATION_ID = "organization_id";
+    public static final String TYPE = "type";
+    public static final String EVENT_ID = "event_id";
+    public static final String ORGANIZATION_ID = "organization_id";
     private int type = 0;
     private int organizationId;
     private int eventId;
@@ -83,6 +83,10 @@ public class UserListFragment extends Fragment{
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        if (type == TypeFormat.event.nativeInt)
+            loadEvent();
+        else
+            loadOrganization();
         return rootView;
     }
 
@@ -161,17 +165,8 @@ public class UserListFragment extends Fragment{
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (type == TypeFormat.event.nativeInt)
-            loadEvent();
-        else
-            loadOrganization();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         if (type == TypeFormat.event.nativeInt)
             mEventLoader.cancel();
         else
