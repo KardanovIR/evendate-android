@@ -56,14 +56,19 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         //just change that fucking home icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.mipmap.ic_menu_white);
-        mToolbar = toolbar;
+        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
         mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.getDrawer().openDrawer();
+            }
+        });
 
         //mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         //mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
@@ -251,5 +256,15 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     protected void onStart() {
         super.onStart();
         mDrawer.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawer.getDrawer().isDrawerOpen()) {
+            mDrawer.getDrawer().closeDrawer();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }
