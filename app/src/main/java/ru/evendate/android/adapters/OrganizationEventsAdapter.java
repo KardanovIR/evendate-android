@@ -5,8 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -86,6 +89,7 @@ public class OrganizationEventsAdapter extends EventsAdapter{
                     .load(mOrganization.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mLogoView);
+            holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
         } else{
             super.onBindViewHolder(viewHolder, position - 1);
         }
@@ -113,6 +117,8 @@ public class OrganizationEventsAdapter extends EventsAdapter{
         @Bind(R.id.organization_description) TextView mDescriptionView;
         @Bind(R.id.organization_place) TextView mPlaceView;
         @Bind(R.id.organization_users_description) TextView mUsersDescriptionView;
+        @Bind(R.id.organization_more_container) RelativeLayout mOrganizationMoreContainer;
+        @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
 
         @Bind({ R.id.organization_divider, R.id.organization_description_label,
                 R.id.organization_description, R.id.organization_place_label,
@@ -124,15 +130,15 @@ public class OrganizationEventsAdapter extends EventsAdapter{
             super(itemView);
             holderView = itemView;
             ButterKnife.bind(this, itemView);
-            ButterKnife.apply(mDescriptionViews, GONE);
+            mOrganizationMoreContainer.setVisibility(View.GONE);
             mMoreToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        ButterKnife.apply(mDescriptionViews, VISIBLE);
+                        expand(mOrganizationMoreContainer);
                     }
                     else{
-                        ButterKnife.apply(mDescriptionViews, GONE);
+                        collapse(mOrganizationMoreContainer);
                     }
                 }
             });
@@ -169,6 +175,59 @@ public class OrganizationEventsAdapter extends EventsAdapter{
             mOrganizationCardController.onUsersClicked();
         }
 
+        public void expand(final View v) {
+            v.measure(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            final int targetHeight = v.getMeasuredHeight();
+
+            // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+            v.getLayoutParams().height = 1;
+            v.setVisibility(View.VISIBLE);
+            Animation a = new Animation()
+            {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    v.getLayoutParams().height = interpolatedTime == 1
+                            ? RelativeLayout.LayoutParams.WRAP_CONTENT
+                            : (int)(targetHeight * interpolatedTime);
+                    v.requestLayout();
+                }
+
+                @Override
+                public boolean willChangeBounds() {
+                    return true;
+                }
+            };
+
+            // 1dp/ms
+            a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+            v.startAnimation(a);
+        }
+
+        public void collapse(final View v) {
+            final int initialHeight = v.getMeasuredHeight();
+
+            Animation a = new Animation()
+            {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    if(interpolatedTime == 1){
+                        v.setVisibility(View.GONE);
+                    }else{
+                        v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+                        v.requestLayout();
+                    }
+                }
+
+                @Override
+                public boolean willChangeBounds() {
+                    return true;
+                }
+            };
+
+            // 1dp/ms
+            a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+            v.startAnimation(a);
+        }
 
     }
     public interface OrganizationCardController{

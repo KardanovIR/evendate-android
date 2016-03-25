@@ -1,8 +1,14 @@
 package ru.evendate.android.ui;
 
+import android.animation.Animator;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -13,10 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -52,11 +60,15 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.organization_image) ImageView mBackgroundView;
-
-    int appBarOffset = 0;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.organization_toolbar_title) TextView mToolbarTitle;
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
+    LinearLayoutManager mLayoutManager;
     int scrollOffset = 0;
-
-
+    int toolbarColor = Color.TRANSPARENT;
+    boolean isToolbarTransparent = true;
+    ValueAnimator colorAnimation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +76,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         View rootView = inflater.inflate(R.layout.fragment_organization, container, false);
         ButterKnife.bind(this, rootView);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        mToolbar.setTitle("");
+        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle args = getArguments();
@@ -78,34 +92,100 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                     .setLabel(Long.toString(organizationId));
             tracker.send(event.build());
         }
-
         mAdapter = new OrganizationEventsAdapter(getContext(), this);
 
         mOrganizationLoader = new OrganizationLoader(getActivity());
         mOrganizationLoader.setLoaderListener(this);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mToolbar.setBackgroundColor(toolbarColor);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
-                setImageViewY();
+                setImageViewY(recyclerView);
+                int targetColor;
+                if(checkOrgCardScrolling(recyclerView) == isToolbarTransparent)
+                    return;
+                if(isToolbarTransparent){
+                    targetColor = getResources().getColor(R.color.primary);
+                }
+                else
+                    targetColor = Color.TRANSPARENT;
+                if(colorAnimation != null)
+                    colorAnimation.cancel();
+                colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), toolbarColor, targetColor);
+                colorAnimation.setDuration(200); // milliseconds
+                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator) {
+                        toolbarColor = (int) animator.getAnimatedValue();
+                        mToolbar.setBackgroundColor(toolbarColor);
+                    }
+                });
+                colorAnimation.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (Build.VERSION.SDK_INT < 21)
+                            return;
+                        if(isToolbarTransparent){
+                            mAppBarLayout.setElevation(0);
+                        }
+                    }
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (Build.VERSION.SDK_INT < 21)
+                            return;
+                        if(!isToolbarTransparent){
+                            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                                    getResources().getDisplayMetrics());
+                            mAppBarLayout.setElevation(px);
+                        }
+                    }
+                    @Override
+                    public void onAnimationCancel(Animator animation) {}
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {}
+                });
+                isToolbarTransparent = !isToolbarTransparent;
+                colorAnimation.start();
             }
         });
-        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                appBarOffset = Math.abs(verticalOffset);
-                setImageViewY();
-            }
-        });
+        //mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        //    @Override
+        //    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        //        appBarOffset = Math.abs(verticalOffset);
+        //        setImageViewY();
+        //    }
+        //});
         mOrganizationLoader.getOrganization(organizationId);
         return rootView;
     }
-
-    private void setImageViewY(){
-        mBackgroundView.setY((-appBarOffset - scrollOffset) * 0.5f);
+    private boolean checkOrgCardScrolling(RecyclerView recyclerView){
+        float imageHeight = getResources().getDimension(R.dimen.organization_background_height);
+        float actionBarHeight = 0;
+        TypedValue tv = new TypedValue();
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+        }
+        int index = mLayoutManager.findFirstVisibleItemPosition();
+        return mAdapter.getItemViewType(index) == R.layout.card_organization_detail
+                && (Math.abs(recyclerView.computeVerticalScrollOffset()) + actionBarHeight) < imageHeight;
+    }
+    private boolean checkOrgCardVisible(){
+        int index = mLayoutManager.findFirstVisibleItemPosition();
+        return mAdapter.getItemViewType(index) == R.layout.card_organization_detail;
+    }
+    private void setImageViewY(RecyclerView recyclerView){
+        scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
+        if(checkOrgCardVisible()){
+            mBackgroundView.setVisibility(View.VISIBLE);
+            mBackgroundView.setY(-scrollOffset * 0.5f);
+        }
+        else
+            mBackgroundView.setVisibility(View.INVISIBLE);
     }
     public void onSubscribed() {
         OrganizationDetail organization = mAdapter.getOrganization();
@@ -169,6 +249,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                 .load(organization.getBackgroundUrl())
                 .error(R.drawable.default_background)
                 .into(mBackgroundView);
+        mToolbarTitle.setText(organization.getShortName());
     }
 
     @Override
@@ -192,4 +273,5 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         super.onDestroy();
         mOrganizationLoader.cancel();
     }
+
 }

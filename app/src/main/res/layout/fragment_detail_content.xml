@@ -29,11 +29,11 @@
                 <TextView
                     android:id="@+id/event_price_label"
                     app:layout_columnWeight="1"
-                    android:text="Цена" />
+                    android:text="@string/event_price" />
                 <TextView
                     android:id="@+id/event_registration_label"
                     app:layout_columnWeight="1"
-                    android:text="Регистрация" />
+                    android:text="@string/event_registration" />
                 <TextView
                     android:id="@+id/event_price"
                     app:layout_columnWeight="1"

@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/organization_subscribers"
+                android:text="@string/organization_card_subscribers"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:gravity="center" />

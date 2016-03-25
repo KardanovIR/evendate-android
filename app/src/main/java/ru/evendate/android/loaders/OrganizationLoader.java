@@ -17,7 +17,7 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  * Created by Dmitry on 02.02.2016.
  */
 public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
-    private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
+    private final String LOG_TAG = OrganizationLoader.class.getSimpleName();
 
     public OrganizationLoader(Context context) {
         super(context);

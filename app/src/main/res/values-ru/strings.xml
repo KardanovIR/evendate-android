@@ -21,13 +21,12 @@
     <string name="favorite">Избранное</string>
     <string name="organization_event_number">мероприятий</string>
     <string name="organization_friends">друзей</string>
-    <string name="organization_subscribers">подписчиков</string>
+    <string name="organization_card_subscribers">подписчиков</string>
     <string name="event_link">Подробнее</string>
     <string name="event_organization">Организация</string>
     <string name="event_participants">участников</string>
     <string name="event_place">Место</string>
     <string name="event_tags">Теги</string>
-    <string name="favorite_events">избранных событий</string>
     <string name="event_description">Описание</string>
     <string name="feed">Лента</string>
     <string name="account_already_exists">Аккаунт уже существует</string>
@@ -77,4 +76,15 @@
     <string name="event_registration_till">До</string>
     <string name="event_show_on_map">ПОКАЗАТЬ НА КАРТЕ</string>
     <string name="user_card_all">ВСЕ</string>
+    <string name="organization_word_friends">друзей</string>
+    <string name="organization_word_and">и</string>
+    <string name="organization_unsubscribe">ОТПИСАТЬСЯ</string>
+    <string name="organization_subscribers">ВСЕ ПОДПИСЧИКИ</string>
+    <string name="organization_subscribe">ПОДПИСАТЬСЯ</string>
+    <string name="organization_page">Страница организатора</string>
+    <string name="organization_more">ПОДРОБНЕЕ</string>
+    <string name="organization_go_to_page">ПЕРЕЙТИ К СТРАНИЦЕ</string>
+    <string name="organization_description">Описание</string>
+    <string name="organization_background_description">Фоновое изображение организации</string>
+    <string name="organization_address">Адрес организатора</string>
 </resources>

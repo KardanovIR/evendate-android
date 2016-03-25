@@ -25,7 +25,7 @@ public class UsersFormatter {
             if(user.is_friend())
                 friend_count++;
         }
-        return organization.getSubscribedUsersList().size() + " " + c.getString(R.string.event_word_and)
-                + " " + friend_count + " " + c.getString(R.string.event_word_friends);
+        return organization.getSubscribedUsersList().size() + " " + c.getString(R.string.organization_word_and)
+                + " " + friend_count + " " + c.getString(R.string.organization_word_friends);
     }
 }

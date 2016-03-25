@@ -256,6 +256,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
+            if(mEvent.getUserList().size() == 0){
+                mUserFavoritedCard.setVisibility(View.GONE);
+            }
             mToolbarTitle.setText(mEvent.getTitle());
             setFabIcon();
             mUserFavoritedCard.setUsers(mEvent.getUserList());

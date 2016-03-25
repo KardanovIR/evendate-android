@@ -41,6 +41,8 @@
     <string name="event_place">Place</string>
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>
+    <string name="event_registration">Регистрация</string>
+    <string name="event_price">Цена</string>
 
     <string name="action_share">Share</string>
 
@@ -63,15 +65,24 @@
     <!-- user favorite card -->
     <string name="user_card_all">ALL</string>
 
+    <!-- cards strings -->
+    <string name="organization_card_subscribers">subscribers</string>
 
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
-    <string name="organization_subscribers">subscribers</string>
     <string name="organization_friends">friends</string>
-    <string name="favorite_events">favorite events</string>
 
-    <string name="event_word_and">and</string>
-    <string name="event_word_friends">friend</string>
+    <string name="organization_word_and">and</string>
+    <string name="organization_word_friends">friends</string>
+    <string name="organization_subscribe">SUBSCRIBE</string>
+    <string name="organization_unsubscribe">UNSUBDCRIBE</string>
+    <string name="organization_subscribers">ALL SUBSCRIBERS</string>
+    <string name="organization_more">MORE</string>
+    <string name="organization_go_to_page">GO TO PAGE</string>
+    <string name="organization_description">Description</string>
+    <string name="organization_page">Organization page</string>
+    <string name="organization_address">Organization address</string>
+    <string name="organization_background_description">Organization background image</string>
 
     <!-- strings for sign in -->
     <string name="sing_in_description">Sing in via social network</string>
