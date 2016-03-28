@@ -34,7 +34,7 @@ public interface EvendateService {
             @Header("Authorization") String authorization,
             @Query("unique") boolean unique,
             @Query("my") boolean my,
-            @Query("since") String since,
+            @Query("future") boolean future,
             @Query("fields") String fields
     );
 

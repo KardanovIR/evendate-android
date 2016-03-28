@@ -45,7 +45,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
     private MaterialCalendarView mCalendarView;
     private ReelFragment mReelFragment;
     private OneDayDecorator mOneDayDecorator;
-    public SlidingUpPanelLayout mSlidingUpPanelLayout;
+    private SlidingUpPanelLayout mSlidingUpPanelLayout;
     private Date minimumDate;
     private ToggleButton mToggleButton;
     private TextView mSelectedDateTextView;
@@ -156,6 +156,9 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
 
             }
         });
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
+        mLoader.getData();
         return rootView;
     }
     @Override
@@ -350,7 +353,6 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         super.onStart();
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
-        mLoader.getData();
     }
 
     @Override
@@ -358,6 +360,10 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         super.onStop();
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mLoader.cancel();
     }
 }

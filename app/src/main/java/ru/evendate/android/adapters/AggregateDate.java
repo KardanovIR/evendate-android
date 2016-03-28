@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by ds_gordeev on 19.02.2016.
  */
 public class AggregateDate<T> implements Comparable<AggregateDate>{
-    long date;
+    private long date;
     private ArrayList<T> mList;
 
     public AggregateDate(long date) {

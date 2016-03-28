@@ -12,7 +12,7 @@ import ru.evendate.android.R;
  * Created by Dmitry on 04.02.2016.
  */
 public class StatusBarColorChanger implements AppBarLayout.OnOffsetChangedListener {
-    Activity mContext;
+    private Activity mContext;
     public StatusBarColorChanger(Activity context) {
         mContext = context;
     }

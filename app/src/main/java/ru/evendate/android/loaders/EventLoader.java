@@ -23,7 +23,7 @@ public class EventLoader extends AbstractLoader<EventDetail> {
     }
 
     public void getData(int eventId){
-        Log.d(LOG_TAG, "getting event");
+        Log.d(LOG_TAG, "getting event " + eventId);
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
@@ -47,7 +47,7 @@ public class EventLoader extends AbstractLoader<EventDetail> {
 
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
+                Log.e(LOG_TAG, t.getMessage());
                 onError();
             }
         });

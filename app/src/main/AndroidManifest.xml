@@ -106,7 +106,6 @@
 
         <activity
             android:name=".ui.EventDetailActivity"
-            android:label="@string/title_activity_detail"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
@@ -174,6 +173,14 @@
             android:name=".gcm.RegistrationGCMIntentService"
             android:exported="false">
         </service>
+        <!-- Used for Google Play Store Campaign Measurement-->
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 

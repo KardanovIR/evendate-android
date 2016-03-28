@@ -26,7 +26,7 @@ import ru.evendate.android.models.EventFeed;
 
 /**
  * fragment containing a reel
- * used in calendar, main pager, detail organization activities
+ * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
 public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>>{
@@ -35,7 +35,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     private android.support.v7.widget.RecyclerView mRecyclerView;
 
     private EventsAdapter mAdapter;
-    EventsLoader mEventLoader;
+    private EventsLoader mEventLoader;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
@@ -138,19 +138,14 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
          * listener that let using refresh on top of the event list
          */
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(RecyclerView view, int scrollState) {
-            }
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 boolean enable = false;
-                if (mRecyclerView != null && mRecyclerView.getChildCount() > 0) {
+                if (recyclerView.getChildCount() > 0) {
                     // check if the first item of the list is visible
                     // check if the top of the first item is visible
-                    boolean verticalScrollOffset = mRecyclerView.computeVerticalScrollOffset() == 0;
+                    boolean verticalScrollOffset = recyclerView.computeVerticalScrollOffset() == 0;
                     // enabling or disabling the refresh layout
                     enable = verticalScrollOffset;
                 }
@@ -159,6 +154,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
             }
         });
         initLoader();
+        mSwipeRefreshLayout.setRefreshing(true);
+        mEventLoader.getData();
         return rootView;
     }
 
@@ -177,6 +174,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         }
         mEventLoader.setLoaderListener(this);
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -194,14 +192,14 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     /**
      * notify about finishing a download
      */
-    interface OnEventsDataLoadedListener{
+    public interface OnEventsDataLoadedListener{
         void onEventsDataLoaded();
     }
 
     /**
      *
      */
-    interface OnRefreshListener{
+    public interface OnRefreshListener{
         void onRefresh();
     }
 
@@ -228,16 +226,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mEventLoader.getData();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mSwipeRefreshLayout.setRefreshing(false);
+    public void onDestroy() {
+        super.onDestroy();
         mEventLoader.cancel();
     }
 }
