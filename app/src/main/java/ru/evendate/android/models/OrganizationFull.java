@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class OrganizationFull extends Organization implements OrganizationDetail, OrganizationSubscription{
     public static final String FIELDS_LIST = "description,background_medium_img_url,background_small_img_url," +
-            "img_medium_url,img_small_url,site_url,subscribed_count,is_subscribed,subscription_id,default_address" +
+            "img_medium_url,img_small_url,site_url,subscribed_count,is_subscribed,subscription_id,default_address," +
             "subscribed,events{fields:'" + EventFeed.FIELDS_LIST + "'}";
 
     String description;
