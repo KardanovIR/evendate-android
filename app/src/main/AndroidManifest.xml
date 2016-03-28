@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- gcm_permissions -->
-    <uses-permission android:name="ru.getlect.evendate.evendate.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="ru.evendate.android.c2dm.permission.RECEIVE" />
 
 
     <application
@@ -152,7 +152,7 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="ru.getlect.evendate.evendate.gcm" />
+                <category android:name="ru.evendate.android.gcm" />
             </intent-filter>
         </receiver>
         <service
