@@ -87,4 +87,7 @@
     <string name="organization_description">Описание</string>
     <string name="organization_background_description">Фоновое изображение организации</string>
     <string name="organization_address">Адрес организатора</string>
+    <string name="dates_view_less">МЕНЬШЕ</string>
+    <string name="event_price">Цена</string>
+    <string name="event_registration">Регистрация</string>
 </resources>

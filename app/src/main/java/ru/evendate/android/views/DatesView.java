@@ -4,14 +4,10 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -19,7 +15,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
-import ru.evendate.android.models.Date;
 import ru.evendate.android.models.DateFull;
 
 /**
@@ -29,8 +24,7 @@ public class DatesView extends CardView {
     private ArrayList<DateFull> mDates;
     @Bind(R.id.container) LinearLayout mLayout;
     private int minDates = 5;
-    private boolean isExpanded = false;
-    @Bind(R.id.expand_button) TextView ExpandButton;
+    @Bind(R.id.expand_button) ToggleButton ExpandButton;
 
     public DatesView(Context context) {
         this(context, null);
@@ -40,6 +34,7 @@ public class DatesView extends CardView {
         super(context, attrs);
         View rootView = inflate(getContext(), R.layout.view_dates, this);
         ButterKnife.bind(this, rootView);
+        ExpandButton.setChecked(false);
         if(isInEditMode()){
             mockup();
             return;
@@ -62,7 +57,7 @@ public class DatesView extends CardView {
         if(mLayout.getChildCount() != 0)
             mLayout.removeViewsInLayout(0, mLayout.getChildCount());
         for (DateFull date : mDates){
-            if(!isExpanded){
+            if(!ExpandButton.isChecked()){
                 if(mLayout.getChildCount() == minDates)
                     break;
             }
@@ -94,8 +89,8 @@ public class DatesView extends CardView {
     }
 
     @OnClick(R.id.expand_button)
-    public void expand(TextView button) {
-        isExpanded = !isExpanded;
+    public void expand(ToggleButton button) {
+        button.setChecked(button.isChecked());
         initDates();
     }
 }

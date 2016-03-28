@@ -33,11 +33,13 @@
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp">
         </LinearLayout>
-        <TextView
+        <ToggleButton
             android:id="@+id/expand_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dates_view_more"
+            android:minHeight="0dp"
+            android:textOff="@string/dates_view_more"
+            android:textOn="@string/dates_view_less"
             android:textSize="14sp"
             android:textColor="#ff5f9e"
             android:layout_below="@+id/container"
@@ -45,6 +47,7 @@
             android:paddingTop="16dp"
             android:paddingRight="48dp"
             android:paddingBottom="16dp"
-            android:paddingLeft="48dp" />
+            android:paddingLeft="48dp"
+            style="?android:attr/borderlessButtonStyle" />
     </RelativeLayout>
 </merge>
