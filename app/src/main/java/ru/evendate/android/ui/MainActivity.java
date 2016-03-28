@@ -6,11 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,9 +20,6 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.AuthActivity;
-import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.Organization;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
@@ -34,13 +28,10 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     private Fragment mFragment;
     private Toolbar mToolbar;
-    private AppBarLayout mAppBar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
-    private boolean mDestroyed = false;
 
-    private AlertDialog mAlertDialog;
     private SharedPreferences mSharedPreferences = null;
     public final String APP_PREF = "evendate_pref";
     public final String FIRST_RUN = "first_run";
@@ -63,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_menu_white);
         mToolbar = toolbar;
-        mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
 
         //mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         //mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
@@ -102,25 +92,15 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
         mDrawer = EvendateDrawer.newInstance(this);
-        mDrawer.getDrawer().setOnDrawerItemClickListener(new MainNavigationItemClickListener(this));
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
         mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
-    }
-
-    /**
-     * Returns true if the final {@link #onDestroy()} call has been made
-     * on the Activity, so this instance is now dead.
-     * cause api 17 has not this method
-     */
-    @Override
-    public boolean isDestroyed() {
-        return mDestroyed;
+        mDrawer.start();
     }
 
     @Override
     protected void onDestroy() {
-        mDestroyed = true;
-        if(mAlertDialog != null)
-            mAlertDialog.cancel();
+        mDrawer.cancel();
         super.onDestroy();
     }
 
@@ -146,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         return true;
     }
 
+    /**
+     * check account exists and start intro if no
+     */
     private void checkAccount(){
         Account account = EvendateSyncAdapter.getSyncAccount(this);
         if(account == null){
@@ -168,15 +151,12 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     /**
-     * handle clicks on items of navigation drawer list
-     * it's maybe actions or accounts menu
+     * handle clicks on items of navigation drawer list in main activity
      */
     private class MainNavigationItemClickListener
-            implements Drawer.OnDrawerItemClickListener{
-        private Context mContext;
-
-        public MainNavigationItemClickListener(Context context) {
-            mContext = context;
+            extends NavigationItemSelectedListener{
+        public MainNavigationItemClickListener(Context context, Drawer drawer) {
+            super(context, drawer);
         }
 
         @Override
@@ -218,40 +198,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                         mToolbar.setElevation(px);
                 }
                 break;
-                case R.id.nav_add_account:
-                    Intent authIntent = new Intent(mContext, AuthActivity.class);
-                    startActivity(authIntent);
-                    break;
-                case R.id.nav_account_management:
-                    Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-                    //TODO не робит(
-                    intent.putExtra(Settings.EXTRA_AUTHORITIES, getResources().getString(R.string.content_authority));
-                    intent.putExtra(Settings.EXTRA_AUTHORITIES, getResources().getString(R.string.account_type));
-                    startActivity(intent);
-                    break;
-                default:{
-                        //open organization from subs
-                        int id = ((Organization)drawerItem.getTag()).getEntryId();
-                        Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
-                        detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
-                                .buildUpon().appendPath(Long.toString(id)).build());
-                        startActivity(detailIntent);
-                    }
+                default:
+                    super.onItemClick(view, position, drawerItem);
             }
-            mDrawer.getDrawer().closeDrawer();
+            mDrawer.closeDrawer();
             return true;
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mDrawer.cancel();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mDrawer.start();
     }
 }

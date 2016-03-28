@@ -19,6 +19,7 @@ import ru.evendate.android.adapters.MainPagerAdapter;
 
 /**
  * Created by Dmitry on 23.01.2016.
+ * contain logic of switching main fragments in main activity
  */
 public class MainPagerFragment extends Fragment {
     private ViewPager mViewPager;
@@ -46,11 +47,19 @@ public class MainPagerFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * translate refresh message from child fragment to parent main activity
+     * @param refreshListener ReelFragment.OnRefreshListener
+     */
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
         mRefreshListener = refreshListener;
         if(mMainPagerAdapter != null)
             mMainPagerAdapter.setOnRefreshListener(refreshListener);
     }
+
+    /**
+     * setup screen names of fragments for statistic screen tracking
+     */
     private void setupStat(){
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

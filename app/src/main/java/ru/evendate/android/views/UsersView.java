@@ -22,6 +22,7 @@ import ru.evendate.android.models.UserDetail;
 public class UsersView extends LinearLayout {
     private ArrayList<UserDetail> mUsers;
     private int userLimit = 6;
+
     public UsersView(Context context) {
         this(context, null);
     }
@@ -38,10 +39,11 @@ public class UsersView extends LinearLayout {
         } finally {
             a.recycle();
         }
-        if(isInEditMode()){
+        if (isInEditMode()) {
             mockup();
         }
     }
+
     public ArrayList<UserDetail> getUsers() {
         return mUsers;
     }
@@ -50,8 +52,9 @@ public class UsersView extends LinearLayout {
         this.mUsers = users;
         setupUsers();
     }
-    private void setupUsers(){
-        if(getChildCount() != 0)
+
+    private void setupUsers() {
+        if (getChildCount() != 0)
             removeViewsInLayout(0, getChildCount());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
                 MarginLayoutParams.MATCH_PARENT);
@@ -62,8 +65,8 @@ public class UsersView extends LinearLayout {
                 r.getDisplayMetrics()
         );
         lp.setMargins(0, 0, px, 0);
-        for(int i = 0; i < mUsers.size(); i++){
-            if(i > userLimit - 1)
+        for (int i = 0; i < mUsers.size(); i++) {
+            if (i > userLimit - 1)
                 break;
             CircleImageView circleImageView = new CircleImageView(getContext());
             circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -72,7 +75,8 @@ public class UsersView extends LinearLayout {
             addView(circleImageView, lp);
         }
     }
-    private void mockup(){
+
+    private void mockup() {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
                 MarginLayoutParams.MATCH_PARENT);
         Resources r = getContext().getResources();
@@ -82,7 +86,7 @@ public class UsersView extends LinearLayout {
                 r.getDisplayMetrics()
         );
         lp.setMargins(0, 0, px, 0);
-        for(int i = 0; i < userLimit; i++){
+        for (int i = 0; i < userLimit; i++) {
             CircleImageView circleImageView = new CircleImageView(getContext());
             circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             circleImageView.setImageResource(R.drawable.butterfly);

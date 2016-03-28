@@ -18,7 +18,7 @@ import ru.evendate.android.models.Tag;
  * Created by Dmitry on 27.02.2016.
  */
 @SuppressWarnings("unused")
-public class TagsView extends ViewGroup{
+public class TagsView extends ViewGroup {
     private ArrayList<Tag> mTags;
 
     public TagsView(Context context) {
@@ -29,22 +29,22 @@ public class TagsView extends ViewGroup{
         super(context, attrs);
     }
 
-    public void setTags(ArrayList<Tag> tags){
+    public void setTags(ArrayList<Tag> tags) {
         mTags = tags;
         initTags();
         invalidate();
     }
 
-    public ArrayList<Tag> getTags(){
+    public ArrayList<Tag> getTags() {
         return mTags;
     }
 
-    private void initTags(){
-        if(mTags == null)
+    private void initTags() {
+        if (mTags == null)
             return;
-        if(getChildCount() != 0)
+        if (getChildCount() != 0)
             removeViewsInLayout(0, getChildCount());
-        for (Tag tag : mTags){
+        for (Tag tag : mTags) {
             TagView tagView = new TagView(getContext());
             tagView.setText(tag.getName());
             addView(tagView);
@@ -71,20 +71,19 @@ public class TagsView extends ViewGroup{
             if (child.getVisibility() != GONE) {
                 // Measure the child.
                 measureChildWithMargins(child, 0, widthMeasureSpec, 0, heightMeasureSpec);
-                MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
+                MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
                 int mLeft = lp.leftMargin;
                 int mRight = lp.rightMargin;
                 int mTop = lp.topMargin;
                 int mBottom = lp.bottomMargin;
-                if(rowWidth + mLeft + child.getMeasuredWidth() + mRight > myWidth){
-                    if(childCountInRow != 0){
+                if (rowWidth + mLeft + child.getMeasuredWidth() + mRight > myWidth) {
+                    if (childCountInRow != 0) {
                         childCountInRow = 0;
                         rowWidth = 0;
                     }
                     maxHeight += mTop + child.getMeasuredHeight() + mBottom;
-                }
-                else{
-                    if(childCountInRow == 0)
+                } else {
+                    if (childCountInRow == 0)
                         maxHeight += mTop + child.getMeasuredHeight() + mBottom;
                 }
                 rowWidth += mLeft + child.getMeasuredWidth() + mRight;
@@ -121,7 +120,7 @@ public class TagsView extends ViewGroup{
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
 
-                MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
+                MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
                 int mLeft = lp.leftMargin;
                 int mRight = lp.rightMargin;
                 int mTop = lp.topMargin;
@@ -130,8 +129,8 @@ public class TagsView extends ViewGroup{
                 final int width = mLeft + child.getMeasuredWidth() + mRight;
                 final int height = mTop + child.getMeasuredHeight() + mBottom;
 
-                if(rowWidth + width > rightPos){
-                    if(childCountInRow != 0){
+                if (rowWidth + width > rightPos) {
+                    if (childCountInRow != 0) {
                         childCountInRow = 0;
                         heightOffset += height;
                         rowWidth = 0;
@@ -158,7 +157,7 @@ public class TagsView extends ViewGroup{
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(R.layout.view_tag, this, true);
-            if(attrs == null){
+            if (attrs == null) {
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
@@ -169,7 +168,7 @@ public class TagsView extends ViewGroup{
             mTextView = (TextView) getChildAt(0);
         }
 
-        public void setText(String text){
+        public void setText(String text) {
             mTextView.setText(text);
         }
 

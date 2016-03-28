@@ -26,7 +26,7 @@ import ru.evendate.android.models.EventFeed;
 
 /**
  * fragment containing a reel
- * used in calendar, main pager, detail organization activities
+ * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
 public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>>{
@@ -174,6 +174,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         }
         mEventLoader.setLoaderListener(this);
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

@@ -19,6 +19,8 @@ import ru.evendate.android.models.DateFull;
 
 /**
  * Created by ds_gordeev on 15.03.2016.
+ * date card for event detail
+ * contain also button to expand and collapse when dates more when more than 5
  */
 public class DatesView extends CardView {
     private ArrayList<DateFull> mDates;
@@ -35,30 +37,32 @@ public class DatesView extends CardView {
         View rootView = inflate(getContext(), R.layout.view_dates, this);
         ButterKnife.bind(this, rootView);
         ExpandButton.setChecked(false);
-        if(isInEditMode()){
+        if (isInEditMode()) {
             mockup();
             return;
         }
     }
-    public void setDates(ArrayList<DateFull> dates){
+
+    public void setDates(ArrayList<DateFull> dates) {
         mDates = dates;
         initDates();
-        if(dates.size() < minDates){
+        if (dates.size() < minDates) {
             ExpandButton.setVisibility(GONE);
         }
     }
-    public ArrayList<DateFull> getDates(){
+
+    public ArrayList<DateFull> getDates() {
         return mDates;
     }
 
-    private void initDates(){
-        if(mDates == null)
+    private void initDates() {
+        if (mDates == null)
             return;
-        if(mLayout.getChildCount() != 0)
+        if (mLayout.getChildCount() != 0)
             mLayout.removeViewsInLayout(0, mLayout.getChildCount());
-        for (DateFull date : mDates){
-            if(!ExpandButton.isChecked()){
-                if(mLayout.getChildCount() == minDates)
+        for (DateFull date : mDates) {
+            if (!ExpandButton.isChecked()) {
+                if (mLayout.getChildCount() == minDates)
                     break;
             }
             DatetimeView dateView = new DatetimeView(getContext());
@@ -72,14 +76,14 @@ public class DatesView extends CardView {
         invalidate();
     }
 
-    private void mockup(){
+    private void mockup() {
         long[] str = {
                 1446508800,
                 1448928000,
                 1449014400,
                 1449100800
         };
-        for(long date : str){
+        for (long date : str) {
             DatetimeView dateView = new DatetimeView(getContext());
             dateView.setDate(date);
             ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

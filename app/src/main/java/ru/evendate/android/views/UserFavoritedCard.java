@@ -9,16 +9,19 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.UserDetail;
 
 /**
  * Created by Dmitry on 29.02.2016.
+ * users card for event detail
  */
 public class UserFavoritedCard extends CardView {
-    private UsersView mUsersView;
-    private TextView mAllTextView;
-    private TextView mTitleTextView;
+    @Bind(R.id.user_container) UsersView mUsersView;
+    @Bind(R.id.all_users) TextView mAllTextView;
+    @Bind(R.id.title) TextView mTitleTextView;
 
     public UserFavoritedCard(Context context) {
         this(context, null);
@@ -30,13 +33,11 @@ public class UserFavoritedCard extends CardView {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = inflater.inflate(R.layout.view_user_favorited, this, true);
-        mUsersView = (UsersView)rootView.findViewById(R.id.user_container);
-        mAllTextView = (TextView)rootView.findViewById(R.id.all_users);
-        mTitleTextView = (TextView)rootView.findViewById(R.id.title);
+        ButterKnife.bind(this, rootView);
         mAllTextView.setText(context.getString(R.string.event_users_all));
     }
 
-    public void setOnAllButtonListener(View.OnClickListener clickListener){
+    public void setOnAllButtonListener(View.OnClickListener clickListener) {
         mAllTextView.setOnClickListener(clickListener);
     }
 
@@ -48,7 +49,7 @@ public class UserFavoritedCard extends CardView {
         mUsersView.setUsers(users);
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         mTitleTextView.setText(title);
     }
 
