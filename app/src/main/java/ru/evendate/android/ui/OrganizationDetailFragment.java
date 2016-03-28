@@ -69,6 +69,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     int toolbarColor = Color.TRANSPARENT;
     boolean isToolbarTransparent = true;
     ValueAnimator colorAnimation;
+    EvendateDrawer mDrawer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -160,6 +161,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         //    }
         //});
         mOrganizationLoader.getOrganization(organizationId);
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+        mDrawer.start();
         return rootView;
     }
     private boolean checkOrgCardScrolling(RecyclerView recyclerView){
@@ -272,6 +277,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     public void onDestroy() {
         super.onDestroy();
         mOrganizationLoader.cancel();
+        mDrawer.cancel();
     }
 
 }

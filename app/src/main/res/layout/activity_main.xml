@@ -1,21 +1,14 @@
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="ui.MainActivity">
-    <LinearLayout
+    android:orientation="vertical">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:elevation="0dp">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
         <android.support.v7.widget.Toolbar
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -23,13 +16,9 @@
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:textColorSecondary="#FFFFFF"/>
-        </android.support.design.widget.AppBarLayout>
-        <FrameLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
-
-    <include layout="@layout/nav_drawer_layout" />
-
-</android.support.v4.widget.DrawerLayout>
+    </android.support.design.widget.AppBarLayout>
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

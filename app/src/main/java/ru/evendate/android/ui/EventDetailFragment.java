@@ -108,6 +108,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
+    EvendateDrawer mDrawer;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,6 +225,10 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
         mEventLoader.getData(eventId);
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+        mDrawer.start();
         return rootView;
     }
 
@@ -427,5 +433,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
         mEventLoader.cancel();
+        mDrawer.cancel();
     }
 }

@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -82,6 +83,8 @@ public class OrganizationCatalogFragment extends Fragment
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mLoader.getData();
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
         return rootView;
     }
 
