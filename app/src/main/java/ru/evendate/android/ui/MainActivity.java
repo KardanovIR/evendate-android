@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         //just change that fucking home icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
-        mAppBar = (AppBarLayout)findViewById(R.id.app_bar_layout);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
