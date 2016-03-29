@@ -17,7 +17,7 @@ public class OrganizationDetailActivity extends AppCompatActivity {
 
         Bundle args = new Bundle();
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             Uri organizationUri = intent.getData();
             args.putString(OrganizationDetailFragment.URI, organizationUri.toString());
         }

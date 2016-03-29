@@ -26,7 +26,7 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by Dmitry on 01.12.2015.
  */
 
-public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected Context mContext;
     private ArrayList<EventFeed> mEventList;
@@ -34,12 +34,12 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 
-    public EventsAdapter(Context context, int type){
+    public EventsAdapter(Context context, int type) {
         this.mContext = context;
         this.type = type;
     }
 
-    public void setEventList(ArrayList<EventFeed> eventList){
+    public void setEventList(ArrayList<EventFeed> eventList) {
         mEventList = eventList;
         notifyDataSetChanged();
     }
@@ -47,14 +47,14 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int position) {
         int layoutItemId;
-        if(type == ReelFragment.TypeFormat.ORGANIZATION.type()){
-            layoutItemId = R.layout.reel_item_organization;
-        } else if(type == ReelFragment.TypeFormat.FAVORITES.type()){
-            layoutItemId = R.layout.reel_favorite_item;
-        } else if(type == ReelFragment.TypeFormat.CALENDAR.type()){
-            layoutItemId = R.layout.reel_item;
-        } else{
-            layoutItemId = R.layout.reel_item;
+        if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
+            layoutItemId = R.layout.card_event_organization;
+        } else if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
+            layoutItemId = R.layout.card_event_favorite;
+        } else if (type == ReelFragment.TypeFormat.CALENDAR.type()) {
+            layoutItemId = R.layout.card_event;
+        } else {
+            layoutItemId = R.layout.card_event;
         }
         return layoutItemId;
     }
@@ -70,16 +70,16 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if(mEventList == null)
+        if (mEventList == null)
             return;
         EventFeed eventEntry = mEventList.get(position);
         EventHolder holder = (EventHolder)viewHolder;
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
-        if(holder.mOrganizationTextView != null)
+        if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
-        if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type() &&
-                type != ReelFragment.TypeFormat.ORGANIZATION.type()){
+        if (eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type() &&
+                type != ReelFragment.TypeFormat.ORGANIZATION.type()) {
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
         String date = EventFormatter.formatDate((EventDetail)eventEntry);
@@ -92,7 +92,7 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        if(mEventList == null)
+        if (mEventList == null)
             return 0;
         return mEventList.size();
     }
@@ -100,10 +100,10 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onViewRecycled(RecyclerView.ViewHolder viewHolder) {
         super.onViewRecycled(viewHolder);
-        if(!(viewHolder instanceof EventHolder))
+        if (!(viewHolder instanceof EventHolder))
             return;
         EventHolder holder = (EventHolder)viewHolder;
-        if(holder.mFavoriteIndicator != null)
+        if (holder.mFavoriteIndicator != null)
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
 
@@ -116,7 +116,7 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public View mFavoriteIndicator;
         public int id;
 
-        public EventHolder(View itemView){
+        public EventHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
@@ -129,7 +129,7 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            if(v == holderView){
+            if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
                 mContext.startActivity(intent);

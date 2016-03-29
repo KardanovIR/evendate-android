@@ -16,6 +16,7 @@ public class EvendateSyncService extends Service {
     private static EvendateSyncAdapter sSyncAdapter = null;
     // Object to use as a thread-safe lock
     private static final Object sSyncAdapterLock = new Object();
+
     /*
      * Instantiate the sync adapter object.
      */
@@ -32,10 +33,10 @@ public class EvendateSyncService extends Service {
             }
         }
     }
+
     /**
      * Return an object that allows the system to invoke
      * the sync adapter.
-     *
      */
     @Override
     public IBinder onBind(Intent intent) {

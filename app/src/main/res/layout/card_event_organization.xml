@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="236dp"
     android:id="@+id/cardView"
-    style="@style/OrganizationCard"
-    android:layout_marginLeft="@dimen/organization_card_side_margin"
-    android:layout_marginRight="@dimen/organization_card_side_margin">
+    style="@style/EventOrganizationCard">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

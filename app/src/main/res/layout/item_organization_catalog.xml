@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    style="@style/EventCard">
+    style="@style/OrganizationItem">
     <FrameLayout
         android:id="@+id/icon_frame"
         android:layout_width="72dp"

@@ -21,7 +21,8 @@ public class MeLoader extends AbstractLoader<UserDetail> {
     public MeLoader(Context context) {
         super(context);
     }
-    public void getData(){
+
+    public void getData() {
         Log.d(LOG_TAG, "getting me");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -37,7 +38,7 @@ public class MeLoader extends AbstractLoader<UserDetail> {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData().get(0));
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with me");

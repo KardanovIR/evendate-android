@@ -23,7 +23,8 @@ public class ActionLoader extends AbstractLoader<ArrayList<Action>> {
     public ActionLoader(Context context) {
         super(context);
     }
-    public void getData(int userId){
+
+    public void getData(int userId) {
         Log.d(LOG_TAG, "getting actions");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -39,7 +40,7 @@ public class ActionLoader extends AbstractLoader<ArrayList<Action>> {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with actions");
                     onError();

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class Date extends DataModel implements Comparable<Date>{
+public class Date extends DataModel implements Comparable<Date> {
     @SerializedName("event_date")
     long eventDate;
 

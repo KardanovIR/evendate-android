@@ -9,24 +9,38 @@ public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
             "organization_short_name,is_favorite,dates," +
             "registration_required,registration_till,is_free,min_price";
+
     int getEntryId();
+
     String getTitle();
+
     long getFirstDate();
+
     long getLastDate();
+
     long getNearestDate();
+
     String getImageHorizontalUrl();
+
     String getImageVerticalUrl();
+
     int getOrganizationId();
+
     ArrayList<DateFull> getDateList();
 
     boolean isFavorite();
 
     void setIsFavorite(boolean isFavorite);
+
     String getOrganizationShortName();
 
     void favore();
+
     boolean isRegistrationRequired();
+
     String getRegistrationTill();
+
     boolean isFree();
+
     int getMinPrice();
 }

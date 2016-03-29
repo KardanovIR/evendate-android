@@ -23,7 +23,7 @@ public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
         super(context);
     }
 
-    public void getOrganization(int organizationId){
+    public void getOrganization(int organizationId) {
         Log.d(LOG_TAG, "getting organization " + organizationId);
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -39,7 +39,7 @@ public class OrganizationLoader extends AbstractLoader<OrganizationDetail> {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData().get(0));
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with events");
                     onError();

@@ -23,43 +23,49 @@ public abstract class AbstractLoader<D> {
     public AbstractLoader(Context context) {
         mContext = context;
     }
+
     public void setLoaderListener(LoaderListener<D> listener) {
         this.mListener = listener;
     }
-    protected String peekToken(){
+
+    protected String peekToken() {
         AccountManager accountManager = AccountManager.get(mContext);
         String token = null;
         try {
             token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(mContext),
                     mContext.getString(R.string.account_type));
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(LOG_TAG, "Error with peeking token");
             e.fillInStackTrace();
             mListener.onError();
         }
-        if(token == null){
+        if (token == null) {
             mContext.startActivity(new Intent(mContext, AuthActivity.class));
         }
         return token;
     }
-    protected void invalidateToken(){
+
+    protected void invalidateToken() {
         AccountManager accountManager = AccountManager.get(mContext);
         accountManager.invalidateAuthToken(mContext.getString(R.string.account_type), peekToken());
     }
 
-    protected void onStartLoading(){
+    protected void onStartLoading() {
         isCanceled = false;
     }
-    public void cancel(){
-        if(mCall == null)
+
+    public void cancel() {
+        if (mCall == null)
             return;
         mCall.cancel();
     }
-    protected void onError(){
-        if(!isCanceled)
+
+    protected void onError() {
+        if (!isCanceled)
             mListener.onError();
     }
-    protected void onLoaded(D data){
+
+    protected void onLoaded(D data) {
         isCanceled = true;
         mListener.onLoaded(data);
     }

@@ -78,7 +78,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         });
     }
 
-    public static EvendateDrawer newInstance(Activity context){
+    public static EvendateDrawer newInstance(Activity context) {
 
         //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
@@ -105,7 +105,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                 .build();
         result.withActivity(context)
                 .withAccountHeader(headerResult);
-        EvendateDrawer drawer =  new EvendateDrawer(result.build(), headerResult, context);
+        EvendateDrawer drawer = new EvendateDrawer(result.build(), headerResult, context);
         drawer.setupMenu();
 
         if (Build.VERSION.SDK_INT >= 19) {
@@ -113,7 +113,8 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         }
         return drawer;
     }
-    public void setupMenu(){
+
+    public void setupMenu() {
         mDrawer.removeAllItems();
         mDrawer.addItems(
                 reel_item,
@@ -122,29 +123,33 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                 new SectionDrawerItem().withName(R.string.subscriptions)
         );
     }
-    public AccountHeader getAccountHeader(){
+
+    public AccountHeader getAccountHeader() {
         return mAccountHeader;
     }
-    private void updateSubs(){
+
+    private void updateSubs() {
         setupMenu();
-        for (Organization detail: mSubscriptions) {
+        for (Organization detail : mSubscriptions) {
             mDrawer.addItem(new SubscriptionDrawerItem().withName(detail.getName())
                     .withIcon(detail.getLogoUrl()).withTag(detail).withSelectable(false));
         }
     }
 
-    protected Drawer getDrawer(){
+    protected Drawer getDrawer() {
         return mDrawer;
     }
+
     @Override
     public void onLoaded(ArrayList<Organization> subList) {
         mSubscriptions = subList;
         updateSubs();
     }
 
-    public void update(){
+    public void update() {
         mSubscriptionLoader.getSubscriptions();
     }
+
     @Override
     public void onError() {
         //if(isDestroyed())
@@ -158,11 +163,13 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         //});
         //mAlertDialog.show();
     }
-    public void cancel(){
+
+    public void cancel() {
         mMeLoader.cancel();
         mSubscriptionLoader.cancel();
     }
-    public void start(){
+
+    public void start() {
         mSubscriptionLoader.getSubscriptions();
         mMeLoader.getData();
     }

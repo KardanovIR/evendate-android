@@ -27,24 +27,31 @@ public class Organization extends DataModel {
     public int getEntryId() {
         return this.organizationId;
     }
+
     public String getName() {
         return name;
     }
+
     public String getShortName() {
         return shortName;
     }
+
     public String getLogoUrl() {
         return logoLargeUrl;
     }
+
     public String getBackgroundUrl() {
         return backgroundLargeUrl;
     }
+
     public int getTypeId() {
         return typeId;
     }
+
     public String getTypeName() {
         return typeName;
     }
+
     public String getTypeOrder() {
         return typeOrder;
     }

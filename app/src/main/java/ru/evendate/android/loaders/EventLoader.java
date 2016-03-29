@@ -22,7 +22,7 @@ public class EventLoader extends AbstractLoader<EventDetail> {
         super(context);
     }
 
-    public void getData(int eventId){
+    public void getData(int eventId) {
         Log.d(LOG_TAG, "getting event " + eventId);
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -38,7 +38,7 @@ public class EventLoader extends AbstractLoader<EventDetail> {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData().get(0));
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with events");
                     onError();

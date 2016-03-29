@@ -59,7 +59,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         //((AppBarLayout)findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(this));
 
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
         }
         mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
@@ -117,7 +117,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         });
         dialog.show();
     }
-    private class UserAdapter{
+
+    private class UserAdapter {
         private UserDetail mUserDetail;
 
         public void setUser(UserDetail user) {
@@ -129,7 +130,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             return mUserDetail;
         }
 
-        private void setUserInfo(){
+        private void setUserInfo() {
             String userName = mUserDetail.getFirstName() + " " + mUserDetail.getLastName();
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
@@ -139,10 +140,11 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         }
     }
 
-    private void setupStat(){
+    private void setupStat() {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
             @Override
             public void onPageSelected(int position) {
                 Tracker tracker = EvendateApplication.getTracker();
@@ -150,6 +152,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                         mUserPagerAdapter.getPageLabel(position));
                 tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
+
             @Override
             public void onPageScrollStateChanged(int state) {}
         });

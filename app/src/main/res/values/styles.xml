@@ -10,137 +10,6 @@
         <item name="android:textColorPrimary">@color/text_primary</item>
     </style>
 
-
-
-
-    <style name="TransparentStatusBar" parent="AppTheme">
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
-    </style>
-
-
-    <array name="spinner">
-        <item>@style/LightSpinner</item>
-        <item>@style/DarkSpinner</item>
-    </array>
-
-    <style name="LightSpinner" parent="Material.Widget.Spinner.Light">
-        <item name="rd_style">@style/Material.Drawable.Ripple.Wave.Light</item>
-        <item name="spn_labelEnable">true</item>
-        <item name="spn_arrowSwitchMode">true</item>
-        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
-        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="spn_arrowColor">@color/colorControlNormal</item>
-        <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
-    </style>
-
-    <style name="DarkSpinner" parent="Material.Widget.Spinner">
-        <item name="rd_style">@style/Material.Drawable.Ripple.Wave</item>
-        <item name="spn_labelEnable">true</item>
-        <item name="spn_arrowSwitchMode">true</item>
-        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
-        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="spn_arrowColor">@color/primary</item>
-        <item name="android:popupBackground">@drawable/popup_background_dark</item>
-    </style>
-
-
-    <style name="Evendate.TimePicker" parent="Material.App.Dialog.Light">
-        <item name="tp_backgroundColor">#28999999</item>
-        <item name="tp_selectionColor">?attr/colorPrimary</item>
-        <item name="tp_selectionRadius">16dp</item>
-        <item name="tp_tickSize">1dp</item>
-        <item name="tp_textSize">@dimen/abc_text_size_caption_material</item>
-        <item name="tp_textStyle">normal</item>
-        <item name="tp_textColor">@color/abc_primary_text_material_light</item>
-        <item name="tp_textHighlightColor">#FFFFFFFF</item>
-        <item name="tp_animDuration">@android:integer/config_mediumAnimTime</item>
-        <item name="tp_inInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="tp_outInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="tp_mode">hour</item>
-        <item name="tp_headerHeight">120dp</item>
-        <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
-        <item name="tp_textTimeColor">#90FFFFFF</item>
-        <item name="tp_leadingZero">false</item>
-        <item name="di_positiveActionTextColor">#fc290a</item>
-        <item name="di_negativeActionTextColor">#454546</item>
-
-    </style>
-
-    <style name="Evendate.DatePicker" parent="Material.App.Dialog.Light">
-        <item name="dp_yearTextSize">@dimen/abc_text_size_title_material</item>
-        <item name="dp_yearItemHeight">48dp</item>
-        <item name="dp_textColor">@color/abc_primary_text_material_light</item>
-        <item name="dp_textHighlightColor">#FFFFFFFF</item>
-        <item name="dp_selectionColor">?attr/colorPrimary</item>
-        <item name="dp_animDuration">@android:integer/config_mediumAnimTime</item>
-        <item name="dp_inInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="dp_outInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="dp_textStyle">normal</item>
-        <item name="dp_dayTextSize">@dimen/abc_text_size_caption_material</item>
-        <item name="dp_textLabelColor">@color/abc_secondary_text_material_light</item>
-        <item name="dp_textDisableColor">@color/abc_secondary_text_material_light</item>
-        <item name="dp_headerPrimaryHeight">144dp</item>
-        <item name="dp_headerSecondaryHeight">32dp</item>
-        <item name="dp_headerPrimaryColor">?attr/colorPrimary</item>
-        <item name="dp_headerSecondaryColor">?attr/colorPrimaryDark</item>
-        <item name="dp_headerPrimaryTextSize">@dimen/abc_text_size_display_2_material</item>
-        <item name="dp_headerSecondaryTextSize">@dimen/abc_text_size_headline_material</item>
-        <item name="dp_textHeaderColor">#90FFFFFF</item>
-        <item name="di_positiveActionTextColor">#fc290a</item>
-        <item name="di_negativeActionTextColor">#454546</item>
-    </style>
-
-
-    <style name="SimpleDialogLight" parent="Material.App.Dialog.Simple.Light">
-        <item name="di_inAnimation">@anim/anim_scale_in</item>
-        <item name="di_outAnimation">@anim/anim_scale_out</item>
-        <item name="di_positiveActionTextColor">#FC2969</item>
-        <item name="di_negativeActionTextColor">#FC2969</item>
-        <item name="di_checkBoxStyle">@style/Material.Drawable.CheckBox</item>
-        <item name="cbd_strokeColor">#6B89C6</item>
-        <item name="cbd_tickColor">#ffffff</item>
-        <item name="di_messageTextColor">@color/text_color_black</item>
-    </style>
-
-
-    <style name="RoboTheme" parent="@android:style/TextAppearance.DeviceDefault.Medium">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">30dp</item>
-        <item name="android:textColor">#FFFFFF</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_marginTop">10dp</item>
-    </style>
-
-    <style name="EventCard" parent="CardView">
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="cardElevation">2dp</item>
-        <item name="cardUseCompatPadding">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:layout_margin">4dp</item>
-    </style>
-    <style name="UserCard">
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:layout_marginLeft">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
-    </style>
-    <style name="ActionCard" parent="CardView">
-        <item name="cardUseCompatPadding">true</item>
-        <item name="android:layout_marginLeft">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
-        <item name="cardElevation">2dp</item>
-    </style>
-    <style name="EventCardWithGroupDate">
-        <item name="android:layout_marginBottom">6dp</item>
-        <item name="android:layout_marginTop">18dp</item>
-    </style>
-    <style name="Theme_FirstSyncDialog" parent="Material.App.Dialog.Light">
-        <item name="android:textColorPrimary">#000000</item>
-    </style>
-
-
     <style name="DialogCustom" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -152,17 +21,60 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="EventDescriptionCard" parent="CardView">
+    <!-- cards -->
+    <style name="FeedCard" parent="CardView">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="EventOrganizationCard" parent="FeedCard">
+        <item name="android:layout_marginLeft">@dimen/organization_card_side_margin</item>
+        <item name="android:layout_marginRight">@dimen/organization_card_side_margin</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:stateListAnimator" tools:targetApi="21">@anim/card_raise</item>
+    </style>
+
+    <style name="EventCard" parent="FeedCard">
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:stateListAnimator" tools:targetApi="21">@anim/card_raise</item>
+    </style>
+
+    <style name="ActionCard" parent="FeedCard">
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="OrganizationDescriptionCard" parent="FeedCard">
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="DescriptionCard" parent="CardView">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="cardElevation">1dp</item>
-        <item name="cardUseCompatPadding">true</item>
+        <item name="cardUseCompatPadding">false</item>
         <item name="android:layout_marginBottom">8dp</item>
     </style>
-    <style name="OrganizationCard" parent="CardView">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="cardElevation">1dp</item>
-        <item name="cardUseCompatPadding">true</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:stateListAnimator" tools:targetApi="21">@anim/card_raise</item>
+
+    <style name="EventDescriptionCard" parent="DescriptionCard">
+        <item name="android:clickable">false</item>
+    </style>
+
+    <!-- flat items -->
+    <style name="FlatItem">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+    </style>
+
+    <style name="UserItem" parent="FlatItem"/>
+    <style name="OrganizationItem" parent="FlatItem"/>
+
+    <style name="EventCardWithGroupDate">
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:layout_marginTop">18dp</item>
     </style>
 </resources>

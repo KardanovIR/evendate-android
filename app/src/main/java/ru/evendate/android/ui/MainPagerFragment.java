@@ -27,6 +27,7 @@ public class MainPagerFragment extends Fragment {
 
     private TabLayout mTabLayout;
     private ReelFragment.OnRefreshListener mRefreshListener;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,7 +35,7 @@ public class MainPagerFragment extends Fragment {
 
         mViewPager = (ViewPager)rootView.findViewById(R.id.pager);
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), getActivity());
-        if(mRefreshListener != null)
+        if (mRefreshListener != null)
             mMainPagerAdapter.setOnRefreshListener(mRefreshListener);
         mViewPager.setAdapter(mMainPagerAdapter);
 
@@ -49,21 +50,23 @@ public class MainPagerFragment extends Fragment {
 
     /**
      * translate refresh message from child fragment to parent main activity
+     *
      * @param refreshListener ReelFragment.OnRefreshListener
      */
-    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
+    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         mRefreshListener = refreshListener;
-        if(mMainPagerAdapter != null)
+        if (mMainPagerAdapter != null)
             mMainPagerAdapter.setOnRefreshListener(refreshListener);
     }
 
     /**
      * setup screen names of fragments for statistic screen tracking
      */
-    private void setupStat(){
+    private void setupStat() {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
             @Override
             public void onPageSelected(int position) {
                 Tracker tracker = EvendateApplication.getTracker();
@@ -71,6 +74,7 @@ public class MainPagerFragment extends Fragment {
                         mMainPagerAdapter.getPageLabel(position));
                 tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
+
             @Override
             public void onPageScrollStateChanged(int state) {}
         });

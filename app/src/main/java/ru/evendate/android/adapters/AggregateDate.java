@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
-public class AggregateDate<T> implements Comparable<AggregateDate>{
+public class AggregateDate<T> implements Comparable<AggregateDate> {
     private long date;
     private ArrayList<T> mList;
 

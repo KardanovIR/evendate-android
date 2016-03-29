@@ -20,6 +20,7 @@ public class SubOrganizationLoader extends AbstractLoader<Void> {
     private final String LOG_TAG = SubOrganizationLoader.class.getSimpleName();
     OrganizationDetail mOrganization;
     boolean subscribe;
+
     public SubOrganizationLoader(Context context, OrganizationDetail organization,
                                  boolean subscribe) {
         super(context);
@@ -27,12 +28,12 @@ public class SubOrganizationLoader extends AbstractLoader<Void> {
         mOrganization = organization;
     }
 
-    public void execute(){
+    public void execute() {
         Log.d(LOG_TAG, "performing sub");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
         Call<EvendateServiceResponse> call;
-        if(subscribe){
+        if (subscribe) {
             call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
         } else {
             call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());

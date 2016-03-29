@@ -34,11 +34,12 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     private int userId;
     private ProgressBar mProgressBar;
 
-    public static UserActionsFragment newInstance(int userId){
+    public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment userListFragment = new UserActionsFragment();
         userListFragment.userId = userId;
         return userListFragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,15 +59,17 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         mLoader.getData(userId);
         return rootView;
     }
+
     @Override
     public void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
         mProgressBar.setVisibility(View.GONE);
         mAdapter.setList(convertedList);
     }
+
     @Override
     public void onError() {
-        if(!isAdded())
+        if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {

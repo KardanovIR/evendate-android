@@ -99,6 +99,7 @@ public interface EvendateService {
             @Query("future") boolean future,
             @Query("fields") String fields
     );
+
     @GET(API_PATH + "/users/{id}")
     Call<EvendateServiceResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,
@@ -126,6 +127,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<Organization>> getSubscriptions(
             @Header("Authorization") String authorization
     );
+
     @POST(API_PATH + "/organizations/{id}/subscriptions")
     Call<EvendateServiceResponse> organizationPostSubscription(
             @Path("id") int organizationId,

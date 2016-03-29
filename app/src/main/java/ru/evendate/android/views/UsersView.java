@@ -59,7 +59,7 @@ public class UsersView extends LinearLayout {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
                 MarginLayoutParams.MATCH_PARENT);
         Resources r = getContext().getResources();
-        int px = (int) TypedValue.applyDimension(
+        int px = (int)TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 4,
                 r.getDisplayMetrics()
@@ -80,7 +80,7 @@ public class UsersView extends LinearLayout {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
                 MarginLayoutParams.MATCH_PARENT);
         Resources r = getContext().getResources();
-        int px = (int) TypedValue.applyDimension(
+        int px = (int)TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 4,
                 r.getDisplayMetrics()

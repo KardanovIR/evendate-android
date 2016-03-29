@@ -39,8 +39,8 @@ import ru.evendate.android.models.DateCalendar;
 /**
  * Created by fj on 28.09.2015.
  */
-public class CalendarFragment extends Fragment  implements ReelFragment.OnEventsDataLoadedListener,
-        OnDateChangedListener{
+public class CalendarFragment extends Fragment implements ReelFragment.OnEventsDataLoadedListener,
+        OnDateChangedListener {
     private final String LOG_TAG = CalendarFragment.class.getSimpleName();
     private MaterialCalendarView mCalendarView;
     private ReelFragment mReelFragment;
@@ -59,7 +59,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
      * change localize months in rus
      * //TODO move to strings
      */
-    private static DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols(){
+    private static DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols() {
 
         @Override
         public String[] getMonths() {
@@ -68,12 +68,14 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         }
 
     };
-    class MyTitleFormatter implements TitleFormatter{
-        public CharSequence format(CalendarDay day){
+
+    class MyTitleFormatter implements TitleFormatter {
+        public CharSequence format(CalendarDay day) {
             SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy", myDateFormatSymbols);
             return format.format(day.getDate());
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
@@ -134,7 +136,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         mLoader.setLoaderListener(new LoaderListener<ArrayList<DateCalendar>>() {
             @Override
             public void onLoaded(ArrayList<DateCalendar> subList) {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 mAdapter.setDateList(subList);
                 mAdapter.setDates();
@@ -142,16 +144,16 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
 
             @Override
             public void onError() {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                         new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mLoader.getData();
-                        dialog.dismiss();
-                    }
-                });
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mLoader.getData();
+                                dialog.dismiss();
+                            }
+                        });
                 dialog.show();
 
             }
@@ -161,6 +163,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         mLoader.getData();
         return rootView;
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -188,22 +191,22 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
 
     @Override
     public void onEventsDataLoaded() {
-        if(!isAdded())
+        if (!isAdded())
             return;
         Log.i(LOG_TAG, "data loaded");
         //TODO нужно как-то изящнее это сделать
-        if(mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
+        if (mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
             return;
         //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
         mSelectedDateTextView.setText(simpleDateFormat.format(mCalendarView.getSelectedDate().getDate()));
         //mReelFragment.setRecyclerViewOnScrollListener(new RecyclerView.OnScrollListener() {
-//
+        //
         //    @Override
         //    public void onScrollStateChanged(RecyclerView view, int scrollState) {
         //    }
-//
+        //
         //    @Override
         //    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         //        super.onScrolled(recyclerView, dx, dy);
@@ -223,23 +226,25 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         //});
     }
 
-    class DateAdapter{
+    class DateAdapter {
         private ArrayList<DateCalendar> mDateList;
 
         public ArrayList<DateCalendar> getDateList() {
             return mDateList;
         }
+
         public void setDateList(ArrayList<DateCalendar> dateList) {
             this.mDateList = dateList;
         }
-        public void setDates(){
+
+        public void setDates() {
             ArrayList<CalendarDay> activeDates = new ArrayList<>();
             ArrayList<CalendarDay> favoritesDates = new ArrayList<>();
-            for (DateCalendar date : mDateList){
+            for (DateCalendar date : mDateList) {
                 CalendarDay day = CalendarDay.from(new Date(date.getEventDate() * 1000));
-                if(date.getEventCount() != 0)
+                if (date.getEventCount() != 0)
                     activeDates.add(day);
-                if(date.getFavoredCount() != 0)
+                if (date.getFavoredCount() != 0)
                     favoritesDates.add(day);
             }
             EventActiveDecorator eventActiveDecorator = new EventActiveDecorator(activeDates);
@@ -348,6 +353,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
             view.setDaysDisabled(true);
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -361,6 +367,7 @@ public class CalendarFragment extends Fragment  implements ReelFragment.OnEvents
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

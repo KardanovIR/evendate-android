@@ -33,7 +33,7 @@ public class EvendateApiFactory {
     }
 
     @NonNull
-    private static Retrofit getRetrofit(){
+    private static Retrofit getRetrofit() {
         return new Retrofit.Builder().baseUrl(HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create()
                 ).client(CLIENT).build();

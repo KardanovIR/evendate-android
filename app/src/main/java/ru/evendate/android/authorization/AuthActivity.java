@@ -27,7 +27,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     static public String URL_KEY = "url";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
@@ -41,7 +41,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         // temporary we remove function to change accounts
         // delete old account
         Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
-        if(oldAccount != null)
+        if (oldAccount != null)
             am.removeAccount(oldAccount, null, null);
     }
 
@@ -49,7 +49,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     @Override
     public void onClick(View v) {
         Bundle args = new Bundle();
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.sing_in_vk_button:
                 args.putString(URL_KEY, VK_URL);
                 break;

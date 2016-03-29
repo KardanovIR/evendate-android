@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="72dp"
     android:layout_width="match_parent"
-    style="@style/UserCard">
+    style="@style/UserItem">
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="48dp"
         android:layout_height="match_parent"

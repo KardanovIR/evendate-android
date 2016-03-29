@@ -16,18 +16,18 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
     private Context mContext;
     private ReelFragment.OnRefreshListener listener;
 
-    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener){
+    public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         listener = refreshListener;
     }
 
-    public MainPagerAdapter(FragmentManager fragmentManager, Context context){
+    public MainPagerAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
         mContext = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        switch (position){
+        switch (position) {
             case 0: {
                 ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FEED.type(), true);
                 fragment.setOnRefreshListener(this);
@@ -51,7 +51,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 return mContext.getString(R.string.feed);
             case 1:
@@ -63,11 +63,12 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
 
     /**
      * return strings for statistics
+     *
      * @param position int
      * @return String
      */
-    public String getPageLabel(int position){
-        switch (position){
+    public String getPageLabel(int position) {
+        switch (position) {
             case 0:
                 return mContext.getString(R.string.stat_page_feed);
             case 1:
@@ -79,7 +80,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
 
     @Override
     public void onRefresh() {
-        if(listener != null)
+        if (listener != null)
             listener.onRefresh();
     }
 }

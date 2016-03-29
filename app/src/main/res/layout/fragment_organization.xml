@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"
         android:background="@color/translucent"
-        tools:listitem="@layout/reel_item"/>
+        tools:listitem="@layout/card_event"/>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

@@ -24,7 +24,8 @@ public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> 
     public SubscriptionLoader(Context context) {
         super(context);
     }
-    public void getSubscriptions(){
+
+    public void getSubscriptions() {
         Log.d(LOG_TAG, "getting subs");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -40,7 +41,7 @@ public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> 
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with subs");

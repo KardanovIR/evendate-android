@@ -24,7 +24,7 @@ import ru.evendate.android.models.OrganizationDetail;
 /**
  * Created by Dmitry on 04.02.2016.
  */
-public class UserListFragment extends Fragment{
+public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
@@ -40,34 +40,35 @@ public class UserListFragment extends Fragment{
     private ProgressBar mProgressBar;
 
     public enum TypeFormat {
-        event                (0),
-        organization        (1);
+        event(0),
+        organization(1);
 
         TypeFormat(int nativeInt) {
             this.nativeInt = nativeInt;
         }
+
         final int nativeInt;
     }
 
-    public static UserListFragment newInstance(int type, int id){
+    public static UserListFragment newInstance(int type, int id) {
         UserListFragment userListFragment = new UserListFragment();
         userListFragment.type = type;
-        if(type == TypeFormat.event.nativeInt){
+        if (type == TypeFormat.event.nativeInt) {
             userListFragment.eventId = id;
-        }
-        else{
+        } else {
             userListFragment.organizationId = id;
         }
         return userListFragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                          Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
         }
 
@@ -101,25 +102,26 @@ public class UserListFragment extends Fragment{
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState == null)
+        if (savedInstanceState == null)
             return;
         type = savedInstanceState.getInt(TYPE);
         eventId = savedInstanceState.getInt(EVENT_ID);
         organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
     }
 
-    private void loadOrganization(){
+    private void loadOrganization() {
         mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
             @Override
             public void onLoaded(OrganizationDetail subList) {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 mAdapter.setList(subList.getSubscribedUsersList());
                 mProgressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onError() {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
@@ -136,18 +138,19 @@ public class UserListFragment extends Fragment{
         mOrganizationLoader.getOrganization(organizationId);
     }
 
-    private void loadEvent(){
+    private void loadEvent() {
         mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
             @Override
             public void onLoaded(EventDetail subList) {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 mAdapter.setList(subList.getUserList());
                 mProgressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onError() {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override

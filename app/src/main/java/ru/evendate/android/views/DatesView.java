@@ -68,7 +68,7 @@ public class DatesView extends CardView {
             DatetimeView dateView = new DatetimeView(getContext());
             dateView.setDate(date);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+            int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
             lp.setMargins(0, margin, 0, margin);
             dateView.setLayoutParams(lp);
             mLayout.addView(dateView);

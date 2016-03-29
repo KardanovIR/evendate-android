@@ -63,7 +63,7 @@ import ru.evendate.android.views.UserFavoritedCard;
  * contain details of events
  */
 public class EventDetailFragment extends Fragment implements View.OnClickListener,
-        LoaderListener<EventDetail>{
+        LoaderListener<EventDetail> {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -162,50 +162,51 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mToolbarTitle.setAlpha(0f);
         if (Build.VERSION.SDK_INT >= 21)
             mAppBarLayout.setElevation(0);
-        mScrollView.post(new Runnable(){
-        @Override
-        public void run() {
-            ViewTreeObserver observer = mScrollView.getViewTreeObserver();
-            observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener(){
-                @Override
-                public void onScrollChanged() {
-                    if(mScrollView.getScrollY() >= mEventImageView.getHeight()){
-                        mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-                        if(mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
-                            mTitleDisappearAnimation.cancel();
-                        if(mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()){
-                            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
-                                    mToolbarTitle.getAlpha(), 1f);
-                            mTitleAppearAnimation.setDuration(200);
-                            mTitleAppearAnimation.start();
-                            if (Build.VERSION.SDK_INT >= 21){
-                                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
-                                        getResources().getDisplayMetrics());
-                                mAppBarLayout.setElevation(px);
+        mScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                ViewTreeObserver observer = mScrollView.getViewTreeObserver();
+                observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                    @Override
+                    public void onScrollChanged() {
+                        if (mScrollView.getScrollY() >= mEventImageView.getHeight()) {
+                            mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+                            if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
+                                mTitleDisappearAnimation.cancel();
+                            if (mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()) {
+                                mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                        mToolbarTitle.getAlpha(), 1f);
+                                mTitleAppearAnimation.setDuration(200);
+                                mTitleAppearAnimation.start();
+                                if (Build.VERSION.SDK_INT >= 21) {
+                                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                                            getResources().getDisplayMetrics());
+                                    mAppBarLayout.setElevation(px);
+                                }
+                            }
+                        } else {
+                            mToolbar.setBackgroundColor(Color.TRANSPARENT);
+                            if (mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
+                                mTitleAppearAnimation.cancel();
+                            if (mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
+                                mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                        mToolbarTitle.getAlpha(), 0f);
+                                mTitleDisappearAnimation.setDuration(200);
+                                mTitleDisappearAnimation.start();
+                                if (Build.VERSION.SDK_INT >= 21)
+                                    mAppBarLayout.setElevation(0);
                             }
                         }
+                        int color = getResources().getColor(R.color.primary);
+                        color = Color.argb(
+                                (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
+                                Color.red(color), Color.green(color), Color.blue(color));
+                        mEventImageMask.setBackgroundColor(color);
+                        mEventOrganizationMask.setBackgroundColor(color);
                     }
-                    else{
-                        mToolbar.setBackgroundColor(Color.TRANSPARENT);
-                        if(mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
-                            mTitleAppearAnimation.cancel();
-                        if(mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
-                            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
-                                    mToolbarTitle.getAlpha(), 0f);
-                            mTitleDisappearAnimation.setDuration(200);
-                            mTitleDisappearAnimation.start();
-                            if (Build.VERSION.SDK_INT >= 21)
-                                mAppBarLayout.setElevation(0);
-                        }
-                    }
-                    int color = getResources().getColor(R.color.primary);
-                    color = Color.argb(
-                            (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
-                            Color.red(color), Color.green(color), Color.blue(color));
-                    mEventImageMask.setBackgroundColor(color);
-                    mEventOrganizationMask.setBackgroundColor(color);
-                }});
-        }});
+                });
+            }
+        });
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
@@ -232,7 +233,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         return rootView;
     }
 
-    private class EventAdapter{
+    private class EventAdapter {
         private EventDetail mEvent;
 
         public void setEvent(EventDetail event) {
@@ -243,9 +244,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             return mEvent;
         }
 
-        private void setEventInfo(){
+        private void setEventInfo() {
             //prevent illegal state exception cause fragment not attached to
-            if(!isAdded())
+            if (!isAdded())
                 return;
             //TODO
             mOrganizationTextView.setText(mEvent.getOrganizationName());
@@ -262,7 +263,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
-            if(mEvent.getUserList().size() == 0){
+            if (mEvent.getUserList().size() == 0) {
                 mUserFavoritedCard.setVisibility(View.GONE);
             }
             mToolbarTitle.setText(mEvent.getTitle());
@@ -272,22 +273,22 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     (eventPriceFromLabel + " " + mEvent.getMinPrice()));
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
-                eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
+                    eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
         }
     }
 
     @OnClick({R.id.event_place_button, R.id.event_link_card, R.id.event_organization_container, R.id.fab})
     @Override
     public void onClick(View v) {
-        if(mAdapter.getEvent() == null)
+        if (mAdapter.getEvent() == null)
             return;
-        if(v.getId() == R.id.event_organization_container){
+        if (v.getId() == R.id.event_organization_container) {
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
             startActivity(intent);
         }
-        if(v == mFAB) {
+        if (v == mFAB) {
             Tracker tracker = EvendateApplication.getTracker();
             HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
                     .setCategory(getActivity().getString(R.string.stat_category_event))
@@ -308,25 +309,24 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             });
             likeEventLoader.load();
             mAdapter.getEvent().favore();
-            if(mAdapter.getEvent().isFavorite()){
+            if (mAdapter.getEvent().isFavorite()) {
                 event.setAction(getActivity().getString(R.string.stat_action_like));
                 Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
-            }
-            else{
+            } else {
                 event.setAction(getActivity().getString(R.string.stat_action_dislike));
                 Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
             }
             tracker.send(event.build());
             mAdapter.setEventInfo();
         }
-        if(v.getId() == R.id.event_link_card && mAdapter.getEvent() != null){
+        if (v.getId() == R.id.event_link_card && mAdapter.getEvent() != null) {
             Intent openLink = new Intent(Intent.ACTION_VIEW);
             openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
             startActivity(openLink);
         }
-        if(v.getId() == R.id.event_place_button){
+        if (v.getId() == R.id.event_place_button) {
             Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
-                    "," + mAdapter.getEvent().getLongitude() + "?q="+ mAdapter.mEvent.getLocation());
+                    "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
             startActivity(mapIntent);
@@ -334,7 +334,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @SuppressWarnings("deprecation")
-    private void setFabIcon(){
+    private void setFabIcon() {
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
         } else {
@@ -368,6 +368,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
+
     /**
      * Returns the URI path to the Bitmap displayed in specified ImageView
      */
@@ -375,8 +376,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp;
-        if (drawable instanceof BitmapDrawable){
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        if (drawable instanceof BitmapDrawable) {
+            bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
         } else {
             return null;
         }
@@ -398,14 +399,14 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         return bmpUri;
     }
 
-    public String ConstructUrl(){
+    public String ConstructUrl() {
         final String base = EvendateApiFactory.HOST_NAME + "/event.php?id=";
         return base + mAdapter.getEvent().getEntryId();
     }
 
     @Override
     public void onLoaded(EventDetail event) {
-        if(!isAdded())
+        if (!isAdded())
             return;
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
@@ -414,7 +415,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onError() {
-        if(!isAdded())
+        if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {

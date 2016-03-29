@@ -19,21 +19,21 @@ public class LikeEventLoader extends AbstractLoader<Void> {
     private final String LOG_TAG = LikeEventLoader.class.getSimpleName();
     Event mEvent;
     boolean favorite;
+
     public LikeEventLoader(Context context, Event event, boolean favorite) {
         super(context);
         this.favorite = favorite;
         mEvent = event;
     }
 
-    public void load(){
+    public void load() {
         Log.d(LOG_TAG, "performing like");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
         Call<EvendateServiceResponse> call;
-        if(favorite){
+        if (favorite) {
             call = evendateService.eventDeleteFavorite(mEvent.getEntryId(), peekToken());
-        }
-        else {
+        } else {
             call = evendateService.eventPostFavorite(mEvent.getEntryId(), peekToken());
         }
         mCall = call;

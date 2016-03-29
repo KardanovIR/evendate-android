@@ -29,7 +29,7 @@ import ru.evendate.android.models.EventFeed;
  * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>>{
+public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>> {
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
@@ -40,21 +40,26 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     private ProgressBar mProgressBar;
     boolean refreshingEnabled = false;
 
-    /** organization id from detail organization */
+    /**
+     * organization id from detail organization
+     */
     private int organizationId;
     static final String TYPE = "type";
     private int type = 0;
-    /** selected date in calendar */
+    /**
+     * selected date in calendar
+     */
     private Date mDate;
 
     public enum TypeFormat {
-        FEED            (0),
-        FAVORITES       (1),
-        ORGANIZATION    (2),
+        FEED(0),
+        FAVORITES(1),
+        ORGANIZATION(2),
         //organizationSubscribed  (3),
-        CALENDAR        (4);
+        CALENDAR(4);
 
         final int type;
+
         TypeFormat(int type) {
             this.type = type;
         }
@@ -68,20 +73,22 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     private ArrayList<OnRefreshListener> mRefreshListenerList;
 
 
-    public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing){
+    public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing) {
         ReelFragment reelFragment = new ReelFragment();
         reelFragment.type = type;
         reelFragment.organizationId = organizationId;
         reelFragment.refreshingEnabled = enableRefreshing;
         return reelFragment;
     }
-    public static ReelFragment newInstance(int type, boolean enableRefreshing){
+
+    public static ReelFragment newInstance(int type, boolean enableRefreshing) {
         ReelFragment reelFragment = new ReelFragment();
         reelFragment.type = type;
         reelFragment.refreshingEnabled = enableRefreshing;
         return reelFragment;
     }
-    public static ReelFragment newInstance(int type, Date date, boolean enableRefreshing){
+
+    public static ReelFragment newInstance(int type, Date date, boolean enableRefreshing) {
         ReelFragment reelFragment = new ReelFragment();
         reelFragment.type = type;
         reelFragment.mDate = date;
@@ -92,8 +99,9 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     public void setDataListener(OnEventsDataLoadedListener dataListener) {
         this.mDataListener = dataListener;
     }
-    public void setOnRefreshListener(OnRefreshListener refreshListener){
-        if(mRefreshListenerList == null)
+
+    public void setOnRefreshListener(OnRefreshListener refreshListener) {
+        if (mRefreshListenerList == null)
             mRefreshListenerList = new ArrayList<>();
         mRefreshListenerList.add(refreshListener);
     }
@@ -113,19 +121,19 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh_layout);
-        if(!refreshingEnabled)
+        if (!refreshingEnabled)
             mSwipeRefreshLayout.setEnabled(false);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mEventLoader.getData();
-                if(mRefreshListenerList != null){
-                    for(OnRefreshListener listener : mRefreshListenerList){
+                if (mRefreshListenerList != null) {
+                    for (OnRefreshListener listener : mRefreshListenerList) {
                         listener.onRefresh();
                     }
                 }
@@ -149,7 +157,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
                     // enabling or disabling the refresh layout
                     enable = verticalScrollOffset;
                 }
-                if(refreshingEnabled)
+                if (refreshingEnabled)
                     mSwipeRefreshLayout.setEnabled(enable);
             }
         });
@@ -159,17 +167,14 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         return rootView;
     }
 
-    private void initLoader(){
-        if(type == TypeFormat.FEED.type){
+    private void initLoader() {
+        if (type == TypeFormat.FEED.type) {
             mEventLoader = new EventsLoader(getActivity(), type);
-        }
-        else if(type == TypeFormat.ORGANIZATION.type){
+        } else if (type == TypeFormat.ORGANIZATION.type) {
             mEventLoader = new EventsLoader(getActivity(), type, organizationId);
-        }
-        else if(type == TypeFormat.CALENDAR.type){
+        } else if (type == TypeFormat.CALENDAR.type) {
             mEventLoader = new EventsLoader(getActivity(), type, mDate);
-        }
-        else if(type == TypeFormat.FAVORITES.type){
+        } else if (type == TypeFormat.FAVORITES.type) {
             mEventLoader = new EventsLoader(getActivity(), type);
         }
         mEventLoader.setLoaderListener(this);
@@ -185,42 +190,45 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     public ArrayList<EventFeed> getEventList() {
         return mAdapter.getEventList();
     }
-    public EventsAdapter getAdapter(){
+
+    public EventsAdapter getAdapter() {
         return mAdapter;
     }
 
     /**
      * notify about finishing a download
      */
-    public interface OnEventsDataLoadedListener{
+    public interface OnEventsDataLoadedListener {
         void onEventsDataLoaded();
     }
 
     /**
      *
      */
-    public interface OnRefreshListener{
+    public interface OnRefreshListener {
         void onRefresh();
     }
 
     /**
      * handle date changing in calendar
+     *
      * @param mDate
      */
     public void setDate(Date mDate) {
-        if(type != TypeFormat.CALENDAR.type())
+        if (type != TypeFormat.CALENDAR.type())
             return;
         this.mDate = mDate;
     }
 
-    public void onLoaded(ArrayList<EventFeed> eventList){
+    public void onLoaded(ArrayList<EventFeed> eventList) {
         mSwipeRefreshLayout.setRefreshing(false);
         mAdapter.setEventList(eventList);
         mProgressBar.setVisibility(View.GONE);
-        if(mDataListener != null)
+        if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
     }
-    public void onError(){
+
+    public void onError() {
         mSwipeRefreshLayout.setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
     }

@@ -29,7 +29,7 @@ import ru.evendate.android.models.OrganizationType;
  */
 public class OrganizationCatalogFragment extends Fragment
         implements OrganizationFilterDialog.OnCategorySelectListener,
-        View.OnClickListener{
+        View.OnClickListener {
     private android.support.v7.widget.RecyclerView mRecyclerView;
     private CatalogLoader mLoader;
     private OrganizationCategoryAdapter mAdapter;
@@ -75,7 +75,7 @@ public class OrganizationCatalogFragment extends Fragment
             }
         });
 
-        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
+        mFAB = (FloatingActionButton)rootView.findViewById((R.id.fab));
         mFAB.setOnClickListener(this);
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
@@ -90,10 +90,10 @@ public class OrganizationCatalogFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-        if(v == mFAB) {
-            if(mCategoryList == null)
+        if (v == mFAB) {
+            if (mCategoryList == null)
                 return;
-            if(mSelectedItems == null){
+            if (mSelectedItems == null) {
                 mSelectedItems = new boolean[mCategoryList.size()];
                 Arrays.fill(mSelectedItems, Boolean.TRUE);
             }
@@ -108,8 +108,8 @@ public class OrganizationCatalogFragment extends Fragment
     public void onCategorySelected(boolean[] itemsSelected) {
         ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
         mSelectedItems = itemsSelected;
-        for(int i = 0; i < itemsSelected.length; i++){
-            if(itemsSelected[i])
+        for (int i = 0; i < itemsSelected.length; i++) {
+            if (itemsSelected[i])
                 newItemSelected.add(mCategoryList.get(i));
         }
         mAdapter.setCategoryList(newItemSelected);

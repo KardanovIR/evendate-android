@@ -26,7 +26,9 @@ public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> 
 
     public DateCalendarLoader(Context context) {
         super(context);
-    }public void getData(){
+    }
+
+    public void getData() {
         Log.d(LOG_TAG, "getting calendar dates");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
@@ -45,7 +47,7 @@ public class DateCalendarLoader extends AbstractLoader<ArrayList<DateCalendar>> 
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     Log.e(LOG_TAG, "Error with response with calendar dates");
                     onError();

@@ -16,16 +16,16 @@ import ru.evendate.android.models.OrganizationType;
 /**
  * Created by Dmitry on 30.11.2015.
  */
-public class OrganizationCategoryAdapter extends RecyclerView.Adapter<OrganizationCategoryAdapter.CategoryHolder>{
+public class OrganizationCategoryAdapter extends RecyclerView.Adapter<OrganizationCategoryAdapter.CategoryHolder> {
 
     private Context mContext;
     private ArrayList<OrganizationType> mCategoryList;
 
-    public OrganizationCategoryAdapter(Context context){
+    public OrganizationCategoryAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void setCategoryList(ArrayList<OrganizationType> categoryList){
+    public void setCategoryList(ArrayList<OrganizationType> categoryList) {
         mCategoryList = categoryList;
         notifyDataSetChanged();
     }
@@ -37,12 +37,12 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
     @Override
     public CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CategoryHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.organization_category_item, parent, false));
+                .inflate(R.layout.item_organization_category, parent, false));
     }
 
     @Override
     public void onBindViewHolder(CategoryHolder holder, int position) {
-        if(mCategoryList == null)
+        if (mCategoryList == null)
             return;
         String category = mCategoryList.get(position).getName();
         holder.mCategoryTextView.setText(category);
@@ -57,7 +57,7 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
 
     @Override
     public int getItemCount() {
-        if(mCategoryList == null)
+        if (mCategoryList == null)
             return 0;
         return mCategoryList.size();
     }
@@ -71,7 +71,8 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
         public TextView mCategoryTextView;
         public RecyclerView mContainer;
         public OrganizationCatalogAdapter mAdapter;
-        public CategoryHolder(View itemView){
+
+        public CategoryHolder(View itemView) {
             super(itemView);
             mCategoryTextView = (TextView)itemView.findViewById(R.id.organization_category);
             mContainer = (RecyclerView)itemView.findViewById(R.id.container);

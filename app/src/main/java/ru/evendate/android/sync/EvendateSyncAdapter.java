@@ -21,6 +21,7 @@ import android.util.Log;
 
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.EvendateAuthenticator;
+
 @Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();
@@ -77,6 +78,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         mContext = context;
         mContentResolver = context.getContentResolver();
     }
+
     /*
      * Specify the code you want to run in the sync adapter. The entire
      * sync adapter runs in a background thread, so you don't have to set
@@ -96,17 +98,18 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Helper method to have the sync adapter sync immediately
+     *
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
-        if(isSyncRunning)
+        if (isSyncRunning)
             return;
         isSyncRunning = true;
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         Account account = getSyncAccount(context);
-        if(account == null){
+        if (account == null) {
             Log.e(LOG_TAG, "no account");
             return;
         }
@@ -114,38 +117,40 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.content_authority), bundle);
         Log.d(LOG_TAG, "Scheduled sync");
     }
+
     /**
      * @param context The application context
      */
     public static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         AccountManager accountManager =
-                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+                (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
 
         SharedPreferences sPref = context.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
         String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
 
-        Account [] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
+        Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
             Log.e(LOG_TAG, "get account: No Accounts");
             return null;
         }
-        for(Account account : accounts){
-            if(account.name.equals(account_name))
+        for (Account account : accounts) {
+            if (account.name.equals(account_name))
                 return account;
         }
         return null;
     }
+
     //private static void onAccountCreated(Account newAccount, Context context) {
     //    /*
     //     * Since we've created an account
     //     */
-//
+    //
     //    /*
     //     * Without calling setSyncAutomatically, our periodic sync will not be enabled.
     //     */
     //    ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
-//
+    //
     //    /*
     //     * Finally, let's do a sync to get things started
     //     */
@@ -156,17 +161,17 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
 
-    public static boolean checkInternetConnection(Context context){
+    public static boolean checkInternetConnection(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean result = true;
-        if(activeNetwork == null)
+        if (activeNetwork == null)
             result = false;
-        else{
+        else {
             boolean isConnected = activeNetwork.isConnected();
-            if (!isConnected){
+            if (!isConnected) {
                 result = false;
             }
         }

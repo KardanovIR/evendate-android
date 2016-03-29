@@ -32,14 +32,14 @@ public class DatetimeView extends LinearLayout {
     public DatetimeView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        LayoutInflater inflater = (LayoutInflater) context
+        LayoutInflater inflater = (LayoutInflater)context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = inflater.inflate(R.layout.view_datetime, this, true);
         ButterKnife.bind(this, rootView);
         if (attrs == null) {
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
-            int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+            int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
 
             lp.setMargins(0, margin, 0, margin);
             setLayoutParams(lp);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class EventDetail extends Event implements EventFeed{
+public class EventDetail extends Event implements EventFeed {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
             "organization_type_name,organization_short_name,organization_logo_large_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
@@ -115,7 +115,7 @@ public class EventDetail extends Event implements EventFeed{
         this.likedUsersCount = likedUsersCount;
     }
 
-    public void favore(){
+    public void favore() {
         isFavorite = !isFavorite;
         likedUsersCount += isFavorite ? 1 : -1;
     }

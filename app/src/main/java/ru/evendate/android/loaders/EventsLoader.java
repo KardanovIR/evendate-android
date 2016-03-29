@@ -24,7 +24,7 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by ds_gordeev on 11.03.2016.
  * downloading events from server
  */
-public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
+public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>> {
     private final String LOG_TAG = EventsLoader.class.getSimpleName();
     private int type;
     private int organizationId;
@@ -34,33 +34,34 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>>{
         super(context);
         this.type = type;
     }
+
     public EventsLoader(Context context, int type, int organizationId) {
         super(context);
         this.type = type;
         this.organizationId = organizationId;
     }
+
     public EventsLoader(Context context, int type, Date date) {
         super(context);
         this.type = type;
         mDate = date;
     }
 
-    public void getData(){
+    public void getData() {
         Log.d(LOG_TAG, "getting events");
         onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<EventDetail>> call;
-        if(type == ReelFragment.TypeFormat.FAVORITES.type()){
+        if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
             call = evendateService.getFavorite(peekToken(), true, EventFeed.FIELDS_LIST);
-        }else if(type == ReelFragment.TypeFormat.ORGANIZATION.type()){
+        } else if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
             call = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST);
-        }else{
-            if(mDate != null){
+        } else {
+            if (mDate != null) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 call = evendateService.getFeed(peekToken(), dateFormat.format(mDate), true, EventFeed.FIELDS_LIST);
-            }
-            else{
+            } else {
                 call = evendateService.getFeed(peekToken(), true, EventFeed.FIELDS_LIST);
             }
         }

@@ -9,7 +9,7 @@
     tools:layout_marginTop="0dp"
     android:layout_marginRight="@dimen/organization_card_side_margin"
     android:layout_marginLeft="@dimen/organization_card_side_margin"
-    style="@style/OrganizationCard">
+    style="@style/OrganizationDescriptionCard">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

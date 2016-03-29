@@ -23,7 +23,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener{
+public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private Fragment mFragment;
@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //just change that fucking home icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         checkPlayServices();
 
         checkAccount();
-        if(savedInstanceState != null){
-            switch (savedInstanceState.getInt(TYPE)){
+        if (savedInstanceState != null) {
+            switch (savedInstanceState.getInt(TYPE)) {
                 case REEL:
                     mFragment = new MainPagerFragment();
                     ((MainPagerFragment)mFragment).setOnRefreshListener(this);
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     mFragment = new MainPagerFragment();
                     ((MainPagerFragment)mFragment).setOnRefreshListener(this);
             }
-        }else{
+        } else {
             mFragment = new MainPagerFragment();
             ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         }
@@ -92,8 +92,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
             isFirstRun = true;
             mSharedPreferences.edit().putBoolean(FIRST_RUN, false).apply();
-        }
-        else
+        } else
             fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
         mDrawer = EvendateDrawer.newInstance(this);
@@ -134,16 +133,17 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     /**
      * check account exists and start intro if no
      */
-    private void checkAccount(){
+    private void checkAccount() {
         Account account = EvendateSyncAdapter.getSyncAccount(this);
-        if(account == null){
+        if (account == null) {
             Intent introIntent = new Intent(this, EvendateIntro.class);
             startActivityForResult(introIntent, INTRO_REQUEST);
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == INTRO_REQUEST){
+        if (requestCode == INTRO_REQUEST) {
             if (resultCode == RESULT_CANCELED) {
                 finish();
             }
@@ -159,17 +159,17 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
      * handle clicks on items of navigation drawer list in main activity
      */
     private class MainNavigationItemClickListener
-            extends NavigationItemSelectedListener{
+            extends NavigationItemSelectedListener {
         public MainNavigationItemClickListener(Context context, Drawer drawer) {
             super(context, drawer);
         }
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()){
-                case EvendateDrawer.REEL_IDENTIFIER:{
+            switch (drawerItem.getIdentifier()) {
+                case EvendateDrawer.REEL_IDENTIFIER: {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    if(!(mFragment instanceof MainPagerFragment)){
+                    if (!(mFragment instanceof MainPagerFragment)) {
                         mFragment = new MainPagerFragment();
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                     }
@@ -179,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                 break;
                 case R.id.settings:
                     break;
-                case EvendateDrawer.CALENDAR_IDENTIFIER:{
+                case EvendateDrawer.CALENDAR_IDENTIFIER: {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    if(!(mFragment instanceof CalendarFragment)){
+                    if (!(mFragment instanceof CalendarFragment)) {
                         mFragment = new CalendarFragment();
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                     }
@@ -191,9 +191,9 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                         mToolbar.setElevation(px);
                 }
                 break;
-                case EvendateDrawer.ORGANIZATION_IDENTIFIER:{
+                case EvendateDrawer.ORGANIZATION_IDENTIFIER: {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    if(!(mFragment instanceof OrganizationCatalogFragment)){
+                    if (!(mFragment instanceof OrganizationCatalogFragment)) {
                         mFragment = new OrganizationCatalogFragment();
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                     }
