@@ -31,6 +31,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
@@ -45,7 +47,7 @@ import ru.evendate.android.models.OrganizationDetail;
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements LoaderListener<OrganizationDetail>,
+public class OrganizationDetailFragment extends Fragment implements LoaderListener<ArrayList<OrganizationDetail>>,
         OrganizationEventsAdapter.OrganizationCardController {
     private final String LOG_TAG = "OrganizationFragment";
 
@@ -95,7 +97,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         }
         mAdapter = new OrganizationEventsAdapter(getContext(), this);
 
-        mOrganizationLoader = new OrganizationLoader(getActivity());
+        mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
         mOrganizationLoader.setLoaderListener(this);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mAdapter);
@@ -162,7 +164,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         //        setImageViewY();
         //    }
         //});
-        mOrganizationLoader.getOrganization(organizationId);
+        mOrganizationLoader.startLoading();
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
@@ -200,9 +202,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         OrganizationDetail organization = mAdapter.getOrganization();
         SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
                 organization, organization.isSubscribed());
-        subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+        subOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
             @Override
-            public void onLoaded(Void subList) {
+            public void onLoaded(ArrayList<Void> subList) {
 
             }
 
@@ -224,7 +226,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
             Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
         tracker.send(event.build());
-        subOrganizationLoader.execute();
+        subOrganizationLoader.startLoading();
     }
 
     public void onPlaceClicked() {
@@ -250,9 +252,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         startActivity(openLink);
     }
 
-    public void onLoaded(OrganizationDetail organization) {
+    public void onLoaded(ArrayList<OrganizationDetail> organizations) {
         if (!isAdded())
             return;
+        OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
         Picasso.with(getActivity())
                 .load(organization.getBackgroundUrl())
@@ -269,7 +272,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.getOrganization(organizationId);
+                        mOrganizationLoader.startLoading();
                         dialog.dismiss();
                     }
                 });
@@ -279,7 +282,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mOrganizationLoader.cancel();
+        mOrganizationLoader.cancelLoad();
         mDrawer.cancel();
     }
 

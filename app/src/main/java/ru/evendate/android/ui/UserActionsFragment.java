@@ -49,14 +49,14 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mLoader = new ActionLoader(getActivity());
+        mLoader = new ActionLoader(getActivity(), userId);
         mLoader.setLoaderListener(this);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBarAction);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.getData(userId);
+        mLoader.startLoading();
         return rootView;
     }
 
@@ -75,7 +75,7 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mLoader.getData(userId);
+                mLoader.startLoading();
                 dialog.dismiss();
             }
         });
@@ -85,6 +85,6 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
     }
 }

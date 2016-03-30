@@ -22,9 +22,8 @@ public class MeLoader extends AbstractLoader<UserDetail> {
         super(context);
     }
 
-    public void getData() {
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting me");
-        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<UserDetail>> call =
@@ -36,7 +35,7 @@ public class MeLoader extends AbstractLoader<UserDetail> {
             public void onResponse(Response<EvendateServiceResponseArray<UserDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    onLoaded(response.body().getData().get(0));
+                    onLoaded(response.body().getData());
                 } else {
                     if (response.code() == 401)
                         invalidateToken();
