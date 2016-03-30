@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         //just change that fucking home icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
