@@ -28,12 +28,12 @@ public class UserListFragment extends Fragment{
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
-    OrganizationLoader mOrganizationLoader;
-    EventLoader mEventLoader;
+    private OrganizationLoader mOrganizationLoader;
+    private EventLoader mEventLoader;
     private UsersAdapter mAdapter;
-    static final String TYPE = "type";
-    static final String EVENT_ID = "event_id";
-    static final String ORGANIZATION_ID = "organization_id";
+    public static final String TYPE = "type";
+    public static final String EVENT_ID = "event_id";
+    public static final String ORGANIZATION_ID = "organization_id";
     private int type = 0;
     private int organizationId;
     private int eventId;

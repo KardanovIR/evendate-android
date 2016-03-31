@@ -35,8 +35,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    UserAdapter mUserAdapter;
-    UserLoader mLoader;
+    private UserAdapter mUserAdapter;
+    private UserLoader mLoader;
 
     private ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
@@ -45,6 +45,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private ImageView mUserImageView;
     private CollapsingToolbarLayout mCollapsingToolbar;
     private ProgressBar mProgressBar;
+    EvendateDrawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +75,12 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
         mLoader.getData(userId);
+        mDrawer.start();
     }
 
     @Override
@@ -154,5 +159,6 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     public void onDestroy() {
         super.onDestroy();
         mLoader.cancel();
+        mDrawer.cancel();
     }
 }

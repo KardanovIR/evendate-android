@@ -44,11 +44,44 @@
 
     <string name="action_share">Share</string>
 
+    <string name="event_word_users_and">users and</string>
+    <string name="event_word_friends_add">friends added to favorite</string>
+    <string name="event_users_all">ALL</string>
+
+    <string name="event_free">Free</string>
+    <string name="event_price_from">From</string>
+    <string name="event_registration_till">Till</string>
+    <string name="event_registration_not_required">Not required</string>
+
+    <string name="event_show_on_map">SHOW ON MAP</string>
+    <string name="event_go_to_page">GO TO EVENT PAGE</string>
+
+    <!-- dates view -->
+    <string name="dates_view_date_label">Date</string>
+    <string name="dates_view_time_label">Time</string>
+    <string name="dates_view_more">MORE</string>
+    <string name="dates_view_less">LESS</string>
+    <!-- user favorite card -->
+    <string name="user_card_all">ALL</string>
+
+    <!-- cards strings -->
+    <string name="organization_card_subscribers">subscribers</string>
+
     <!-- detail organization -->
     <string name="organization_event_number">events</string>
-    <string name="organization_subscribers">subscribers</string>
     <string name="organization_friends">friends</string>
-    <string name="favorite_events">favorite events</string>
+
+    <string name="organization_word_and">and</string>
+    <string name="organization_word_friends">friends</string>
+    <string name="organization_subscribe">SUBSCRIBE</string>
+    <string name="organization_unsubscribe">UNSUBDCRIBE</string>
+    <string name="organization_subscribers">ALL SUBSCRIBERS</string>
+    <string name="organization_more">MORE</string>
+    <string name="organization_go_to_page">GO TO PAGE</string>
+    <string name="organization_description">Description</string>
+    <string name="organization_page">Organization page</string>
+    <string name="organization_address">Organization address</string>
+    <string name="organization_background_description">Organization background image</string>
 
     <!-- strings for sign in -->
     <string name="sing_in_description">Sing in via social network</string>
@@ -112,4 +145,6 @@
     <string name="action_unsubscribe">Unsubscribe from organizations</string>
     <string name="action_like">Added events to favorites</string>
     <string name="action_dislike">Remove events from favorites</string>
+    <string name="event_price">Price</string>
+    <string name="event_registration">Registration</string>
 </resources>

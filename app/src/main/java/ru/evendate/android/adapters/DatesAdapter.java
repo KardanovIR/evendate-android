@@ -11,7 +11,6 @@ import android.widget.TextView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
@@ -36,9 +35,10 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
                 EventFormatter.formatMonth(entry.getDate());
         holder.mDateTextView.setText(date);
         holder.mActionsAdapter = new ActionTypesAdapter(mContext);
-        holder.recyclerView.setLayoutManager(
-                new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
-                        LinearLayoutManager.VERTICAL, false));
+        WrapLinearLayoutManager manager =
+                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        manager.setAutoMeasureEnabled(false);
+        holder.recyclerView.setLayoutManager(manager);
         holder.recyclerView.setAdapter(holder.mActionsAdapter);
         holder.mActionsAdapter.setList(entry.getList());
         holder.recyclerView.setNestedScrollingEnabled(false);

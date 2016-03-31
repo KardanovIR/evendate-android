@@ -7,7 +7,8 @@ import java.util.ArrayList;
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
-            "organization_short_name,is_favorite,dates";
+            "organization_short_name,is_favorite,dates," +
+            "registration_required,registration_till,is_free,min_price";
     int getEntryId();
     String getTitle();
     long getFirstDate();
@@ -16,7 +17,7 @@ public interface EventFeed {
     String getImageHorizontalUrl();
     String getImageVerticalUrl();
     int getOrganizationId();
-    ArrayList<Date> getDataList();
+    ArrayList<DateFull> getDateList();
 
     boolean isFavorite();
 
@@ -24,4 +25,8 @@ public interface EventFeed {
     String getOrganizationShortName();
 
     void favore();
+    boolean isRegistrationRequired();
+    String getRegistrationTill();
+    boolean isFree();
+    int getMinPrice();
 }

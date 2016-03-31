@@ -29,8 +29,8 @@ import ru.evendate.android.models.ActionType;
 public class UserActionsFragment extends Fragment implements LoaderListener<ArrayList<Action>> {
 
     private RecyclerView mRecyclerView;
-    DatesAdapter mAdapter;
-    ActionLoader mLoader;
+    private DatesAdapter mAdapter;
+    private ActionLoader mLoader;
     private int userId;
     private ProgressBar mProgressBar;
 

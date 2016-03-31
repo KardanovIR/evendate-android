@@ -1,16 +1,18 @@
 package ru.evendate.android.ui;
 
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -25,9 +27,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +42,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.BindString;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
@@ -46,8 +53,11 @@ import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.views.DatesView;
+import ru.evendate.android.views.TagsView;
+import ru.evendate.android.views.UserFavoritedCard;
 
 /**
  * contain details of events
@@ -58,49 +68,68 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     private EventDetailActivity mEventDetailActivity;
 
-    private CoordinatorLayout mCoordinatorLayout;
-    private FloatingActionButton mFAB;
-
-    private ImageView mEventImageView;
-    private ImageView mOrganizationIconView;
-
-    private TextView mOrganizationTextView;
-    private TextView mDescriptionTextView;
-    private TextView mTitleTextView;
-    private TextView mDateTextView;
-    private TextView mPlaceTextView;
-    private TextView mTagsTextView;
-    private TextView mLinkTextView;
-
-    private TextView mMonthTextView;
-    private TextView mDayTextView;
-    private TextView mTimeTextView;
-    private TextView mParticipantCountTextView;
-
-    private FrameLayout mLink;
-
     private Uri mUri;
     private int eventId;
-    ProgressBar mProgressBar;
-    EventAdapter mAdapter;
-    EventLoader mEventLoader;
+    private ProgressBar mProgressBar;
+    private EventAdapter mAdapter;
+    private EventLoader mEventLoader;
+
+    private CoordinatorLayout mCoordinatorLayout;
+    //private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    @Bind(R.id.scroll_view) ScrollView mScrollView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.event_image_mask) View mEventImageMask;
+    @Bind(R.id.event_organization_mask) View mEventOrganizationMask;
+    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
+    @Bind(R.id.fab) FloatingActionButton mFAB;
+
+    @Bind(R.id.event_image) ImageView mEventImageView;
+    @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
+    @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
+    @Bind(R.id.event_description) TextView mDescriptionTextView;
+    @Bind(R.id.event_title) TextView mTitleTextView;
+    @Bind(R.id.event_place_button) View mPlaceButtonView;
+    @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
+    @Bind(R.id.event_link_card) View mLinkCard;
+
+    @Bind(R.id.tag_layout) TagsView mTagsView;
+    @Bind(R.id.event_price_card) android.support.v7.widget.CardView mPriceCard;
+    @Bind(R.id.event_price) TextView mPriceTextView;
+    @Bind(R.id.event_registration) TextView mRegistrationTextView;
+    @Bind(R.id.event_dates) DatesView mDatesView;
+
+    @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+
+    @BindString(R.string.event_free) String eventFreeLabel;
+    @BindString(R.string.event_price_from) String eventPriceFromLabel;
+    @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
+    @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
+
+    EvendateDrawer mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
     }
+
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
         mCoordinatorLayout = (CoordinatorLayout)rootView.findViewById(R.id.main_content);
 
-        mEventDetailActivity.setSupportActionBar((Toolbar) rootView.findViewById(R.id.toolbar));
+        mToolbar.setTitle("");
+        mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -108,43 +137,98 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mProgressBar.setVisibility(View.VISIBLE);
 
         //make status bar transparent
-        ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
-
-        CollapsingToolbarLayout collapsingToolbarLayout;
-        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-
-        mOrganizationTextView = (TextView)rootView.findViewById(R.id.event_organization);
-        mDescriptionTextView = (TextView)rootView.findViewById(R.id.event_description);
-        mTitleTextView = (TextView)rootView.findViewById(R.id.event_name);
-        mDateTextView = (TextView)rootView.findViewById(R.id.event_date);
-        mPlaceTextView = (TextView)rootView.findViewById(R.id.event_place);
-        mTagsTextView = (TextView)rootView.findViewById(R.id.event_tags);
-        mLinkTextView = (TextView)rootView.findViewById(R.id.event_link);
-
-        mMonthTextView = (TextView)rootView.findViewById(R.id.event_month);
-        mDayTextView = (TextView)rootView.findViewById(R.id.event_day);
-        mTimeTextView = (TextView)rootView.findViewById(R.id.event_time);
-        mParticipantCountTextView = (TextView)rootView.findViewById(R.id.event_participant_count);
-
-        mOrganizationIconView = (ImageView)rootView.findViewById(R.id.event_organization_icon);
-        mOrganizationIconView.setOnClickListener(this);
-        mEventImageView = (ImageView)rootView.findViewById(R.id.event_image);
-
-        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
+        //((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
+        //((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        //    @Override
+        //    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        //        if (verticalOffset > 0){
+        //            //TODO move to behavior?
+        //            //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+        //            //lp.setAnchorId(View.NO_ID);
+        //            //mFAB.setLayoutParams(lp);
+        //            //lp.gravity = Gravity.BOTTOM | Gravity.END;
+        //            //mFAB.setLayoutParams(lp);
+        //        }
+        //        else{
+        //            //CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mFAB.getLayoutParams();
+        //            //lp.setAnchorId(R.id.event_organization_container);
+        //            //mFAB.setLayoutParams(lp);
+        //            //lp.gravity = Gravity.NO_GRAVITY;
+        //            //mFAB.setLayoutParams(lp);
+        //        }
+        //    }
+        //});
+        mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
+        mToolbarTitle.setAlpha(0f);
+        if (Build.VERSION.SDK_INT >= 21)
+            mAppBarLayout.setElevation(0);
+        mScrollView.post(new Runnable(){
+        @Override
+        public void run() {
+            ViewTreeObserver observer = mScrollView.getViewTreeObserver();
+            observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener(){
+                @Override
+                public void onScrollChanged() {
+                    if(mScrollView.getScrollY() >= mEventImageView.getHeight()){
+                        mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+                        if(mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
+                            mTitleDisappearAnimation.cancel();
+                        if(mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()){
+                            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                    mToolbarTitle.getAlpha(), 1f);
+                            mTitleAppearAnimation.setDuration(200);
+                            mTitleAppearAnimation.start();
+                            if (Build.VERSION.SDK_INT >= 21){
+                                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                                        getResources().getDisplayMetrics());
+                                mAppBarLayout.setElevation(px);
+                            }
+                        }
+                    }
+                    else{
+                        mToolbar.setBackgroundColor(Color.TRANSPARENT);
+                        if(mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
+                            mTitleAppearAnimation.cancel();
+                        if(mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
+                            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                                    mToolbarTitle.getAlpha(), 0f);
+                            mTitleDisappearAnimation.setDuration(200);
+                            mTitleDisappearAnimation.start();
+                            if (Build.VERSION.SDK_INT >= 21)
+                                mAppBarLayout.setElevation(0);
+                        }
+                    }
+                    int color = getResources().getColor(R.color.primary);
+                    color = Color.argb(
+                            (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
+                            Color.red(color), Color.green(color), Color.blue(color));
+                    mEventImageMask.setBackgroundColor(color);
+                    mEventOrganizationMask.setBackgroundColor(color);
+                }});
+        }});
 
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
-        mFAB.setOnClickListener(this);
-
-        mLink = (FrameLayout)rootView.findViewById(R.id.event_link_content);
-        rootView.findViewById(R.id.event_participant_button).setOnClickListener(this);
+        mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserListActivity.class);
+                intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                        .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+                intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+                startActivity(intent);
+            }
+        });
 
         mAdapter = new EventAdapter();
         mEventLoader = new EventLoader(getActivity());
         mEventLoader.setLoaderListener(this);
         mEventLoader.getData(eventId);
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+        mDrawer.start();
         return rootView;
     }
 
@@ -167,19 +251,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
             mTitleTextView.setText(mEvent.getTitle());
-            if(mEvent.getTitle().length() > 60)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            mPlaceTextView.setText(mEvent.getLocation());
-            if(mEvent.getLocation().length() > 30)
-                mPlaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            mTagsTextView.setText(EventFormatter.formatTags(mEvent));
-            mLinkTextView.setText(mEvent.getDetailInfoUrl());
-            mParticipantCountTextView.setText(String.valueOf(mEvent.getLikedUsersCount()));
-            //mTimeTextView.setText(EventFormatter.formatTime(mEvent.getFirstDate()));
-            mDayTextView.setText(EventFormatter.formatDay(mEvent.getFirstDate()));
-            mMonthTextView.setText(EventFormatter.formatMonth(mEvent.getFirstDate()));
-            mDateTextView.setText(EventFormatter.formatDate(mEvent));
-
+            mPlacePlaceTextView.setText(mEvent.getLocation());
+            mTagsView.setTags(mEvent.getTagList());
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
@@ -188,29 +261,27 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(mOrganizationIconView);
-            mLink.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent openLink = new Intent(Intent.ACTION_VIEW);
-                    openLink.setData(Uri.parse(mEvent.getDetailInfoUrl()));
-                    Tracker tracker = EvendateApplication.getTracker();
-                    HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                            .setCategory(getString(R.string.stat_category_event))
-                            .setAction(getString(R.string.stat_action_click_on_link))
-                            .setLabel(mUri.getLastPathSegment());
-                    tracker.send(event.build());
-                    startActivity(openLink);
-                }
-            });
+            mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
+            if(mEvent.getUserList().size() == 0){
+                mUserFavoritedCard.setVisibility(View.GONE);
+            }
+            mToolbarTitle.setText(mEvent.getTitle());
             setFabIcon();
+            mUserFavoritedCard.setUsers(mEvent.getUserList());
+            mDatesView.setDates(mEvent.getDateList());
+            mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
+                    (eventPriceFromLabel + " " + mEvent.getMinPrice()));
+            mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
+                eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
         }
     }
 
+    @OnClick({R.id.event_place_button, R.id.event_link_card, R.id.event_organization_container, R.id.fab})
     @Override
     public void onClick(View v) {
         if(mAdapter.getEvent() == null)
             return;
-        if(v == mOrganizationIconView || v == mOrganizationTextView){
+        if(v.getId() == R.id.event_organization_container){
             Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
             intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                     .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
@@ -248,12 +319,17 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             tracker.send(event.build());
             mAdapter.setEventInfo();
         }
-        if(v.getId() == R.id.event_participant_button){
-            Intent intent = new Intent(getContext(), UserListActivity.class);
-            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
-            startActivity(intent);
+        if(v.getId() == R.id.event_link_card && mAdapter.getEvent() != null){
+            Intent openLink = new Intent(Intent.ACTION_VIEW);
+            openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
+            startActivity(openLink);
+        }
+        if(v.getId() == R.id.event_place_button){
+            Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
+                    "," + mAdapter.getEvent().getLongitude() + "?q="+ mAdapter.mEvent.getLocation());
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
         }
     }
 
@@ -357,5 +433,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
         mEventLoader.cancel();
+        mDrawer.cancel();
     }
 }

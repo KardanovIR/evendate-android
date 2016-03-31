@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,11 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by Dmitry on 01.12.2015.
  */
 
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolder>{
+public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    Context mContext;
+    protected Context mContext;
     private ArrayList<EventFeed> mEventList;
-    int type;
+    private int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 
@@ -45,15 +44,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         notifyDataSetChanged();
     }
 
-    public ArrayList<EventFeed> getEventList() {
-        return mEventList;
-    }
-
     @Override
-    public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public int getItemViewType(int position) {
         int layoutItemId;
         if(type == ReelFragment.TypeFormat.ORGANIZATION.type()){
-            layoutItemId = R.layout.reel_item;
+            layoutItemId = R.layout.reel_item_organization;
         } else if(type == ReelFragment.TypeFormat.FAVORITES.type()){
             layoutItemId = R.layout.reel_favorite_item;
         } else if(type == ReelFragment.TypeFormat.CALENDAR.type()){
@@ -61,24 +56,30 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
         } else{
             layoutItemId = R.layout.reel_item;
         }
-        return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(layoutItemId, parent, false));
+        return layoutItemId;
+    }
+
+    public ArrayList<EventFeed> getEventList() {
+        return mEventList;
     }
 
     @Override
-    public void onBindViewHolder(EventHolder holder, int position) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if(mEventList == null)
             return;
         EventFeed eventEntry = mEventList.get(position);
+        EventHolder holder = (EventHolder)viewHolder;
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
-        if(type != ReelFragment.TypeFormat.FAVORITES.type()){
-            if(eventEntry.getTitle().length() > 60)
-                holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            else
-                holder.mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        }
-        holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
-        if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type()){
+        if(holder.mOrganizationTextView != null)
+            holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
+        if(eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type() &&
+                type != ReelFragment.TypeFormat.ORGANIZATION.type()){
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         }
         String date = EventFormatter.formatDate((EventDetail)eventEntry);
@@ -97,8 +98,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventHolde
     }
 
     @Override
-    public void onViewRecycled(EventHolder holder) {
-        super.onViewRecycled(holder);
+    public void onViewRecycled(RecyclerView.ViewHolder viewHolder) {
+        super.onViewRecycled(viewHolder);
+        if(!(viewHolder instanceof EventHolder))
+            return;
+        EventHolder holder = (EventHolder)viewHolder;
         if(holder.mFavoriteIndicator != null)
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }

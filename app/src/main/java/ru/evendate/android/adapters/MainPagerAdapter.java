@@ -1,4 +1,4 @@
-package ru.evendate.android.ui;
+package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -6,12 +6,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import ru.evendate.android.R;
+import ru.evendate.android.ui.ReelFragment;
 
 /**
  * Created by Dmitry on 23.01.2016.
  */
 
-public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener{
+public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener {
     private Context mContext;
     private ReelFragment.OnRefreshListener listener;
 
