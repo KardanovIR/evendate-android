@@ -21,6 +21,7 @@
     <string name="help">Help</string>
     <string name="organizations">Organization catalog</string>
     <string name="subscriptions">Subscriptions</string>
+    <string name="log_out">Log out</string>
 
     <string name="feed">Feed</string>
     <string name="favorite">Favorite</string>

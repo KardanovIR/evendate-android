@@ -90,4 +90,5 @@
     <string name="dates_view_less">МЕНЬШЕ</string>
     <string name="event_price">Цена</string>
     <string name="event_registration">Регистрация</string>
+    <string name="log_out">Выйти из аккаунта</string>
 </resources>

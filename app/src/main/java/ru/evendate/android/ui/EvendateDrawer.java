@@ -18,6 +18,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
 
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.loaders.LoaderListener;
@@ -40,16 +41,18 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     final static int ORGANIZATION_IDENTIFIER = 3;
     Context mContext;
 
-    PrimaryDrawerItem reel_item = new PrimaryDrawerItem().withName(R.string.reel)
+    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
             .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem calendar_item = new PrimaryDrawerItem().withName(R.string.calendar)
+    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizations_item = new PrimaryDrawerItem().withName(R.string.organizations)
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.organizations)
+            .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem logOutItem = new PrimaryDrawerItem().withName(R.string.log_out)
             .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
     //PrimaryDrawerItem item = new PrimaryDrawerItem().withName(R.string.reel);
     //PrimaryDrawerItem item = new PrimaryDrawerItem().withName(R.string.reel);
 
-    protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, Context context) {
+    protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
         mAccountHeader = accountHeader;
@@ -67,7 +70,15 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                 getAccountHeader().addProfiles(
                         new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
                                 .withEmail(accountName)
-                                .withIcon(user.getAvatarUrl())
+                                .withIcon(user.getAvatarUrl()),
+                        new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
+                                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                    @Override
+                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                        EvendateAccountManager.deleteAccount(mContext);
+                                        return false;
+                                    }
+                                })
                 );
             }
 
@@ -102,6 +113,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
                 .withProfileImagesClickable(false)
+                .withOnlyMainProfileImageVisible(true)
                 .build();
         result.withActivity(context)
                 .withAccountHeader(headerResult);
@@ -117,9 +129,9 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     public void setupMenu() {
         mDrawer.removeAllItems();
         mDrawer.addItems(
-                reel_item,
-                calendar_item,
-                organizations_item,
+                reelItem,
+                calendarItem,
+                organizationsItem,
                 new SectionDrawerItem().withName(R.string.subscriptions)
         );
     }
