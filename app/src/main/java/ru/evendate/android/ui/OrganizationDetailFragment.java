@@ -37,22 +37,26 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.AppendableAdapter;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.EventsLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.loaders.SubOrganizationLoader;
+import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Contain details of organization
  */
 public class OrganizationDetailFragment extends Fragment implements LoaderListener<ArrayList<OrganizationDetail>>,
-        OrganizationEventsAdapter.OrganizationCardController {
+        OrganizationEventsAdapter.OrganizationCardController, AppendableAdapter.AdapterController {
     private final String LOG_TAG = "OrganizationFragment";
 
     private OrganizationEventsAdapter mAdapter;
     private OrganizationLoader mOrganizationLoader;
+    private EventsLoader mEventLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private int organizationId = -1;
@@ -95,10 +99,33 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                     .setLabel(Long.toString(organizationId));
             tracker.send(event.build());
         }
-        mAdapter = new OrganizationEventsAdapter(getContext(), this);
+        mAdapter = new OrganizationEventsAdapter(getContext(), this, this);
 
         mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
         mOrganizationLoader.setLoaderListener(this);
+        mEventLoader = new EventsLoader(getActivity(), ReelFragment.TypeFormat.ORGANIZATION.type(), organizationId);
+        mEventLoader.setOffset(mEventLoader.getLength());
+        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventFeed>>() {
+            @Override
+            public void onLoaded(ArrayList<EventFeed> subList) {
+                mAdapter.setList(subList);
+            }
+
+            @Override
+            public void onError() {
+                if (!isAdded())
+                    return;
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mEventLoader.startLoading();
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.show();
+            }
+        });
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -286,4 +313,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         mDrawer.cancel();
     }
 
+    @Override
+    public void requestNext() {
+        mEventLoader.startLoading();
+    }
 }

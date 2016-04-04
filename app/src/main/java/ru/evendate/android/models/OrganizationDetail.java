@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public interface OrganizationDetail {
     String FIELDS_LIST = "description,site_url,img_medium_url,subscribed_count,is_subscribed,default_address," +
-            "subscribed,events{filters:'future=true',fields:'" + EventFeed.FIELDS_LIST + "'}";
+            "subscribed,events{filters:'future=true',fields:'" + EventFeed.FIELDS_LIST + "',length:10,order_by:'created_at'}";
 
     int getEntryId();
 

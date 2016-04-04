@@ -94,6 +94,20 @@ public interface EvendateService {
     );
 
     /**
+     * Get events in organization
+     */
+    @GET(API_PATH + "/events")
+    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    /**
      * Get feed events by date
      */
     @GET(API_PATH + "/events/my")

@@ -54,7 +54,7 @@ public class EventsLoader extends AppendableLoader<EventFeed> {
         if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
             mCall = evendateService.getFavorite(peekToken(), true, EventFeed.FIELDS_LIST, getLength(), getOffset());
         } else if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
-            mCall = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST);
+            mCall = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST, "created_at", getLength(), getOffset());
         } else {
             if (mDate != null) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());

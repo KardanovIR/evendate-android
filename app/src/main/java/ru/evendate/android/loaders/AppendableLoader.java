@@ -32,6 +32,10 @@ public abstract class AppendableLoader<D> extends AbstractLoader<D> {
         this.length = length;
     }
 
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     @Override
     protected void onLoaded(ArrayList<D> data) {
         super.onLoaded(data);

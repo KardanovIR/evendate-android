@@ -12,8 +12,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventDetail;
@@ -26,22 +24,15 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by Dmitry on 01.12.2015.
  */
 
-public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class EventsAdapter extends AppendableAdapter<EventFeed> {
 
-    protected Context mContext;
-    private ArrayList<EventFeed> mEventList;
     private int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 
-    public EventsAdapter(Context context, int type) {
-        this.mContext = context;
+    public EventsAdapter(Context context, AdapterController controller, int type) {
+        super(context, controller);
         this.type = type;
-    }
-
-    public void setEventList(ArrayList<EventFeed> eventList) {
-        mEventList = eventList;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -59,10 +50,6 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return layoutItemId;
     }
 
-    public ArrayList<EventFeed> getEventList() {
-        return mEventList;
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
@@ -70,9 +57,9 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (mEventList == null)
+        if (getList() == null)
             return;
-        EventFeed eventEntry = mEventList.get(position);
+        EventFeed eventEntry = getList().get(position);
         EventHolder holder = (EventHolder)viewHolder;
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
@@ -88,13 +75,9 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .load(type == ReelFragment.TypeFormat.FAVORITES.type() ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
                 .error(R.drawable.default_background)
                 .into(holder.mEventImageView);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mEventList == null)
-            return 0;
-        return mEventList.size();
+        if (!isRequesting() && position == getList().size() - 1) {
+            onLastReached();
+        }
     }
 
     @Override
