@@ -77,4 +77,31 @@
         <item name="android:layout_marginBottom">6dp</item>
         <item name="android:layout_marginTop">18dp</item>
     </style>
+
+    <!-- text styles -->
+    <style name="Headline" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="Headline.Light">
+        <item name="android:textColor">#DE000000</item>
+    </style>
+
+    <style name="Headline.Dark">
+        <item name="android:textColor">#FFF</item>
+    </style>
+
+    <style name="Title" parent="Base.TextAppearance.AppCompat.Title">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="Title.Light">
+        <item name="android:textColor">#FFF</item>
+    </style>
+
+    <style name="Subhead.Light" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#8A000000</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
 </resources>

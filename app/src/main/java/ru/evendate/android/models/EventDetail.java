@@ -9,7 +9,8 @@ import java.util.ArrayList;
  */
 public class EventDetail extends Event implements EventFeed {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
-            "organization_type_name,organization_short_name,organization_logo_large_url," +
+            "organization_type_name,organization_short_name," +
+            "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
             "registration_required,registration_till,is_free,min_price," +
             "dates{fields:'" + DateFull.FIELDS_LIST + "'},tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
@@ -25,6 +26,10 @@ public class EventDetail extends Event implements EventFeed {
     String organizationShortName;
     @SerializedName("organization_logo_large_url")
     String organizationLogoUrl;
+    @SerializedName("organization_logo_medium_url")
+    String organizationLogoMediumUrl;
+    @SerializedName("organization_logo_small_url")
+    String organizationLogoSmallUrl;
     @SerializedName("favored_users_count")
     int likedUsersCount;
     String description;
@@ -89,6 +94,14 @@ public class EventDetail extends Event implements EventFeed {
 
     public String getOrganizationLogoUrl() {
         return organizationLogoUrl;
+    }
+
+    public String getOrganizationLogoMediumUrl() {
+        return organizationLogoMediumUrl;
+    }
+
+    public String getOrganizationLogoSmallUrl() {
+        return organizationLogoSmallUrl;
     }
 
     public String getLocation() {

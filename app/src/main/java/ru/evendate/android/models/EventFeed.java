@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
-            "organization_short_name,is_favorite,dates," +
+            "organization_short_name,is_favorite,dates,organization_logo_small_url," +
             "registration_required,registration_till,is_free,min_price";
 
     int getEntryId();
@@ -33,6 +33,8 @@ public interface EventFeed {
     void setIsFavorite(boolean isFavorite);
 
     String getOrganizationShortName();
+
+    String getOrganizationLogoSmallUrl();
 
     void favore();
 

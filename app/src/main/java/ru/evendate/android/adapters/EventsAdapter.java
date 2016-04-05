@@ -3,6 +3,7 @@ package ru.evendate.android.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.ui.EventDetailActivity;
@@ -50,9 +53,11 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
             layoutItemId = R.layout.card_event_organization;
         } else if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
-            layoutItemId = R.layout.card_event_favorite;
+            layoutItemId = R.layout.card_event_feed;
         } else if (type == ReelFragment.TypeFormat.CALENDAR.type()) {
             layoutItemId = R.layout.card_event;
+        } else if (type == ReelFragment.TypeFormat.FEED.type()) {
+            layoutItemId = R.layout.card_event_feed;
         } else {
             layoutItemId = R.layout.card_event;
         }
@@ -78,16 +83,23 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
-        if (eventEntry.isFavorite() && type != ReelFragment.TypeFormat.FAVORITES.type() &&
-                type != ReelFragment.TypeFormat.ORGANIZATION.type()) {
+        if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
-        }
-        String date = EventFormatter.formatDate((EventDetail)eventEntry);
+        String date = EventFormatter.formatDate(eventEntry.getNearestDate());
         holder.mDateTextView.setText(date);
         Picasso.with(mContext)
-                .load(type == ReelFragment.TypeFormat.FAVORITES.type() ? eventEntry.getImageHorizontalUrl() : eventEntry.getImageVerticalUrl())
+                .load(eventEntry.getImageHorizontalUrl())
                 .error(R.drawable.default_background)
                 .into(holder.mEventImageView);
+
+        if (type == ReelFragment.TypeFormat.CALENDAR.type())
+            return;
+        if (holder.mOrganizationLogo != null)
+            Picasso.with(mContext)
+                    .load(eventEntry.getOrganizationLogoSmallUrl())
+                    .error(R.drawable.evendate_logo)
+                    .into(holder.mOrganizationLogo);
+        holder.mPriceTextView.setText(eventEntry.isFree() ? holder.eventFreeLabel : String.valueOf(eventEntry.getMinPrice()));
     }
 
     @Override
@@ -109,21 +121,28 @@ public class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
+        @Bind(R.id.event_item_image)
         public ImageView mEventImageView;
+        @Bind(R.id.event_item_title)
         public TextView mTitleTextView;
+        @Bind(R.id.event_item_date)
         public TextView mDateTextView;
+        @Nullable @Bind(R.id.event_item_price)
+        public TextView mPriceTextView;
+        @Nullable @Bind(R.id.event_item_organization)
         public TextView mOrganizationTextView;
+        @Nullable @Bind(R.id.event_item_organization_icon)
+        public ImageView mOrganizationLogo;
+        @Bind(R.id.event_item_favorite_indicator)
         public View mFavoriteIndicator;
         public int id;
+        @BindString(R.string.event_free)
+        public String eventFreeLabel;
 
         public EventHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             holderView = itemView;
-            mEventImageView = (ImageView)itemView.findViewById(R.id.event_item_image);
-            mTitleTextView = (TextView)itemView.findViewById(R.id.event_item_title);
-            mDateTextView = (TextView)itemView.findViewById(R.id.event_item_date);
-            mOrganizationTextView = (TextView)itemView.findViewById(R.id.event_item_organization);
-            mFavoriteIndicator = itemView.findViewById(R.id.event_item_favorite_indicator);
             holderView.setOnClickListener(this);
         }
 
