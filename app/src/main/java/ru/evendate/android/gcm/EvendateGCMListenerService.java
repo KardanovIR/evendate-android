@@ -20,6 +20,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.OrganizationDetailActivity;
+import ru.evendate.android.ui.UserProfileActivity;
 
 /**
  * Created by Dmitry on 29.11.2015.
@@ -27,6 +28,7 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
 public class EvendateGCMListenerService extends GcmListenerService {
 
     private static final String LOG_TAG = EvendateGCMListenerService.class.getSimpleName();
+
     /**
      * Called when message is received.
      *
@@ -44,11 +46,12 @@ public class EvendateGCMListenerService extends GcmListenerService {
         final String USER_ID = "user_id";
         final String MESSAGE = "message";
         final String IMAGE_URL = "image_url";
+        final String NOTIFICATION_TYPE = "type";
 
-        final String EVENT_CHANNEL = "events";
-        final String ORGANIZATION_CHANNEL = "organizations";
-        final String USER_CHANNEL = "users";
-        final String DEBUG_CHANNEL = "debug";
+        final String EVENT_TYPE = "events";
+        final String ORGANIZATION_TYPE = "organizations";
+        final String USER_TYPE = "users";
+        final String DEBUG_TYPE = "debug";
 
         String message = data.getString(MESSAGE);
         String imageUrl = data.getString(IMAGE_URL);
@@ -56,38 +59,42 @@ public class EvendateGCMListenerService extends GcmListenerService {
         Log.d(LOG_TAG, "Message: " + message);
         Intent intent;
         if (from.startsWith("/topics/")) {
-            switch (from.substring(from.lastIndexOf("/"), from.length())) {
+            return;
+        } else {
+            String type = data.getString(NOTIFICATION_TYPE);
+            if (type == null) {
+                Log.e(LOG_TAG, "null type");
+                return;
+            }
+            switch (type) {
                 //todo optimize
-                case EVENT_CHANNEL:
+                case EVENT_TYPE:
                     intent = new Intent(this, EventDetailActivity.class);
                     int eventId = Integer.valueOf(data.getString(EVENT_ID));
                     intent.setData(EvendateContract.EventEntry.getContentUri(eventId));
                     intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
-                case ORGANIZATION_CHANNEL:
+                case ORGANIZATION_TYPE:
                     intent = new Intent(this, OrganizationDetailActivity.class);
                     int orgId = Integer.valueOf(data.getString(ORGANIZATION_ID));
                     intent.setData(EvendateContract.OrganizationEntry.getContentUri(orgId));
                     intent.putExtra(OrganizationDetailActivity.INTENT_TYPE, OrganizationDetailActivity.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
-                case USER_CHANNEL:
-                    intent = new Intent(this, EventDetailActivity.class);
+                case USER_TYPE:
+                    intent = new Intent(this, UserProfileActivity.class);
                     int userId = Integer.valueOf(data.getString(USER_ID));
                     intent.setData(EvendateContract.UserEntry.getContentUri(userId));
                     intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
-                case DEBUG_CHANNEL:
+                case DEBUG_TYPE:
                     //if (!BuildConfig.DEBUG)
                     return;
                 default:
                     return;
             }
-        } else {
-            // normal downstream message.
-            return;
         }
         /**
          * Production applications would usually process the message here.
