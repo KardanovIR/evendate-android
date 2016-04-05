@@ -146,6 +146,9 @@ public class EvendateContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/user";
 
+        public static Uri getContentUri(int userId) {
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(userId)).build();
+        }
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_LAST_NAME = "last_name";

@@ -124,6 +124,7 @@
     <!-- strings for statistics -->
     <string name="stat_category_event" translatable="false">Event</string>
     <string name="stat_category_organization" translatable="false">Organization</string>
+    <string name="stat_category_user" translatable="false">User</string>
     <string name="stat_action_view" translatable="false">View</string>
     <string name="stat_action_notification" translatable="false">View by notification</string>
     <string name="stat_action_like" translatable="false">Like</string>
