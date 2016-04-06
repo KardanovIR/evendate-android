@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="FeedCard" parent="FeedCard">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="cardElevation">2dp</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="android:clickable">true</item>
-        <item name="android:width">344dp</item>
+        <item name="android:layout_width">376dp</item>
     </style>
 </resources>
