@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="236dp"
+    android:id="@+id/cardView"
+    style="@style/OrganizationCard"
+    android:layout_marginLeft="@dimen/organization_card_side_margin"
+    android:layout_marginRight="@dimen/organization_card_side_margin">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="184dp"
+            android:id="@+id/event_item_image"
+            android:contentDescription="event_image"
+            android:scaleType="centerCrop" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient"
+            android:layout_alignBottom="@+id/event_item_image" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_item_title"
+            tools:text="Title"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textIsSelectable="false"
+            android:gravity="start|bottom"
+            android:layout_alignBottom="@+id/event_item_image"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="16dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/event_item_image"
+            android:id="@+id/frameLayout">
+
+            <TextView
+                android:id="@+id/event_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="24, 25, 28 февраля; 2, 4, 5 марта"
+                android:textColor="#dd000000"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:focusable="false"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

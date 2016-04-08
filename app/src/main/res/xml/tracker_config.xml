@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId">UA-69300084-2</string>
+    <string name="ga_sampleFrequency">100.0</string>
+    <integer name="ga_sessionTimeout">1800</integer>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_anonymizeIp">false</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+
+    <screenName name="ru.evendate.android.ui.MainActivity">Main Screen</screenName>
+    <screenName name="ru.evendate.android.ui.AuthActivity">Auth Screen</screenName>
+    <screenName name="ru.evendate.android.ui.EventDetailActivity">Event Screen</screenName>
+    <screenName name="ru.evendate.android.ui.OrganizationDetailActivity">Organization Screen</screenName>
+    <screenName name="ru.evendate.android.ui.UserListActivity">User List Screen</screenName>
+    <screenName name="ru.evendate.android.ui.EvendateIntro">Intro Screen</screenName>
+    <screenName name="ru.evendate.android.ui.UserProfileActivity">User Profile Screen</screenName>
+</resources>

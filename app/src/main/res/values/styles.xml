@@ -119,6 +119,19 @@
         <item name="android:clickable">true</item>
         <item name="android:layout_margin">4dp</item>
     </style>
+    <style name="UserCard">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+    </style>
+    <style name="ActionCard" parent="CardView">
+        <item name="cardUseCompatPadding">true</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="cardElevation">2dp</item>
+    </style>
     <style name="EventCardWithGroupDate">
         <item name="android:layout_marginBottom">6dp</item>
         <item name="android:layout_marginTop">18dp</item>
@@ -128,5 +141,28 @@
     </style>
 
 
+    <style name="DialogCustom" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
 
+    <style name="TextAppearance.CollapsingToolbar" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textSize">10pt</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="EventDescriptionCard" parent="CardView">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="cardElevation">1dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+    <style name="OrganizationCard" parent="CardView">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="cardElevation">1dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:stateListAnimator" tools:targetApi="21">@anim/card_raise</item>
+    </style>
 </resources>

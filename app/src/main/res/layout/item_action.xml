@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/cardView"
+    style="@style/ActionCard">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_avatar"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/evendate_logo"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
+            <TextView
+                android:id="@+id/action_description"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                tools:text="подписался на органашку"
+                android:layout_below="@+id/user_name"
+                android:layout_toRightOf="@+id/user_avatar"
+                android:layout_toEndOf="@+id/user_avatar"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                tools:text="Deniz Ozdemir"
+                android:textSize="14sp"
+                android:textIsSelectable="false"
+                android:layout_alignParentTop="true"
+                android:layout_alignLeft="@+id/action_description"
+                android:layout_alignStart="@+id/action_description"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/text_color_black" />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#AAAAAA"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_action_target_org" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
