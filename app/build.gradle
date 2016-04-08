@@ -18,7 +18,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             // cause bug in google play-services libraries
             // https://code.google.com/p/analytics-issues/issues/detail?id=733
-            lintOptions { disable 'MissingTranslation' }
+            lintOptions {
+                disable 'MissingTranslation'
+                checkReleaseBuilds false
+                abortOnError false
+            }
         }
     }
     dexOptions {
