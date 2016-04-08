@@ -11,11 +11,13 @@ public class EvendateAuthenticatorService extends Service {
 
     // Instance field that stores the authenticator object
     private EvendateAuthenticator mAuthenticator;
+
     @Override
     public void onCreate() {
         // Create a new authenticator object
         mAuthenticator = new EvendateAuthenticator(this);
     }
+
     /*
      * When the system binds to this Service to make the RPC call
      * return the authenticator's IBinder.

@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 /**
  * Created by Dmitry on 07.09.2015.
- *
  */
 public class EvendateAuthenticator extends AbstractAccountAuthenticator {
     Context mContext;
@@ -29,12 +28,14 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
         super(context);
         mContext = context;
     }
+
     // Editing properties is not supported
     @Override
     public Bundle editProperties(
             AccountAuthenticatorResponse r, String s) {
         throw new UnsupportedOperationException();
     }
+
     // Don't add additional accounts
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
@@ -50,6 +51,7 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
         return bundle;
 
     }
+
     // Ignore attempts to confirm credentials
     @Override
     public Bundle confirmCredentials(
@@ -58,6 +60,7 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
             Bundle bundle) throws NetworkErrorException {
         return null;
     }
+
     // Getting an authentication token is not supported
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType,
@@ -88,11 +91,13 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
     }
+
     // Getting a label for the auth token is not supported
     @Override
     public String getAuthTokenLabel(String s) {
         throw new UnsupportedOperationException();
     }
+
     // Updating user credentials is not supported
     @Override
     public Bundle updateCredentials(
@@ -101,6 +106,7 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
             String s, Bundle bundle) throws NetworkErrorException {
         throw new UnsupportedOperationException();
     }
+
     // Checking features for the account is not supported
     @Override
     public Bundle hasFeatures(

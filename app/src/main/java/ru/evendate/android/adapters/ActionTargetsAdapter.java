@@ -35,7 +35,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
     @Override
     public int getItemViewType(int position) {
         int type = getList().get(position).getTargetType();
-        if(type == ActionTarget.TYPE_EVENT)
+        if (type == ActionTarget.TYPE_EVENT)
             return R.layout.item_action_target_event;
         else
             return R.layout.item_action_target_org;
@@ -65,8 +65,8 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
         public ActionTargetHolder(View itemView) {
             super(itemView);
             holderView = itemView;
-            mNameTextView = (TextView) itemView.findViewById(R.id.action_target_text_view);
-            mImageView = (ImageView) itemView.findViewById(R.id.action_target_image) ;
+            mNameTextView = (TextView)itemView.findViewById(R.id.action_target_text_view);
+            mImageView = (ImageView)itemView.findViewById(R.id.action_target_image);
             holderView.setOnClickListener(this);
         }
 
@@ -74,7 +74,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
         public void onClick(View v) {
             if (v == holderView) {
                 Intent intent;
-                if(type == ActionTarget.TYPE_EVENT)
+                if (type == ActionTarget.TYPE_EVENT)
                     intent = new Intent(mContext, EventDetailActivity.class);
                 else
                     intent = new Intent(mContext, OrganizationDetailActivity.class);

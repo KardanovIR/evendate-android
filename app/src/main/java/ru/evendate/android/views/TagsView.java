@@ -71,7 +71,7 @@ public class TagsView extends ViewGroup {
             if (child.getVisibility() != GONE) {
                 // Measure the child.
                 measureChildWithMargins(child, 0, widthMeasureSpec, 0, heightMeasureSpec);
-                MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
+                MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
                 int mLeft = lp.leftMargin;
                 int mRight = lp.rightMargin;
                 int mTop = lp.topMargin;
@@ -120,7 +120,7 @@ public class TagsView extends ViewGroup {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
 
-                MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
+                MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
                 int mLeft = lp.leftMargin;
                 int mRight = lp.rightMargin;
                 int mTop = lp.topMargin;
@@ -154,18 +154,18 @@ public class TagsView extends ViewGroup {
         public TagView(Context context, AttributeSet attrs) {
             super(context, attrs);
 
-            LayoutInflater inflater = (LayoutInflater) context
+            LayoutInflater inflater = (LayoutInflater)context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(R.layout.view_tag, this, true);
             if (attrs == null) {
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+                int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
 
                 lp.setMargins(margin, margin, margin, margin);
                 setLayoutParams(lp);
             }
-            mTextView = (TextView) getChildAt(0);
+            mTextView = (TextView)getChildAt(0);
         }
 
         public void setText(String text) {

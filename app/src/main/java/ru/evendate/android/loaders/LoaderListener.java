@@ -5,5 +5,6 @@ package ru.evendate.android.loaders;
  */
 public interface LoaderListener<Type> {
     void onLoaded(Type subList);
+
     void onError();
 }

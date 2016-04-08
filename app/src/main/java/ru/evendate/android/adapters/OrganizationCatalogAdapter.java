@@ -23,17 +23,17 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
  * Created by Dmitry on 01.12.2015.
  * adapter for organization model into catalog item
  */
-public class OrganizationCatalogAdapter extends RecyclerView.Adapter<OrganizationCatalogAdapter.OrganizationHolder>{
+public class OrganizationCatalogAdapter extends RecyclerView.Adapter<OrganizationCatalogAdapter.OrganizationHolder> {
 
     private Context mContext;
     private ArrayList<OrganizationSubscription> mOrganizationList;
     private Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
-    public OrganizationCatalogAdapter(Context context){
+    public OrganizationCatalogAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void setOrganizationList(ArrayList<OrganizationSubscription> organizationList){
+    public void setOrganizationList(ArrayList<OrganizationSubscription> organizationList) {
         mOrganizationList = organizationList;
         notifyDataSetChanged();
     }
@@ -41,7 +41,7 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
     @Override
     public OrganizationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new OrganizationHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.organization_catalog_little_item, parent, false));
+                .inflate(R.layout.item_organization_catalog, parent, false));
     }
 
     @Override
@@ -77,7 +77,7 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
         public ImageView mImageView;
         public long id;
 
-        public OrganizationHolder(View itemView){
+        public OrganizationHolder(View itemView) {
             super(itemView);
             mItem = itemView;
             mSubCounts = (TextView)itemView.findViewById(R.id.organization_item_subs);
@@ -89,7 +89,7 @@ public class OrganizationCatalogAdapter extends RecyclerView.Adapter<Organizatio
 
         @Override
         public void onClick(View v) {
-            if(v.equals(mItem)){
+            if (v.equals(mItem)) {
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
                 mContext.startActivity(intent);

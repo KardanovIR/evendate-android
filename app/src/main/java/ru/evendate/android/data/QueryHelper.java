@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
  * contains projections that uses in content provider
  */
 public class QueryHelper {
-    public static String[] getOrganizationProjection(){
-        return new String[] {
+    public static String[] getOrganizationProjection() {
+        return new String[]{
                 EvendateContract.OrganizationEntry._ID,
                 EvendateContract.OrganizationEntry.COLUMN_ORGANIZATION_ID,
                 EvendateContract.OrganizationEntry.COLUMN_NAME,
@@ -26,7 +26,8 @@ public class QueryHelper {
                 EvendateContract.OrganizationEntry.COLUMN_CREATED_AT,
         };
     }
-    public static String[] getEventProjection(){
+
+    public static String[] getEventProjection() {
         return new String[]{
                 EvendateContract.EventEntry.TABLE_NAME + "." +
                         EvendateContract.EventEntry._ID,
@@ -71,14 +72,15 @@ public class QueryHelper {
         };
     }
 
-    public static String[] getTagProjection(){
+    public static String[] getTagProjection() {
         return new String[]{
                 EvendateContract.TagEntry._ID,
                 EvendateContract.TagEntry.COLUMN_TAG_ID,
                 EvendateContract.TagEntry.COLUMN_NAME,
         };
     }
-    public static String[] getEventTagProjection(){
+
+    public static String[] getEventTagProjection() {
         return new String[]{
                 EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry._ID,
                 EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry.COLUMN_TAG_ID,
@@ -86,7 +88,8 @@ public class QueryHelper {
                 EvendateContract.TagEntry.TABLE_NAME + "." + EvendateContract.TagEntry.COLUMN_NAME,
         };
     }
-    public static String[] getUserProjection(){
+
+    public static String[] getUserProjection() {
         return new String[]{
                 EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry._ID,
                 EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_USER_ID,
@@ -100,7 +103,7 @@ public class QueryHelper {
         };
     }
 
-    public static String[] getUserEventProjection(){
+    public static String[] getUserEventProjection() {
         return new String[]{
                 EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry._ID,
                 EvendateContract.UserEntry.TABLE_NAME + "." + EvendateContract.UserEntry.COLUMN_USER_ID,
@@ -114,14 +117,15 @@ public class QueryHelper {
                 EvendateContract.UserEventEntry.TABLE_NAME + "." + EvendateContract.UserEventEntry.COLUMN_EVENT_ID
         };
     }
-    public static String[] getDateWithEventProjection(){
+
+    public static String[] getDateWithEventProjection() {
         return new String[]{
                 EvendateContract.EventDateEntry.TABLE_NAME + "." + EvendateContract.EventDateEntry.COLUMN_DATE,
                 EvendateContract.EventEntry.TABLE_NAME + "." + EvendateContract.EventEntry.COLUMN_IS_FAVORITE,
         };
     }
 
-    public static SQLiteQueryBuilder buildEventQuery(){
+    public static SQLiteQueryBuilder buildEventQuery() {
         final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
                 = new SQLiteQueryBuilder();
         sOrganizationWithEventQueryBuilder.setTables(EvendateContract.EventEntry.TABLE_NAME
@@ -132,7 +136,8 @@ public class QueryHelper {
                 "." + EvendateContract.EventEntry.COLUMN_ORGANIZATION_ID);
         return sOrganizationWithEventQueryBuilder;
     }
-    public static SQLiteQueryBuilder buildEventWithDateQuery(){
+
+    public static SQLiteQueryBuilder buildEventWithDateQuery() {
         final SQLiteQueryBuilder sOrganizationWithEventQueryBuilder
                 = new SQLiteQueryBuilder();
         sOrganizationWithEventQueryBuilder.setDistinct(true);
@@ -151,7 +156,7 @@ public class QueryHelper {
         return sOrganizationWithEventQueryBuilder;
     }
 
-    public static SQLiteQueryBuilder buildEventTagQuery(){
+    public static SQLiteQueryBuilder buildEventTagQuery() {
         final SQLiteQueryBuilder sTagsByEventsQueryBuilder
                 = new SQLiteQueryBuilder();
         sTagsByEventsQueryBuilder.setTables(
@@ -169,7 +174,8 @@ public class QueryHelper {
                         "." + EvendateContract.EventTagEntry.COLUMN_TAG_ID);
         return sTagsByEventsQueryBuilder;
     }
-    public static SQLiteQueryBuilder buildEventFriendQuery(){
+
+    public static SQLiteQueryBuilder buildEventFriendQuery() {
 
         final SQLiteQueryBuilder sFriendsByEventsQueryBuilder
                 = new SQLiteQueryBuilder();
@@ -189,7 +195,8 @@ public class QueryHelper {
         );
         return sFriendsByEventsQueryBuilder;
     }
-    public static SQLiteQueryBuilder buildEventDatesQuery(){
+
+    public static SQLiteQueryBuilder buildEventDatesQuery() {
 
         final SQLiteQueryBuilder sDatesByEventsQueryBuilder
                 = new SQLiteQueryBuilder();
@@ -204,7 +211,7 @@ public class QueryHelper {
         return sDatesByEventsQueryBuilder;
     }
 
-    public static SQLiteQueryBuilder buildDateWithEventQuery(){
+    public static SQLiteQueryBuilder buildDateWithEventQuery() {
         final SQLiteQueryBuilder sDateWithEventQueryBuilder
                 = new SQLiteQueryBuilder();
         sDateWithEventQueryBuilder.setTables(EvendateContract.EventDateEntry.TABLE_NAME

@@ -7,9 +7,10 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class EventDetail extends Event implements EventFeed{
+public class EventDetail extends Event implements EventFeed {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
-            "organization_type_name,organization_short_name,organization_logo_large_url," +
+            "organization_type_name,organization_short_name," +
+            "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
             "registration_required,registration_till,is_free,min_price," +
             "dates{fields:'" + DateFull.FIELDS_LIST + "'},tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
@@ -25,6 +26,10 @@ public class EventDetail extends Event implements EventFeed{
     String organizationShortName;
     @SerializedName("organization_logo_large_url")
     String organizationLogoUrl;
+    @SerializedName("organization_logo_medium_url")
+    String organizationLogoMediumUrl;
+    @SerializedName("organization_logo_small_url")
+    String organizationLogoSmallUrl;
     @SerializedName("favored_users_count")
     int likedUsersCount;
     String description;
@@ -37,7 +42,7 @@ public class EventDetail extends Event implements EventFeed{
     @SerializedName("registration_required")
     boolean registrationRequired;
     @SerializedName("registration_till")
-    String registrationTill;
+    long registrationTill;
     @SerializedName("is_free")
     boolean isFree;
     @SerializedName("min_price")
@@ -91,6 +96,14 @@ public class EventDetail extends Event implements EventFeed{
         return organizationLogoUrl;
     }
 
+    public String getOrganizationLogoMediumUrl() {
+        return organizationLogoMediumUrl;
+    }
+
+    public String getOrganizationLogoSmallUrl() {
+        return organizationLogoSmallUrl;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -115,7 +128,7 @@ public class EventDetail extends Event implements EventFeed{
         this.likedUsersCount = likedUsersCount;
     }
 
-    public void favore(){
+    public void favore() {
         isFavorite = !isFavorite;
         likedUsersCount += isFavorite ? 1 : -1;
     }
@@ -128,7 +141,7 @@ public class EventDetail extends Event implements EventFeed{
         return registrationRequired;
     }
 
-    public String getRegistrationTill() {
+    public long getRegistrationTill() {
         return registrationTill;
     }
 

@@ -29,13 +29,14 @@ import ru.evendate.android.views.UsersView;
 /**
  * Created by ds_gordeev on 22.03.2016.
  */
-public class OrganizationEventsAdapter extends EventsAdapter{
+public class OrganizationEventsAdapter extends EventsAdapter {
     private OrganizationDetail mOrganization;
     private OrganizationCardController mOrganizationCardController;
 
-    public OrganizationEventsAdapter(Context context, OrganizationCardController controller) {
-        super(context, ReelFragment.TypeFormat.ORGANIZATION.type());
-        mOrganizationCardController = controller;
+    public OrganizationEventsAdapter(Context context, AdapterController controller,
+                                     OrganizationCardController cardController) {
+        super(context, controller, ReelFragment.TypeFormat.ORGANIZATION.type());
+        mOrganizationCardController = cardController;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class OrganizationEventsAdapter extends EventsAdapter{
 
     public void setOrganization(OrganizationDetail organization) {
         mOrganization = organization;
-        super.setEventList(organization.getEventsList());
+        super.setList(organization.getEventsList());
         notifyDataSetChanged();
     }
 
@@ -55,7 +56,7 @@ public class OrganizationEventsAdapter extends EventsAdapter{
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0 && mOrganization != null)
+        if (position == 0 && mOrganization != null)
             return R.layout.card_organization_detail;
         return super.getItemViewType(position);
     }
@@ -76,9 +77,9 @@ public class OrganizationEventsAdapter extends EventsAdapter{
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if(mOrganization == null)
+        if (mOrganization == null)
             return;
-        if(position == 0){
+        if (position == 0) {
             OrganizationHolder holder = (OrganizationHolder)viewHolder;
             holder.mNameView.setText(mOrganization.getName());
             holder.mUsersView.setUsers(mOrganization.getSubscribedUsersList());
@@ -90,20 +91,13 @@ public class OrganizationEventsAdapter extends EventsAdapter{
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mLogoView);
             holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
-        } else{
+            if(mOrganization.getSubscribedUsersList().size() == 0)
+                holder.mUserContainer.setVisibility(View.GONE);
+
+        } else {
             super.onBindViewHolder(viewHolder, position - 1);
         }
     }
-    static final ButterKnife.Action<View> VISIBLE = new ButterKnife.Action<View>() {
-        @Override public void apply(View view, int index) {
-            view.setVisibility(View.VISIBLE);
-        }
-    };
-    static final ButterKnife.Action<View> GONE = new ButterKnife.Action<View>() {
-        @Override public void apply(View view, int index) {
-            view.setVisibility(View.GONE);
-        }
-    };
 
     @SuppressWarnings("unused")
     public class OrganizationHolder extends RecyclerView.ViewHolder {
@@ -117,16 +111,17 @@ public class OrganizationEventsAdapter extends EventsAdapter{
         @Bind(R.id.organization_description) TextView mDescriptionView;
         @Bind(R.id.organization_place) TextView mPlaceView;
         @Bind(R.id.organization_users_description) TextView mUsersDescriptionView;
+        @Bind(R.id.organization_users_container) RelativeLayout mUserContainer;
         @Bind(R.id.organization_more_container) RelativeLayout mOrganizationMoreContainer;
         @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
 
-        @Bind({ R.id.organization_divider, R.id.organization_description_label,
+        @Bind({R.id.organization_divider, R.id.organization_description_label,
                 R.id.organization_description, R.id.organization_place_label,
-                R.id.organization_place, R.id.organization_link_label, R.id.organization_link_container })
+                R.id.organization_place, R.id.organization_link_label, R.id.organization_link_container})
         List<View> mDescriptionViews;
 
 
-        public OrganizationHolder(View itemView){
+        public OrganizationHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             ButterKnife.bind(this, itemView);
@@ -134,10 +129,9 @@ public class OrganizationEventsAdapter extends EventsAdapter{
             mMoreToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
+                    if (isChecked) {
                         expand(mOrganizationMoreContainer);
-                    }
-                    else{
+                    } else {
                         collapse(mOrganizationMoreContainer);
                     }
                 }
@@ -146,31 +140,35 @@ public class OrganizationEventsAdapter extends EventsAdapter{
 
         @OnClick(R.id.organization_place)
         public void onPlaceClick(View v) {
-            if(mOrganization == null)
+            if (mOrganization == null)
                 return;
             mOrganizationCardController.onPlaceClicked();
         }
+
         @OnClick(R.id.organization_link_container)
         public void onLinkClick(View v) {
-            if(mOrganization == null)
+            if (mOrganization == null)
                 return;
             mOrganizationCardController.onLinkClicked();
         }
+
         @OnClick(R.id.organization_subscribe_button)
         public void onSubscribeClick(View v) {
-            if(mOrganization == null)
+            if (mOrganization == null)
                 return;
             mOrganizationCardController.onSubscribed();
         }
+
         @OnClick(R.id.organization_more_button)
         public void onMoreClick(View v) {
-            if(mOrganization == null)
+            if (mOrganization == null)
                 return;
             mMoreToggle.setChecked(!mMoreToggle.isChecked());
         }
-        @OnClick(R.id.organization_users_container)
+
+        @OnClick(R.id.organization_users_description)
         public void onUsersClick(View v) {
-            if(mOrganization == null)
+            if (mOrganization == null)
                 return;
             mOrganizationCardController.onUsersClicked();
         }
@@ -182,8 +180,7 @@ public class OrganizationEventsAdapter extends EventsAdapter{
             // Older versions of android (pre API 21) cancel animations for views with a height of 0.
             v.getLayoutParams().height = 1;
             v.setVisibility(View.VISIBLE);
-            Animation a = new Animation()
-            {
+            Animation a = new Animation() {
                 @Override
                 protected void applyTransformation(float interpolatedTime, Transformation t) {
                     v.getLayoutParams().height = interpolatedTime == 1
@@ -206,13 +203,12 @@ public class OrganizationEventsAdapter extends EventsAdapter{
         public void collapse(final View v) {
             final int initialHeight = v.getMeasuredHeight();
 
-            Animation a = new Animation()
-            {
+            Animation a = new Animation() {
                 @Override
                 protected void applyTransformation(float interpolatedTime, Transformation t) {
-                    if(interpolatedTime == 1){
+                    if (interpolatedTime == 1) {
                         v.setVisibility(View.GONE);
-                    }else{
+                    } else {
                         v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
                         v.requestLayout();
                     }
@@ -230,10 +226,14 @@ public class OrganizationEventsAdapter extends EventsAdapter{
         }
 
     }
-    public interface OrganizationCardController{
+
+    public interface OrganizationCardController {
         void onSubscribed();
+
         void onUsersClicked();
+
         void onPlaceClicked();
+
         void onLinkClicked();
     }
 }

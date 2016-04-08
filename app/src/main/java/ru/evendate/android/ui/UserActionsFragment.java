@@ -34,11 +34,12 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     private int userId;
     private ProgressBar mProgressBar;
 
-    public static UserActionsFragment newInstance(int userId){
+    public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment userListFragment = new UserActionsFragment();
         userListFragment.userId = userId;
         return userListFragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,31 +49,33 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mLoader = new ActionLoader(getActivity());
+        mLoader = new ActionLoader(getActivity(), userId);
         mLoader.setLoaderListener(this);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBarAction);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.getData(userId);
+        mLoader.startLoading();
         return rootView;
     }
+
     @Override
     public void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
         mProgressBar.setVisibility(View.GONE);
         mAdapter.setList(convertedList);
     }
+
     @Override
     public void onError() {
-        if(!isAdded())
+        if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mLoader.getData(userId);
+                mLoader.startLoading();
                 dialog.dismiss();
             }
         });
@@ -82,6 +85,6 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
     }
 }

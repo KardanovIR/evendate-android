@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/recyclerView"
             android:layout_gravity="center_horizontal|top"
-            tools:listitem="@layout/reel_item"/>
+            android:scrollbars="vertical"
+            tools:listitem="@layout/card_event"/>
     </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

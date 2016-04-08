@@ -30,7 +30,7 @@ public class UserFavoritedCard extends CardView {
     public UserFavoritedCard(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        LayoutInflater inflater = (LayoutInflater) context
+        LayoutInflater inflater = (LayoutInflater)context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = inflater.inflate(R.layout.view_user_favorited, this, true);
         ButterKnife.bind(this, rootView);

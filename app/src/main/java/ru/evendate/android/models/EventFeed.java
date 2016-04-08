@@ -7,26 +7,43 @@ import java.util.ArrayList;
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
-            "organization_short_name,is_favorite,dates," +
-            "registration_required,registration_till,is_free,min_price";
+            "organization_short_name,is_favorite,dates,organization_logo_small_url," +
+            "registration_required,registration_till,is_free,min_price" +
+            ",created_at";
+
     int getEntryId();
+
     String getTitle();
+
     long getFirstDate();
+
     long getLastDate();
+
     long getNearestDate();
+
     String getImageHorizontalUrl();
+
     String getImageVerticalUrl();
+
     int getOrganizationId();
+
     ArrayList<DateFull> getDateList();
 
     boolean isFavorite();
 
     void setIsFavorite(boolean isFavorite);
+
     String getOrganizationShortName();
 
+    String getOrganizationLogoSmallUrl();
+
     void favore();
+
     boolean isRegistrationRequired();
-    String getRegistrationTill();
+
+    long getRegistrationTill();
+
     boolean isFree();
+
     int getMinPrice();
 }

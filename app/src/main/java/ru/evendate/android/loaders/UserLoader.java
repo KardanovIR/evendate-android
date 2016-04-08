@@ -17,13 +17,16 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  */
 public class UserLoader extends AbstractLoader<UserDetail> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
+    int userId;
 
-    public UserLoader(Context context) {
+    public UserLoader(Context context, int userId) {
         super(context);
+        this.userId = userId;
     }
-    public void getData(int userId){
+
+    @Override
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting user");
-        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<UserDetail>> call =
@@ -35,9 +38,9 @@ public class UserLoader extends AbstractLoader<UserDetail> {
             public void onResponse(Response<EvendateServiceResponseArray<UserDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    onLoaded(response.body().getData().get(0));
+                    onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with user");

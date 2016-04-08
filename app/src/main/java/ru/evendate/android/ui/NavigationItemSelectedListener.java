@@ -19,9 +19,10 @@ import ru.evendate.android.models.Organization;
  */
 
 public class NavigationItemSelectedListener
-        implements Drawer.OnDrawerItemClickListener{
+        implements Drawer.OnDrawerItemClickListener {
     protected Context mContext;
     protected Drawer mDrawer;
+
     public NavigationItemSelectedListener(Context context, Drawer drawer) {
         mContext = context;
         mDrawer = drawer;
@@ -29,8 +30,8 @@ public class NavigationItemSelectedListener
 
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-        switch (drawerItem.getIdentifier()){
-            case EvendateDrawer.REEL_IDENTIFIER:{
+        switch (drawerItem.getIdentifier()) {
+            case EvendateDrawer.REEL_IDENTIFIER: {
                 Intent reelIntent = new Intent(mContext, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt(MainActivity.TYPE, MainActivity.REEL);
@@ -39,14 +40,14 @@ public class NavigationItemSelectedListener
             break;
             case R.id.settings:
                 break;
-            case EvendateDrawer.CALENDAR_IDENTIFIER:{
+            case EvendateDrawer.CALENDAR_IDENTIFIER: {
                 Intent calendarIntent = new Intent(mContext, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt(MainActivity.TYPE, MainActivity.CALENDAR);
                 mContext.startActivity(calendarIntent, bundle);
             }
             break;
-            case EvendateDrawer.ORGANIZATION_IDENTIFIER:{
+            case EvendateDrawer.ORGANIZATION_IDENTIFIER: {
                 Intent organizationIntent = new Intent(mContext, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt(MainActivity.TYPE, MainActivity.CATALOG);
@@ -64,7 +65,7 @@ public class NavigationItemSelectedListener
             //    intent.putExtra(Settings.EXTRA_AUTHORITIES, mContext.getResources().getString(R.string.account_type));
             //    mContext.startActivity(intent);
             //    break;
-            default:{
+            default: {
                 //open organization from subs
                 int id = ((Organization)drawerItem.getTag()).getEntryId();
                 Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);

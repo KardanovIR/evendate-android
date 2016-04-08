@@ -45,7 +45,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     /**
@@ -65,7 +67,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @POST(API_PATH + "/events/{id}/favorites")
@@ -90,6 +94,20 @@ public interface EvendateService {
     );
 
     /**
+     * Get events in organization
+     */
+    @GET(API_PATH + "/events")
+    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    /**
      * Get feed events by date
      */
     @GET(API_PATH + "/events/my")
@@ -99,6 +117,7 @@ public interface EvendateService {
             @Query("future") boolean future,
             @Query("fields") String fields
     );
+
     @GET(API_PATH + "/users/{id}")
     Call<EvendateServiceResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,
@@ -126,6 +145,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<Organization>> getSubscriptions(
             @Header("Authorization") String authorization
     );
+
     @POST(API_PATH + "/organizations/{id}/subscriptions")
     Call<EvendateServiceResponse> organizationPostSubscription(
             @Path("id") int organizationId,

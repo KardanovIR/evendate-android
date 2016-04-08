@@ -30,6 +30,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/event_dates_description"
             android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/expand_container"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/container"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp">
         </LinearLayout>
@@ -42,7 +52,7 @@
             android:textOn="@string/dates_view_less"
             android:textSize="14sp"
             android:textColor="#ff5f9e"
-            android:layout_below="@+id/container"
+            android:layout_below="@+id/expand_container"
             android:layout_centerHorizontal="true"
             android:paddingTop="16dp"
             android:paddingRight="48dp"
