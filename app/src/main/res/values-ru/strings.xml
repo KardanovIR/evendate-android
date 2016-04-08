@@ -70,14 +70,13 @@
     <string name="dates_view_more">ЕЩЕ</string>
     <string name="dates_view_time_label">Время</string>
     <string name="event_free">Бесплатно</string>
-    <string name="event_go_to_page">ПЕРЕЙТИ К СТРАНИЦЕ ОРГАНИЗАТОРА</string>
+    <string name="event_go_to_page">ПЕРЕЙТИ К СТРАНИЦЕ СОБЫТИЯ</string>
     <string name="event_price_from">От</string>
     <string name="event_registration_not_required">Не требуется</string>
     <string name="event_registration_till">До</string>
     <string name="event_show_on_map">ПОКАЗАТЬ НА КАРТЕ</string>
     <string name="user_card_all">ВСЕ</string>
-    <string name="organization_word_friends">друзей</string>
-    <string name="organization_word_and">и</string>
+    <string name="organization_word_users">подписчиков</string>
     <string name="organization_unsubscribe">ОТПИСАТЬСЯ</string>
     <string name="organization_subscribers">ВСЕ ПОДПИСЧИКИ</string>
     <string name="organization_subscribe">ПОДПИСАТЬСЯ</string>

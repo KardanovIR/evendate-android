@@ -72,7 +72,7 @@
     <string name="organization_event_number">events</string>
     <string name="organization_friends">friends</string>
 
-    <string name="organization_word_and">and</string>
+    <string name="organization_word_users">subscribers</string>
     <string name="organization_word_friends">friends</string>
     <string name="organization_subscribe">SUBSCRIBE</string>
     <string name="organization_unsubscribe">UNSUBDCRIBE</string>
