@@ -53,6 +53,7 @@ import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.views.DatesView;
@@ -273,7 +274,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     (eventPriceFromLabel + " " + mEvent.getMinPrice()));
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
-                    eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
+                    eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }
     }
 

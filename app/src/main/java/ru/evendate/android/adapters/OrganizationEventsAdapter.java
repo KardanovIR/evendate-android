@@ -90,23 +90,13 @@ public class OrganizationEventsAdapter extends EventsAdapter {
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mLogoView);
             holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
+            if(mOrganization.getSubscribedUsersList().size() == 0)
+                holder.mUserContainer.setVisibility(View.GONE);
+
         } else {
             super.onBindViewHolder(viewHolder, position - 1);
         }
     }
-
-    static final ButterKnife.Action<View> VISIBLE = new ButterKnife.Action<View>() {
-        @Override
-        public void apply(View view, int index) {
-            view.setVisibility(View.VISIBLE);
-        }
-    };
-    static final ButterKnife.Action<View> GONE = new ButterKnife.Action<View>() {
-        @Override
-        public void apply(View view, int index) {
-            view.setVisibility(View.GONE);
-        }
-    };
 
     @SuppressWarnings("unused")
     public class OrganizationHolder extends RecyclerView.ViewHolder {
@@ -120,6 +110,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
         @Bind(R.id.organization_description) TextView mDescriptionView;
         @Bind(R.id.organization_place) TextView mPlaceView;
         @Bind(R.id.organization_users_description) TextView mUsersDescriptionView;
+        @Bind(R.id.organization_users_container) RelativeLayout mUserContainer;
         @Bind(R.id.organization_more_container) RelativeLayout mOrganizationMoreContainer;
         @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
 
@@ -174,7 +165,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
             mMoreToggle.setChecked(!mMoreToggle.isChecked());
         }
 
-        @OnClick(R.id.organization_users_container)
+        @OnClick(R.id.organization_users_description)
         public void onUsersClick(View v) {
             if (mOrganization == null)
                 return;

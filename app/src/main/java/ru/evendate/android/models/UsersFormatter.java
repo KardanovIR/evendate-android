@@ -26,7 +26,9 @@ public class UsersFormatter {
             if (user.is_friend())
                 friend_count++;
         }
-        return organization.getSubscribedUsersList().size() + " " + c.getString(R.string.organization_word_and)
-                + " " + friend_count + " " + c.getString(R.string.organization_word_friends);
+        String users;
+        users = organization.getSubscribedCount() != 0 ? organization.getSubscribedCount() + " " + c.getString(R.string.organization_word_users) : "";
+        users += friend_count != 0 ?  (users.equals("") ? "" : "\n") + friend_count + " " + c.getString(R.string.organization_word_friends) : "";
+        return users;
     }
 }

@@ -72,7 +72,7 @@
         <RelativeLayout
             android:id="@+id/organization_users_container"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/organization_card_user_container_height"
             android:layout_below="@+id/organization_subscribe_button"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
@@ -82,27 +82,20 @@
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 tools:background="#aaaa00"
-                app:usersLimit="4"/>
-            <LinearLayout
+                app:usersLimit="4"
+                app:type="org"/>
+            <TextView
+                android:id="@+id/organization_users_description"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
+                tools:text="72 подписчиков\n14 друзей"
+                android:textColor="#5379b8"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/organization_subscribers"
-                    android:textColor="#5379b8" />
-                <TextView
-                    android:id="@+id/organization_users_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    tools:text="72 и 14 друзей" />
-            </LinearLayout>
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/organization_users"
+                android:layout_toRightOf="@+id/organization_users"
+                android:gravity="center_vertical"/>
         </RelativeLayout>
         <LinearLayout
             android:id="@+id/organization_more_button"

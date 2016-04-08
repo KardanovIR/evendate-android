@@ -37,7 +37,7 @@ public class EventDetail extends Event implements EventFeed {
     @SerializedName("registration_required")
     boolean registrationRequired;
     @SerializedName("registration_till")
-    String registrationTill;
+    long registrationTill;
     @SerializedName("is_free")
     boolean isFree;
     @SerializedName("min_price")
@@ -128,7 +128,7 @@ public class EventDetail extends Event implements EventFeed {
         return registrationRequired;
     }
 
-    public String getRegistrationTill() {
+    public long getRegistrationTill() {
         return registrationTill;
     }
 

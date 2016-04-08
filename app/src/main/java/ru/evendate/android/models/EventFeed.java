@@ -38,7 +38,7 @@ public interface EventFeed {
 
     boolean isRegistrationRequired();
 
-    String getRegistrationTill();
+    long getRegistrationTill();
 
     boolean isFree();
 

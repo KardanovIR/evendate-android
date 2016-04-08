@@ -1,4 +1,5 @@
 <resources>
     <dimen name="organization_background_height">198dp</dimen>
     <dimen name="organization_card_side_margin">16dp</dimen>
+    <dimen name="organization_card_user_container_height">40dp</dimen>
 </resources>

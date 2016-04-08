@@ -2,5 +2,9 @@
 <resources>
     <declare-styleable name="UsersView">
         <attr name="usersLimit" format="integer" />
+        <attr name="type" enum="enum">
+            <enum name="event" value="0"/>
+            <enum name="org" value="1"/>
+        </attr>
     </declare-styleable>
 </resources>
