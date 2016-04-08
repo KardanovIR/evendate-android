@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -24,7 +23,7 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by ds_gordeev on 11.03.2016.
  * downloading events from server
  */
-public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>> {
+public class EventsLoader extends AppendableLoader<EventFeed> {
     private final String LOG_TAG = EventsLoader.class.getSimpleName();
     private int type;
     private int organizationId;
@@ -47,27 +46,25 @@ public class EventsLoader extends AbstractLoader<ArrayList<EventFeed>> {
         mDate = date;
     }
 
-    public void getData() {
+    @SuppressWarnings("unchecked")
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting events");
-        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<EventDetail>> call;
         if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
-            call = evendateService.getFavorite(peekToken(), true, EventFeed.FIELDS_LIST);
+            mCall = evendateService.getFavorite(peekToken(), true, EventFeed.FIELDS_LIST, getLength(), getOffset());
         } else if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
-            call = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST);
+            mCall = evendateService.getEvents(peekToken(), organizationId, true, EventFeed.FIELDS_LIST, "created_at", getLength(), getOffset());
         } else {
             if (mDate != null) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                call = evendateService.getFeed(peekToken(), dateFormat.format(mDate), true, EventFeed.FIELDS_LIST);
+                mCall = evendateService.getFeed(peekToken(), dateFormat.format(mDate), true, EventFeed.FIELDS_LIST);
             } else {
-                call = evendateService.getFeed(peekToken(), true, EventFeed.FIELDS_LIST);
+                mCall = evendateService.getFeed(peekToken(), true, EventFeed.FIELDS_LIST, getLength(), getOffset());
             }
         }
-        mCall = call;
 
-        call.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {
+        mCall.enqueue(new Callback<EvendateServiceResponseArray<EventDetail>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<EventDetail>> response,
                                    Retrofit retrofit) {

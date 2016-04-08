@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.AppendableAdapter;
 import ru.evendate.android.adapters.EventsAdapter;
 import ru.evendate.android.loaders.EventsLoader;
 import ru.evendate.android.loaders.LoaderListener;
@@ -29,7 +30,7 @@ import ru.evendate.android.models.EventFeed;
  * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>> {
+public class ReelFragment extends Fragment implements LoaderListener<ArrayList<EventFeed>>, AppendableAdapter.AdapterController {
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
@@ -131,7 +132,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mEventLoader.getData();
+                mEventLoader.reset();
+                mEventLoader.startLoading();
                 if (mRefreshListenerList != null) {
                     for (OnRefreshListener listener : mRefreshListenerList) {
                         listener.onRefresh();
@@ -139,7 +141,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
                 }
             }
         });
-        mAdapter = new EventsAdapter(getActivity(), type);
+        mAdapter = new EventsAdapter(getActivity(), this, type);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         /**
@@ -163,7 +165,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
         });
         initLoader();
         mSwipeRefreshLayout.setRefreshing(true);
-        mEventLoader.getData();
+        mEventLoader.startLoading();
         return rootView;
     }
 
@@ -188,7 +190,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
 
 
     public ArrayList<EventFeed> getEventList() {
-        return mAdapter.getEventList();
+        return mAdapter.getList();
     }
 
     public EventsAdapter getAdapter() {
@@ -212,7 +214,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     /**
      * handle date changing in calendar
      *
-     * @param mDate
+     * @param mDate selected date in calendar
      */
     public void setDate(Date mDate) {
         if (type != TypeFormat.CALENDAR.type())
@@ -221,8 +223,15 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     }
 
     public void onLoaded(ArrayList<EventFeed> eventList) {
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mAdapter.reset();
+            mAdapter.enableNext();
+        }
         mSwipeRefreshLayout.setRefreshing(false);
-        mAdapter.setEventList(eventList);
+        if (eventList.size() < mEventLoader.getLength()) {
+            mAdapter.disableNext();
+        }
+        mAdapter.setList(eventList);
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
@@ -236,6 +245,11 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mEventLoader.cancel();
+        mEventLoader.cancelLoad();
+    }
+
+    @Override
+    public void requestNext() {
+        mEventLoader.startLoading();
     }
 }

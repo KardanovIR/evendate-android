@@ -45,7 +45,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     /**
@@ -65,7 +67,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @POST(API_PATH + "/events/{id}/favorites")
@@ -87,6 +91,20 @@ public interface EvendateService {
             @Query("organization_id") int organizationId,
             @Query("future") boolean future,
             @Query("fields") String fields
+    );
+
+    /**
+     * Get events in organization
+     */
+    @GET(API_PATH + "/events")
+    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     /**

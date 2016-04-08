@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
             "organization_short_name,is_favorite,dates," +
-            "registration_required,registration_till,is_free,min_price";
+            "registration_required,registration_till,is_free,min_price" +
+            ",created_at";
 
     int getEntryId();
 

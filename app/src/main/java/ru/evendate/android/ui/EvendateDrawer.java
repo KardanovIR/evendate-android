@@ -55,9 +55,10 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         mSubscriptionLoader = new SubscriptionLoader(context);
         mSubscriptionLoader.setLoaderListener(this);
         mMeLoader = new MeLoader(context);
-        mMeLoader.setLoaderListener(new LoaderListener<UserDetail>() {
+        mMeLoader.setLoaderListener(new LoaderListener<ArrayList<UserDetail>>() {
             @Override
-            public void onLoaded(UserDetail user) {
+            public void onLoaded(ArrayList<UserDetail> users) {
+                UserDetail user = users.get(0);
                 SharedPreferences sPref =
                         mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
                 String accountName = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
@@ -156,7 +157,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     }
 
     public void update() {
-        mSubscriptionLoader.getSubscriptions();
+        mSubscriptionLoader.startLoading();
     }
 
     @Override
@@ -174,12 +175,12 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     }
 
     public void cancel() {
-        mMeLoader.cancel();
-        mSubscriptionLoader.cancel();
+        mMeLoader.cancelLoad();
+        mSubscriptionLoader.cancelLoad();
     }
 
     public void start() {
-        mSubscriptionLoader.getSubscriptions();
-        mMeLoader.getData();
+        mSubscriptionLoader.startLoading();
+        mMeLoader.startLoading();
     }
 }

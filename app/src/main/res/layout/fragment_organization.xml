@@ -22,6 +22,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"
         android:background="@color/translucent"
+        android:scrollbars="vertical"
         tools:listitem="@layout/card_event"/>
 
     <android.support.design.widget.AppBarLayout

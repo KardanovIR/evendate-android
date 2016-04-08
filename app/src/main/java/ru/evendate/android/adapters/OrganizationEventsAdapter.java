@@ -33,9 +33,10 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     private OrganizationDetail mOrganization;
     private OrganizationCardController mOrganizationCardController;
 
-    public OrganizationEventsAdapter(Context context, OrganizationCardController controller) {
-        super(context, ReelFragment.TypeFormat.ORGANIZATION.type());
-        mOrganizationCardController = controller;
+    public OrganizationEventsAdapter(Context context, AdapterController controller,
+                                     OrganizationCardController cardController) {
+        super(context, controller, ReelFragment.TypeFormat.ORGANIZATION.type());
+        mOrganizationCardController = cardController;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
 
     public void setOrganization(OrganizationDetail organization) {
         mOrganization = organization;
-        super.setEventList(organization.getEventsList());
+        super.setList(organization.getEventsList());
         notifyDataSetChanged();
     }
 
@@ -94,19 +95,6 @@ public class OrganizationEventsAdapter extends EventsAdapter {
             super.onBindViewHolder(viewHolder, position - 1);
         }
     }
-
-    static final ButterKnife.Action<View> VISIBLE = new ButterKnife.Action<View>() {
-        @Override
-        public void apply(View view, int index) {
-            view.setVisibility(View.VISIBLE);
-        }
-    };
-    static final ButterKnife.Action<View> GONE = new ButterKnife.Action<View>() {
-        @Override
-        public void apply(View view, int index) {
-            view.setVisibility(View.GONE);
-        }
-    };
 
     @SuppressWarnings("unused")
     public class OrganizationHolder extends RecyclerView.ViewHolder {

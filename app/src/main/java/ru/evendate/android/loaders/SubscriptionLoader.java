@@ -3,8 +3,6 @@ package ru.evendate.android.loaders;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -18,16 +16,15 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  * Created by ds_gordeev on 01.02.2016.
  * download subs from server
  */
-public class SubscriptionLoader extends AbstractLoader<ArrayList<Organization>> {
+public class SubscriptionLoader extends AbstractLoader<Organization> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
 
     public SubscriptionLoader(Context context) {
         super(context);
     }
 
-    public void getSubscriptions() {
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting subs");
-        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<Organization>> call =
