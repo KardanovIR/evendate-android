@@ -47,6 +47,9 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private ProgressBar mProgressBar;
     EvendateDrawer mDrawer;
 
+    public static final String INTENT_TYPE = "type";
+    public static final String NOTIFICATION = "notification";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +64,19 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         Intent intent = getIntent();
         if (intent != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
+            Bundle intent_extras = getIntent().getExtras();
+            Tracker tracker = EvendateApplication.getTracker();
+
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_user))
+                    .setLabel(String.valueOf(userId));
+            if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
+                    intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
+                event.setAction(getString(R.string.stat_action_notification));
+            } else {
+                event.setAction(getString(R.string.stat_action_view));
+            }
+            tracker.send(event.build());
         }
         mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
         mUserImageView = (ImageView)findViewById(R.id.user_avatar);

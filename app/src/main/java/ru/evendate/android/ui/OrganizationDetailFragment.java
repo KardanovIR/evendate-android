@@ -86,12 +86,6 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         if (args != null) {
             mUri = Uri.parse(args.getString(URI));
             organizationId = Integer.parseInt(mUri.getLastPathSegment());
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getString(R.string.stat_category_organization))
-                    .setAction(getString(R.string.stat_action_view))
-                    .setLabel(Long.toString(organizationId));
-            tracker.send(event.build());
         }
         mAdapter = new OrganizationEventsAdapter(getContext(), this);
 

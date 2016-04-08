@@ -89,7 +89,8 @@ public class RegistrationGCMIntentService extends IntentService {
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
-            putDeviceToken(evendateService, authToken, token);
+            if (!putDeviceToken(evendateService, authToken, token))
+                Log.e(LOG_TAG, "not registered device token");
         } catch (IOException | OperationCanceledException | AuthenticatorException e) {
             e.printStackTrace();
         }
