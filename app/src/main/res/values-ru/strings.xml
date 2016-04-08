@@ -90,4 +90,5 @@
     <string name="dates_view_less">МЕНЬШЕ</string>
     <string name="event_price">Цена</string>
     <string name="event_registration">Регистрация</string>
+    <string name="action_add_notification">Напомнить о событии</string>
 </resources>
