@@ -18,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -102,6 +103,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     @Bind(R.id.event_price) TextView mPriceTextView;
     @Bind(R.id.event_registration) TextView mRegistrationTextView;
     @Bind(R.id.event_dates) DatesView mDatesView;
+    @Bind(R.id.event_dates_light) CardView mDatesLightView;
+    @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
+    @Bind(R.id.event_time) TextView mEventTimeTextView;
 
     @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
 
@@ -271,7 +275,16 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mToolbarTitle.setText(mEvent.getTitle());
             setFabIcon();
             mUserFavoritedCard.setUsers(mEvent.getUserList());
-            mDatesView.setDates(mEvent.getDateList());
+
+            if (mEvent.isSameTime()) {
+                mDatesLightView.setVisibility(View.VISIBLE);
+                mEventTimeTextView.setText(EventFormatter.formatEventTime(getContext(), mEvent.getDateList().get(0)));
+                mEventDateIntervalsTextView.setText(EventFormatter.formatDate(mEvent));
+            } else {
+                mDatesView.setVisibility(View.VISIBLE);
+                mDatesView.setDates(mEvent.getDateList());
+            }
+
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     (eventPriceFromLabel + " " + mEvent.getMinPrice()));
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
