@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +14,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.sync.EvendateSyncAdapter;
 
@@ -27,7 +31,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private Fragment mFragment;
-    private Toolbar mToolbar;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final int INTRO_REQUEST = 1;
@@ -46,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
         //just change that fucking home icon
@@ -60,10 +65,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             }
         });
 
-        //mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        //mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
-
-
         checkPlayServices();
 
         checkAccount();
@@ -75,9 +76,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     break;
                 case CALENDAR:
                     mFragment = new CalendarFragment();
-                    break;
-                case CATALOG:
-                    mFragment = new OrganizationCatalogFragment();
                     break;
                 default:
                     mFragment = new MainPagerFragment();
@@ -160,8 +158,10 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
      */
     private class MainNavigationItemClickListener
             extends NavigationItemSelectedListener {
+        private Context mContext;
         public MainNavigationItemClickListener(Context context, Drawer drawer) {
             super(context, drawer);
+            mContext = context;
         }
 
         @Override
@@ -183,18 +183,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     if (!(mFragment instanceof CalendarFragment)) {
                         mFragment = new CalendarFragment();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-                    }
-                    // Converts 4 dip into its equivalent px
-                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
-                    if (Build.VERSION.SDK_INT >= 21)
-                        mToolbar.setElevation(px);
-                }
-                break;
-                case EvendateDrawer.ORGANIZATION_IDENTIFIER: {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    if (!(mFragment instanceof OrganizationCatalogFragment)) {
-                        mFragment = new OrganizationCatalogFragment();
                         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
                     }
                     // Converts 4 dip into its equivalent px
