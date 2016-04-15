@@ -28,9 +28,9 @@ public class SubOrganizationLoader extends AbstractLoader<Void> {
         mOrganization = organization;
     }
 
-    public void execute() {
+    @Override
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "performing sub");
-        onStartLoading();
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
         Call<EvendateServiceResponse> call;
         if (subscribe) {

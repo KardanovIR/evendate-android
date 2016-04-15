@@ -31,26 +31,32 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.AppendableAdapter;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.EventsLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.loaders.SubOrganizationLoader;
+import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements LoaderListener<OrganizationDetail>,
-        OrganizationEventsAdapter.OrganizationCardController {
+public class OrganizationDetailFragment extends Fragment implements LoaderListener<ArrayList<OrganizationDetail>>,
+        OrganizationEventsAdapter.OrganizationCardController, AppendableAdapter.AdapterController {
     private final String LOG_TAG = "OrganizationFragment";
 
     private OrganizationEventsAdapter mAdapter;
     private OrganizationLoader mOrganizationLoader;
+    private EventsLoader mEventLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private int organizationId = -1;
@@ -86,17 +92,34 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         if (args != null) {
             mUri = Uri.parse(args.getString(URI));
             organizationId = Integer.parseInt(mUri.getLastPathSegment());
-            Tracker tracker = EvendateApplication.getTracker();
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getString(R.string.stat_category_organization))
-                    .setAction(getString(R.string.stat_action_view))
-                    .setLabel(Long.toString(organizationId));
-            tracker.send(event.build());
         }
-        mAdapter = new OrganizationEventsAdapter(getContext(), this);
+        mAdapter = new OrganizationEventsAdapter(getContext(), this, this);
 
-        mOrganizationLoader = new OrganizationLoader(getActivity());
+        mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
         mOrganizationLoader.setLoaderListener(this);
+        mEventLoader = new EventsLoader(getActivity(), ReelFragment.TypeFormat.ORGANIZATION.type(), organizationId);
+        mEventLoader.setOffset(mEventLoader.getLength());
+        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventFeed>>() {
+            @Override
+            public void onLoaded(ArrayList<EventFeed> subList) {
+                mAdapter.setList(subList);
+            }
+
+            @Override
+            public void onError() {
+                if (!isAdded())
+                    return;
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mEventLoader.startLoading();
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.show();
+            }
+        });
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -162,7 +185,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         //        setImageViewY();
         //    }
         //});
-        mOrganizationLoader.getOrganization(organizationId);
+        mOrganizationLoader.startLoading();
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
@@ -200,9 +223,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         OrganizationDetail organization = mAdapter.getOrganization();
         SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
                 organization, organization.isSubscribed());
-        subOrganizationLoader.setLoaderListener(new LoaderListener<Void>() {
+        subOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
             @Override
-            public void onLoaded(Void subList) {
+            public void onLoaded(ArrayList<Void> subList) {
 
             }
 
@@ -224,7 +247,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
             Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
         tracker.send(event.build());
-        subOrganizationLoader.execute();
+        subOrganizationLoader.startLoading();
     }
 
     public void onPlaceClicked() {
@@ -250,9 +273,10 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         startActivity(openLink);
     }
 
-    public void onLoaded(OrganizationDetail organization) {
+    public void onLoaded(ArrayList<OrganizationDetail> organizations) {
         if (!isAdded())
             return;
+        OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
         Picasso.with(getActivity())
                 .load(organization.getBackgroundUrl())
@@ -269,7 +293,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.getOrganization(organizationId);
+                        mOrganizationLoader.startLoading();
                         dialog.dismiss();
                     }
                 });
@@ -279,8 +303,12 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mOrganizationLoader.cancel();
+        mOrganizationLoader.cancelLoad();
         mDrawer.cancel();
     }
 
+    @Override
+    public void requestNext() {
+        mEventLoader.startLoading();
+    }
 }

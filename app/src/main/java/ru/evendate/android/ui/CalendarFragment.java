@@ -150,7 +150,7 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mLoader.getData();
+                                mLoader.startLoading();
                                 dialog.dismiss();
                             }
                         });
@@ -160,7 +160,7 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         });
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
-        mLoader.getData();
+        mLoader.startLoading();
         return rootView;
     }
 
@@ -371,6 +371,6 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
     }
 }

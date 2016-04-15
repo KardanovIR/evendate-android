@@ -22,6 +22,7 @@ import ru.evendate.android.models.UserDetail;
 public class UsersView extends LinearLayout {
     private ArrayList<UserDetail> mUsers;
     private int userLimit = 6;
+    private int type = 0;
 
     public UsersView(Context context) {
         this(context, null);
@@ -36,6 +37,7 @@ public class UsersView extends LinearLayout {
 
         try {
             userLimit = a.getInteger(R.styleable.UsersView_usersLimit, userLimit);
+            type = a.getInteger(R.styleable.UsersView_type, type);
         } finally {
             a.recycle();
         }
@@ -56,14 +58,16 @@ public class UsersView extends LinearLayout {
     private void setupUsers() {
         if (getChildCount() != 0)
             removeViewsInLayout(0, getChildCount());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(MarginLayoutParams.WRAP_CONTENT,
-                MarginLayoutParams.MATCH_PARENT);
+        int size = getResources().getDimensionPixelSize(R.dimen.organization_card_user_container_height);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
         Resources r = getContext().getResources();
         int px = (int)TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 4,
                 r.getDisplayMetrics()
         );
+        if(type == 1)
+            px = -px;
         lp.setMargins(0, 0, px, 0);
         for (int i = 0; i < mUsers.size(); i++) {
             if (i > userLimit - 1)
@@ -71,7 +75,6 @@ public class UsersView extends LinearLayout {
             CircleImageView circleImageView = new CircleImageView(getContext());
             circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Picasso.with(getContext()).load(mUsers.get(i).getAvatarUrl()).into(circleImageView);
-            circleImageView.setMinimumWidth(getHeight());
             addView(circleImageView, lp);
         }
     }

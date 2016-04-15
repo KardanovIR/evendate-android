@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
+
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.loaders.EventLoader;
@@ -76,9 +78,9 @@ public class UserListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (type == TypeFormat.event.nativeInt)
-            mEventLoader = new EventLoader(getActivity());
+            mEventLoader = new EventLoader(getActivity(), eventId);
         else
-            mOrganizationLoader = new OrganizationLoader(getActivity());
+            mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -110,12 +112,13 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadOrganization() {
-        mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
+        mOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<OrganizationDetail>>() {
             @Override
-            public void onLoaded(OrganizationDetail subList) {
+            public void onLoaded(ArrayList<OrganizationDetail> subList) {
                 if (!isAdded())
                     return;
-                mAdapter.setList(subList.getSubscribedUsersList());
+                OrganizationDetail organization = subList.get(0);
+                mAdapter.setList(organization.getSubscribedUsersList());
                 mProgressBar.setVisibility(View.GONE);
             }
 
@@ -126,7 +129,7 @@ public class UserListFragment extends Fragment {
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.getOrganization(organizationId);
+                        mOrganizationLoader.startLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -135,16 +138,17 @@ public class UserListFragment extends Fragment {
                 mProgressBar.setVisibility(View.GONE);
             }
         });
-        mOrganizationLoader.getOrganization(organizationId);
+        mOrganizationLoader.startLoading();
     }
 
     private void loadEvent() {
-        mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
+        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventDetail>>() {
             @Override
-            public void onLoaded(EventDetail subList) {
+            public void onLoaded(ArrayList<EventDetail> subList) {
                 if (!isAdded())
                     return;
-                mAdapter.setList(subList.getUserList());
+                EventDetail event = subList.get(0);
+                mAdapter.setList(event.getUserList());
                 mProgressBar.setVisibility(View.GONE);
             }
 
@@ -155,7 +159,7 @@ public class UserListFragment extends Fragment {
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mEventLoader.getData(eventId);
+                        mEventLoader.onStartLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -164,15 +168,15 @@ public class UserListFragment extends Fragment {
                 mProgressBar.setVisibility(View.GONE);
             }
         });
-        mEventLoader.getData(eventId);
+        mEventLoader.onStartLoading();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (type == TypeFormat.event.nativeInt)
-            mEventLoader.cancel();
+            mEventLoader.cancelLoad();
         else
-            mOrganizationLoader.cancel();
+            mOrganizationLoader.cancelLoad();
     }
 }

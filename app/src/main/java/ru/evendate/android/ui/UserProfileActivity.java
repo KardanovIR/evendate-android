@@ -20,6 +20,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
@@ -30,7 +32,7 @@ import ru.evendate.android.models.UserDetail;
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoaderListener<UserDetail> {
+public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<UserDetail>> {
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
@@ -47,6 +49,9 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private ProgressBar mProgressBar;
     EvendateDrawer mDrawer;
 
+    public static final String INTENT_TYPE = "type";
+    public static final String NOTIFICATION = "notification";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +66,24 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         Intent intent = getIntent();
         if (intent != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
+            Bundle intent_extras = getIntent().getExtras();
+            Tracker tracker = EvendateApplication.getTracker();
+
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_user))
+                    .setLabel(String.valueOf(userId));
+            if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
+                    intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
+                event.setAction(getString(R.string.stat_action_notification));
+            } else {
+                event.setAction(getString(R.string.stat_action_view));
+            }
+            tracker.send(event.build());
         }
         mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
         mUserImageView = (ImageView)findViewById(R.id.user_avatar);
 
-        mLoader = new UserLoader(this);
+        mLoader = new UserLoader(this, userId);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
         mViewPager = (ViewPager)findViewById(R.id.pager);
@@ -79,7 +97,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
-        mLoader.getData(userId);
+        mLoader.startLoading();
         mDrawer.start();
     }
 
@@ -96,9 +114,9 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     }
 
     @Override
-    public void onLoaded(UserDetail user) {
-        mUserAdapter.setUser(user);
-        mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, user);
+    public void onLoaded(ArrayList<UserDetail> users) {
+        mUserAdapter.setUser(users.get(0));
+        mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, mUserAdapter.getUser());
         mViewPager.setAdapter(mUserPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mProgressBar.setVisibility(View.GONE);
@@ -110,7 +128,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mLoader.getData(userId);
+                mLoader.startLoading();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
@@ -161,7 +179,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
         mDrawer.cancel();
     }
 }

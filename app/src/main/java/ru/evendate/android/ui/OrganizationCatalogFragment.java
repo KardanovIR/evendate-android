@@ -66,7 +66,7 @@ public class OrganizationCatalogFragment extends Fragment
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mLoader.getData();
+                        mLoader.startLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -82,7 +82,7 @@ public class OrganizationCatalogFragment extends Fragment
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.getData();
+        mLoader.startLoading();
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
         return rootView;
@@ -118,6 +118,6 @@ public class OrganizationCatalogFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
     }
 }

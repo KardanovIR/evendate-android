@@ -1,10 +1,13 @@
 package ru.evendate.android;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import ru.evendate.android.authorization.AuthActivity;
 import ru.evendate.android.authorization.EvendateAuthenticator;
 
 /**
@@ -35,5 +38,11 @@ public class EvendateAccountManager {
                 return account;
         }
         return null;
+    }
+
+    public static void deleteAccount(Context context) {
+        AccountManager accountManager = (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
+        accountManager.removeAccount(getSyncAccount(context), null, null);
+        context.startActivity(new Intent(context, AuthActivity.class));
     }
 }

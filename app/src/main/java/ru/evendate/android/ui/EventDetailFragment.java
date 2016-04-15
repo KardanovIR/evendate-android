@@ -48,6 +48,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.Bind;
@@ -61,6 +62,7 @@ import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.views.DatesView;
@@ -71,7 +73,7 @@ import ru.evendate.android.views.UserFavoritedCard;
  * contain details of events
  */
 public class EventDetailFragment extends Fragment implements View.OnClickListener,
-        LoaderListener<EventDetail> {
+        LoaderListener<ArrayList<EventDetail>> {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -231,9 +233,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         });
 
         mAdapter = new EventAdapter();
-        mEventLoader = new EventLoader(getActivity());
+        mEventLoader = new EventLoader(getActivity(), eventId);
         mEventLoader.setLoaderListener(this);
-        mEventLoader.getData(eventId);
+        mEventLoader.onStartLoading();
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
@@ -281,7 +283,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     (eventPriceFromLabel + " " + mEvent.getMinPrice()));
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
-                    eventRegistrationTillLabel + " " + mEvent.getRegistrationTill());
+                    eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }
     }
 
@@ -304,9 +306,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
             LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
                     mAdapter.getEvent().isFavorite());
-            likeEventLoader.setLoaderListener(new LoaderListener<Void>() {
+            likeEventLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
                 @Override
-                public void onLoaded(Void subList) {
+                public void onLoaded(ArrayList<Void> subList) {
 
                 }
 
@@ -315,7 +317,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
                 }
             });
-            likeEventLoader.load();
+            likeEventLoader.startLoading();
             mAdapter.getEvent().favore();
             if (mAdapter.getEvent().isFavorite()) {
                 event.setAction(getActivity().getString(R.string.stat_action_like));
@@ -417,9 +419,10 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onLoaded(EventDetail event) {
+    public void onLoaded(ArrayList<EventDetail> events) {
         if (!isAdded())
             return;
+        EventDetail event = events.get(0);
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         mProgressBar.setVisibility(View.GONE);
@@ -433,7 +436,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mEventLoader.getData(eventId);
+                mEventLoader.onStartLoading();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
@@ -445,7 +448,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
-        mEventLoader.cancel();
+        mEventLoader.cancelLoad();
         mDrawer.cancel();
     }
 
