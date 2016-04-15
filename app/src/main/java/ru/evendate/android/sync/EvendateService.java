@@ -180,4 +180,11 @@ public interface EvendateService {
             @Query("fields") String fields,
             @Query("order_by") String orderBy
     );
+
+    @POST(API_PATH + "/events/{id}/notifications")
+    Call<EvendateServiceResponse> setNotification(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("notification_time") String notificationTime
+    );
 }

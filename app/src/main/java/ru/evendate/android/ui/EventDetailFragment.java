@@ -48,8 +48,12 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -61,6 +65,7 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
+import ru.evendate.android.loaders.NotificationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.UsersFormatter;
@@ -373,7 +378,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
                 return true;
             case R.id.action_add_notification:
-                DialogFragment newFragment = new DatePickerFragment();
+                DialogFragment newFragment = DatePickerFragment.getInstance(eventId);
                 newFragment.show(getChildFragmentManager(), "datePicker");
                 return true;
             default:
@@ -454,6 +459,14 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
+        Calendar calendar = Calendar.getInstance();
+        int eventId;
+
+        public static DatePickerFragment getInstance(int eventId) {
+            DatePickerFragment fragment = new DatePickerFragment();
+            fragment.eventId = eventId;
+            return fragment;
+        }
 
         @NonNull
         @Override
@@ -468,11 +481,27 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
-        public void onDateSet(DatePicker view, int year, int month, int day) {
+        public void onDateSet(DatePicker view, final int year, final int month, final int day) {
+            calendar.set(year, month, day);
             TimePickerDialog newFragment2 = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    calendar.set(year, month, day, hourOfDay, minute);
+                    DateFormat df = new SimpleDateFormat("YYYY-MM-DDThh:mm:ss", Locale.getDefault());
+                    NotificationLoader notificationLoader = new NotificationLoader(getContext(), eventId,
+                            df.format(new Date(calendar.get(Calendar.MILLISECOND))));
+                    notificationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
+                        @Override
+                        public void onLoaded(ArrayList<Void> subList) {
 
+                        }
+
+                        @Override
+                        public void onError() {
+                            Toast.makeText(getContext(), R.string.loading_error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    notificationLoader.startLoading();
                 }
             }, 0, 0, true);
             newFragment2.show();
