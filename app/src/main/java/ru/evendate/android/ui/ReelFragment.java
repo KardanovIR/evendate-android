@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AppendableAdapter;
@@ -189,7 +190,7 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     }
 
 
-    public ArrayList<EventFeed> getEventList() {
+    public ArrayList<Object> getEventList() {
         return mAdapter.getList();
     }
 

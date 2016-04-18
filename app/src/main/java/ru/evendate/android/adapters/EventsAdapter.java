@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -29,7 +27,7 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by Dmitry on 01.12.2015.
  */
 
-public class EventsAdapter extends AppendableAdapter<EventFeed> {
+public class EventsAdapter extends AdapterWithDates {
 
     private int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
@@ -52,22 +50,34 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         } else if (type == ReelFragment.TypeFormat.FEED.type()) {
             layoutItemId = R.layout.card_event_feed;
         } else {
-            layoutItemId = R.layout.card_event;
+            layoutItemId = super.getItemViewType(position);
         }
         return layoutItemId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
+        if (viewType == R.layout.date_item_light)
+            return super.onCreateViewHolder(parent, viewType);
+        else
+            return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (getList() == null)
             return;
-        EventFeed eventEntry = getList().get(position);
-        EventHolder holder = (EventHolder)viewHolder;
+        if (viewHolder instanceof EventHolder)
+            bindEventHolder((EventHolder)viewHolder, (EventFeed)getList().get(position));
+        else {
+            super.bindViewHolder(viewHolder, position);
+        }
+        if (!isRequesting() && position == getList().size() - 1) {
+            onLastReached();
+        }
+    }
+
+    private void bindEventHolder(EventHolder holder, EventFeed eventEntry) {
         holder.id = eventEntry.getEntryId();
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
@@ -89,10 +99,6 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                     .error(R.drawable.evendate_logo)
                     .into(holder.mOrganizationLogo);
         holder.mPriceTextView.setText(eventEntry.isFree() ? holder.eventFreeLabel : String.valueOf(eventEntry.getMinPrice()));
-
-        if (!isRequesting() && position == getList().size() - 1) {
-            onLastReached();
-        }
     }
 
 
