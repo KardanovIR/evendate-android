@@ -10,6 +10,7 @@
     <color name="window_background">#FFFFFF</color>
     <color name="window_reel_background">#EEEEEE</color>
     <color name="translucent">#00000000</color>
+    <color name="black_translucent">#50000000</color>
 
     <!--Colors for icons -->
     <color name="vk_color">#4d7aa3</color>
