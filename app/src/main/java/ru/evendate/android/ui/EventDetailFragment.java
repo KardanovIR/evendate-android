@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -378,7 +379,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
                 return true;
             case R.id.action_add_notification:
-                DialogFragment newFragment = DatePickerFragment.getInstance(eventId);
+                DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
                 newFragment.show(getChildFragmentManager(), "datePicker");
                 return true;
             default:
@@ -461,10 +462,12 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             implements DatePickerDialog.OnDateSetListener {
         Calendar calendar = Calendar.getInstance();
         int eventId;
+        Context context;
 
-        public static DatePickerFragment getInstance(int eventId) {
+        public static DatePickerFragment getInstance(Context context, int eventId) {
             DatePickerFragment fragment = new DatePickerFragment();
             fragment.eventId = eventId;
+            fragment.context = context;
             return fragment;
         }
 
@@ -483,25 +486,25 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
 
         public void onDateSet(DatePicker view, final int year, final int month, final int day) {
             calendar.set(year, month, day);
-            TimePickerDialog newFragment2 = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+            TimePickerDialog newFragment2 = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    calendar.set(year, month, day, hourOfDay, minute);
-                    DateFormat df = new SimpleDateFormat("YYYY-MM-DDThh:mm:ss", Locale.getDefault());
-                    NotificationLoader notificationLoader = new NotificationLoader(getContext(), eventId,
-                            df.format(new Date(calendar.get(Calendar.MILLISECOND))));
+                    calendar.set(year, month, day, hourOfDay, minute, 0);
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    NotificationLoader notificationLoader = new NotificationLoader(context, eventId,
+                            df.format(new Date(calendar.getTimeInMillis())));
                     notificationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
                         @Override
                         public void onLoaded(ArrayList<Void> subList) {
-
+                            Toast.makeText(context, "added", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onError() {
-                            Toast.makeText(getContext(), R.string.loading_error, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.loading_error, Toast.LENGTH_SHORT).show();
                         }
                     });
-                    notificationLoader.startLoading();
+                    //notificationLoader.startLoading();
                 }
             }, 0, 0, true);
             newFragment2.show();
