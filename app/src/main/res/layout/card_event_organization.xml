@@ -33,10 +33,12 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="24dp"
-            android:background="@color/accent"
-            android:foreground="@drawable/ic_star"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/favorite_label"
             android:foregroundGravity="center_vertical|center_horizontal"
-            android:visibility="gone"/>
+            android:visibility="invisible"
+            tools:visibility="visible"
+            />
 
         <android.support.v7.widget.GridLayout
             android:id="@+id/android.support.v7.widget.GridLayout"
