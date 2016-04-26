@@ -498,15 +498,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                     notificationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
                         @Override
                         public void onLoaded(ArrayList<Void> subList) {
-                            Toast.makeText(context, "added", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onError() {
-                            Toast.makeText(context, R.string.loading_error, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
                         }
                     });
-                    //notificationLoader.startLoading();
+                    notificationLoader.startLoading();
                 }
             }, 0, 0, true);
             newFragment2.show();

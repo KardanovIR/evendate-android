@@ -91,4 +91,7 @@
     <string name="event_registration">Регистрация</string>
     <string name="log_out">Выйти из аккаунта</string>
     <string name="action_add_notification">Напомнить о событии</string>
+    <string name="custom_notification_added">Напоминание добавлено</string>
+    <string name="custom_notification_error">Ошибка. Напоминание не было добавлено</string>
+    <string name="organization_word_friends">друзья</string>
 </resources>

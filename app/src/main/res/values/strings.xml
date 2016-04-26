@@ -33,6 +33,8 @@
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
+    <string name="custom_notification_added">Notification added</string>
+    <string name="custom_notification_error">Error. Notification didn't added</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
