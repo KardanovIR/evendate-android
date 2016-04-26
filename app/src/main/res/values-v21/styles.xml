@@ -9,11 +9,22 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerDialogTheme</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogTheme</item>
     </style>
 
     <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/accent</item> <!-- colorAccent here seems to work just fine? -->
         <item name="android:timePickerStyle">@style/TimePickerDialogStyle</item>
+    </style>
+
+    <style name="DatePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/DatePickerDialogStyle</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
+    <style name="DatePickerDialogStyle" parent="@android:style/Widget.Material.Light.DatePicker">
+        <item name="android:headerBackground">@color/primary</item>
+        <item name="android:datePickerMode">calendar</item>
     </style>
 
     <style name="TimePickerDialogStyle" parent="@android:style/Widget.Material.Light.TimePicker">
