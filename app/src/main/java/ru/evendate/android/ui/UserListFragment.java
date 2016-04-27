@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
+
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.loaders.EventLoader;
@@ -24,7 +26,7 @@ import ru.evendate.android.models.OrganizationDetail;
 /**
  * Created by Dmitry on 04.02.2016.
  */
-public class UserListFragment extends Fragment{
+public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
@@ -40,34 +42,35 @@ public class UserListFragment extends Fragment{
     private ProgressBar mProgressBar;
 
     public enum TypeFormat {
-        event                (0),
-        organization        (1);
+        event(0),
+        organization(1);
 
         TypeFormat(int nativeInt) {
             this.nativeInt = nativeInt;
         }
+
         final int nativeInt;
     }
 
-    public static UserListFragment newInstance(int type, int id){
+    public static UserListFragment newInstance(int type, int id) {
         UserListFragment userListFragment = new UserListFragment();
         userListFragment.type = type;
-        if(type == TypeFormat.event.nativeInt){
+        if (type == TypeFormat.event.nativeInt) {
             userListFragment.eventId = id;
-        }
-        else{
+        } else {
             userListFragment.organizationId = id;
         }
         return userListFragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                          Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
         }
 
@@ -75,9 +78,9 @@ public class UserListFragment extends Fragment{
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (type == TypeFormat.event.nativeInt)
-            mEventLoader = new EventLoader(getActivity());
+            mEventLoader = new EventLoader(getActivity(), eventId);
         else
-            mOrganizationLoader = new OrganizationLoader(getActivity());
+            mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -101,30 +104,32 @@ public class UserListFragment extends Fragment{
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState == null)
+        if (savedInstanceState == null)
             return;
         type = savedInstanceState.getInt(TYPE);
         eventId = savedInstanceState.getInt(EVENT_ID);
         organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
     }
 
-    private void loadOrganization(){
-        mOrganizationLoader.setLoaderListener(new LoaderListener<OrganizationDetail>() {
+    private void loadOrganization() {
+        mOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<OrganizationDetail>>() {
             @Override
-            public void onLoaded(OrganizationDetail subList) {
-                if(!isAdded())
+            public void onLoaded(ArrayList<OrganizationDetail> subList) {
+                if (!isAdded())
                     return;
-                mAdapter.setList(subList.getSubscribedUsersList());
+                OrganizationDetail organization = subList.get(0);
+                mAdapter.setList(organization.getSubscribedUsersList());
                 mProgressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onError() {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.getOrganization(organizationId);
+                        mOrganizationLoader.startLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -133,26 +138,28 @@ public class UserListFragment extends Fragment{
                 mProgressBar.setVisibility(View.GONE);
             }
         });
-        mOrganizationLoader.getOrganization(organizationId);
+        mOrganizationLoader.startLoading();
     }
 
-    private void loadEvent(){
-        mEventLoader.setLoaderListener(new LoaderListener<EventDetail>() {
+    private void loadEvent() {
+        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventDetail>>() {
             @Override
-            public void onLoaded(EventDetail subList) {
-                if(!isAdded())
+            public void onLoaded(ArrayList<EventDetail> subList) {
+                if (!isAdded())
                     return;
-                mAdapter.setList(subList.getUserList());
+                EventDetail event = subList.get(0);
+                mAdapter.setList(event.getUserList());
                 mProgressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onError() {
-                if(!isAdded())
+                if (!isAdded())
                     return;
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mEventLoader.getData(eventId);
+                        mEventLoader.onStartLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -161,15 +168,15 @@ public class UserListFragment extends Fragment{
                 mProgressBar.setVisibility(View.GONE);
             }
         });
-        mEventLoader.getData(eventId);
+        mEventLoader.onStartLoading();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (type == TypeFormat.event.nativeInt)
-            mEventLoader.cancel();
+            mEventLoader.cancelLoad();
         else
-            mOrganizationLoader.cancel();
+            mOrganizationLoader.cancelLoad();
     }
 }

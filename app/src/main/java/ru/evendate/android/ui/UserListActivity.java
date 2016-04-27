@@ -22,11 +22,11 @@ public class UserListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_list);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             Uri uri = intent.getData();
             int type = intent.getIntExtra(UserListFragment.TYPE, 0);
             int id = Integer.parseInt(uri.getLastPathSegment());
-            if(type == UserListFragment.TypeFormat.event.nativeInt){
+            if (type == UserListFragment.TypeFormat.event.nativeInt) {
                 mUserListFragment = UserListFragment.newInstance(type, id);
             } else {
                 mUserListFragment = UserListFragment.newInstance(type, id);
@@ -41,6 +41,7 @@ public class UserListActivity extends AppCompatActivity {
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
+
     @Override
     public void onStart() {
         super.onStart();

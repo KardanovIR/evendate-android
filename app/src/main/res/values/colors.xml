@@ -2,38 +2,19 @@
 <resources>
 
     <color name="arrow_color">#ff737373</color>
-    <color name="selected_day_color">#ff819ac1</color>
 
     <color name="primary">#5379B8</color>
-    <color name="accent">#FC2969</color>
+    <color name="accent">#fc2969</color>
     <color name="primary_dark">#4268A7</color>
     <color name="text_primary">#FFFFFF</color>
     <color name="window_background">#FFFFFF</color>
     <color name="window_reel_background">#EEEEEE</color>
     <color name="translucent">#00000000</color>
-
-
-    <color name="background_color">#ff819ab7</color>
-    <color name="background_color_all">#ffffffff</color>
-    <color name="drawer_background">#fafafa</color>
-    <color name="fab_color">#fc2969</color>
-    <color name="text_color_black">#212121</color>
-
-    <color name="hint_text_color">#9b9b9b</color>
-    <color name="underline_color">#c6c6c6</color>
-
-    <color name="border_line">#e4e4e4</color>
-    <color name="colorControlNormal">#FF78909C</color>
-    <color name="colorAccentHalf">#9000E5FF</color>
-    <color name="colorPrimaryHalf">#9003A9F4</color>
-
-    <color name="icons_color">#717171</color>
+    <color name="black_translucent">#50000000</color>
 
     <!--Colors for icons -->
     <color name="vk_color">#4d7aa3</color>
     <color name="fb_color">#415fa8</color>
     <color name="gplus_color">#d95333</color>
-
-
 
 </resources>

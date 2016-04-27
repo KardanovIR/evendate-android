@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
  * Created by Dmitry on 29.10.2015.
  * just copy-paste AccountAuthenticatorActivity into AppCompat
  */
-public class AccountAuthenticatorAppCompatActivity extends AppCompatActivity{
+public class AccountAuthenticatorAppCompatActivity extends AppCompatActivity {
     private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
     private Bundle mResultBundle = null;
 

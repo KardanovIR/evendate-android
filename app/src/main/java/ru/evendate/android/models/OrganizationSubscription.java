@@ -7,8 +7,12 @@ public interface OrganizationSubscription {
     String FIELDS_LIST = "img_small_url,subscribed_count";
 
     int getEntryId();
+
     String getName();
+
     String getShortName();
+
     String getLogoSmallUrl();
+
     int getSubscribedCount();
 }

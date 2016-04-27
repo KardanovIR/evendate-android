@@ -33,14 +33,14 @@ public class WebAuthFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-    Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_web_auth, container, false);
         super.onCreate(savedInstanceState);
 
         mWebView = (WebView)rootView.findViewById(R.id.auth_web_view);
         if (savedInstanceState != null)
             mWebView.restoreState(savedInstanceState);
-        else{
+        else {
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.removeAllCookie();
         }
@@ -49,7 +49,7 @@ public class WebAuthFragment extends Fragment {
         webSettings.setJavaScriptEnabled(true);
 
         Bundle bundle = getArguments();
-        if(bundle != null)
+        if (bundle != null)
             mUrl = bundle.getString(AuthActivity.URL_KEY);
 
         return rootView;
@@ -70,7 +70,7 @@ public class WebAuthFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if(mUrl != null)
+        if (mUrl != null)
             mWebView.loadUrl(mUrl);
     }
 
@@ -84,7 +84,7 @@ public class WebAuthFragment extends Fragment {
 
             try {
                 URL currentURL = new URL(url);
-                if(currentURL.getPath().equals(oAuth)){
+                if (currentURL.getPath().equals(oAuth)) {
                     Log.i(LOG_TAG, "start authorization");
                     String query = currentURL.getQuery();
                     Log.i(LOG_TAG, query);
@@ -95,7 +95,7 @@ public class WebAuthFragment extends Fragment {
                     Log.i(LOG_TAG, token);
                     String accountType = getResources().getString(R.string.account_type);
                     Account account = new Account(email, accountType);
-                    ((AuthActivity) mContext).onTokenReceived(account, "", token);
+                    ((AuthActivity)mContext).onTokenReceived(account, "", token);
                     Log.i(LOG_TAG, "finish authorization");
                 }
             } catch (MalformedURLException e) {

@@ -29,7 +29,7 @@ import ru.evendate.android.models.OrganizationType;
  */
 public class OrganizationCatalogFragment extends Fragment
         implements OrganizationFilterDialog.OnCategorySelectListener,
-        View.OnClickListener{
+        View.OnClickListener {
     private android.support.v7.widget.RecyclerView mRecyclerView;
     private CatalogLoader mLoader;
     private OrganizationCategoryAdapter mAdapter;
@@ -66,7 +66,7 @@ public class OrganizationCatalogFragment extends Fragment
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mLoader.getData();
+                        mLoader.startLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -75,14 +75,14 @@ public class OrganizationCatalogFragment extends Fragment
             }
         });
 
-        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
+        mFAB = (FloatingActionButton)rootView.findViewById((R.id.fab));
         mFAB.setOnClickListener(this);
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.getData();
+        mLoader.startLoading();
         if (Build.VERSION.SDK_INT >= 21)
             getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
         return rootView;
@@ -90,10 +90,10 @@ public class OrganizationCatalogFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-        if(v == mFAB) {
-            if(mCategoryList == null)
+        if (v == mFAB) {
+            if (mCategoryList == null)
                 return;
-            if(mSelectedItems == null){
+            if (mSelectedItems == null) {
                 mSelectedItems = new boolean[mCategoryList.size()];
                 Arrays.fill(mSelectedItems, Boolean.TRUE);
             }
@@ -108,8 +108,8 @@ public class OrganizationCatalogFragment extends Fragment
     public void onCategorySelected(boolean[] itemsSelected) {
         ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
         mSelectedItems = itemsSelected;
-        for(int i = 0; i < itemsSelected.length; i++){
-            if(itemsSelected[i])
+        for (int i = 0; i < itemsSelected.length; i++) {
+            if (itemsSelected[i])
                 newItemSelected.add(mCategoryList.get(i));
         }
         mAdapter.setCategoryList(newItemSelected);
@@ -118,6 +118,6 @@ public class OrganizationCatalogFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancel();
+        mLoader.cancelLoad();
     }
 }

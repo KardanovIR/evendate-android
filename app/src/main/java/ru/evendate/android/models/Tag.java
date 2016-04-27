@@ -15,9 +15,11 @@ public class Tag extends DataModel {
     public int getEntryId() {
         return this.tagId;
     }
+
     public String getName() {
         return name;
     }
+
     public String getEvents_count() {
         return events_count;
     }

@@ -6,7 +6,10 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import ru.evendate.android.models.DateFull;
 public class DatesView extends CardView {
     private ArrayList<DateFull> mDates;
     @Bind(R.id.container) LinearLayout mLayout;
+    @Bind(R.id.expand_container) LinearLayout mLayoutExpand;
     private int minDates = 5;
     @Bind(R.id.expand_button) ToggleButton ExpandButton;
 
@@ -48,7 +52,8 @@ public class DatesView extends CardView {
         initDates();
         if (dates.size() < minDates) {
             ExpandButton.setVisibility(GONE);
-        }
+        } else
+            mLayoutExpand.setVisibility(GONE);
     }
 
     public ArrayList<DateFull> getDates() {
@@ -61,19 +66,77 @@ public class DatesView extends CardView {
         if (mLayout.getChildCount() != 0)
             mLayout.removeViewsInLayout(0, mLayout.getChildCount());
         for (DateFull date : mDates) {
-            if (!ExpandButton.isChecked()) {
-                if (mLayout.getChildCount() == minDates)
-                    break;
-            }
             DatetimeView dateView = new DatetimeView(getContext());
             dateView.setDate(date);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+            int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
             lp.setMargins(0, margin, 0, margin);
             dateView.setLayoutParams(lp);
-            mLayout.addView(dateView);
+            if (mLayout.getChildCount() == 5)
+                mLayoutExpand.addView(dateView);
+            else
+                mLayout.addView(dateView);
         }
         invalidate();
+    }
+
+    private void hideViews() {
+        if (ExpandButton.isChecked()) {
+            expand(mLayoutExpand);
+        } else
+            collapse(mLayoutExpand);
+    }
+
+    public void expand(final View v) {
+        v.measure(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        final int targetHeight = v.getMeasuredHeight();
+
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        v.getLayoutParams().height = 1;
+        v.setVisibility(View.VISIBLE);
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                v.getLayoutParams().height = interpolatedTime == 1
+                        ? RelativeLayout.LayoutParams.WRAP_CONTENT
+                        : (int)(targetHeight * interpolatedTime);
+                v.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // 2dp/ms
+        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density) / 2);
+        v.startAnimation(a);
+    }
+
+    public void collapse(final View v) {
+        final int initialHeight = v.getMeasuredHeight();
+
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (interpolatedTime == 1) {
+                    v.setVisibility(View.GONE);
+                } else {
+                    v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+                    v.requestLayout();
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // 2dp/ms
+        a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density) / 2);
+        v.startAnimation(a);
     }
 
     private void mockup() {
@@ -95,6 +158,6 @@ public class DatesView extends CardView {
     @OnClick(R.id.expand_button)
     public void expand(ToggleButton button) {
         button.setChecked(button.isChecked());
-        initDates();
+        hideViews();
     }
 }

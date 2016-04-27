@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class User extends DataModel {
     public static final String FIELDS_LIST = "is_friend,type,link";
-    
+
     @SerializedName("id")
     int userId;
     @SerializedName("last_name")

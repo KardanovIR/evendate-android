@@ -9,20 +9,21 @@ import ru.evendate.android.data.EvendateContract;
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
-public class Action extends DataModel implements ActionTarget, Comparable<Action>{
+public class Action extends DataModel implements ActionTarget, Comparable<Action> {
     public static final String FIELDS_LIST = "name,created_at,event,organization,user{fields:'" + User.FIELDS_LIST + "'}";
     public static final String ORDER_BY = "-created_at";
 
     public enum Type {
-        ACTION_LIKE         (5),
-        ACTION_DISLIKE      (4),
-        ACTION_SUBSCRIBE    (3),
-        ACTION_UNSUBSCRIBE  (6),
-        ACTION_VIEW_EVENT   (2),
-        ACTION_VIEW_ORGANIZATION    (1),
-        ACTION_VIEW_EVENT_INFO    (7);
+        ACTION_LIKE(5),
+        ACTION_DISLIKE(4),
+        ACTION_SUBSCRIBE(3),
+        ACTION_UNSUBSCRIBE(6),
+        ACTION_VIEW_EVENT(2),
+        ACTION_VIEW_ORGANIZATION(1),
+        ACTION_VIEW_EVENT_INFO(7);
 
         final int type;
+
         Type(int type) {
             this.type = type;
         }
@@ -31,6 +32,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
             return type;
         }
     }
+
     @SerializedName("stat_type_id")
     long statTypeId;
     @SerializedName("organization_id")
@@ -97,9 +99,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
 
     @Override
     public String getTargetName() {
-        if(statTypeId == Type.ACTION_DISLIKE.type()|| statTypeId == Type.ACTION_LIKE.type())
+        if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return event.getTitle();
-        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+        else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return organization.getShortName();
         else
             return null;
@@ -107,9 +109,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
 
     @Override
     public Uri getTargetUri() {
-        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
+        if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return EvendateContract.EventEntry.getContentUri(event.getEntryId());
-        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+        else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return EvendateContract.OrganizationEntry.getContentUri(organization.getEntryId());
         else
             return null;
@@ -117,9 +119,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
 
     @Override
     public String getTargetImageLink() {
-        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
+        if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return getEvent().getImageHorizontalUrl();
-        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+        else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return organization.getLogoUrl();
         else
             return null;
@@ -127,9 +129,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
 
     @Override
     public int getTargetType() {
-        if(statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
+        if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return ActionTarget.TYPE_EVENT;
-        else if(statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
+        else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return ActionTarget.TYPE_ORGANIZATION;
         return 0;
     }

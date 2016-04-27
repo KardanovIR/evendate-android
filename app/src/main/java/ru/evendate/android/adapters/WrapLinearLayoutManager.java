@@ -12,7 +12,7 @@ import android.view.ViewGroup;
  */
 public class WrapLinearLayoutManager extends LinearLayoutManager {
 
-    public WrapLinearLayoutManager(Context context, int orientation, boolean reverseLayout){
+    public WrapLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }
 
@@ -66,7 +66,7 @@ public class WrapLinearLayoutManager extends LinearLayoutManager {
                                    int heightSpec, int[] measuredDimension) {
         View view = recycler.getViewForPosition(position);
         if (view != null) {
-            RecyclerView.LayoutParams p = (RecyclerView.LayoutParams) view.getLayoutParams();
+            RecyclerView.LayoutParams p = (RecyclerView.LayoutParams)view.getLayoutParams();
             int childWidthSpec = ViewGroup.getChildMeasureSpec(widthSpec,
                     getPaddingLeft() + getPaddingRight(), p.width);
             int childHeightSpec = ViewGroup.getChildMeasureSpec(heightSpec,

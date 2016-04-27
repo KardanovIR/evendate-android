@@ -13,6 +13,7 @@ import ru.evendate.android.R;
  */
 public class StatusBarColorChanger implements AppBarLayout.OnOffsetChangedListener {
     private Activity mContext;
+
     public StatusBarColorChanger(Activity context) {
         mContext = context;
     }
@@ -21,12 +22,11 @@ public class StatusBarColorChanger implements AppBarLayout.OnOffsetChangedListen
         if (Build.VERSION.SDK_INT < 21)
             return;
         TypedValue tv = new TypedValue();
-        if (mContext.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
+        if (mContext.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, mContext.getResources().getDisplayMetrics());
-            if(Math.abs(verticalOffset) + actionBarHeight > appBarLayout.getTotalScrollRange()){
+            if (Math.abs(verticalOffset) + actionBarHeight > appBarLayout.getTotalScrollRange()) {
                 mContext.getWindow().setStatusBarColor(Color.TRANSPARENT);
-            }else{
+            } else {
                 mContext.getWindow().setStatusBarColor(mContext.getResources().getColor(R.color.black_translucent));
             }
         }

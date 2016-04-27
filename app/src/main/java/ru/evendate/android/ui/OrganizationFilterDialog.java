@@ -64,12 +64,14 @@ public class OrganizationFilterDialog extends DialogFragment {
 
         return builder.create();
     }
-    interface OnCategorySelectListener{
+
+    interface OnCategorySelectListener {
         void onCategorySelected(boolean[] selectedItems);
     }
-    private String[] typeToStrings(){
+
+    private String[] typeToStrings() {
         String[] stringArray = new String[mItemsList.size()];
-        for (int i = 0; i < mItemsList.size(); i++){
+        for (int i = 0; i < mItemsList.size(); i++) {
             stringArray[i] = mItemsList.get(i).getName();
         }
         return stringArray;

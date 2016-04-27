@@ -26,9 +26,10 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
         return new DateHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_date, parent, false));
     }
+
     @Override
     public void onBindViewHolder(DateHolder holder, int position) {
-        if(getList() == null)
+        if (getList() == null)
             return;
         AggregateDate<ActionType> entry = getList().get(position);
         String date = EventFormatter.formatDay(entry.getDate()) + " " +
@@ -43,13 +44,14 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
         holder.mActionsAdapter.setList(entry.getList());
         holder.recyclerView.setNestedScrollingEnabled(false);
     }
+
     public class DateHolder extends RecyclerView.ViewHolder {
         public View holderView;
         public RecyclerView recyclerView;
         public TextView mDateTextView;
         public ActionTypesAdapter mActionsAdapter;
 
-        public DateHolder(View itemView){
+        public DateHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             recyclerView = (RecyclerView)itemView.findViewById(R.id.recycler_view);

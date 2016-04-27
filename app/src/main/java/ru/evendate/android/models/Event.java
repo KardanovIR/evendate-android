@@ -27,24 +27,31 @@ public class Event extends DataModel {
     public int getEntryId() {
         return eventId;
     }
+
     public String getTitle() {
         return title;
     }
+
     public long getFirstDate() {
         return firstDate;
     }
+
     public long getLastDate() {
         return lastDate;
     }
+
     public long getNearestDate() {
         return nearestDate;
     }
+
     public String getImageHorizontalUrl() {
         return imageHorizontalUrl;
     }
+
     public String getImageVerticalUrl() {
         return imageVerticalUrl;
     }
+
     public int getOrganizationId() {
         return organizationId;
     }

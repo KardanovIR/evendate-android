@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
  */
 public class EventFormatterTest extends AndroidTestCase {
     //TODO Work only on ru device
-    public void testFormatDate(){
+    public void testFormatDate() {
         //Log.d("EventFormatter", EventFormatter.formatDate(getEventDetail(0)));
         assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDate(getEventDetail(0)));
         assertEquals("1 декабря", EventFormatter.formatDate(getEventDetail(1)));
@@ -27,15 +27,17 @@ public class EventFormatterTest extends AndroidTestCase {
         assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDate(getEventDetail(5)));
         assertEquals("13, 14 февраля", EventFormatter.formatDate(getEventDetail(6)));
     }
-    public static EventDetail getEventDetail(int num){
+
+    public static EventDetail getEventDetail(int num) {
         EventDetail event = Mockito.mock(EventDetail.class);
         ArrayList<DateFull> dates = getDates(num);
         when(event.getDateList()).thenReturn(dates);
         return event;
     }
-    private static ArrayList<DateFull> getDates(int num){
+
+    private static ArrayList<DateFull> getDates(int num) {
         ArrayList<DateFull> dateList = new ArrayList<>();
-        for(long date : getIntDates(num)){
+        for (long date : getIntDates(num)) {
             DateFull dateModel = Mockito.mock(DateFull.class);
             when(dateModel.getEventDate()).thenReturn(date);
             dateList.add(dateModel);
@@ -43,9 +45,9 @@ public class EventFormatterTest extends AndroidTestCase {
         return dateList;
     }
 
-    private static long[] getIntDates(int num){
-        switch (num){
-            case 0:{
+    private static long[] getIntDates(int num) {
+        switch (num) {
+            case 0: {
                 long[] str = {
                         1446508800,
                         1446681600,
@@ -61,20 +63,20 @@ public class EventFormatterTest extends AndroidTestCase {
                 };
                 return str;
             }
-            case 1:{
+            case 1: {
                 long[] str = {
                         1448928000
                 };
                 return str;
             }
-            case 2:{
+            case 2: {
                 long[] str = {
                         1448582400,
                         1448928000
                 };
                 return str;
             }
-            case 3:{
+            case 3: {
                 long[] str = {
                         1456358400,
                         1456444800,
@@ -95,7 +97,7 @@ public class EventFormatterTest extends AndroidTestCase {
                 };
                 return str;
             }
-            case 4:{
+            case 4: {
                 long[] str = {
                         1456790400,
                         1456876800,
@@ -111,7 +113,7 @@ public class EventFormatterTest extends AndroidTestCase {
                 };
                 return str;
             }
-            case 5:{
+            case 5: {
                 long[] str = {
                         1446508800,
                         1448928000,
@@ -120,7 +122,7 @@ public class EventFormatterTest extends AndroidTestCase {
                 };
                 return str;
             }
-            case 6:{
+            case 6: {
                 long[] str = {
                         1455321600,
                         1455408000

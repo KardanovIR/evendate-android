@@ -9,7 +9,7 @@ import ru.evendate.android.R;
 /**
  * Created by ds_gordeev on 04.03.2016.
  */
-public class SubscriptionDrawerItem extends ProfileDrawerItem{
+public class SubscriptionDrawerItem extends ProfileDrawerItem {
 
     @Override
     @LayoutRes

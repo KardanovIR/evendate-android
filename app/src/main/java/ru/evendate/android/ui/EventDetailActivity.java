@@ -23,7 +23,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             mUri = intent.getData();
             Bundle intent_extras = getIntent().getExtras();
 
@@ -34,7 +34,7 @@ public class EventDetailActivity extends AppCompatActivity {
             if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
                     intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
                 event.setAction(getString(R.string.stat_action_notification));
-            }else{
+            } else {
                 event.setAction(getString(R.string.stat_action_view));
             }
             tracker.send(event.build());

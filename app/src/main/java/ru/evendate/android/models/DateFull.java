@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by ds_gordeev on 16.03.2016.
  */
-public class DateFull extends Date{
+public class DateFull extends Date {
     public static final String FIELDS_LIST = "start_time,end_time";
 
 

@@ -21,16 +21,18 @@ public class EvendateContract {
     public static final String PATH_ORGANIZATION_IMAGES = "images/organizations";
     public static final String PATH_ORGANIZATION_LOGOS = "images/organizations/logos";
 
-    public static final class EventEntry implements BaseColumns{
+    public static final class EventEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_EVENTS).build();
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_EVENTS;
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_EVENTS;
-        public static Uri getContentUri(int eventId){
+
+        public static Uri getContentUri(int eventId) {
             return CONTENT_URI.buildUpon().appendPath(String.valueOf(eventId)).build();
         }
+
         public static final String TABLE_NAME = "events";
 
         public static final String COLUMN_EVENT_ID = "event_id";
@@ -64,27 +66,32 @@ public class EvendateContract {
         public static final String COLUMN_CREATED_AT = "created_at";
 
     }
-    public static final class EventDateEntry implements BaseColumns{
-        public static Uri getContentUri(int eventId){
+
+    public static final class EventDateEntry implements BaseColumns {
+        public static Uri getContentUri(int eventId) {
             return EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_DATES).build();
         }
+
         public static final String TABLE_NAME = "events_dates";
         public static final String COLUMN_EVENT_ID = "event_id";
         public static final String COLUMN_DATE = "date";
     }
-    public static final class EventTagEntry implements BaseColumns{
-        public static Uri GetContentUri(int eventId){
+
+    public static final class EventTagEntry implements BaseColumns {
+        public static Uri GetContentUri(int eventId) {
             return EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_TAGS).build();
         }
+
         public static final String QUERY_ADD_PARAMETER_NAME = "addTags";
         public static final String QUERY_REMOVE_PARAMETER_NAME = "removeTags";
         public static final String TABLE_NAME = "events_tags";
         public static final String COLUMN_EVENT_ID = "event_id";
         public static final String COLUMN_TAG_ID = "tag_id";
     }
-    public static final class OrganizationEntry implements BaseColumns{
+
+    public static final class OrganizationEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_ORGANIZATIONS).build();
         public static final String CONTENT_TYPE =
@@ -92,7 +99,7 @@ public class EvendateContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/organization";
 
-        public static Uri getContentUri(int organizationId){
+        public static Uri getContentUri(int organizationId) {
             return CONTENT_URI.buildUpon().appendPath(String.valueOf(organizationId)).build();
         }
 
@@ -117,7 +124,8 @@ public class EvendateContract {
         public static final String COLUMN_UPDATED_AT = "updated_at";
         public static final String COLUMN_CREATED_AT = "created_at";
     }
-    public static final class TagEntry implements BaseColumns{
+
+    public static final class TagEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_TAGS).build();
         public static final String CONTENT_TYPE =
@@ -129,7 +137,8 @@ public class EvendateContract {
         public static final String COLUMN_TAG_ID = "tag_id";
         public static final String COLUMN_NAME = "name";
     }
-    public static final class UserEntry implements BaseColumns{
+
+    public static final class UserEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_USERS).build();
         public static final String CONTENT_TYPE =
@@ -137,6 +146,9 @@ public class EvendateContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/user";
 
+        public static Uri getContentUri(int userId) {
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(userId)).build();
+        }
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_LAST_NAME = "last_name";
@@ -147,11 +159,13 @@ public class EvendateContract {
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_LINK = "link";
     }
-    public static final class UserEventEntry implements BaseColumns{
-        public static Uri getContentUri(int eventId){
+
+    public static final class UserEventEntry implements BaseColumns {
+        public static Uri getContentUri(int eventId) {
             return EventEntry.CONTENT_URI.buildUpon()
                     .appendPath(Integer.toString(eventId)).appendPath(EvendateContract.PATH_USERS).build();
         }
+
         public static final String QUERY_ADD_PARAMETER_NAME = "addFriends";
         public static final String QUERY_REMOVE_PARAMETER_NAME = "removeFriends";
         public static final String TABLE_NAME = "events_users";
