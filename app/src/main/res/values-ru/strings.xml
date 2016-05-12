@@ -91,4 +91,9 @@
     <string name="event_registration">Регистрация</string>
     <string name="log_out">Выйти из аккаунта</string>
     <string name="organization_word_friends">друзья</string>
+    <string name="feed_empty_header">Ближайших событий нет</string>
+    <string name="feed_empty_text">Вы можете посмотреть другие события, подписавшись на других организаторов, или перейти в раздел рекомендованных событий</string>
+    <string name="favourites_empty_header">Избранных событий нет</string>
+    <string name="favourites_empty_text">Добавьте событие в избранное, чтобы оно появилось здесь!</string>
+
 </resources>

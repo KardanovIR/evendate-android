@@ -13,7 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +41,11 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
     private EventsAdapter mAdapter;
     private EventsLoader mEventLoader;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private FrameLayout mFrameLayout;
+    private LinearLayout mFeedEmptyLayout;
     private ProgressBar mProgressBar;
+    private TextView mFeedEmptyHeader;
+    private TextView mFeedEmptyTextView;
     boolean refreshingEnabled = false;
 
     /**
@@ -121,6 +128,11 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
                 PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
+        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.flFeedWrapper);
+        mFeedEmptyLayout = (LinearLayout) rootView.findViewById(R.id.llFeedEmpty);
+        mFeedEmptyHeader = (TextView) rootView.findViewById(R.id.tvFeedHeader);
+        mFeedEmptyTextView = (TextView) rootView.findViewById(R.id.tvFeedEmptyText);
+
 
         if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
@@ -228,9 +240,23 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
             mAdapter.enableNext();
         }
         mSwipeRefreshLayout.setRefreshing(false);
+        if (eventList.size()==0) {
+            mRecyclerView.setVisibility(View.GONE);
+            mFrameLayout.setBackgroundResource(R.color.primary);
+            mFeedEmptyLayout.setVisibility(View.VISIBLE);
+            if (type == TypeFormat.FEED.type) {
+                mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
+                mFeedEmptyTextView.setText(getResources().getString(R.string.feed_empty_text));
+            } else if (type == TypeFormat.FAVORITES.type) {
+                mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
+                mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
+            }
+        }
+
         if (eventList.size() < mEventLoader.getLength()) {
             mAdapter.disableNext();
         }
+
         mAdapter.setList(eventList);
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)

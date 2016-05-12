@@ -59,4 +59,5 @@ dependencies {
     compile('com.mikepenz:materialdrawer:4.6.4@aar') {
         transitive = true
     }
+    compile 'com.android.support:palette-v7:22.2.0'
 }

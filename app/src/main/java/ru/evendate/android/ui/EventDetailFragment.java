@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.graphics.Pallete;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -260,10 +262,32 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             mTitleTextView.setText(mEvent.getTitle());
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Palette.from(bitmap).generate(new PaletteAsyncListener() {
+                        public void onGenerated(Palette p) {
+                            // Use generated instance
+                        }
+                    });
+                    mEventImageView.setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+
+            };
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
-                    .into(mEventImageView);
+                    .into(target);
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
