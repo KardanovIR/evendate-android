@@ -91,4 +91,5 @@
     <string name="event_registration">Регистрация</string>
     <string name="log_out">Выйти из аккаунта</string>
     <string name="organization_word_friends">друзья</string>
+    <string name="event_price_rub">рублей</string>
 </resources>
