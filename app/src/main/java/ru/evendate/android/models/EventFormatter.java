@@ -170,4 +170,8 @@ public class EventFormatter {
     private static String catEventTime(String time) {
         return time.substring(0, time.lastIndexOf(":"));
     }
+
+    public static String formatPrice(Context c, int price) {
+        return c.getString(R.string.event_price_from) + " " + price + " " + c.getString(R.string.event_price_rub);
+    }
 }
