@@ -23,7 +23,8 @@
             app:contentScrim="?attr/colorPrimary"
             app:titleEnabled="false"
             android:fitsSystemWindows="true"
-            app:toolbarId="@id/toolbar">
+            app:toolbarId="@id/toolbar"
+            >
             <ImageView
                 android:id="@+id/event_image"
                 android:layout_width="match_parent"
@@ -32,12 +33,12 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 android:paddingBottom="?attr/actionBarSize"/>
-            <!--<View
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/gradient_top"
-                android:paddingBottom="?attr/actionBarSize"
-                app:layout_collapseMode="none"/>-->
+                app:layout_collapseMode="none"
+                android:id="@+id/iv_image_foreground"
+                android:paddingBottom="57dp"/>
             <FrameLayout
                 android:id="@+id/event_header"
                 android:layout_width="match_parent"

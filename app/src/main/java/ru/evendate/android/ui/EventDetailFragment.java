@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +9,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
@@ -88,6 +92,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     //private TextView mTimeTextView;
     private TextView mParticipantCountTextView;
 
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+
+
     private FrameLayout mLink;
 
     private Uri mUri;
@@ -141,7 +148,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         //make status bar transparent
         ((AppBarLayout)rootView.findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(getActivity()));
 
-        CollapsingToolbarLayout collapsingToolbarLayout;
         collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
@@ -437,10 +443,11 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         Palette palette = Palette.generate(bitmap);
         int vibrant = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
         int vibrantDark = Color.argb(255, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
+        int vibrantDarkTransparent = Color.argb(200, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
         getActivity().findViewById(R.id.strip).setBackgroundColor(vibrant);
         getActivity().findViewById(R.id.event_header).setBackgroundColor(vibrantDark);
-        ((CollapsingToolbarLayout)getActivity().findViewById(R.id.collapsing_toolbar)).setContentScrimColor(vibrant);
-        //mTitleTextView.setTextColor(mutedDarkSwatch.getTitleTextColor());
-
+        GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { vibrantDark, vibrantDark, vibrantDarkTransparent, getResources().getColor(android.R.color.transparent), getResources().getColor(android.R.color.transparent),getResources().getColor(android.R.color.transparent), getResources().getColor(android.R.color.transparent) });
+        collapsingToolbarLayout.setContentScrimColor(vibrant);
+        ((ImageView)getActivity().findViewById(R.id.iv_image_foreground)).setImageDrawable(g);
     }
 }
