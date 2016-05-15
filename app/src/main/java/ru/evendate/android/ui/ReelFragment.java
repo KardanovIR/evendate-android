@@ -128,10 +128,10 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
                 PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
-        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.flFeedWrapper);
-        mFeedEmptyLayout = (LinearLayout) rootView.findViewById(R.id.llFeedEmpty);
-        mFeedEmptyHeader = (TextView) rootView.findViewById(R.id.tvFeedHeader);
-        mFeedEmptyTextView = (TextView) rootView.findViewById(R.id.tvFeedEmptyText);
+        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.fl_feed_wrapper);
+        mFeedEmptyLayout = (LinearLayout) rootView.findViewById(R.id.ll_feed_empty);
+        mFeedEmptyHeader = (TextView) rootView.findViewById(R.id.tv_feed_header);
+        mFeedEmptyTextView = (TextView) rootView.findViewById(R.id.tv_feed_emptyText);
 
 
         if (savedInstanceState != null) {

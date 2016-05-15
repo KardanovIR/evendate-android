@@ -8,7 +8,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/flFeedWrapper">
+        android:id="@+id/fl_feed_wrapper">
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleLarge"
@@ -31,7 +31,7 @@
             android:layout_width="276dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/llFeedEmpty"
+            android:id="@+id/ll_feed_empty"
             android:visibility="gone">
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/feed_empty_header"
-                android:id="@+id/tvFeedHeader"
+                android:id="@+id/tv_feed_header"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:textSize="24dp"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/feed_empty_text"
-                android:id="@+id/tvFeedEmptyText"
+                android:id="@+id/tv_feed_emptyText"
                 android:fontFamily="sans-serif"
                 android:textSize="14sp"
                 android:textColor="@color/feed_empty_text_color"
