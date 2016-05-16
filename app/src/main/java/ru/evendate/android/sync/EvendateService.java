@@ -15,6 +15,7 @@ import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
 import ru.evendate.android.models.UserDetail;
+import rx.Observable;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -54,9 +55,9 @@ public interface EvendateService {
      * Get concrete event
      */
     @GET(API_PATH + "/events/{id}")
-    Call<EvendateServiceResponseArray<EventDetail>> eventData(
-            @Path("id") int eventId,
+    Observable<EvendateServiceResponseArray<EventDetail>> getEvent(
             @Header("Authorization") String authorization,
+            @Path("id") int eventId,
             @Query("fields") String fields
     );
 
@@ -132,7 +133,7 @@ public interface EvendateService {
     );
 
     @GET(API_PATH + "/organizations/{id}")
-    Call<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
+    Observable<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("fields") String fields

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -36,6 +37,7 @@ public class EvendateApiFactory {
     private static Retrofit getRetrofit() {
         return new Retrofit.Builder().baseUrl(HOST_NAME)
                 .addConverterFactory(GsonConverterFactory.create()
-                ).client(CLIENT).build();
+                ).addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(CLIENT).build();
     }
 }
