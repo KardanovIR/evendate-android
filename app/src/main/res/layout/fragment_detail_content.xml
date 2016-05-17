@@ -46,6 +46,70 @@
                 tools:text="ГЭС-2 — мёртвый участок между Болотной площадью и «Красным Октябрём»"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
+    <ru.evendate.android.views.DatesView
+        android:id="@+id/event_dates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EventDescriptionCard"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+    <android.support.v7.widget.CardView
+        android:id="@+id/event_dates_light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EventDescriptionCard"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/event_dates_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dates_view_date_label"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="8dp"
+                style="@style/Body2.Light"/>
+
+            <TextView
+                android:id="@+id/event_dates_intervals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="19 - 27 февраля, 1 - 30 марта, 5 - 18 апреля"
+                android:layout_below="@+id/event_dates_label"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="16dp"
+                style="@style/Body1.Light"/>
+
+            <TextView
+                android:id="@+id/event_time_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dates_view_time_label"
+                android:layout_below="@+id/event_dates_intervals"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="8dp"
+                style="@style/Body2.Light"/>
+
+            <TextView
+                android:id="@+id/event_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="13:00 - 15:00"
+                android:layout_below="@+id/event_time_label"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                style="@style/Body1.Light"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
         android:id="@+id/event_price_card"
         android:layout_width="match_parent"
@@ -150,70 +214,6 @@
                 android:layout_height="wrap_content"
                 android:minHeight="20dp"/>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
-    <ru.evendate.android.views.DatesView
-        android:id="@+id/event_dates"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/EventDescriptionCard"
-        android:visibility="gone"
-        tools:visibility="visible"/>
-    <android.support.v7.widget.CardView
-        android:id="@+id/event_dates_light"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/EventDescriptionCard"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/event_dates_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dates_view_date_label"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="8dp"
-                style="@style/Body2.Light"/>
-
-            <TextView
-                android:id="@+id/event_dates_intervals"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="19 - 27 февраля, 1 - 30 марта, 5 - 18 апреля"
-                android:layout_below="@+id/event_dates_label"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="16dp"
-                style="@style/Body1.Light"/>
-
-            <TextView
-                android:id="@+id/event_time_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dates_view_time_label"
-                android:layout_below="@+id/event_dates_intervals"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="8dp"
-                style="@style/Body2.Light"/>
-
-            <TextView
-                android:id="@+id/event_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="13:00 - 15:00"
-                android:layout_below="@+id/event_time_label"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                style="@style/Body1.Light"/>
-        </RelativeLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView

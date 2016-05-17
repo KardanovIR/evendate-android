@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:lines="1"
-                app:layout_columnWeight="2"
+                app:layout_columnWeight="5"
                 tools:text="Завтра, 12:00 - 13:00"/>
 
             <TextView
@@ -71,7 +71,7 @@
                 android:ellipsize="end"
                 android:gravity="end"
                 android:lines="1"
-                app:layout_columnWeight="1"
+                app:layout_columnWeight="3"
                 tools:text="Бесплатно"/>
         </android.support.v7.widget.GridLayout>
 

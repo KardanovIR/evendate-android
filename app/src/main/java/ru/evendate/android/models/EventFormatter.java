@@ -157,7 +157,7 @@ public class EventFormatter {
     }
 
     public static String formatRegistrationDate(long date) {
-        DateFormat monthFormat = new SimpleDateFormat("d.mm.yyyy", Locale.getDefault());
+        DateFormat monthFormat = new SimpleDateFormat("d.MM.yyyy", Locale.getDefault());
         return monthFormat.format(date * 1000);
     }
 

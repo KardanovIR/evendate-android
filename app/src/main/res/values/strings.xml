@@ -50,7 +50,7 @@
     <string name="event_users_all">ALL</string>
 
     <string name="event_free">Free</string>
-    <string name="event_price_rub">rubles</string>
+    <string name="event_price_rub">rub</string>
     <string name="event_price_from">From</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
