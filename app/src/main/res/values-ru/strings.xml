@@ -10,7 +10,7 @@
     <string name="subscription_fail_cause_network">Нет интернет подключения</string>
     <string name="subscriptions">Мои подписки</string>
     <string name="title_activity_detail">Мероприятие</string>
-    <string name="title_activity_organization">Организация</string>
+    <string name="title_activity_organization">Каталог организаторов</string>
     <string name="settings">Настройки</string>
     <string name="reel">Мои мероприятия</string>
     <string name="organizations">Каталог организаций</string>

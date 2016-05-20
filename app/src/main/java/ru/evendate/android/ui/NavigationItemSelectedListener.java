@@ -48,10 +48,8 @@ public class NavigationItemSelectedListener
             }
             break;
             case EvendateDrawer.ORGANIZATION_IDENTIFIER: {
-                Intent organizationIntent = new Intent(mContext, MainActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt(MainActivity.TYPE, MainActivity.CATALOG);
-                mContext.startActivity(organizationIntent, bundle);
+                Intent intent = new Intent(mContext, OrganizationCatalogActivity.class);
+                mContext.startActivity(intent);
             }
             break;
             //case R.id.nav_add_account:
