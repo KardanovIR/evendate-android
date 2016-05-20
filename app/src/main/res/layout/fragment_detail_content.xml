@@ -15,84 +15,6 @@
         android:layout_height="wrap_content"
         style="@style/EventDescriptionCard"/>
     <android.support.v7.widget.CardView
-        android:id="@+id/event_price_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/EventDescriptionCard">
-        <android.support.v7.widget.GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:columnCount="2"
-            app:rowCount="2"
-            app:orientation="horizontal"
-            android:layout_margin="16dp">
-                <TextView
-                    android:id="@+id/event_price_label"
-                    app:layout_columnWeight="1"
-                    android:text="@string/event_price" />
-                <TextView
-                    android:id="@+id/event_registration_label"
-                    app:layout_columnWeight="1"
-                    android:text="@string/event_registration" />
-                <TextView
-                    android:id="@+id/event_price"
-                    app:layout_columnWeight="1"
-                    tools:text="500 руб"
-                    android:textColor="#de000000" />
-                <TextView
-                    android:id="@+id/event_registration"
-                    app:layout_columnWeight="1"
-                    tools:text="До 18.02. 2016"
-                    android:textColor="#de000000" />
-        </android.support.v7.widget.GridLayout>
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        android:id="@+id/event_place_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/EventDescriptionCard">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/event_place_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Г. Москва, Берсеневская набережная 5, ст1"
-                android:layout_below="@+id/event_place_label"
-                android:layout_alignLeft="@+id/event_place_label"
-                android:layout_alignStart="@+id/event_place_label"
-                android:textSize="14sp"
-                android:textColor="#de000000" />
-
-            <TextView
-                android:id="@+id/event_place_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_place"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginRight="16dp" />
-
-            <TextView
-                android:id="@+id/event_place_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_show_on_map"
-                android:textColor="#ff5f9e"
-                android:textSize="13sp"
-                android:layout_below="@+id/event_place_text"
-                android:layout_centerHorizontal="true"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:paddingLeft="24dp"
-                android:paddingRight="24dp"
-                android:layout_marginTop="4dp" />
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
         android:id="@+id/event_description_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,63 +26,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/event_description"
-                android:id="@+id/textView4"
+                android:id="@+id/event_description_label"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                style="@style/Body2.Light" />
             <TextView
                 android:id="@+id/event_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textView4"
+                android:layout_below="@+id/event_description_label"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
-                android:textColor="#de000000"
-                android:textSize="13sp"/>
+                style="@style/Body1.Light"
+                tools:text="ГЭС-2 — мёртвый участок между Болотной площадью и «Красным Октябрём»"/>
         </RelativeLayout>
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        android:id="@+id/tag_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/EventDescriptionCard">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-            <TextView
-                android:id="@+id/tagHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/event_tags"
-                android:layout_gravity="start|top"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp" />
-            <ru.evendate.android.views.TagsView
-                android:id="@+id/tag_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="20dp"/>
-        </LinearLayout>
     </android.support.v7.widget.CardView>
     <ru.evendate.android.views.DatesView
         android:id="@+id/event_dates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/EventDescriptionCard"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
     <android.support.v7.widget.CardView
         android:id="@+id/event_dates_light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/EventDescriptionCard"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -171,7 +70,7 @@
                 android:id="@+id/event_dates_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Дата"
+                android:text="@string/dates_view_date_label"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -193,7 +92,7 @@
                 android:id="@+id/event_time_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Время"
+                android:text="@string/dates_view_time_label"
                 android:layout_below="@+id/event_dates_intervals"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -210,6 +109,111 @@
                 android:layout_alignParentStart="true"
                 style="@style/Body1.Light"/>
         </RelativeLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:id="@+id/event_price_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EventDescriptionCard">
+        <android.support.v7.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="2"
+            app:rowCount="2"
+            app:orientation="horizontal"
+            android:layout_margin="16dp">
+                <TextView
+                    android:id="@+id/event_price_label"
+                    app:layout_columnWeight="1"
+                    android:text="@string/event_price"
+                    style="@style/Body2.Light"/>
+                <TextView
+                    android:id="@+id/event_registration_label"
+                    app:layout_columnWeight="1"
+                    android:text="@string/event_registration"
+                    style="@style/Body2.Light" />
+                <TextView
+                    android:id="@+id/event_price"
+                    app:layout_columnWeight="1"
+                    tools:text="500 руб"
+                    style="@style/Body1.Light" />
+                <TextView
+                    android:id="@+id/event_registration"
+                    app:layout_columnWeight="1"
+                    tools:text="До 18.02.2016"
+                    style="@style/Body1.Light" />
+        </android.support.v7.widget.GridLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:id="@+id/event_place_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EventDescriptionCard">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/event_place_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Г. Москва, Берсеневская набережная 5, ст1"
+                android:layout_below="@+id/event_place_label"
+                android:layout_alignLeft="@+id/event_place_label"
+                android:layout_alignStart="@+id/event_place_label"
+                style="@style/Body1.Light" />
+
+            <TextView
+                android:id="@+id/event_place_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_place"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="16dp"
+                style="@style/Body2.Light" />
+
+            <TextView
+                android:id="@+id/event_place_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_show_on_map"
+                android:layout_below="@+id/event_place_text"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:layout_marginTop="4dp"
+                style="@style/Caption.Light" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:id="@+id/tag_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EventDescriptionCard">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView
+                android:id="@+id/tagHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/event_tags"
+                android:layout_gravity="start|top"
+                android:layout_marginBottom="4dp"
+                style="@style/Body2.Light" />
+            <ru.evendate.android.views.TagsView
+                android:id="@+id/tag_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="20dp"/>
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView

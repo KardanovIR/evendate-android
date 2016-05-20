@@ -10,14 +10,14 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            tools:text="19 февраля" />
+            tools:text="19 февраля"
+            style="@style/Body1.Light" />
         <TextView
             android:id="@+id/time"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            tools:text="13:00 - 15:00" />
+            tools:text="13:00 - 15:00"
+            style="@style/Body1.Light" />
     </LinearLayout>
 </merge>

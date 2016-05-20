@@ -157,7 +157,7 @@ public class EventFormatter {
     }
 
     public static String formatRegistrationDate(long date) {
-        DateFormat monthFormat = new SimpleDateFormat("d.mm.yyyy", Locale.getDefault());
+        DateFormat monthFormat = new SimpleDateFormat("d.MM.yyyy", Locale.getDefault());
         return monthFormat.format(date * 1000);
     }
 
@@ -169,5 +169,9 @@ public class EventFormatter {
 
     private static String catEventTime(String time) {
         return time.substring(0, time.lastIndexOf(":"));
+    }
+
+    public static String formatPrice(Context c, int price) {
+        return c.getString(R.string.event_price_from) + " " + price + " " + c.getString(R.string.event_price_rub);
     }
 }

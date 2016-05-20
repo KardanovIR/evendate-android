@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -88,7 +86,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                     .load(eventEntry.getOrganizationLogoSmallUrl())
                     .error(R.drawable.evendate_logo)
                     .into(holder.mOrganizationLogo);
-        holder.mPriceTextView.setText(eventEntry.isFree() ? holder.eventFreeLabel : String.valueOf(eventEntry.getMinPrice()));
+        holder.mPriceTextView.setText(eventEntry.isFree() ? holder.eventFreeLabel : EventFormatter.formatPrice(mContext, eventEntry.getMinPrice()));
 
         if (!isRequesting() && position == getList().size() - 1) {
             onLastReached();
