@@ -251,6 +251,8 @@ public class ReelFragment extends Fragment implements LoaderListener<ArrayList<E
                 mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
                 mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
             }
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
 
         if (eventList.size() < mEventLoader.getLength()) {

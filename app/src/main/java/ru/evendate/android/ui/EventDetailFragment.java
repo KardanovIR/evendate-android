@@ -53,10 +53,12 @@ import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventLoader;
+import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.views.DatesView;
@@ -218,6 +220,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
+
+
         mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,6 +237,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mEventLoader = new EventLoader(getActivity(), eventId);
         mEventLoader.setLoaderListener(this);
         mEventLoader.onStartLoading();
+
+        createMultichoiceAlertDialog(null);
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
@@ -240,7 +246,32 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         return rootView;
     }
 
-    private class EventAdapter {
+
+    public void loadNotifications() {
+        EventNotificationsLoader e = new EventNotificationsLoader(getActivity(),eventId);
+        e.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
+            @Override
+            public void onLoaded(ArrayList<EventNotification> notifications) {
+                createMultichoiceAlertDialog(notifications);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+        e.startLoading();
+    }
+
+    public void createMultichoiceAlertDialog(ArrayList<EventNotification> list) {
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+        // создаем view из dialog.xml
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_multichoice, null);
+        adb.setTitle("Custom dialog").setPositiveButton("OK",null);
+        adb.setView(view);
+        adb.create().show();
+    }
+     private class EventAdapter {
         private EventDetail mEvent;
 
         public void setEvent(EventDetail event) {
