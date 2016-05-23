@@ -110,7 +110,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
 
     @BindString(R.string.event_free) String eventFreeLabel;
-    @BindString(R.string.event_price_from) String eventPriceFromLabel;
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
@@ -286,7 +285,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
             }
 
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
-                    (eventPriceFromLabel + " " + mEvent.getMinPrice()));
+                    EventFormatter.formatPrice(getContext(), mEvent.getMinPrice()));
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
                     eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }

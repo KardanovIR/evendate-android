@@ -95,6 +95,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity
+            android:name=".ui.OrganizationCatalogActivity"
+            android:label="@string/title_activity_organization"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".ui.UserListActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"/>

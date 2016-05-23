@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Evendate</string>
     <string name="title_activity_detail">Event</string>
-    <string name="title_activity_organization">Organization</string>
+    <string name="title_activity_organization">Organizer catalog</string>
 
     <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
      <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
@@ -50,6 +50,7 @@
     <string name="event_users_all">ALL</string>
 
     <string name="event_free">Free</string>
+    <string name="event_price_rub">rub</string>
     <string name="event_price_from">From</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>

@@ -45,7 +45,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
             .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.organizations)
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
             .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
 
     protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, final Context context) {
@@ -121,6 +121,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         if (Build.VERSION.SDK_INT >= 19) {
             drawer.getDrawer().getDrawerLayout().setFitsSystemWindows(false);
         }
+
         return drawer;
     }
 

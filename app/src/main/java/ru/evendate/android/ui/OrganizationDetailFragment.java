@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +60,8 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     private OrganizationLoader mOrganizationLoader;
     private EventsLoader mEventLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.progressBar)
+    ProgressBar mProgressBar;
 
     private int organizationId = -1;
     public static final String URI = "uri";
@@ -185,6 +189,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         //        setImageViewY();
         //    }
         //});
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
         mOrganizationLoader.startLoading();
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -276,6 +283,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     public void onLoaded(ArrayList<OrganizationDetail> organizations) {
         if (!isAdded())
             return;
+        mProgressBar.setVisibility(View.GONE);
         OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
         Picasso.with(getActivity())
@@ -289,6 +297,7 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
     public void onError() {
         if (!isAdded())
             return;
+        mProgressBar.setVisibility(View.GONE);
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                 new DialogInterface.OnClickListener() {
                     @Override
