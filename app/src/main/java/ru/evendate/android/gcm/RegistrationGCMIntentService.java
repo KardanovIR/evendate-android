@@ -77,7 +77,7 @@ public class RegistrationGCMIntentService extends IntentService {
 
     /**
      * Persist registration to third-party servers.
-     *
+     * <p/>
      * Modify this method to associate the user's GCM registration token with any server-side account
      * maintained by your application.
      *
@@ -89,25 +89,27 @@ public class RegistrationGCMIntentService extends IntentService {
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
-            putDeviceToken(evendateService, authToken, token);
-        }catch (IOException|OperationCanceledException|AuthenticatorException e){
+            if (!putDeviceToken(evendateService, authToken, token))
+                Log.e(LOG_TAG, "not registered device token");
+        } catch (IOException | OperationCanceledException | AuthenticatorException e) {
             e.printStackTrace();
         }
     }
 
-    public static boolean putDeviceToken(EvendateService evendateService, String basicAuth, String deviceToken){
+    public static boolean putDeviceToken(EvendateService evendateService, String basicAuth, String deviceToken) {
         Call<EvendateServiceResponse> call =
                 evendateService.putDeviceToken(deviceToken, "android", basicAuth);
-        try{
+        try {
             Response<EvendateServiceResponse> response = call.execute();
-            if(response.isSuccess()){
+            if (response.isSuccess()) {
                 return true;
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
+
     /**
      * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
      *

@@ -12,46 +12,46 @@ import java.util.HashSet;
  * filter action target by action type
  */
 public class ActionSorter {
-    public static ArrayList<ActionType> processActions(ArrayList<Action> actionList){
+    public static ArrayList<ActionType> processActions(ArrayList<Action> actionList) {
         return filterActions(sortActions(convertActions(actionList)));
     }
 
     /**
      * convert actions to action type structure exclude unnecessary types
      */
-    public static ArrayList<ActionType> convertActions(ArrayList<Action> actionList){
+    public static ArrayList<ActionType> convertActions(ArrayList<Action> actionList) {
         HashMap<Long, ActionType> actionTypes = new HashMap<>();
         for (Action action : actionList) {
-            if(!isApprovedType(action.getTypeId()))
+            if (!isApprovedType(action.getTypeId()))
                 continue;
             ActionType type;
-            if(!actionTypes.keySet().contains(action.getTypeId())){
+            if (!actionTypes.keySet().contains(action.getTypeId())) {
                 type = ActionType.newInstance(action.getTypeId(), action.getUser());
                 actionTypes.put(action.getTypeId(), type);
-            }
-            else {
+            } else {
                 type = actionTypes.get(action.getTypeId());
             }
             type.getTargetList().add(action);
         }
         return new ArrayList<>(actionTypes.values());
     }
+
     /**
      * filter actions: remove actions with same target and keep only last action
      */
-    public static ArrayList<ActionType> filterActions(ArrayList<ActionType> actionTypes){
+    public static ArrayList<ActionType> filterActions(ArrayList<ActionType> actionTypes) {
         HashSet<Uri> set = new HashSet<>();
         ArrayList<ActionType> removingTypes = new ArrayList<>();
-        for (ActionType type: actionTypes) {
+        for (ActionType type : actionTypes) {
             ArrayList<ActionTarget> removingTargets = new ArrayList<>();
-            for (ActionTarget action: type.getTargetList()) {
-                if(set.contains(action.getTargetUri()))
+            for (ActionTarget action : type.getTargetList()) {
+                if (set.contains(action.getTargetUri()))
                     removingTargets.add(action);
                 else
                     set.add(action.getTargetUri());
             }
             type.getTargetList().removeAll(removingTargets);
-            if(type.getTargetList().size() == 0)
+            if (type.getTargetList().size() == 0)
                 removingTypes.add(type);
         }
         actionTypes.removeAll(removingTypes);
@@ -61,12 +61,13 @@ public class ActionSorter {
     /**
      * sort actions for one type
      */
-    public static ArrayList<ActionType> sortActions(ArrayList<ActionType> actionTypes){
-        for (ActionType type: actionTypes)
+    public static ArrayList<ActionType> sortActions(ArrayList<ActionType> actionTypes) {
+        for (ActionType type : actionTypes)
             Collections.sort(type.getTargetList(), Collections.reverseOrder());
         return actionTypes;
     }
-    public static boolean isApprovedType(long type){
+
+    public static boolean isApprovedType(long type) {
         return (type == Action.Type.ACTION_DISLIKE.type() ||
                 type == Action.Type.ACTION_LIKE.type() ||
                 type == Action.Type.ACTION_SUBSCRIBE.type() ||

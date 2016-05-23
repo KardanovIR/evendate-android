@@ -16,8 +16,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
 import ru.evendate.android.loaders.LoaderListener;
@@ -27,13 +32,13 @@ import ru.evendate.android.models.UserDetail;
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoaderListener<UserDetail> {
+public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<UserDetail>> {
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    UserAdapter mUserAdapter;
-    UserLoader mLoader;
+    private UserAdapter mUserAdapter;
+    private UserLoader mLoader;
 
     private ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
@@ -42,6 +47,10 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private ImageView mUserImageView;
     private CollapsingToolbarLayout mCollapsingToolbar;
     private ProgressBar mProgressBar;
+    EvendateDrawer mDrawer;
+
+    public static final String INTENT_TYPE = "type";
+    public static final String NOTIFICATION = "notification";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +64,28 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         //((AppBarLayout)findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(this));
 
         Intent intent = getIntent();
-        if(intent != null){
+        if (intent != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
+            Bundle intent_extras = getIntent().getExtras();
+            Tracker tracker = EvendateApplication.getTracker();
+
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+                    .setCategory(getString(R.string.stat_category_user))
+                    .setLabel(String.valueOf(userId));
+            if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
+                    intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
+                event.setAction(getString(R.string.stat_action_notification));
+            } else {
+                event.setAction(getString(R.string.stat_action_view));
+            }
+            tracker.send(event.build());
         }
         mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
         mUserImageView = (ImageView)findViewById(R.id.user_avatar);
 
-        mLoader = new UserLoader(this);
+        mLoader = new UserLoader(this, userId);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
-        mLoader.getData(userId);
         mViewPager = (ViewPager)findViewById(R.id.pager);
         mTabLayout = (TabLayout)findViewById(R.id.tabs);
 
@@ -72,6 +93,12 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+        setupStat();
+        mLoader.startLoading();
+        mDrawer.start();
     }
 
     @Override
@@ -87,9 +114,9 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     }
 
     @Override
-    public void onLoaded(UserDetail user) {
-        mUserAdapter.setUser(user);
-        mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, user);
+    public void onLoaded(ArrayList<UserDetail> users) {
+        mUserAdapter.setUser(users.get(0));
+        mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, mUserAdapter.getUser());
         mViewPager.setAdapter(mUserPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mProgressBar.setVisibility(View.GONE);
@@ -101,14 +128,15 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mLoader.getData(userId);
+                mLoader.startLoading();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
         });
         dialog.show();
     }
-    private class UserAdapter{
+
+    private class UserAdapter {
         private UserDetail mUserDetail;
 
         public void setUser(UserDetail user) {
@@ -120,7 +148,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             return mUserDetail;
         }
 
-        private void setUserInfo(){
+        private void setUserInfo() {
             String userName = mUserDetail.getFirstName() + " " + mUserDetail.getLastName();
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
@@ -128,5 +156,30 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                     .error(R.drawable.default_background)
                     .into(mUserImageView);
         }
+    }
+
+    private void setupStat() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                Tracker tracker = EvendateApplication.getTracker();
+                tracker.setScreenName("User Profile Screen ~" +
+                        mUserPagerAdapter.getPageLabel(position));
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLoader.cancelLoad();
+        mDrawer.cancel();
     }
 }

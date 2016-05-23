@@ -62,7 +62,7 @@ public class EvendateIntro extends AppIntro {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == AUTH_REQUEST){
+        if (requestCode == AUTH_REQUEST) {
             if (resultCode == RESULT_OK) {
                 setResult(RESULT_OK);
                 finish();

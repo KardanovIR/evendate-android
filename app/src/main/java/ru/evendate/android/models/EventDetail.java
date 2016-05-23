@@ -7,11 +7,13 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class EventDetail extends EventModel {
+public class EventDetail extends Event implements EventFeed {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
-            "organization_type_name,organization_type_name,organization_short_name,organization_logo_large_url," +
-            "favored_users_count,description,detail_info_url,is_favorite," +
-            "dates,tags,favored{fields:\'" + UserModel.FIELDS_LIST + "\'}";
+            "organization_type_name,organization_short_name," +
+            "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
+            "favored_users_count,description,detail_info_url,is_favorite,link," +
+            "registration_required,registration_till,is_free,min_price,is_same_time," +
+            "dates{fields:'" + DateFull.FIELDS_LIST + "'},tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
     String location;
     double latitude;
@@ -24,6 +26,10 @@ public class EventDetail extends EventModel {
     String organizationShortName;
     @SerializedName("organization_logo_large_url")
     String organizationLogoUrl;
+    @SerializedName("organization_logo_medium_url")
+    String organizationLogoMediumUrl;
+    @SerializedName("organization_logo_small_url")
+    String organizationLogoSmallUrl;
     @SerializedName("favored_users_count")
     int likedUsersCount;
     String description;
@@ -31,16 +37,28 @@ public class EventDetail extends EventModel {
     String detailInfoUrl;
     @SerializedName("is_favorite")
     boolean isFavorite;
+    @SerializedName("link")
+    String link;
+    @SerializedName("registration_required")
+    boolean registrationRequired;
+    @SerializedName("registration_till")
+    long registrationTill;
+    @SerializedName("is_free")
+    boolean isFree;
+    @SerializedName("min_price")
+    int minPrice;
+    @SerializedName("is_same_time")
+    boolean isSameTime;
 
     @SerializedName("tags")
-    ArrayList<TagModel> tagList;
+    ArrayList<Tag> tagList;
     @SerializedName("dates")
-    ArrayList<Date> dateList;
+    ArrayList<DateFull> dateList;
     @SerializedName("favored")
     ArrayList<UserDetail> userList;
 
 
-    public ArrayList<TagModel> getTagList() {
+    public ArrayList<Tag> getTagList() {
         return tagList;
     }
 
@@ -48,7 +66,7 @@ public class EventDetail extends EventModel {
         return userList;
     }
 
-    public ArrayList<Date> getDataList() {
+    public ArrayList<DateFull> getDateList() {
         return dateList;
     }
 
@@ -80,6 +98,14 @@ public class EventDetail extends EventModel {
         return organizationLogoUrl;
     }
 
+    public String getOrganizationLogoMediumUrl() {
+        return organizationLogoMediumUrl;
+    }
+
+    public String getOrganizationLogoSmallUrl() {
+        return organizationLogoSmallUrl;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -104,8 +130,33 @@ public class EventDetail extends EventModel {
         this.likedUsersCount = likedUsersCount;
     }
 
-    public void favore(){
+    public void favore() {
         isFavorite = !isFavorite;
         likedUsersCount += isFavorite ? 1 : -1;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public boolean isRegistrationRequired() {
+        return registrationRequired;
+    }
+
+    public long getRegistrationTill() {
+        return registrationTill;
+    }
+
+    public boolean isFree() {
+        return isFree;
+    }
+
+    @Override
+    public int getMinPrice() {
+        return minPrice;
+    }
+
+    public boolean isSameTime() {
+        return isSameTime;
     }
 }

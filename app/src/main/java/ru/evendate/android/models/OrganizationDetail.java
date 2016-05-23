@@ -1,75 +1,41 @@
 package ru.evendate.android.models;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 
 /**
- * Created by Dmitry on 07.02.2016.
+ * Created by ds_gordeev on 11.03.2016.
  */
-public class OrganizationDetail extends OrganizationModel {
-    public static final String FIELDS_LIST = "description,background_medium_img_url,background_small_img_url," +
-            "img_medium_url,img_small_url,site_url,subscribed_count,is_subscribed,subscription_id," +
-            "subscribed,events";
+public interface OrganizationDetail {
+    String FIELDS_LIST = "description,site_url,img_medium_url,subscribed_count,is_subscribed,default_address," +
+            "subscribed,events{filters:'future=true',fields:'" + EventFeed.FIELDS_LIST + "',length:10,order_by:'created_at'}";
 
-    String description;
-    @SerializedName("background_medium_img_url")
-    String backgroundMediumUrl;
-    @SerializedName("background_small_img_url")
-    String backgroundSmallUrl;
-    @SerializedName("img_medium_url")
-    String logoMediumUrl;
-    @SerializedName("img_small_url")
-    String logoSmallUrl;
-    @SerializedName("site_url")
-    String siteUrl;
-    @SerializedName("subscribed_count")
-    int subscribedCount;
-    @SerializedName("is_subscribed")
-    boolean isSubscribed;
-    @SerializedName("subscription_id")
-    Integer subscriptionId;
+    int getEntryId();
 
-    @SerializedName("subscribed")
-    ArrayList<UserDetail> mSubscribedUsersList;
-    @SerializedName("events")
-    ArrayList<EventModel> mEventsList;
+    String getName();
 
-    public ArrayList<UserDetail> getSubscribedUsersList() {
-        return mSubscribedUsersList;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public String getLogoMediumUrl() {
-        return logoMediumUrl;
-    }
-    public String getLogoSmallUrl() {
-        return logoSmallUrl;
-    }
-    public String getBackgroundMediumUrl() {
-        return backgroundMediumUrl;
-    }
-    public String getBackgroundSmallUrl() {
-        return backgroundSmallUrl;
-    }
-    public String getSiteUrl() {
-        return siteUrl;
-    }
-    public int getSubscribedCount() {
-        return subscribedCount;
-    }
-    public Integer getSubscriptionId() {
-        return subscriptionId;
-    }
-    public boolean isSubscribed() {
-        return isSubscribed;
-    }
-    public void setSubscriptionId(Integer subscriptionId) {
-        this.subscriptionId = subscriptionId;
-    }
-    public void subscribe(){
-        isSubscribed = !isSubscribed;
-        subscribedCount += isSubscribed ? 1 : -1;
-    }
+    String getShortName();
+
+    String getLogoUrl();
+
+    String getLogoMediumUrl();
+
+    String getBackgroundUrl();
+
+    ArrayList<UserDetail> getSubscribedUsersList();
+
+    String getDescription();
+
+    String getSiteUrl();
+
+    int getSubscribedCount();
+
+    Integer getSubscriptionId();
+
+    boolean isSubscribed();
+
+    void subscribe();
+
+    String getDefaultAddress();
+
+    ArrayList<EventFeed> getEventsList();
 }

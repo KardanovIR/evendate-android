@@ -5,9 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.ArrayList;
+
+import retrofit.Call;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.authorization.AuthActivity;
+import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.sync.EvendateService;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -15,32 +20,70 @@ import ru.evendate.android.authorization.AuthActivity;
 public abstract class AbstractLoader<D> {
     private final String LOG_TAG = AbstractLoader.class.getSimpleName();
     protected Context mContext;
-    protected LoaderListener<D> mListener;
+    private LoaderListener<ArrayList<D>> mListener;
+    protected Call mCall;
+    private boolean isStopped = true;
 
     public AbstractLoader(Context context) {
         mContext = context;
     }
-    public void setLoaderListener(LoaderListener<D> listener) {
+
+    public void setLoaderListener(LoaderListener<ArrayList<D>> listener) {
         this.mListener = listener;
     }
-    protected String peekToken(){
+
+    protected String peekToken() {
         AccountManager accountManager = AccountManager.get(mContext);
         String token = null;
         try {
             token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(mContext),
                     mContext.getString(R.string.account_type));
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(LOG_TAG, "Error with peeking token");
             e.fillInStackTrace();
             mListener.onError();
         }
-        if(token == null){
+        if (token == null) {
             mContext.startActivity(new Intent(mContext, AuthActivity.class));
         }
         return token;
     }
-    protected void invalidateToken(){
+
+    protected void invalidateToken() {
         AccountManager accountManager = AccountManager.get(mContext);
         accountManager.invalidateAuthToken(mContext.getString(R.string.account_type), peekToken());
+    }
+
+    public final void startLoading() {
+        isStopped = false;
+        onStartLoading();
+    }
+
+    protected abstract void onStartLoading();
+
+    public void cancelLoad() {
+        isStopped = true;
+        if (mCall == null)
+            return;
+        mCall.cancel();
+    }
+
+    protected void onError() {
+        if (!isStopped)
+            mListener.onError();
+    }
+
+    protected void onLoaded(ArrayList<D> data) {
+        isStopped = true;
+        mListener.onLoaded(data);
+    }
+
+    public void onFailure(Throwable t) {
+        Log.e(LOG_TAG, t.getMessage());
+        onError();
+    }
+
+    protected EvendateService getEvendateService() {
+        return EvendateApiFactory.getEvendateService();
     }
 }

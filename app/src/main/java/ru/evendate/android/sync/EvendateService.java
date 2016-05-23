@@ -11,8 +11,8 @@ import retrofit.http.Query;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
 import ru.evendate.android.models.UserDetail;
 
@@ -33,7 +33,8 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<DateCalendar>> getCalendarDates(
             @Header("Authorization") String authorization,
             @Query("unique") boolean unique,
-            @Query("since") String since,
+            @Query("my") boolean my,
+            @Query("future") boolean future,
             @Query("fields") String fields
     );
 
@@ -44,7 +45,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     /**
@@ -64,7 +67,9 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @POST(API_PATH + "/events/{id}/favorites")
@@ -89,15 +94,30 @@ public interface EvendateService {
     );
 
     /**
-     * Get events by date
+     * Get events in organization
      */
     @GET(API_PATH + "/events")
     Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    /**
+     * Get feed events by date
+     */
+    @GET(API_PATH + "/events/my")
+    Call<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("date") String date,
             @Query("future") boolean future,
             @Query("fields") String fields
     );
+
     @GET(API_PATH + "/users/{id}")
     Call<EvendateServiceResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,
@@ -112,7 +132,7 @@ public interface EvendateService {
     );
 
     @GET(API_PATH + "/organizations/{id}")
-    Call<EvendateServiceResponseArray<OrganizationDetail>> getOrganization(
+    Call<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("fields") String fields
@@ -122,9 +142,10 @@ public interface EvendateService {
      * Get subscriptions
      */
     @GET(API_PATH + "/organizations/subscriptions")
-    Call<EvendateServiceResponseArray<OrganizationModel>> getSubscriptions(
+    Call<EvendateServiceResponseArray<Organization>> getSubscriptions(
             @Header("Authorization") String authorization
     );
+
     @POST(API_PATH + "/organizations/{id}/subscriptions")
     Call<EvendateServiceResponse> organizationPostSubscription(
             @Path("id") int organizationId,
@@ -156,6 +177,7 @@ public interface EvendateService {
     Call<EvendateServiceResponseArray<Action>> getActions(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy
     );
 }

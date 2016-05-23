@@ -3,13 +3,11 @@ package ru.evendate.android.loaders;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.models.Organization;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponseArray;
@@ -18,38 +16,41 @@ import ru.evendate.android.sync.EvendateServiceResponseArray;
  * Created by ds_gordeev on 01.02.2016.
  * download subs from server
  */
-public class SubscriptionLoader extends AbstractLoader<ArrayList<OrganizationModel>> {
+public class SubscriptionLoader extends AbstractLoader<Organization> {
     private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
 
     public SubscriptionLoader(Context context) {
         super(context);
     }
-    public void getSubscriptions(){
+
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting subs");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<OrganizationModel>> call =
+        Call<EvendateServiceResponseArray<Organization>> call =
                 evendateService.getSubscriptions(peekToken());
-        call.enqueue(new Callback<EvendateServiceResponseArray<OrganizationModel>>() {
+        mCall = call;
+
+        call.enqueue(new Callback<EvendateServiceResponseArray<Organization>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<OrganizationModel>> response,
+            public void onResponse(Response<EvendateServiceResponseArray<Organization>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData());
+                    onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with subs");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             // something went completely south (like no internet connection)
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
-                mListener.onError();
+                Log.e(LOG_TAG, t.getMessage());
+                onError();
             }
         });
     }

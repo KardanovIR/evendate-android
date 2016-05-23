@@ -16,29 +16,29 @@ import java.util.ArrayList;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.ui.OrganizationDetailActivity;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.SubscriptionHolder>{
+public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.SubscriptionHolder> {
 
-    Context mContext;
-    private ArrayList<OrganizationDetail> mSubscriptionList;
+    private Context mContext;
+    private ArrayList<OrganizationSubscription> mSubscriptionList;
     public static Uri mUri = EvendateContract.OrganizationEntry.CONTENT_URI;
 
 
-    public SubscriptionsAdapter(Context context){
+    public SubscriptionsAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void setSubscriptionList(ArrayList<OrganizationDetail> subscriptionList){
+    public void setSubscriptionList(ArrayList<OrganizationSubscription> subscriptionList) {
         mSubscriptionList = subscriptionList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<OrganizationDetail> getSubscriptionList() {
+    public ArrayList<OrganizationSubscription> getSubscriptionList() {
         return mSubscriptionList;
     }
 
@@ -50,20 +50,20 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
 
     @Override
     public void onBindViewHolder(SubscriptionHolder holder, int position) {
-        if(mSubscriptionList == null)
+        if (mSubscriptionList == null)
             return;
-        OrganizationDetail subEntry = mSubscriptionList.get(position);
+        OrganizationSubscription subEntry = mSubscriptionList.get(position);
         holder.id = subEntry.getEntryId();
         holder.mOrganizationNameTextView.setText(subEntry.getName());
         Picasso.with(mContext)
-                .load(subEntry.getLogoUrl())
+                .load(subEntry.getLogoSmallUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mOrganizationLogoImageView);
     }
 
     @Override
     public int getItemCount() {
-        if(mSubscriptionList == null)
+        if (mSubscriptionList == null)
             return 0;
         return mSubscriptionList.size();
     }
@@ -74,7 +74,7 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
         public ImageView mOrganizationLogoImageView;
         public int id;
 
-        public SubscriptionHolder(View itemView){
+        public SubscriptionHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             mOrganizationLogoImageView = (ImageView)itemView.findViewById(R.id.item_user_sub_organization_logo);
@@ -84,7 +84,7 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
 
         @Override
         public void onClick(View v) {
-            if(v == holderView){
+            if (v == holderView) {
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
                 mContext.startActivity(intent);

@@ -11,6 +11,7 @@ import ru.evendate.android.data.EvendateContract.OrganizationEntry;
 import ru.evendate.android.data.EvendateContract.TagEntry;
 import ru.evendate.android.data.EvendateContract.UserEntry;
 import ru.evendate.android.data.EvendateContract.UserEventEntry;
+
 /**
  * Created by Dmitry on 02.09.2015.
  */
@@ -18,9 +19,11 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 5;
 
     static final String DATABASE_NAME = "evendate.db";
+
     public EvendateDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_EVENTS_TABLE =
@@ -139,12 +142,12 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
                         " );";
         final String SQL_CREATE_USERS_EVENT_TABLE =
                 "CREATE TABLE " + UserEventEntry.TABLE_NAME + " (" +
-                UserEventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                UserEventEntry.COLUMN_USER_ID + " INTEGER NOT NULL, " +
-                UserEventEntry.COLUMN_EVENT_ID + " INTEGER NOT NULL, " +
-                " UNIQUE (" + UserEventEntry.COLUMN_USER_ID + ", " + UserEventEntry.COLUMN_EVENT_ID +
-                ") ON CONFLICT REPLACE " +
-                " );";
+                        UserEventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        UserEventEntry.COLUMN_USER_ID + " INTEGER NOT NULL, " +
+                        UserEventEntry.COLUMN_EVENT_ID + " INTEGER NOT NULL, " +
+                        " UNIQUE (" + UserEventEntry.COLUMN_USER_ID + ", " + UserEventEntry.COLUMN_EVENT_ID +
+                        ") ON CONFLICT REPLACE " +
+                        " );";
 
         //sqLiteDatabase.execSQL(SQL_CREATE_ORGANIZATIONS_TABLE);
         //sqLiteDatabase.execSQL(SQL_CREATE_EVENTS_TABLE);
@@ -154,6 +157,7 @@ public class EvendateDBHelper extends SQLiteOpenHelper {
         //sqLiteDatabase.execSQL(SQL_CREATE_USERS_TABLE);
         //sqLiteDatabase.execSQL(SQL_CREATE_USERS_EVENT_TABLE);
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EvendateContract.EventEntry.TABLE_NAME);

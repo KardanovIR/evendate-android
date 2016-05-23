@@ -11,7 +11,6 @@ import android.widget.TextView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
@@ -27,29 +26,32 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
         return new DateHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_date, parent, false));
     }
+
     @Override
     public void onBindViewHolder(DateHolder holder, int position) {
-        if(getList() == null)
+        if (getList() == null)
             return;
         AggregateDate<ActionType> entry = getList().get(position);
         String date = EventFormatter.formatDay(entry.getDate()) + " " +
                 EventFormatter.formatMonth(entry.getDate());
         holder.mDateTextView.setText(date);
         holder.mActionsAdapter = new ActionTypesAdapter(mContext);
-        holder.recyclerView.setLayoutManager(
-                new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
-                        LinearLayoutManager.VERTICAL, false));
+        WrapLinearLayoutManager manager =
+                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        manager.setAutoMeasureEnabled(false);
+        holder.recyclerView.setLayoutManager(manager);
         holder.recyclerView.setAdapter(holder.mActionsAdapter);
         holder.mActionsAdapter.setList(entry.getList());
         holder.recyclerView.setNestedScrollingEnabled(false);
     }
+
     public class DateHolder extends RecyclerView.ViewHolder {
         public View holderView;
         public RecyclerView recyclerView;
         public TextView mDateTextView;
         public ActionTypesAdapter mActionsAdapter;
 
-        public DateHolder(View itemView){
+        public DateHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             recyclerView = (RecyclerView)itemView.findViewById(R.id.recycler_view);

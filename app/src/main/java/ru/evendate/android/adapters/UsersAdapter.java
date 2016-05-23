@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
-import ru.evendate.android.models.UserModel;
 import ru.evendate.android.ui.UserProfileActivity;
 
 /**
@@ -31,11 +31,12 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
         return new UserHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user_list, parent, false));
     }
+
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {
-        if(getList() == null)
+        if (getList() == null)
             return;
-        UserModel userEntry = getList().get(position);
+        User userEntry = getList().get(position);
         holder.id = userEntry.getEntryId();
         String name = userEntry.getLastName() + " " + userEntry.getFirstName();
         holder.mNameTextView.setText(name);
@@ -44,13 +45,14 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
                 .error(R.drawable.default_background)
                 .into(holder.mUserImageView);
     }
+
     public class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public ImageView mUserImageView;
         public TextView mNameTextView;
         public int id;
 
-        public UserHolder(View itemView){
+        public UserHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             mUserImageView = (ImageView)itemView.findViewById(R.id.user_item_image);
@@ -60,7 +62,7 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
 
         @Override
         public void onClick(View v) {
-            if(v == holderView){
+            if (v == holderView) {
                 Intent intent = new Intent(mContext, UserProfileActivity.class);
                 intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
                 mContext.startActivity(intent);

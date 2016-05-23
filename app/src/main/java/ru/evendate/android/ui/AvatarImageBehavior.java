@@ -27,7 +27,7 @@ public class AvatarImageBehavior extends CoordinatorLayout.Behavior<View> {
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
-        if(dependency instanceof AppBarLayout)
+        if (dependency instanceof AppBarLayout)
             modifyAvatarDependingDependencyState(child, (AppBarLayout)dependency);
         return true;
     }
@@ -37,7 +37,7 @@ public class AvatarImageBehavior extends CoordinatorLayout.Behavior<View> {
         int toolbarHeight = dependency.findViewById(R.id.toolbar).getHeight();
         avatar.setAlpha(1.0f - ((float)(dependency.getTotalScrollRange() - Math.abs(dependency.getTop()) - toolbarHeight)
                 / (dependency.getTotalScrollRange() - toolbarHeight)));
-        if(dependency.getTotalScrollRange() - Math.abs(dependency.getTop()) <= toolbarHeight)
+        if (dependency.getTotalScrollRange() - Math.abs(dependency.getTop()) <= toolbarHeight)
             avatar.setAlpha(0.0f);
     }
 }

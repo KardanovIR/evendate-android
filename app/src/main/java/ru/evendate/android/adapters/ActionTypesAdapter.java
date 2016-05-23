@@ -13,25 +13,25 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
-import ru.evendate.android.ui.OrganizationCatalogAdapter;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
 public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
 
-    public ActionTypesAdapter(Context context){
+    public ActionTypesAdapter(Context context) {
         super(context);
     }
 
     @Override
     public ActionHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ActionHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_action, parent, false));
+                .inflate(R.layout.card_action, parent, false));
     }
+
     @Override
     public void onBindViewHolder(ActionHolder holder, int position) {
-        if(getList() == null)
+        if (getList() == null)
             return;
         ActionType type = getList().get(position);
         holder.mActionTextView.setText(type.getTypeName(mContext));
@@ -43,13 +43,15 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
                 .into(holder.mAvatarView);
 
         holder.mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
-        holder.recyclerView.setLayoutManager(
-                new OrganizationCatalogAdapter.CatalogLinearLayoutManager(mContext,
-                        LinearLayoutManager.VERTICAL, false));
+        WrapLinearLayoutManager manager =
+                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        manager.setAutoMeasureEnabled(false);
+        holder.recyclerView.setLayoutManager(manager);
         holder.recyclerView.setAdapter(holder.mActionTargetsAdapter);
         holder.mActionTargetsAdapter.setList(type.getTargetList());
         holder.recyclerView.setNestedScrollingEnabled(false);
     }
+
     public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
         public TextView mActionTextView;
@@ -58,7 +60,7 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
         public RecyclerView recyclerView;
         public ActionTargetsAdapter mActionTargetsAdapter;
 
-        public ActionHolder(View itemView){
+        public ActionHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             recyclerView = (RecyclerView)itemView.findViewById(R.id.recycler_view);

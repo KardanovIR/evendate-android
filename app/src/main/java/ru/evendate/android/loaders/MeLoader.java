@@ -21,32 +21,35 @@ public class MeLoader extends AbstractLoader<UserDetail> {
     public MeLoader(Context context) {
         super(context);
     }
-    public void getData(){
+
+    protected void onStartLoading() {
         Log.d(LOG_TAG, "getting me");
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
 
         Call<EvendateServiceResponseArray<UserDetail>> call =
                 evendateService.getMe(peekToken(), UserDetail.FIELDS_LIST);
+        mCall = call;
+
         call.enqueue(new Callback<EvendateServiceResponseArray<UserDetail>>() {
             @Override
             public void onResponse(Response<EvendateServiceResponseArray<UserDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    mListener.onLoaded(response.body().getData().get(0));
+                    onLoaded(response.body().getData());
                 } else {
-                    if(response.code() == 401)
+                    if (response.code() == 401)
                         invalidateToken();
                     // error response, no access to resource?
                     Log.e(LOG_TAG, "Error with response with me");
-                    mListener.onError();
+                    onError();
                 }
             }
 
             // something went completely south (like no internet connection)
             @Override
             public void onFailure(Throwable t) {
-                Log.e("Error", t.getMessage());
-                mListener.onError();
+                Log.e(LOG_TAG, t.getMessage());
+                onError();
             }
         });
     }

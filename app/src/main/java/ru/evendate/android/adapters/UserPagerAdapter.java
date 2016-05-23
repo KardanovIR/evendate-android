@@ -13,11 +13,11 @@ import ru.evendate.android.ui.UserSubscriptionsFragment;
 /**
  * Created by Dmitry on 21.02.2016.
  */
-public class UserPagerAdapter extends FragmentStatePagerAdapter{
+public class UserPagerAdapter extends FragmentStatePagerAdapter {
     private Context mContext;
     private UserDetail mUser;
 
-    public UserPagerAdapter(FragmentManager fragmentManager, Context context, UserDetail user){
+    public UserPagerAdapter(FragmentManager fragmentManager, Context context, UserDetail user) {
         super(fragmentManager);
         mContext = context;
         mUser = user;
@@ -25,7 +25,7 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter{
 
     @Override
     public Fragment getItem(int position) {
-        switch (position){
+        switch (position) {
             case 0: {
                 return UserActionsFragment.newInstance(mUser.getEntryId());
             }
@@ -44,11 +44,28 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter{
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 return mContext.getString(R.string.tab_actions);
             case 1:
                 return mContext.getString(R.string.tab_subscriptions);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * return strings for statistics
+     *
+     * @param position int
+     * @return String
+     */
+    public String getPageLabel(int position) {
+        switch (position) {
+            case 0:
+                return mContext.getString(R.string.stat_page_actions);
+            case 1:
+                return mContext.getString(R.string.stat_page_subscriptions);
             default:
                 return null;
         }

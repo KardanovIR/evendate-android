@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.OrganizationCategoryAdapter;
 import ru.evendate.android.loaders.CatalogLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.OrganizationType;
@@ -27,7 +29,7 @@ import ru.evendate.android.models.OrganizationType;
  */
 public class OrganizationCatalogFragment extends Fragment
         implements OrganizationFilterDialog.OnCategorySelectListener,
-        View.OnClickListener{
+        View.OnClickListener {
     private android.support.v7.widget.RecyclerView mRecyclerView;
     private CatalogLoader mLoader;
     private OrganizationCategoryAdapter mAdapter;
@@ -64,7 +66,7 @@ public class OrganizationCatalogFragment extends Fragment
                 AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mLoader.getData();
+                        mLoader.startLoading();
                         mProgressBar.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
@@ -73,23 +75,25 @@ public class OrganizationCatalogFragment extends Fragment
             }
         });
 
-        mFAB = (FloatingActionButton) rootView.findViewById((R.id.fab));
+        mFAB = (FloatingActionButton)rootView.findViewById((R.id.fab));
         mFAB.setOnClickListener(this);
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
-        mLoader.getData();
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
+        mLoader.startLoading();
+        if (Build.VERSION.SDK_INT >= 21)
+            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
         return rootView;
     }
 
     @Override
     public void onClick(View v) {
-        if(v == mFAB) {
-            if(mCategoryList == null)
+        if (v == mFAB) {
+            if (mCategoryList == null)
                 return;
-            if(mSelectedItems == null){
+            if (mSelectedItems == null) {
                 mSelectedItems = new boolean[mCategoryList.size()];
                 Arrays.fill(mSelectedItems, Boolean.TRUE);
             }
@@ -104,10 +108,16 @@ public class OrganizationCatalogFragment extends Fragment
     public void onCategorySelected(boolean[] itemsSelected) {
         ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
         mSelectedItems = itemsSelected;
-        for(int i = 0; i < itemsSelected.length; i++){
-            if(itemsSelected[i])
+        for (int i = 0; i < itemsSelected.length; i++) {
+            if (itemsSelected[i])
                 newItemSelected.add(mCategoryList.get(i));
         }
         mAdapter.setCategoryList(newItemSelected);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLoader.cancelLoad();
     }
 }
