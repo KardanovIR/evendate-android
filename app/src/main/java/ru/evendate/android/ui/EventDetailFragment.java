@@ -32,6 +32,8 @@
         import android.view.View;
         import android.view.ViewGroup;
         import android.view.ViewTreeObserver;
+        import android.view.Window;
+        import android.view.WindowManager;
         import android.widget.ImageView;
         import android.widget.ProgressBar;
         import android.widget.ScrollView;
@@ -475,12 +477,15 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         int vibrant = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
         int vibrantDark = Color.argb(255, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
         int vibrantDarkEnd = Color.argb(50, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
-
         getActivity().findViewById(R.id.event_organization_container).setBackgroundColor(vibrant);
-        //        getActivity().findViewById(R.id.event_header).setBackgroundColor(vibrantDark);
         GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{vibrantDark, vibrantDarkEnd});
-        //        collapsingToolbarLayout.setContentScrimColor(vibrant);
         ((ImageView)getActivity().findViewById(R.id.iv_image_foreground)).setImageDrawable(g);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(vibrantDark);
+        }
     }
     @Override
     public void onDestroy() {
