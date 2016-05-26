@@ -44,6 +44,8 @@
     <string name="event_link">More</string>
 
     <string name="action_share">Share</string>
+    <string name="action_notifications">Notifications</string>
+
 
     <string name="event_word_users_and">users and</string>
     <string name="event_word_friends_add">friends added to favorite</string>

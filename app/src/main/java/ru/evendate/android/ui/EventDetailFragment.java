@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -51,12 +52,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.MultichoiseDialogAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventLoader;
+import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.views.DatesView;
@@ -237,6 +241,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         mDrawer.start();
+//        loadNotifications();
         return rootView;
     }
 
@@ -378,6 +383,9 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
                 return true;
+            case R.id.action_notifications:
+                loadNotifications();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -453,4 +461,41 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         mEventLoader.cancelLoad();
         mDrawer.cancel();
     }
+
+
+    public void loadNotifications() {
+        EventNotificationsLoader mEventNotificationsLoader = new EventNotificationsLoader(getActivity(), eventId);
+        mEventNotificationsLoader.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
+            @Override
+            public void onLoaded(ArrayList<EventNotification> subList) {
+                initDialog(subList);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+        mEventNotificationsLoader.startLoading();
+    }
+
+
+    public void initDialog(ArrayList<EventNotification> notifications) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.dialog_multichoice, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle(getString(R.string.action_notifications));
+        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        ListView lv = (ListView) convertView.findViewById(R.id.listView);
+        MultichoiseDialogAdapter adapter = new MultichoiseDialogAdapter(getActivity(), notifications);
+        lv.setAdapter(adapter);
+        alertDialog.show();
+    }
+
 }

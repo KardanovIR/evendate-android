@@ -56,6 +56,7 @@
     <string name="dialog_check_organizations">Выберите организации</string>
     <string name="dialog_ok">ОК</string>
     <string name="action_share">Поделиться</string>
+    <string name="action_notifications">Уведомления</string>
     <string name="tab_actions">Активность</string>
     <string name="tab_subscriptions">Подписки</string>
     <string name="action_dislike">Удалил из ибранного события</string>

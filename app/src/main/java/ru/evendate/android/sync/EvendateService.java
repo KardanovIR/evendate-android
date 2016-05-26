@@ -11,6 +11,7 @@ import retrofit.http.Query;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
@@ -179,5 +180,14 @@ public interface EvendateService {
             @Path("id") int userId,
             @Query("fields") String fields,
             @Query("order_by") String orderBy
+    );
+
+    /**
+     * Get notifications for event
+     */
+    @GET(API_PATH + "/events/{id}/notifications?fields=notification_type")
+    Call<EvendateServiceResponseArray<EventNotification>> getNotifications(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId
     );
 }
