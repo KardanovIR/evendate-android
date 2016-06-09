@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="event_card_dialog_array">
+        <item>@string/dialog_event_hide</item>
+        <item>@string/dialog_event_fave</item>
+        <item>@string/dialog_event_invite_friend</item>
+    </string-array>
+</resources>

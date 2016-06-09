@@ -123,6 +123,15 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_check_organizations">Choose organization</string>
 
+
+    <string name="dialog_event_hide">Hide event</string>
+    <string name="dialog_event_fave">Add to favorites</string>
+    <string name="dialog_event_invite_friend">Invite friend</string>
+
+    <string name="toast_event">Event</string>
+    <string name="toast_event_hide">hided</string>
+    <string name="toast_event_fave">added to favorites</string>
+
     <!-- strings for statistics -->
     <string name="stat_category_event" translatable="false">Event</string>
     <string name="stat_category_organization" translatable="false">Organization</string>

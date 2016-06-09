@@ -1,15 +1,18 @@
 package ru.evendate.android.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -104,7 +107,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
 
-    public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public View holderView;
         @Bind(R.id.event_item_image)
         public ImageView mEventImageView;
@@ -129,6 +132,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             ButterKnife.bind(this, itemView);
             holderView = itemView;
             holderView.setOnClickListener(this);
+            holderView.setOnLongClickListener(this);
         }
 
         @Override
@@ -140,5 +144,32 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             }
         }
 
+        @Override
+        public boolean onLongClick(View v) {
+            final int HIDE_ID = 0;
+            final int FAVE_ID = 1;
+            final int INVITE_ID = 2;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(mTitleTextView.getText())
+                    .setItems(R.array.event_card_dialog_array, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String toastText = mContext.getString(R.string.toast_event) +
+                                    " «" + mTitleTextView.getText() + "» ";
+                            switch (which){
+                                case HIDE_ID:
+                                    toastText += mContext.getString(R.string.toast_event_hide);
+                                    break;
+                                case FAVE_ID:
+                                    toastText += mContext.getString(R.string.toast_event_fave);
+                                    break;
+                                case INVITE_ID:
+                                    break;
+                            }
+                            Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            builder.create().show();
+            return true;
+        }
     }
 }
