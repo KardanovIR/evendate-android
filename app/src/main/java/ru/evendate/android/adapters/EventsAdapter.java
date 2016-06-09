@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +17,34 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 01.12.2015.
  */
 
 public class EventsAdapter extends AppendableAdapter<EventFeed> {
+    private String LOG_TAG = EventsAdapter.class.getSimpleName();
 
     private int type;
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
@@ -73,6 +87,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
+        holder.isFavorited = eventEntry.isFavorite();
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         String date = EventFormatter.formatDate(eventEntry.getNearestDate());
@@ -121,6 +136,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         public TextView mOrganizationTextView;
         @Nullable @Bind(R.id.event_item_organization_icon)
         public ImageView mOrganizationLogo;
+        private boolean isFavorited;
         @Bind(R.id.event_item_favorite_indicator)
         public View mFavoriteIndicator;
         public int id;
@@ -157,10 +173,16 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                                     " «" + mTitleTextView.getText() + "» ";
                             switch (which){
                                 case HIDE_ID:
+                                    hideEvent(id);
                                     toastText += mContext.getString(R.string.toast_event_hide);
                                     break;
                                 case FAVE_ID:
-                                    toastText += mContext.getString(R.string.toast_event_fave);
+                                    likeEvent(isFavorited, id);
+                                    if(isFavorited) {
+                                        toastText += mContext.getString(R.string.toast_event_unfave);
+                                    } else {
+                                        toastText += mContext.getString(R.string.toast_event_fave);
+                                    }
                                     break;
                                 case INVITE_ID:
                                     break;
@@ -170,6 +192,49 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                     });
             builder.create().show();
             return true;
+        }
+    }
+
+    private void hideEvent(int id){
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponse> hideObservable =
+                evendateService.hideEvent(EvendateAccountManager.peekToken(mContext),
+                        id, true);
+        Log.i(LOG_TAG, "hiding event " + id);
+        hideObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> Log.i(LOG_TAG, "event hided")
+                        ,error -> Log.e(LOG_TAG, error.getMessage()));
+
+        for (EventFeed event: getList()) {
+            if(event.getEntryId() == id){
+                remove(event);
+                break;
+            }
+        }
+    }
+    private void likeEvent(boolean isFavorited, int id){
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponse> likeObservable;
+        if(isFavorited) {
+            likeObservable = evendateService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
+            Log.i(LOG_TAG, "disliking event " + id);
+        } else {
+            likeObservable = evendateService.likeEvent(id, EvendateAccountManager.peekToken(mContext));
+            Log.i(LOG_TAG, "liking event " + id);
+        }
+
+        likeObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> Log.i(LOG_TAG, "event liked/disliked")
+                        ,error -> Log.e(LOG_TAG, error.getMessage()));
+
+        for (EventFeed event: getList()) {
+            if(event.getEntryId() == id){
+                event.setIsFavorite(!event.isFavorite());
+                notifyItemChanged(getList().indexOf(event));
+                break;
+            }
         }
     }
 }

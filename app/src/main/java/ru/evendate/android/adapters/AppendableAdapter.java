@@ -84,7 +84,7 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
         notifyItemInserted(getItemCount());
     }
 
-    private void remove(T item) {
+    protected void remove(T item) {
         int position = getList().indexOf(item);
         getList().remove(position);
         notifyItemRemoved(position);

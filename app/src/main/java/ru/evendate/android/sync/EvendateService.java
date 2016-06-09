@@ -82,6 +82,15 @@ public interface EvendateService {
     Call<EvendateServiceResponse> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
+    @POST(API_PATH + "/events/{id}/favorites")
+    Observable<EvendateServiceResponse> likeEvent(
+            @Path("id") int eventId, @Header("Authorization") String authorization
+    );
+
+    @DELETE(API_PATH + "/events/{id}/favorites")
+    Observable<EvendateServiceResponse> dislikeEvent(
+            @Path("id") int eventId, @Header("Authorization") String authorization
+    );
 
     /**
      * Get events in organization
@@ -180,5 +189,12 @@ public interface EvendateService {
             @Path("id") int userId,
             @Query("fields") String fields,
             @Query("order_by") String orderBy
+    );
+
+    @PUT(API_PATH + "/events/{id}/status")
+    Observable<EvendateServiceResponse> hideEvent(
+            @Header("Authorization") String authorization,
+            @Path("id") int organizationId,
+            @Query("hidden") boolean hidden
     );
 }
