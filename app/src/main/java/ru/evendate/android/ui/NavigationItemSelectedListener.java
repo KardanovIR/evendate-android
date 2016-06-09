@@ -2,7 +2,6 @@ package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -33,18 +32,14 @@ public class NavigationItemSelectedListener
         switch (drawerItem.getIdentifier()) {
             case EvendateDrawer.REEL_IDENTIFIER: {
                 Intent reelIntent = new Intent(mContext, MainActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt(MainActivity.TYPE, MainActivity.REEL);
-                mContext.startActivity(reelIntent, bundle);
+                mContext.startActivity(reelIntent);
             }
             break;
             case R.id.settings:
                 break;
             case EvendateDrawer.CALENDAR_IDENTIFIER: {
-                Intent calendarIntent = new Intent(mContext, MainActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt(MainActivity.TYPE, MainActivity.CALENDAR);
-                mContext.startActivity(calendarIntent, bundle);
+                Intent intent = new Intent(mContext, CalendarActivity.class);
+                mContext.startActivity(intent);
             }
             break;
             case EvendateDrawer.ORGANIZATION_IDENTIFIER: {

@@ -1,0 +1,56 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:background="@color/window_reel_background">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:textColorSecondary="#FFFFFF"
+            app:layout_collapseMode="pin"
+            />
+    </android.support.design.widget.AppBarLayout>
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:paddingTop="?attr/actionBarSize"
+        sothree:umanoPanelHeight="?attr/actionBarSize"
+        sothree:umanoDragView="@+id/dragToolbar"
+        >
+        <!-- MAIN CONTENT -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp">
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mcv_showOtherDates="false"
+                app:mcv_arrowColor="@color/arrow_color"
+                app:mcv_selectionColor="@color/primary"
+                app:mcv_firstDayOfWeek="monday"
+                app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_gravity="top" />
+        </FrameLayout>
+        <!-- SLIDING LAYOUT -->
+        <include layout="@layout/fragment_calendar_sliding"/>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</android.support.design.widget.CoordinatorLayout>

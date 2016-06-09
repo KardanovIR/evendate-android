@@ -4,14 +4,14 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.loaders.DateCalendarLoader;
 import ru.evendate.android.loaders.LoaderListener;
@@ -39,21 +41,24 @@ import ru.evendate.android.models.DateCalendar;
 /**
  * Created by fj on 28.09.2015.
  */
-public class CalendarFragment extends Fragment implements ReelFragment.OnEventsDataLoadedListener,
+public class CalendarActivity extends AppCompatActivity implements ReelFragment.OnEventsDataLoadedListener,
         OnDateChangedListener {
-    private final String LOG_TAG = CalendarFragment.class.getSimpleName();
-    private MaterialCalendarView mCalendarView;
+    private final String LOG_TAG = CalendarActivity.class.getSimpleName();
+    @Bind(R.id.calendarView) MaterialCalendarView mCalendarView;
     private ReelFragment mReelFragment;
     private OneDayDecorator mOneDayDecorator;
-    private SlidingUpPanelLayout mSlidingUpPanelLayout;
+    @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingUpPanelLayout;
     private Date minimumDate;
-    private ToggleButton mToggleButton;
-    private TextView mSelectedDateTextView;
-    private TextView mEventCountTextView;
-    private View mDragView;
+    @Bind(R.id.calendar_button) ToggleButton mToggleButton;
+    @Bind(R.id.calendar_date) TextView mSelectedDateTextView;
+    @Bind(R.id.calendar_event_count) TextView mEventCountTextView;
+    @Bind(R.id.dragView) View mDragView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
 
     private DateCalendarLoader mLoader;
     private DateAdapter mAdapter;
+    private EvendateDrawer mDrawer;
 
     /**
      * change localize months in rus
@@ -77,14 +82,23 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_calendar, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_calendar);
+        ButterKnife.bind(this);
 
-        mSlidingUpPanelLayout = (SlidingUpPanelLayout)rootView.findViewById(R.id.sliding_layout);
-        mSelectedDateTextView = (TextView)rootView.findViewById(R.id.calendar_date);
-        mEventCountTextView = (TextView)rootView.findViewById(R.id.calendar_event_count);
-        mCalendarView = (MaterialCalendarView)rootView.findViewById(R.id.calendarView);
-        mDragView = rootView.findViewById(R.id.dragView);
+        setSupportActionBar(mToolbar);
+
+        //just change that fucking home icon
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.getDrawer().openDrawer();
+            }
+        });
+
         mCalendarView.getCurrentDate();
         mCalendarView.setOnDateChangedListener(this);
         Calendar calendar = Calendar.getInstance();
@@ -98,8 +112,6 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         mCalendarView.setShowOtherDates(true);
         mCalendarView.setTitleFormatter(new MyTitleFormatter());
 
-        mToggleButton = (ToggleButton)rootView.findViewById(R.id.calendar_button);
-
         mSlidingUpPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -110,14 +122,14 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
             public void onPanelCollapsed(View panel) {
                 mToggleButton.setChecked(false);
                 if (Build.VERSION.SDK_INT >= 21)
-                    getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
+                    mAppBarLayout.setElevation(4.0f);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
                 mToggleButton.setChecked(true);
                 if (Build.VERSION.SDK_INT >= 21)
-                    getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
+                    mAppBarLayout.setElevation(0.0f);
             }
 
             @Override
@@ -132,21 +144,17 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         });
 
         mAdapter = new DateAdapter();
-        mLoader = new DateCalendarLoader(getActivity());
+        mLoader = new DateCalendarLoader(this);
         mLoader.setLoaderListener(new LoaderListener<ArrayList<DateCalendar>>() {
             @Override
             public void onLoaded(ArrayList<DateCalendar> subList) {
-                if (!isAdded())
-                    return;
                 mAdapter.setDateList(subList);
                 mAdapter.setDates();
             }
 
             @Override
             public void onError() {
-                if (!isAdded())
-                    return;
-                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getBaseContext(),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -159,9 +167,14 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
             }
         });
         if (Build.VERSION.SDK_INT >= 21)
-            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
+            mAppBarLayout.setElevation(4.0f);
         mLoader.startLoading();
-        return rootView;
+
+        //mDrawer = EvendateDrawer.newInstance(this);
+        //mDrawer.getDrawer().setOnDrawerItemClickListener(
+        //        new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+        //mDrawer.getDrawer().setSelection(EvendateDrawer.CALENDAR_IDENTIFIER);
+        //mDrawer.start();
     }
 
     @Override
@@ -172,7 +185,7 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.CALENDAR.type(),
                 mCalendarView.getSelectedDate().getDate(), false);
         mReelFragment.setDataListener(this);
-        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
 
@@ -185,45 +198,19 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDate(date.getDate());
-        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
 
     @Override
     public void onEventsDataLoaded() {
-        if (!isAdded())
-            return;
         Log.i(LOG_TAG, "data loaded");
         //TODO нужно как-то изящнее это сделать
         if (mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
             return;
-        //mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
         mSelectedDateTextView.setText(simpleDateFormat.format(mCalendarView.getSelectedDate().getDate()));
-        //mReelFragment.setRecyclerViewOnScrollListener(new RecyclerView.OnScrollListener() {
-        //
-        //    @Override
-        //    public void onScrollStateChanged(RecyclerView view, int scrollState) {
-        //    }
-        //
-        //    @Override
-        //    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        //        super.onScrolled(recyclerView, dx, dy);
-        //        boolean enable = false;
-        //        if (recyclerView != null && recyclerView.getChildCount() > 0) {
-        //            // check if the first item of the list is visible
-        //            // check if the top of the first item is visible
-        //            boolean verticalScrollOffset = recyclerView.computeVerticalScrollOffset() == 0;
-        //            // enabling or disabling the refresh layout
-        //            enable = verticalScrollOffset;
-        //        }
-        //        if (enable)
-        //            mSlidingUpPanelLayout.setDragView(mDragView);
-        //        else
-        //            mSlidingUpPanelLayout.setDragView(null);
-        //    }
-        //});
     }
 
     class DateAdapter {
@@ -354,23 +341,11 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (Build.VERSION.SDK_INT >= 21)
-            getActivity().findViewById(R.id.app_bar_layout).setElevation(4.0f);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Build.VERSION.SDK_INT >= 21)
-            getActivity().findViewById(R.id.app_bar_layout).setElevation(0.0f);
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mLoader.cancelLoad();
+        mDrawer.cancel();
     }
 }

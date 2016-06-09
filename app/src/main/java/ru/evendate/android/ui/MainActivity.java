@@ -6,15 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -41,10 +38,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public final String APP_PREF = "evendate_pref";
     public final String FIRST_RUN = "first_run";
     public boolean isFirstRun = false;
-    public static final String TYPE = "type";
-    public static final int REEL = 0;
-    public static final int CALENDAR = 1;
-    public static final int CATALOG = 2;
     private EvendateDrawer mDrawer;
 
     @Override
@@ -66,25 +59,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         });
 
         checkPlayServices();
-
         checkAccount();
-        if (savedInstanceState != null) {
-            switch (savedInstanceState.getInt(TYPE)) {
-                case REEL:
-                    mFragment = new MainPagerFragment();
-                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-                    break;
-                case CALENDAR:
-                    mFragment = new CalendarFragment();
-                    break;
-                default:
-                    mFragment = new MainPagerFragment();
-                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-            }
-        } else {
-            mFragment = new MainPagerFragment();
-            ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-        }
+
+        mFragment = new MainPagerFragment();
+        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
         if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
@@ -179,18 +158,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                 break;
                 case R.id.settings:
                     break;
-                case EvendateDrawer.CALENDAR_IDENTIFIER: {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    if (!(mFragment instanceof CalendarFragment)) {
-                        mFragment = new CalendarFragment();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-                    }
-                    // Converts 4 dip into its equivalent px
-                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
-                    if (Build.VERSION.SDK_INT >= 21)
-                        mToolbar.setElevation(px);
-                }
-                break;
                 default:
                     super.onItemClick(view, position, drawerItem);
             }
