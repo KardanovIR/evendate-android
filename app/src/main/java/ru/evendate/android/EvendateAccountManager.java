@@ -45,4 +45,20 @@ public class EvendateAccountManager {
         accountManager.removeAccount(getSyncAccount(context), null, null);
         context.startActivity(new Intent(context, AuthActivity.class));
     }
+
+    public static String peekToken(Context context) {
+        AccountManager accountManager = AccountManager.get(context);
+        String token = null;
+        try {
+            token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(context),
+                    context.getString(R.string.account_type));
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error with peeking token");
+            e.fillInStackTrace();
+        }
+        if (token == null) {
+            context.startActivity(new Intent(context, AuthActivity.class));
+        }
+        return token;
+    }
 }

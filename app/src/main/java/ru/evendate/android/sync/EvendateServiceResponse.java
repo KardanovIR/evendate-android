@@ -7,4 +7,8 @@ package ru.evendate.android.sync;
 public class EvendateServiceResponse {
     boolean status;
     String text;
+
+    public boolean isOk() {
+        return status;
+    }
 }

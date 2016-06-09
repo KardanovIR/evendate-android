@@ -8,20 +8,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UsersAdapter;
-import ru.evendate.android.loaders.EventLoader;
-import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -30,8 +34,6 @@ public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     private android.support.v7.widget.RecyclerView mRecyclerView;
-    private OrganizationLoader mOrganizationLoader;
-    private EventLoader mEventLoader;
     private UsersAdapter mAdapter;
     public static final String TYPE = "type";
     public static final String EVENT_ID = "event_id";
@@ -77,10 +79,6 @@ public class UserListFragment extends Fragment {
         mAdapter = new UsersAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        if (type == TypeFormat.event.nativeInt)
-            mEventLoader = new EventLoader(getActivity(), eventId);
-        else
-            mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
 
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
@@ -112,71 +110,65 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadOrganization() {
-        mOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<OrganizationDetail>>() {
-            @Override
-            public void onLoaded(ArrayList<OrganizationDetail> subList) {
-                if (!isAdded())
-                    return;
-                OrganizationDetail organization = subList.get(0);
-                mAdapter.setList(organization.getSubscribedUsersList());
-                mProgressBar.setVisibility(View.GONE);
-            }
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponseArray<OrganizationFull>> eventObservable =
+                evendateService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
+                        organizationId, OrganizationDetail.FIELDS_LIST);
 
-            @Override
-            public void onError() {
-                if (!isAdded())
-                    return;
-                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.startLoading();
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
+        eventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if (!isAdded())
+                        return;
+                    if(!result.isOk()){
+                        onError();
+                        return;
                     }
-                });
-                dialog.show();
-                mProgressBar.setVisibility(View.GONE);
-            }
-        });
-        mOrganizationLoader.startLoading();
+                    OrganizationDetail organization = result.getData().get(0);
+                    mAdapter.setList(organization.getSubscribedUsersList());
+                    mProgressBar.setVisibility(View.GONE);
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "completed"));
     }
 
     private void loadEvent() {
-        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventDetail>>() {
-            @Override
-            public void onLoaded(ArrayList<EventDetail> subList) {
-                if (!isAdded())
-                    return;
-                EventDetail event = subList.get(0);
-                mAdapter.setList(event.getUserList());
-                mProgressBar.setVisibility(View.GONE);
-            }
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponseArray<EventDetail>> eventObservable =
+                evendateService.getEvent(EvendateAccountManager.peekToken(getActivity()),
+                        eventId, EventDetail.FIELDS_LIST);
 
-            @Override
-            public void onError() {
-                if (!isAdded())
-                    return;
-                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mEventLoader.onStartLoading();
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        dialog.dismiss();
+        eventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if (!isAdded())
+                        return;
+                    if(!result.isOk()){
+                        onError();
+                        return;
                     }
-                });
-                dialog.show();
-                mProgressBar.setVisibility(View.GONE);
-            }
-        });
-        mEventLoader.onStartLoading();
+                    EventDetail event = result.getData().get(0);
+                    mAdapter.setList(event.getUserList());
+                    mProgressBar.setVisibility(View.GONE);
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "completed"));
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (type == TypeFormat.event.nativeInt)
-            mEventLoader.cancelLoad();
-        else
-            mOrganizationLoader.cancelLoad();
+    private void onError(){
+        if (!isAdded())
+            return;
+        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {loadEvent();
+                mProgressBar.setVisibility(View.VISIBLE);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }

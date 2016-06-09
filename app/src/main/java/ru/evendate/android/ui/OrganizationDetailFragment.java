@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AppendableAdapter;
@@ -42,20 +44,24 @@ import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventsLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.OrganizationLoader;
 import ru.evendate.android.loaders.SubOrganizationLoader;
-import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
+import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements LoaderListener<ArrayList<OrganizationDetail>>,
+public class OrganizationDetailFragment extends Fragment implements
         OrganizationEventsAdapter.OrganizationCardController, AppendableAdapter.AdapterController {
     private final String LOG_TAG = "OrganizationFragment";
 
     private OrganizationEventsAdapter mAdapter;
-    private OrganizationLoader mOrganizationLoader;
     private EventsLoader mEventLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
@@ -95,35 +101,20 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         }
         mAdapter = new OrganizationEventsAdapter(getContext(), this, this);
 
-        mOrganizationLoader = new OrganizationLoader(getActivity(), organizationId);
-        mOrganizationLoader.setLoaderListener(this);
-        mEventLoader = new EventsLoader(getActivity(), ReelFragment.TypeFormat.ORGANIZATION.type(), organizationId);
-        mEventLoader.setOffset(mEventLoader.getLength());
-        mEventLoader.setLoaderListener(new LoaderListener<ArrayList<EventFeed>>() {
-            @Override
-            public void onLoaded(ArrayList<EventFeed> subList) {
-                mAdapter.setList(subList);
-            }
-
-            @Override
-            public void onError() {
-                if (!isAdded())
-                    return;
-                AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mEventLoader.startLoading();
-                                dialog.dismiss();
-                            }
-                        });
-                dialog.show();
-            }
-        });
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        initParallax();
+        loadOrg();
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+        mDrawer.start();
+        return rootView;
+    }
+
+    private void initParallax(){
         mToolbar.setBackgroundColor(toolbarColor);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -185,12 +176,6 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         //        setImageViewY();
         //    }
         //});
-        mOrganizationLoader.startLoading();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
-        mDrawer.start();
-        return rootView;
     }
 
     private boolean checkOrgCardScrolling(RecyclerView recyclerView) {
@@ -219,6 +204,27 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
             mBackgroundView.setVisibility(View.INVISIBLE);
     }
 
+    private void loadOrg(){
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponseArray<OrganizationFull>> organizationObservable =
+                evendateService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
+                        organizationId, OrganizationDetail.FIELDS_LIST);
+        organizationObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    onLoaded(new ArrayList<>(result.getData()));
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "Complete!"));
+    }
+
+    /**
+     * handle subscription button
+     * start subscribe/unsubscribe loader to carry it to server
+     * push subscribe/unsubscribe stat to analytics
+     */
     public void onSubscribed() {
         OrganizationDetail organization = mAdapter.getOrganization();
         SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
@@ -250,6 +256,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         subOrganizationLoader.startLoading();
     }
 
+    /**
+     * handle place button click and open google map
+     */
     public void onPlaceClicked() {
         Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mAdapter.getOrganization().getDefaultAddress());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -257,6 +266,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         startActivity(mapIntent);
     }
 
+    /**
+     * handle all user click and open user list for organization
+     */
     @Override
     public void onUsersClicked() {
         Intent intent = new Intent(getContext(), UserListActivity.class);
@@ -266,6 +278,9 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         startActivity(intent);
     }
 
+    /**
+     * handle link button click and open organization page in browser
+     */
     @Override
     public void onLinkClicked() {
         Intent openLink = new Intent(Intent.ACTION_VIEW);
@@ -285,7 +300,6 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
         mToolbarTitle.setText(organization.getShortName());
     }
 
-    @Override
     public void onError() {
         if (!isAdded())
             return;
@@ -293,22 +307,21 @@ public class OrganizationDetailFragment extends Fragment implements LoaderListen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOrganizationLoader.startLoading();
+                        loadOrg();
                         dialog.dismiss();
                     }
                 });
         dialog.show();
     }
-
+//
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mOrganizationLoader.cancelLoad();
         mDrawer.cancel();
     }
 
     @Override
     public void requestNext() {
-        mEventLoader.startLoading();
+        //mEventLoader.startLoading();
     }
 }
