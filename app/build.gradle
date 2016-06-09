@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
@@ -23,6 +24,10 @@ android {
     }
     dexOptions {
         javaMaxHeapSize "4g"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -59,4 +64,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:4.6.4@aar') {
         transitive = true
     }
+    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
 }

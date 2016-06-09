@@ -48,19 +48,24 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.EventLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.sync.EvendateApiFactory;
+import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.TagsView;
 import ru.evendate.android.views.UserFavoritedCard;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * contain details of events
@@ -75,7 +80,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     private int eventId;
     private ProgressBar mProgressBar;
     private EventAdapter mAdapter;
-    private EventLoader mEventLoader;
 
     private CoordinatorLayout mCoordinatorLayout;
     //private CollapsingToolbarLayout mCollapsingToolbarLayout;
@@ -163,6 +167,31 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         //        }
         //    }
         //});
+        initToolbarAnimation();
+        mUri = mEventDetailActivity.mUri;
+        eventId = Integer.parseInt(mUri.getLastPathSegment());
+
+        mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserListActivity.class);
+                intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                        .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+                intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+                startActivity(intent);
+            }
+        });
+
+        mAdapter = new EventAdapter();
+        loadEvent();
+        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+        mDrawer.start();
+        return rootView;
+    }
+
+    private void initToolbarAnimation(){
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         mToolbarTitle.setAlpha(0f);
         if (Build.VERSION.SDK_INT >= 21)
@@ -212,30 +241,26 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
                 });
             }
         });
+    }
 
-        mUri = mEventDetailActivity.mUri;
-        eventId = Integer.parseInt(mUri.getLastPathSegment());
+    public void loadEvent(){
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponseArray<EventDetail>> eventObservable =
+                evendateService.getEvent(EvendateAccountManager.peekToken(getActivity()),
+                        eventId, EventDetail.FIELDS_LIST);
 
-        mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserListActivity.class);
-                intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-                intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
-                startActivity(intent);
-            }
-        });
-
-        mAdapter = new EventAdapter();
-        mEventLoader = new EventLoader(getActivity(), eventId);
-        mEventLoader.setLoaderListener(this);
-        mEventLoader.onStartLoading();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
-        mDrawer.start();
-        return rootView;
+        eventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk())
+                        onLoaded(result.getData());
+                    else
+                        onError();
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "completed"));
     }
 
     private class EventAdapter {
@@ -292,6 +317,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @OnClick({R.id.event_place_button, R.id.event_link_card, R.id.event_organization_container, R.id.fab})
+    //todo refactor like org detail
     @Override
     public void onClick(View v) {
         if (mAdapter.getEvent() == null)
@@ -413,6 +439,8 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         return bmpUri;
     }
 
+    //todo use string from api
+    @Deprecated
     public String ConstructUrl() {
         final String base = EvendateApiFactory.HOST_NAME + "/event.php?id=";
         return base + mAdapter.getEvent().getEntryId();
@@ -436,7 +464,7 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mEventLoader.onStartLoading();
+                loadEvent();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
@@ -448,7 +476,6 @@ public class EventDetailFragment extends Fragment implements View.OnClickListene
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
-        mEventLoader.cancelLoad();
         mDrawer.cancel();
     }
 }
