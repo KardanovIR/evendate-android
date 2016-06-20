@@ -126,6 +126,7 @@
 
     <string name="dialog_event_hide">Hide event</string>
     <string name="dialog_event_fave">Add to favorites</string>
+    <string name="dialog_event_unfave">Remove from favorites</string>
     <string name="dialog_event_invite_friend">Invite friend</string>
 
     <string name="toast_event">Event</string>
