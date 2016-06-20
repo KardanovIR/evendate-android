@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AggregateDate;
 import ru.evendate.android.adapters.DatesAdapter;
@@ -28,11 +30,11 @@ import ru.evendate.android.models.ActionType;
  */
 public class UserActionsFragment extends Fragment implements LoaderListener<ArrayList<Action>> {
 
-    private RecyclerView mRecyclerView;
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private ActionLoader mLoader;
     private int userId;
-    private ProgressBar mProgressBar;
+    @Bind(R.id.progressBarAction) ProgressBar mProgressBar;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment userListFragment = new UserActionsFragment();
@@ -44,15 +46,14 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_actions, container, false);
+        ButterKnife.bind(this, rootView);
 
-        mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mLoader = new ActionLoader(getActivity(), userId);
         mLoader.setLoaderListener(this);
 
-        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBarAction);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);

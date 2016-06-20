@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UsersAdapter;
@@ -33,7 +35,7 @@ import rx.schedulers.Schedulers;
 public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
-    private android.support.v7.widget.RecyclerView mRecyclerView;
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private UsersAdapter mAdapter;
     public static final String TYPE = "type";
     public static final String EVENT_ID = "event_id";
@@ -41,7 +43,7 @@ public class UserListFragment extends Fragment {
     private int type = 0;
     private int organizationId;
     private int eventId;
-    private ProgressBar mProgressBar;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
 
     public enum TypeFormat {
         event(0),
@@ -69,8 +71,7 @@ public class UserListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_list, container, false);
-
-        mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
+        ButterKnife.bind(this, rootView);
 
         if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
@@ -80,7 +81,6 @@ public class UserListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mProgressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);

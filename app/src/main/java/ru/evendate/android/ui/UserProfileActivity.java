@@ -22,6 +22,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
@@ -40,13 +42,13 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private UserAdapter mUserAdapter;
     private UserLoader mLoader;
 
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
-    private TabLayout mTabLayout;
+    @Bind(R.id.tabs) TabLayout mTabLayout;
 
-    private ImageView mUserImageView;
-    private CollapsingToolbarLayout mCollapsingToolbar;
-    private ProgressBar mProgressBar;
+    @Bind(R.id.user_avatar) ImageView mUserImageView;
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
     EvendateDrawer mDrawer;
 
     public static final String INTENT_TYPE = "type";
@@ -56,6 +58,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -80,16 +84,10 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             }
             tracker.send(event.build());
         }
-        mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
-        mUserImageView = (ImageView)findViewById(R.id.user_avatar);
 
         mLoader = new UserLoader(this, userId);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-        mTabLayout = (TabLayout)findViewById(R.id.tabs);
-
-        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
