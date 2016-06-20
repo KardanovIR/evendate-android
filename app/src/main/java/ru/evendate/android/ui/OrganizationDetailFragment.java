@@ -117,7 +117,6 @@ public class OrganizationDetailFragment extends Fragment implements
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
-        return rootView;
     }
 
     private void initParallax(){

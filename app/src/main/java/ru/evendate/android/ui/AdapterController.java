@@ -14,7 +14,7 @@ public class AdapterController {
 
     private boolean isDisable = false;
     private boolean isRequesting = false;
-    private int length = 3;
+    private int length = 10;
     private int offset = 0;
     private AppendableAdapter mAdapter;
     private AdapterContext mAdapterContext;
