@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.MainPagerAdapter;
@@ -22,24 +24,22 @@ import ru.evendate.android.adapters.MainPagerAdapter;
  * contain logic of switching main fragments in main activity
  */
 public class MainPagerFragment extends Fragment {
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.tabs) TabLayout mTabLayout;
     private MainPagerAdapter mMainPagerAdapter;
-
-    private TabLayout mTabLayout;
     private ReelFragment.OnRefreshListener mRefreshListener;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_pager, container, false);
+        ButterKnife.bind(this, rootView);
 
-        mViewPager = (ViewPager)rootView.findViewById(R.id.pager);
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), getActivity());
         if (mRefreshListener != null)
             mMainPagerAdapter.setOnRefreshListener(mRefreshListener);
         mViewPager.setAdapter(mMainPagerAdapter);
 
-        mTabLayout = (TabLayout)rootView.findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
         setupStat();
 
@@ -50,8 +50,6 @@ public class MainPagerFragment extends Fragment {
 
     /**
      * translate refresh message from child fragment to parent main activity
-     *
-     * @param refreshListener ReelFragment.OnRefreshListener
      */
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         mRefreshListener = refreshListener;

@@ -68,7 +68,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         ORGANIZATION(2),
         //organizationSubscribed  (3),
         CALENDAR(4),
-        RECOMENDATION(4);
+        RECOMMENDATION(5);
 
         final int type;
 
@@ -249,7 +249,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
             observable = evendateService.getFeed(EvendateAccountManager.peekToken(getActivity()),
                     dateFormat.format(mDate), true, EventFeed.FIELDS_LIST, length, offset);
 
-        } else if (type == TypeFormat.RECOMENDATION.type()) {
+        } else if (type == TypeFormat.RECOMMENDATION.type()) {
             observable = evendateService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
                     true, EventFeed.FIELDS_LIST, length, offset);
         }

@@ -23,8 +23,13 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="log_out">Log out</string>
 
-    <string name="feed">Feed</string>
-    <string name="favorite">Favorite</string>
+
+    <!-- strings for tabs in main activity -->
+    <string name="feed_tab">Feed</string>
+    <string name="favorite_tab">Favorite</string>
+    <string name="recommendation_tab">For you</string>
+
+
     <string name="accounts">Accounts</string>
 
     <string name="progress_dialog_title">First synchronization</string>
@@ -148,6 +153,7 @@
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
+    <string name="stat_page_recommendations" translatable="false">Recommendations</string>
     <string name="stat_page_actions" translatable="false">Actions</string>
     <string name="stat_page_subscriptions" translatable="false">Subscriptions</string>
 

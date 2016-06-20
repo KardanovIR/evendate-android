@@ -18,7 +18,7 @@
     <string name="nav_account_management">Управление аккаунтами</string>
     <string name="help">Помощь</string>
     <string name="feedback">Оставить отзыв</string>
-    <string name="favorite">Избранное</string>
+    <string name="favorite_tab">Избранное</string>
     <string name="organization_event_number">мероприятий</string>
     <string name="organization_friends">друзей</string>
     <string name="organization_card_subscribers">подписчиков</string>
@@ -28,7 +28,6 @@
     <string name="event_place">Место</string>
     <string name="event_tags">Теги</string>
     <string name="event_description">Описание</string>
-    <string name="feed">Лента</string>
     <string name="account_already_exists">Аккаунт уже существует</string>
     <string name="subscription_confirm">Подписка оформлена</string>
     <string name="subscription_fail_cause_error">Произошла ошибка</string>
@@ -96,4 +95,9 @@
     <string name="dialog_event_hide">Скрыть событие</string>
     <string name="dialog_event_invite_friend">Пригласить друга</string>
     <string name="dialog_event_unfave">Удалить из избранного</string>
+    <string name="feed_tab">Лента</string>
+    <string name="toast_event">Событие</string>
+    <string name="toast_event_fave">добавлено в избранное</string>
+    <string name="toast_event_hide">скрыто</string>
+    <string name="toast_event_unfave">удалено из избранного</string>
 </resources>

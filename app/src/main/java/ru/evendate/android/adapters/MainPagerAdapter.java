@@ -15,6 +15,11 @@ import ru.evendate.android.ui.ReelFragment;
 public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener {
     private Context mContext;
     private ReelFragment.OnRefreshListener listener;
+    private final int TAB_COUNT = 3;
+    private final int REEL_TAB = 0;
+    private final int FAVE_TAB = 1;
+    private final int RECOMMEND_TAB = 2;
+
 
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         listener = refreshListener;
@@ -28,14 +33,18 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: {
+            case REEL_TAB: {
                 ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FEED.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }
-            case 1: {
-                // we need only favorite events in this fragment
+            case FAVE_TAB: {
                 ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FAVORITES.type(), true);
+                fragment.setOnRefreshListener(this);
+                return fragment;
+            }
+            case RECOMMEND_TAB: {
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.RECOMMENDATION.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }
@@ -46,16 +55,18 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
 
     @Override
     public int getCount() {
-        return 2;
+        return TAB_COUNT;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            case 0:
-                return mContext.getString(R.string.feed);
-            case 1:
-                return mContext.getString(R.string.favorite);
+            case REEL_TAB:
+                return mContext.getString(R.string.feed_tab);
+            case FAVE_TAB:
+                return mContext.getString(R.string.favorite_tab);
+            case RECOMMEND_TAB:
+                return mContext.getString(R.string.recommendation_tab);
             default:
                 return null;
         }
@@ -63,16 +74,15 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
 
     /**
      * return strings for statistics
-     *
-     * @param position int
-     * @return String
      */
     public String getPageLabel(int position) {
         switch (position) {
-            case 0:
+            case REEL_TAB:
                 return mContext.getString(R.string.stat_page_feed);
-            case 1:
+            case FAVE_TAB:
                 return mContext.getString(R.string.stat_page_favorite);
+            case RECOMMEND_TAB:
+                return mContext.getString(R.string.stat_page_recommendations);
             default:
                 return null;
         }
