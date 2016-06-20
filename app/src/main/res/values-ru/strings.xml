@@ -95,4 +95,5 @@
     <string name="dialog_event_fave">Добавить в избранное</string>
     <string name="dialog_event_hide">Скрыть событие</string>
     <string name="dialog_event_invite_friend">Пригласить друга</string>
+    <string name="dialog_event_unfave">Удалить из избранного</string>
 </resources>
