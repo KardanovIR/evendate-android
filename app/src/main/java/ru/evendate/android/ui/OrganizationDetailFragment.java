@@ -32,19 +32,22 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AppendableAdapter;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.EventsLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.SubOrganizationLoader;
+import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.sync.EvendateApiFactory;
@@ -58,11 +61,9 @@ import rx.schedulers.Schedulers;
  * Contain details of organization
  */
 public class OrganizationDetailFragment extends Fragment implements
-        OrganizationEventsAdapter.OrganizationCardController, AppendableAdapter.AdapterController {
+        OrganizationEventsAdapter.OrganizationCardController, AdapterController.AdapterContext{
     private final String LOG_TAG = "OrganizationFragment";
 
-    private OrganizationEventsAdapter mAdapter;
-    private EventsLoader mEventLoader;
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
 
     private int organizationId = -1;
@@ -74,14 +75,15 @@ public class OrganizationDetailFragment extends Fragment implements
     @Bind(R.id.organization_image) ImageView mBackgroundView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.organization_toolbar_title) TextView mToolbarTitle;
-    ObjectAnimator mTitleAppearAnimation;
-    ObjectAnimator mTitleDisappearAnimation;
     LinearLayoutManager mLayoutManager;
     int scrollOffset = 0;
     int toolbarColor = Color.TRANSPARENT;
     boolean isToolbarTransparent = true;
     ValueAnimator colorAnimation;
     EvendateDrawer mDrawer;
+
+    private OrganizationEventsAdapter mAdapter;
+    private AdapterController mAdapterController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,12 +101,12 @@ public class OrganizationDetailFragment extends Fragment implements
             mUri = Uri.parse(args.getString(URI));
             organizationId = Integer.parseInt(mUri.getLastPathSegment());
         }
-        mAdapter = new OrganizationEventsAdapter(getContext(), this, this);
 
-        mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
-        mRecyclerView.setAdapter(mAdapter);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new OrganizationEventsAdapter(getContext(), mRecyclerView, this);
+        mAdapterController = new AdapterController(this, mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         initParallax();
         loadOrg();
         mDrawer = EvendateDrawer.newInstance(getActivity());
@@ -220,6 +222,23 @@ public class OrganizationDetailFragment extends Fragment implements
                 }, () -> Log.i(LOG_TAG, "Complete!"));
     }
 
+    private void loadEvents(){
+        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        Observable<EvendateServiceResponseArray<EventDetail>> observable =
+                evendateService.getEvents(EvendateAccountManager.peekToken(getActivity()),
+                        organizationId, true, EventDetail.FIELDS_LIST, "created_at",
+                        mAdapterController.getLength(), mAdapterController.getOffset());
+
+        observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    onLoadedEvents(new ArrayList<>(result.getData()));
+                }, error -> {
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "Complete!"));
+    }
+
     /**
      * handle subscription button
      * start subscribe/unsubscribe loader to carry it to server
@@ -293,11 +312,19 @@ public class OrganizationDetailFragment extends Fragment implements
             return;
         OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
+        mAdapterController.loaded();
         Picasso.with(getActivity())
                 .load(organization.getBackgroundUrl())
                 .error(R.drawable.default_background)
                 .into(mBackgroundView);
         mToolbarTitle.setText(organization.getShortName());
+    }
+
+    public void onLoadedEvents(ArrayList<EventFeed> events) {
+        if (!isAdded())
+            return;
+        mAdapter.setList(events);
+        mAdapterController.loaded();
     }
 
     public void onError() {
@@ -313,15 +340,14 @@ public class OrganizationDetailFragment extends Fragment implements
                 });
         dialog.show();
     }
-//
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         mDrawer.cancel();
     }
 
-    @Override
     public void requestNext() {
-        //mEventLoader.startLoading();
+        loadEvents();
     }
 }

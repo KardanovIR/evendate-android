@@ -50,8 +50,8 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
 
 
-    public EventsAdapter(Context context, AdapterController controller, int type) {
-        super(context, controller);
+    public EventsAdapter(Context context, RecyclerView recyclerView, int type) {
+        super(context, recyclerView);
         this.type = type;
     }
 
@@ -64,22 +64,25 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             layoutItemId = R.layout.card_event_feed;
         } else if (type == ReelFragment.TypeFormat.CALENDAR.type()) {
             layoutItemId = R.layout.card_event;
-        } else if (type == ReelFragment.TypeFormat.FEED.type()) {
-            layoutItemId = R.layout.card_event_feed;
         } else {
-            layoutItemId = R.layout.card_event;
+            layoutItemId = R.layout.card_event_feed;
         }
+        if(position == super.getItemCount() - 1)
+            layoutItemId = AppendableAdapter.VIEW_PROG;
         return layoutItemId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == AppendableAdapter.VIEW_PROG)
+            return super.onCreateViewHolder(parent,viewType);
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (getList() == null)
+        super.onBindViewHolder(viewHolder, position);
+        if (getList() == null || !(viewHolder instanceof EventHolder))
             return;
         EventFeed eventEntry = getList().get(position);
         EventHolder holder = (EventHolder)viewHolder;
@@ -104,11 +107,9 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                     .load(eventEntry.getOrganizationLogoSmallUrl())
                     .error(R.drawable.evendate_logo)
                     .into(holder.mOrganizationLogo);
-        holder.mPriceTextView.setText(eventEntry.isFree() ? holder.eventFreeLabel : EventFormatter.formatPrice(mContext, eventEntry.getMinPrice()));
-
-        if (!isRequesting() && position == getList().size() - 1) {
-            onLastReached();
-        }
+        if(holder.mPriceTextView != null)
+            holder.mPriceTextView.setText(eventEntry.isFree() ?
+                    holder.eventFreeLabel : EventFormatter.formatPrice(mContext, eventEntry.getMinPrice()));
     }
 
 
@@ -213,6 +214,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             }
         }
     }
+
     private void likeEvent(boolean isFavorited, int id){
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
         Observable<EvendateServiceResponse> likeObservable;

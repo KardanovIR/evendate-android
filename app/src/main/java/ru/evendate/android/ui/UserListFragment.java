@@ -164,7 +164,8 @@ public class UserListFragment extends Fragment {
             return;
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {loadEvent();
+            public void onClick(DialogInterface dialog, int which) {
+                loadEvent();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }

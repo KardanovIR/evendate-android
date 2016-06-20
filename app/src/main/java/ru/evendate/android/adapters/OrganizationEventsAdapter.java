@@ -23,6 +23,7 @@ import butterknife.OnClick;
 import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.UsersFormatter;
+import ru.evendate.android.ui.AdapterController;
 import ru.evendate.android.ui.ReelFragment;
 import ru.evendate.android.views.UsersView;
 
@@ -33,9 +34,9 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     private OrganizationDetail mOrganization;
     private OrganizationCardController mOrganizationCardController;
 
-    public OrganizationEventsAdapter(Context context, AdapterController controller,
+    public OrganizationEventsAdapter(Context context, RecyclerView recyclerView,
                                      OrganizationCardController cardController) {
-        super(context, controller, ReelFragment.TypeFormat.ORGANIZATION.type());
+        super(context, recyclerView, ReelFragment.TypeFormat.ORGANIZATION.type());
         mOrganizationCardController = cardController;
     }
 
