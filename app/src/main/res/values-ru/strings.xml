@@ -92,4 +92,7 @@
     <string name="log_out">Выйти из аккаунта</string>
     <string name="organization_word_friends">друзья</string>
     <string name="event_price_rub">руб</string>
+    <string name="dialog_event_fave">Добавить в избранное</string>
+    <string name="dialog_event_hide">Скрыть событие</string>
+    <string name="dialog_event_invite_friend">Пригласить друга</string>
 </resources>

@@ -15,6 +15,7 @@ import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
 import ru.evendate.android.models.UserDetail;
+import rx.Observable;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -42,7 +43,7 @@ public interface EvendateService {
      * Get feed event list
      */
     @GET(API_PATH + "/events/my")
-    Call<EvendateServiceResponseArray<EventDetail>> getFeed(
+    Observable<EvendateServiceResponseArray<EventDetail>> getFeed(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
             @Query("fields") String fields,
@@ -54,9 +55,9 @@ public interface EvendateService {
      * Get concrete event
      */
     @GET(API_PATH + "/events/{id}")
-    Call<EvendateServiceResponseArray<EventDetail>> eventData(
-            @Path("id") int eventId,
+    Observable<EvendateServiceResponseArray<EventDetail>> getEvent(
             @Header("Authorization") String authorization,
+            @Path("id") int eventId,
             @Query("fields") String fields
     );
 
@@ -64,7 +65,31 @@ public interface EvendateService {
      * Get favorite event list
      */
     @GET(API_PATH + "/events/favorites")
-    Call<EvendateServiceResponseArray<EventDetail>> getFavorite(
+    Observable<EvendateServiceResponseArray<EventDetail>> getFavorite(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    /**
+     * Get feed events by date
+     */
+    @GET(API_PATH + "/events/my")
+    Observable<EvendateServiceResponseArray<EventDetail>> getFeed(
+            @Header("Authorization") String authorization,
+            @Query("date") String date,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+    /**
+     * Get recommended events
+     */
+    @GET(API_PATH + "/events/recommendations")
+    Observable<EvendateServiceResponseArray<EventDetail>> getRecommendations(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
             @Query("fields") String fields,
@@ -81,23 +106,21 @@ public interface EvendateService {
     Call<EvendateServiceResponse> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
+    @POST(API_PATH + "/events/{id}/favorites")
+    Observable<EvendateServiceResponse> likeEvent(
+            @Path("id") int eventId, @Header("Authorization") String authorization
+    );
 
-    /**
-     * Get events in organization
-     */
-    @GET(API_PATH + "/events")
-    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
-            @Header("Authorization") String authorization,
-            @Query("organization_id") int organizationId,
-            @Query("future") boolean future,
-            @Query("fields") String fields
+    @DELETE(API_PATH + "/events/{id}/favorites")
+    Observable<EvendateServiceResponse> dislikeEvent(
+            @Path("id") int eventId, @Header("Authorization") String authorization
     );
 
     /**
      * Get events in organization
      */
     @GET(API_PATH + "/events")
-    Call<EvendateServiceResponseArray<EventDetail>> getEvents(
+    Observable<EvendateServiceResponseArray<EventDetail>> getEvents(
             @Header("Authorization") String authorization,
             @Query("organization_id") int organizationId,
             @Query("future") boolean future,
@@ -105,17 +128,6 @@ public interface EvendateService {
             @Query("order_by") String orderBy,
             @Query("length") int length,
             @Query("offset") int offset
-    );
-
-    /**
-     * Get feed events by date
-     */
-    @GET(API_PATH + "/events/my")
-    Call<EvendateServiceResponseArray<EventDetail>> getFeed(
-            @Header("Authorization") String authorization,
-            @Query("date") String date,
-            @Query("future") boolean future,
-            @Query("fields") String fields
     );
 
     @GET(API_PATH + "/users/{id}")
@@ -132,7 +144,7 @@ public interface EvendateService {
     );
 
     @GET(API_PATH + "/organizations/{id}")
-    Call<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
+    Observable<EvendateServiceResponseArray<OrganizationFull>> getOrganization(
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("fields") String fields
@@ -179,5 +191,12 @@ public interface EvendateService {
             @Path("id") int userId,
             @Query("fields") String fields,
             @Query("order_by") String orderBy
+    );
+
+    @PUT(API_PATH + "/events/{id}/status")
+    Observable<EvendateServiceResponse> hideEvent(
+            @Header("Authorization") String authorization,
+            @Path("id") int organizationId,
+            @Query("hidden") boolean hidden
     );
 }
