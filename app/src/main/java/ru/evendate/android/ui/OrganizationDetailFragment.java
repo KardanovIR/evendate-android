@@ -2,7 +2,6 @@ package ru.evendate.android.ui;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,10 +31,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -312,7 +308,7 @@ public class OrganizationDetailFragment extends Fragment implements
             return;
         OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
-        mAdapterController.loaded();
+        mAdapterController.loaded(organization.getEventsList());
         Picasso.with(getActivity())
                 .load(organization.getBackgroundUrl())
                 .error(R.drawable.default_background)
@@ -323,8 +319,7 @@ public class OrganizationDetailFragment extends Fragment implements
     public void onLoadedEvents(ArrayList<EventFeed> events) {
         if (!isAdded())
             return;
-        mAdapter.setList(events);
-        mAdapterController.loaded();
+        mAdapterController.loaded(events);
     }
 
     public void onError() {
@@ -338,6 +333,8 @@ public class OrganizationDetailFragment extends Fragment implements
                         dialog.dismiss();
                     }
                 });
+        mAdapterController.notLoadedCauseError();
+        mAdapterController.disableNext();
         dialog.show();
     }
 

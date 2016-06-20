@@ -17,8 +17,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -27,12 +25,9 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
 import rx.Observable;
@@ -67,14 +62,14 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         } else {
             layoutItemId = R.layout.card_event_feed;
         }
-        if(position == super.getItemCount() - 1)
-            layoutItemId = AppendableAdapter.VIEW_PROG;
+        if(isLoading() && position == super.getItemCount() - 1)
+            layoutItemId = AppendableAdapter.PROGRESS_VIEW_TYPE;
         return layoutItemId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == AppendableAdapter.VIEW_PROG)
+        if(viewType == AppendableAdapter.PROGRESS_VIEW_TYPE)
             return super.onCreateViewHolder(parent,viewType);
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
     }

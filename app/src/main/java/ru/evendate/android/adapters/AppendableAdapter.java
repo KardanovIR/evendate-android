@@ -20,41 +20,44 @@ import ru.evendate.android.ui.AdapterController;
 public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerView.ViewHolder> {
     private final String LOG_TAG = AppendableAdapter.class.getSimpleName();
 
-    public static final int VIEW_PROG = 0;
+    public static final int PROGRESS_VIEW_TYPE = R.layout.item_progress;
 
     // The minimum amount of items to have below your current scroll position before loading more.
     private int visibleThreshold = 2;
-    private int lastVisibleItem, totalItemCount;
     private boolean loading;
     private AdapterController mController;
 
     public AppendableAdapter(Context context, RecyclerView recyclerView) {
         super(context);
-        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+        initLastItemsListener(recyclerView);
+    }
 
-            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
+    public void initLastItemsListener(RecyclerView recyclerView){
+        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager))
+            return;
 
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        // End has been reached
-                        // Do something
-                        if(mController != null) {
-                            if(mController.isDisable())
-                                return;
-                            loading = true;
-                            Log.d(LOG_TAG, "requesting next");
-                            mController.requestNext();
-                            notifyItemInserted(getItemCount() - 1);
-                        }
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int totalItemCount = linearLayoutManager.getItemCount();
+                int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    // End has been reached
+                    // Do something
+                    if(mController != null) {
+                        if(mController.isDisable())
+                            return;
+                        loading = true;
+                        Log.d(LOG_TAG, "requesting next");
+                        mController.requestNext();
+                        notifyItemInserted(getItemCount() - 1);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     protected boolean isLoading() {
@@ -63,14 +66,17 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
 
     @Override
     public int getItemCount() {
+        final int PROGRESS_VIEW = 1;
         if(loading)
-            return super.getItemCount() + 1;
+            return super.getItemCount() + PROGRESS_VIEW;
         return super.getItemCount();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return VIEW_PROG;
+        if(loading)
+            return PROGRESS_VIEW_TYPE;
+        return super.getItemViewType(position);
     }
 
     @Override

@@ -23,7 +23,6 @@ import butterknife.OnClick;
 import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.UsersFormatter;
-import ru.evendate.android.ui.AdapterController;
 import ru.evendate.android.ui.ReelFragment;
 import ru.evendate.android.views.UsersView;
 
@@ -33,6 +32,8 @@ import ru.evendate.android.views.UsersView;
 public class OrganizationEventsAdapter extends EventsAdapter {
     private OrganizationDetail mOrganization;
     private OrganizationCardController mOrganizationCardController;
+    //base adapter know nothing about organization card
+    final int ORGANIZATION_ITEM = 1;
 
     public OrganizationEventsAdapter(Context context, RecyclerView recyclerView,
                                      OrganizationCardController cardController) {
@@ -42,12 +43,12 @@ public class OrganizationEventsAdapter extends EventsAdapter {
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + (mOrganization != null ? 1 : 0);
+        return super.getItemCount() + (mOrganization != null ? ORGANIZATION_ITEM : 0);
     }
 
     public void setOrganization(OrganizationDetail organization) {
         mOrganization = organization;
-        super.setList(organization.getEventsList());
+        //super.setList(organization.getEventsList());
         notifyDataSetChanged();
     }
 
@@ -59,7 +60,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     public int getItemViewType(int position) {
         if (position == 0 && mOrganization != null)
             return R.layout.card_organization_detail;
-        return super.getItemViewType(position);
+        return super.getItemViewType(position - ORGANIZATION_ITEM);
     }
 
     @Override
@@ -78,9 +79,10 @@ public class OrganizationEventsAdapter extends EventsAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        final int ORG_CARD_POSITION = 0;
         if (mOrganization == null)
             return;
-        if (position == 0) {
+        if (position == ORG_CARD_POSITION) {
             OrganizationHolder holder = (OrganizationHolder)viewHolder;
             holder.mNameView.setText(mOrganization.getName());
             holder.mUsersView.setUsers(mOrganization.getSubscribedUsersList());
@@ -96,7 +98,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
                 holder.mUserContainer.setVisibility(View.GONE);
 
         } else {
-            super.onBindViewHolder(viewHolder, position - 1);
+            super.onBindViewHolder(viewHolder, position - ORGANIZATION_ITEM);
         }
     }
 

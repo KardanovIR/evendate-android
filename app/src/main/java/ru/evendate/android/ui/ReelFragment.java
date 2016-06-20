@@ -270,16 +270,12 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 }, () -> Log.i(LOG_TAG, "Complete!"));
     }
 
-    public void onLoaded(ArrayList<EventFeed> eventList) {
+    public void onLoaded(ArrayList<EventFeed> events) {
         if (mSwipeRefreshLayout.isRefreshing()) {
             mAdapter.reset();
         }
         mSwipeRefreshLayout.setRefreshing(false);
-        if (eventList.size() < mAdapterController.getLength()) {
-            mAdapterController.disableNext();
-        }
-        mAdapter.setList(eventList);
-        mAdapterController.loaded();
+        mAdapterController.loaded(events);
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();

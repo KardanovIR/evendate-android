@@ -2,6 +2,8 @@ package ru.evendate.android.ui;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import ru.evendate.android.adapters.AppendableAdapter;
 
 /**
@@ -78,10 +80,25 @@ public class AdapterController {
         mAdapterContext.requestNext();
         isRequesting = true;
     }
+    public void loaded(ArrayList list){
+        if (list.size() < getLength()) {
+            disableNext();
+        }
+        mAdapter.setList(list);
+        isRequesting = false;
+        mAdapter.setLoaded();
+        increaseOffset();
+    }
+
     public void loaded(){
         isRequesting = false;
         mAdapter.setLoaded();
         increaseOffset();
+    }
+
+    public void notLoadedCauseError(){
+        isRequesting = false;
+        mAdapter.setLoaded();
     }
 
     /**

@@ -60,10 +60,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             }
         });
 
-        //mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        //mNavigationView.setNavigationItemSelectedListener(new MainNavigationItemSelectedListener(this));
-
-
         checkPlayServices();
 
         checkAccount();
