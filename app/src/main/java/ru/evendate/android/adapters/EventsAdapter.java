@@ -17,8 +17,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -27,12 +25,9 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.sync.EvendateApiFactory;
 import ru.evendate.android.sync.EvendateService;
 import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
 import rx.Observable;
@@ -167,7 +162,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             final int INVITE_ID = 2;
             final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle(mTitleTextView.getText())
-                    .setItems(R.array.event_card_dialog_array, new DialogInterface.OnClickListener() {
+                    .setItems(getDialogTextItems(), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             String toastText = mContext.getString(R.string.toast_event) +
                                     " «" + mTitleTextView.getText() + "» ";
@@ -193,7 +188,19 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             builder.create().show();
             return true;
         }
+
+        private CharSequence[] getDialogTextItems(){
+            String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
+                    mContext.getString(R.string.dialog_event_fave);
+            CharSequence[] items = {
+                    mContext.getString(R.string.dialog_event_hide),
+                    fave,
+                    //mContext.getString(R.string.dialog_event_invite_friend)
+            };
+            return items;
+        }
     }
+
 
     private void hideEvent(int id){
         EvendateService evendateService = EvendateApiFactory.getEvendateService();
