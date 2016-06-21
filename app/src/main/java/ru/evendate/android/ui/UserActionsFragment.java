@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,30 +17,35 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AggregateDate;
 import ru.evendate.android.adapters.DatesAdapter;
-import ru.evendate.android.loaders.ActionLoader;
-import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.ActionConverter;
 import ru.evendate.android.models.ActionType;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 21.02.2016.
  */
-public class UserActionsFragment extends Fragment implements LoaderListener<ArrayList<Action>> {
+public class UserActionsFragment extends Fragment {
+    private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
-    private ActionLoader mLoader;
     private int userId;
     @Bind(R.id.progressBarAction) ProgressBar mProgressBar;
 
     public static UserActionsFragment newInstance(int userId) {
-        UserActionsFragment userListFragment = new UserActionsFragment();
-        userListFragment.userId = userId;
-        return userListFragment;
+        UserActionsFragment fragment = new UserActionsFragment();
+        fragment.userId = userId;
+        return fragment;
     }
 
     @Override
@@ -51,24 +57,41 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mLoader = new ActionLoader(getActivity(), userId);
-        mLoader.setLoaderListener(this);
 
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.startLoading();
+        loadActions();
         return rootView;
     }
 
-    @Override
+
+    public void loadActions(){
+        ApiService evendateService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<Action>> actionObservable =
+                evendateService.getActions(EvendateAccountManager.peekToken(getActivity()),
+                        userId, Action.FIELDS_LIST, Action.ORDER_BY);
+
+        actionObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk())
+                        onLoaded(result.getData());
+                    else
+                        onError();
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "completed"));
+    }
+
     public void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
         mProgressBar.setVisibility(View.GONE);
         mAdapter.setList(convertedList);
     }
 
-    @Override
     public void onError() {
         if (!isAdded())
             return;
@@ -76,16 +99,11 @@ public class UserActionsFragment extends Fragment implements LoaderListener<Arra
         AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mLoader.startLoading();
+                loadActions();
                 dialog.dismiss();
             }
         });
         dialog.show();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mLoader.cancelLoad();
-    }
 }

@@ -183,7 +183,7 @@ public interface ApiService {
     );
 
     @GET(API_PATH + "/users/{id}/actions")
-    Call<ResponseArray<Action>> getActions(
+    Observable<ResponseArray<Action>> getActions(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
             @Query("fields") String fields,

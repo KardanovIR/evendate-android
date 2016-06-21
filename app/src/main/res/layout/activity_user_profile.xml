@@ -94,13 +94,4 @@
             android:layout_gravity="center_horizontal"
             android:indeterminate="false" />
     </FrameLayout>
-    <!--
-    <View
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="?attr/colorPrimary"
-        app:layout_anchor="@id/user_avatar"
-        app:layout_anchorGravity="center"
-        app:layout_behavior=".ui.AvatarImageBehavior"/>
-        -->
 </android.support.design.widget.CoordinatorLayout>

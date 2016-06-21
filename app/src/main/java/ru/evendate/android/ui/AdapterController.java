@@ -12,9 +12,11 @@ import ru.evendate.android.adapters.AppendableAdapter;
 public class AdapterController {
     private final String LOG_TAG = AdapterController.class.getSimpleName();
 
+    public static final int EVENTS_LENGTH = 10;
+
     private boolean isDisable = false;
     private boolean isRequesting = false;
-    private int length = 10;
+    public int length = EVENTS_LENGTH;
     private int offset = 0;
     private AppendableAdapter mAdapter;
     private AdapterContext mAdapterContext;
@@ -35,13 +37,13 @@ public class AdapterController {
     /**
      * enable starting loading next batch when user scroll to last item of list
      */
-    //public void enableNext() {
-    //    isDisable = false;
-    //}
+    public void enableNext() {
+        isDisable = false;
+    }
 
-    //public boolean isRequesting() {
-    //    return isRequesting;
-    //}
+    public boolean isRequesting() {
+        return isRequesting;
+    }
 
     public boolean isDisable() {
         return isDisable;
@@ -63,9 +65,6 @@ public class AdapterController {
         this.length = length;
     }
 
-    //public void setOffset(int offset) {
-    //    this.offset = offset;
-    //}
 
     public void reset() {
         offset = 0;
