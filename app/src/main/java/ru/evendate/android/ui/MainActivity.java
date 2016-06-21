@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -24,7 +22,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-import ru.evendate.android.sync.EvendateSyncAdapter;
+import ru.evendate.android.network.EvendateSyncAdapter;
 
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener {

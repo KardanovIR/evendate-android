@@ -22,9 +22,9 @@ import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -110,9 +110,9 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadOrganization() {
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponseArray<OrganizationFull>> eventObservable =
-                evendateService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<OrganizationFull>> eventObservable =
+                apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, OrganizationDetail.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
@@ -135,9 +135,9 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadEvent() {
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponseArray<EventDetail>> eventObservable =
-                evendateService.getEvent(EvendateAccountManager.peekToken(getActivity()),
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<EventDetail>> eventObservable =
+                apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
                         eventId, EventDetail.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())

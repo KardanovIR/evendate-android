@@ -1,10 +1,10 @@
-package ru.evendate.android.sync;
+package ru.evendate.android.network;
 
 
 /**
  * Created by Dmitry on 18.10.2015.
  */
-public class EvendateServiceResponse {
+public class Response {
     boolean status;
     String text;
 

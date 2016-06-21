@@ -3,7 +3,7 @@ package ru.evendate.android.adapters;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import ru.evendate.android.R;
 import ru.evendate.android.ui.ReelFragment;
@@ -12,7 +12,7 @@ import ru.evendate.android.ui.ReelFragment;
  * Created by Dmitry on 23.01.2016.
  */
 
-public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelFragment.OnRefreshListener {
+public class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragment.OnRefreshListener {
     private Context mContext;
     private ReelFragment.OnRefreshListener listener;
     private final int TAB_COUNT = 3;
@@ -34,17 +34,17 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter implements ReelF
     public Fragment getItem(int position) {
         switch (position) {
             case REEL_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FEED.type(), true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.FEED.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }
             case FAVE_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.FAVORITES.type(), true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.FAVORITES.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }
             case RECOMMEND_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.TypeFormat.RECOMMENDATION.type(), true);
+                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.RECOMMENDATION.type(), true);
                 fragment.setOnRefreshListener(this);
                 return fragment;
             }

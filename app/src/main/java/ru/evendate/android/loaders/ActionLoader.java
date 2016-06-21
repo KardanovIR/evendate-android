@@ -7,14 +7,14 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.Action;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
-public class ActionLoader extends AbstractLoader<Action> implements Callback<EvendateServiceResponseArray<Action>> {
+public class ActionLoader extends AbstractLoader<Action> implements Callback<ResponseArray<Action>> {
     private final String LOG_TAG = ActionLoader.class.getSimpleName();
 
     int userId;
@@ -28,14 +28,14 @@ public class ActionLoader extends AbstractLoader<Action> implements Callback<Eve
     @Override
     protected void onStartLoading() {
         Log.d(LOG_TAG, "getting actions");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getEvendateService();
 
-        mCall = evendateService.getActions(peekToken(), userId, Action.FIELDS_LIST, Action.ORDER_BY);
+        mCall = apiService.getActions(peekToken(), userId, Action.FIELDS_LIST, Action.ORDER_BY);
         mCall.enqueue(this);
     }
 
     @Override
-    public void onResponse(Response<EvendateServiceResponseArray<Action>> response,
+    public void onResponse(Response<ResponseArray<Action>> response,
                            Retrofit retrofit) {
         if (response.isSuccess()) {
             onLoaded(response.body().getData());

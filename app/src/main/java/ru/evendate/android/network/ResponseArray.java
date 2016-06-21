@@ -1,4 +1,4 @@
-package ru.evendate.android.sync;
+package ru.evendate.android.network;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import ru.evendate.android.models.DataModel;
 /**
  * Created by Дмитрий on 02.11.2015.
  */
-public class EvendateServiceResponseArray<DataType extends DataModel> extends EvendateServiceResponse {
+public class ResponseArray<DataType extends DataModel> extends Response {
 
     private ArrayList<DataType> data;
 

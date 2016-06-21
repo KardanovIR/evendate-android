@@ -29,9 +29,9 @@ import ru.evendate.android.R;
 import ru.evendate.android.adapters.EventsAdapter;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -51,31 +51,38 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
 
+    static final String TYPE = "type";
+    private int type = 0;
     /**
      * organization id from detail organization
      */
     private int organizationId;
-    static final String TYPE = "type";
-    private int type = 0;
     /**
      * selected date in calendar
      */
     private Date mDate;
 
-    public enum TypeFormat {
+    public enum ReelType {
         FEED(0),
         FAVORITES(1),
         ORGANIZATION(2),
-        //organizationSubscribed  (3),
-        CALENDAR(4),
-        RECOMMENDATION(5);
+        CALENDAR(3),
+        RECOMMENDATION(4);
 
         final int type;
 
-        TypeFormat(int type) {
+        ReelType(int type) {
             this.type = type;
         }
 
+        static public ReelType getType(int pType) {
+            for (ReelType type: ReelType.values()) {
+                if (type.type() == pType) {
+                    return type;
+                }
+            }
+            throw new RuntimeException("unknown type");
+        }
         public int type() {
             return type;
         }
@@ -86,26 +93,26 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
 
     public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing) {
-        ReelFragment reelFragment = new ReelFragment();
-        reelFragment.type = type;
-        reelFragment.organizationId = organizationId;
-        reelFragment.refreshingEnabled = enableRefreshing;
-        return reelFragment;
+        ReelFragment reel = new ReelFragment();
+        reel.type = type;
+        reel.organizationId = organizationId;
+        reel.refreshingEnabled = enableRefreshing;
+        return reel;
     }
 
     public static ReelFragment newInstance(int type, boolean enableRefreshing) {
-        ReelFragment reelFragment = new ReelFragment();
-        reelFragment.type = type;
-        reelFragment.refreshingEnabled = enableRefreshing;
-        return reelFragment;
+        ReelFragment reel = new ReelFragment();
+        reel.type = type;
+        reel.refreshingEnabled = enableRefreshing;
+        return reel;
     }
 
     public static ReelFragment newInstance(int type, Date date, boolean enableRefreshing) {
-        ReelFragment reelFragment = new ReelFragment();
-        reelFragment.type = type;
-        reelFragment.mDate = date;
-        reelFragment.refreshingEnabled = enableRefreshing;
-        return reelFragment;
+        ReelFragment reel = new ReelFragment();
+        reel.type = type;
+        reel.mDate = date;
+        reel.refreshingEnabled = enableRefreshing;
+        return reel;
     }
 
     public void setDataListener(OnEventsDataLoadedListener dataListener) {
@@ -176,11 +183,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 super.onScrolled(recyclerView, dx, dy);
                 boolean enable = false;
                 if (recyclerView.getChildCount() > 0) {
-                    // check if the first item of the list is visible
-                    // check if the top of the first item is visible
-                    boolean verticalScrollOffset = recyclerView.computeVerticalScrollOffset() == 0;
-                    // enabling or disabling the refresh layout
-                    enable = verticalScrollOffset;
+                    enable = recyclerView.computeVerticalScrollOffset() == 0;
                 }
                 if (refreshingEnabled)
                     mSwipeRefreshLayout.setEnabled(enable);
@@ -193,11 +196,6 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(TYPE, type);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     public ArrayList<EventFeed> getEventList() {
@@ -225,37 +223,25 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
      * @param mDate selected date in calendar
      */
     public void setDate(Date mDate) {
-        if (type != TypeFormat.CALENDAR.type())
+        if (type != ReelType.CALENDAR.type())
             return;
         this.mDate = mDate;
     }
 
     private void loadEvents(){
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponseArray<EventDetail>> observable;
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<EventDetail>> observable;
 
         final int length = mAdapterController.getLength();
         final int offset = mAdapterController.getOffset();
-        if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
-            observable = evendateService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
-                    true, EventFeed.FIELDS_LIST, length, offset);
 
-        } else if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
-            observable = evendateService.getEvents(EvendateAccountManager.peekToken(getActivity()),
-                    organizationId, true, EventFeed.FIELDS_LIST, "created_at", length, offset);
-
-        } else if (type == TypeFormat.CALENDAR.type()) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            observable = evendateService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                    dateFormat.format(mDate), true, EventFeed.FIELDS_LIST, length, offset);
-
-        } else if (type == TypeFormat.RECOMMENDATION.type()) {
-            observable = evendateService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
-                    true, EventFeed.FIELDS_LIST, length, offset);
-        }
-        else{
-            observable = evendateService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                    true, EventDetail.FIELDS_LIST, length, offset);
+        switch (ReelType.getType(type)){
+            case FEED: observable = getFeed(apiService, length, offset); break;
+            case FAVORITES: observable = getFavorite(apiService, length, offset); break;
+            case ORGANIZATION: observable = getOrgEvent(apiService, length, offset, organizationId); break;
+            case CALENDAR: observable = getCalendarEvent(apiService, length, offset, mDate); break;
+            case RECOMMENDATION: observable = getRecommendation(apiService, length, offset); break;
+            default: throw new RuntimeException("unknown type");
         }
 
         observable.subscribeOn(Schedulers.newThread())
@@ -268,6 +254,37 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                     mProgressBar.setVisibility(View.GONE);
                     Log.e(LOG_TAG, error.getMessage());
                 }, () -> Log.i(LOG_TAG, "Complete!"));
+    }
+
+    private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
+                                                                     int length, int offset){
+        return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+    }
+
+    private Observable<ResponseArray<EventDetail>> getFavorite(ApiService apiService,
+                                                               int length, int offset){
+        return apiService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+    }
+
+    private Observable<ResponseArray<EventDetail>> getOrgEvent(
+            ApiService apiService, int length, int offset, int organizationId){
+        return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
+                organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+    }
+
+    private Observable<ResponseArray<EventDetail>> getCalendarEvent(ApiService apiService,
+                                                                      int length, int offset, Date date){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
+                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+    }
+
+    private Observable<ResponseArray<EventDetail>> getRecommendation(ApiService apiService,
+                                                                     int length, int offset){
+        return apiService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
     public void onLoaded(ArrayList<EventFeed> events) {

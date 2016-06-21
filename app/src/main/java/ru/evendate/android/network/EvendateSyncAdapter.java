@@ -1,4 +1,4 @@
-package ru.evendate.android.sync;
+package ru.evendate.android.network;
 
 /**
  * Created by Dmitry on 08.09.2015.

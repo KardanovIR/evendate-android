@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- gcm_permissions -->
-    <uses-permission android:name="ru.evendate.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
 
     <application
@@ -67,7 +67,7 @@
                 android:resource="@xml/evendate_authenticator" />
         </service>
         <service
-            android:name=".sync.EvendateSyncService"
+            android:name=".network.EvendateSyncService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />

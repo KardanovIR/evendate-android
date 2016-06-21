@@ -37,7 +37,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
 
     public OrganizationEventsAdapter(Context context, RecyclerView recyclerView,
                                      OrganizationCardController cardController) {
-        super(context, recyclerView, ReelFragment.TypeFormat.ORGANIZATION.type());
+        super(context, recyclerView, ReelFragment.ReelType.ORGANIZATION.type());
         mOrganizationCardController = cardController;
     }
 

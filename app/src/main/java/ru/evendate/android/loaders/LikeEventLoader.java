@@ -4,15 +4,14 @@ import android.content.Context;
 import android.util.Log;
 
 import retrofit.Callback;
-import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.Event;
-import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.network.Response;
 
 /**
  * Created by ds_gordeev on 14.03.2016.
  */
-public class LikeEventLoader extends AbstractLoader<Void> implements Callback<EvendateServiceResponse> {
+public class LikeEventLoader extends AbstractLoader<Void> implements Callback<Response> {
     private final String LOG_TAG = LikeEventLoader.class.getSimpleName();
     Event mEvent;
     boolean favorite;
@@ -36,7 +35,7 @@ public class LikeEventLoader extends AbstractLoader<Void> implements Callback<Ev
     }
 
     @Override
-    public void onResponse(Response<EvendateServiceResponse> response,
+    public void onResponse(retrofit.Response response,
                            Retrofit retrofit) {
         if (response.isSuccess()) {
             Log.d(LOG_TAG, "performed like");

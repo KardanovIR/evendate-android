@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 import ru.evendate.android.R;
+import ru.evendate.android.Statistics;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.OrganizationDetailActivity;
@@ -72,21 +73,21 @@ public class EvendateGCMListenerService extends GcmListenerService {
                     intent = new Intent(this, EventDetailActivity.class);
                     int eventId = Integer.valueOf(data.getString(EVENT_ID));
                     intent.setData(EvendateContract.EventEntry.getContentUri(eventId));
-                    intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
+                    intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case ORGANIZATION_TYPE:
                     intent = new Intent(this, OrganizationDetailActivity.class);
                     int orgId = Integer.valueOf(data.getString(ORGANIZATION_ID));
                     intent.setData(EvendateContract.OrganizationEntry.getContentUri(orgId));
-                    intent.putExtra(OrganizationDetailActivity.INTENT_TYPE, OrganizationDetailActivity.NOTIFICATION);
+                    intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case USER_TYPE:
                     intent = new Intent(this, UserProfileActivity.class);
                     int userId = Integer.valueOf(data.getString(USER_ID));
                     intent.setData(EvendateContract.UserEntry.getContentUri(userId));
-                    intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
+                    intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case DEBUG_TYPE:
@@ -124,6 +125,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
                 .setLargeIcon(loadIcon(imageUrl))
                 .setContentTitle("Evendate")
                 .setContentText(message)
+                //.setGroupSummary(false)
                 //just expand message to multi row
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setAutoCancel(true)

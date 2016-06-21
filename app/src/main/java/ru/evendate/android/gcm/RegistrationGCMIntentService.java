@@ -15,12 +15,11 @@ import com.google.android.gms.iid.InstanceID;
 import java.io.IOException;
 
 import retrofit.Call;
-import retrofit.Response;
 import ru.evendate.android.R;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
-import ru.evendate.android.sync.EvendateSyncAdapter;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.EvendateSyncAdapter;
+import ru.evendate.android.network.Response;
 
 /**
  * Created by Dmitry on 29.11.2015.
@@ -84,23 +83,23 @@ public class RegistrationGCMIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getEvendateService();
         Account account = EvendateSyncAdapter.getSyncAccount(getBaseContext());
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
-            if (!putDeviceToken(evendateService, authToken, token))
+            if (!putDeviceToken(apiService, authToken, token))
                 Log.e(LOG_TAG, "not registered device token");
         } catch (IOException | OperationCanceledException | AuthenticatorException e) {
             e.printStackTrace();
         }
     }
 
-    public static boolean putDeviceToken(EvendateService evendateService, String basicAuth, String deviceToken) {
-        Call<EvendateServiceResponse> call =
-                evendateService.putDeviceToken(deviceToken, "android", basicAuth);
+    public static boolean putDeviceToken(ApiService apiService, String basicAuth, String deviceToken) {
+        Call<Response> call =
+                apiService.putDeviceToken(deviceToken, "android", basicAuth);
         try {
-            Response<EvendateServiceResponse> response = call.execute();
+            retrofit.Response response = call.execute();
             if (response.isSuccess()) {
                 return true;
             }

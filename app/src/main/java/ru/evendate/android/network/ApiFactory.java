@@ -1,4 +1,4 @@
-package ru.evendate.android.sync;
+package ru.evendate.android.network;
 
 import android.support.annotation.NonNull;
 
@@ -13,7 +13,7 @@ import retrofit.RxJavaCallAdapterFactory;
 /**
  * Created by Dmitry on 18.10.2015.
  */
-public class EvendateApiFactory {
+public class ApiFactory {
 
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
@@ -29,8 +29,8 @@ public class EvendateApiFactory {
     }
 
     @NonNull
-    public static EvendateService getEvendateService() {
-        return getRetrofit().create(EvendateService.class);
+    public static ApiService getEvendateService() {
+        return getRetrofit().create(ApiService.class);
     }
 
     @NonNull

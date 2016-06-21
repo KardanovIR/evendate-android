@@ -25,9 +25,9 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
 import rx.Observable;
@@ -53,11 +53,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     @Override
     public int getItemViewType(int position) {
         int layoutItemId;
-        if (type == ReelFragment.TypeFormat.ORGANIZATION.type()) {
+        if (type == ReelFragment.ReelType.ORGANIZATION.type()) {
             layoutItemId = R.layout.card_event_organization;
-        } else if (type == ReelFragment.TypeFormat.FAVORITES.type()) {
+        } else if (type == ReelFragment.ReelType.FAVORITES.type()) {
             layoutItemId = R.layout.card_event_feed;
-        } else if (type == ReelFragment.TypeFormat.CALENDAR.type()) {
+        } else if (type == ReelFragment.ReelType.CALENDAR.type()) {
             layoutItemId = R.layout.card_event;
         } else {
             layoutItemId = R.layout.card_event_feed;
@@ -95,7 +95,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 .error(R.drawable.default_background)
                 .into(holder.mEventImageView);
 
-        if (type == ReelFragment.TypeFormat.CALENDAR.type())
+        if (type == ReelFragment.ReelType.CALENDAR.type())
             return;
         if (holder.mOrganizationLogo != null)
             Picasso.with(mContext)
@@ -204,9 +204,9 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
 
 
     private void hideEvent(int id){
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponse> hideObservable =
-                evendateService.hideEvent(EvendateAccountManager.peekToken(mContext),
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<Response> hideObservable =
+                apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
                         id, true);
         Log.i(LOG_TAG, "hiding event " + id);
         hideObservable.subscribeOn(Schedulers.newThread())
@@ -223,13 +223,13 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     }
 
     private void likeEvent(boolean isFavorited, int id){
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponse> likeObservable;
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<Response> likeObservable;
         if(isFavorited) {
-            likeObservable = evendateService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
+            likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
             Log.i(LOG_TAG, "disliking event " + id);
         } else {
-            likeObservable = evendateService.likeEvent(id, EvendateAccountManager.peekToken(mContext));
+            likeObservable = apiService.likeEvent(id, EvendateAccountManager.peekToken(mContext));
             Log.i(LOG_TAG, "liking event " + id);
         }
 

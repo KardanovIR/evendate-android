@@ -48,9 +48,9 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -210,9 +210,9 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     private void loadOrg(){
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponseArray<OrganizationFull>> organizationObservable =
-                evendateService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<OrganizationFull>> organizationObservable =
+                apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, OrganizationDetail.FIELDS_LIST);
         organizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -226,9 +226,9 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     private void loadEvents(){
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Observable<EvendateServiceResponseArray<EventDetail>> observable =
-                evendateService.getEvents(EvendateAccountManager.peekToken(getActivity()),
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<EventDetail>> observable =
+                apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, true, EventDetail.FIELDS_LIST, "created_at",
                         mAdapterController.getLength(), mAdapterController.getOffset());
 

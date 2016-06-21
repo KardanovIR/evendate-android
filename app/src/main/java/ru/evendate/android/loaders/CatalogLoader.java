@@ -7,13 +7,13 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.OrganizationType;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ResponseArray;
 
 /**
  * Created by Dmitry on 08.02.2016.
  */
 public class CatalogLoader extends AbstractLoader<OrganizationType> implements
-        Callback<EvendateServiceResponseArray<OrganizationType>> {
+        Callback<ResponseArray<OrganizationType>> {
     private final String LOG_TAG = CatalogLoader.class.getSimpleName();
 
     public CatalogLoader(Context context) {
@@ -29,7 +29,7 @@ public class CatalogLoader extends AbstractLoader<OrganizationType> implements
     }
 
     @Override
-    public void onResponse(Response<EvendateServiceResponseArray<OrganizationType>> response,
+    public void onResponse(Response<ResponseArray<OrganizationType>> response,
                            Retrofit retrofit) {
         if (response.isSuccess()) {
             onLoaded(response.body().getData());

@@ -36,6 +36,7 @@ public class MainPagerFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         mMainPagerAdapter = new MainPagerAdapter(getChildFragmentManager(), getActivity());
+        mViewPager.setOffscreenPageLimit(2);
         if (mRefreshListener != null)
             mMainPagerAdapter.setOnRefreshListener(mRefreshListener);
         mViewPager.setAdapter(mMainPagerAdapter);

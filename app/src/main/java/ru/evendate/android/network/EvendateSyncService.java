@@ -1,4 +1,4 @@
-package ru.evendate.android.sync;
+package ru.evendate.android.network;
 
 import android.app.Service;
 import android.content.Intent;
