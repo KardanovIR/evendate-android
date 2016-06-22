@@ -1,6 +1,5 @@
-package ru.evendate.android.authorization;
+package ru.evendate.android.auth;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -29,7 +28,7 @@ public class WebAuthFragment extends Fragment {
 
     private WebView mWebView;
     private String mUrl;
-    private Context mContext;
+    private TokenReceiver mContext;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +63,7 @@ public class WebAuthFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context;
+        mContext = (TokenReceiver)context;
     }
 
     @Override
@@ -85,24 +84,35 @@ public class WebAuthFragment extends Fragment {
             try {
                 URL currentURL = new URL(url);
                 if (currentURL.getPath().equals(oAuth)) {
-                    Log.i(LOG_TAG, "start authorization");
+
                     String query = currentURL.getQuery();
-                    Log.i(LOG_TAG, query);
-                    int start = query.indexOf("=");
-                    int end = query.indexOf("&");
-                    String token = query.substring(start + 1, end);
-                    String email = query.substring(query.lastIndexOf("=") + 1);
-                    Log.i(LOG_TAG, token);
-                    String accountType = getResources().getString(R.string.account_type);
-                    Account account = new Account(email, accountType);
-                    ((AuthActivity)mContext).onTokenReceived(account, "", token);
+                    Log.i(LOG_TAG, "start authorization");
+                    Log.d(LOG_TAG, "query: " + query);
+
+                    String token = retrieveToken(query);
+                    String email = retrieveEmail(query);
+                    mContext.onTokenReceived(email, token);
+
+                    Log.d(LOG_TAG, "token: " + token);
                     Log.i(LOG_TAG, "finish authorization");
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
+
+        private String retrieveToken(String query){
+            int start = query.indexOf("=");
+            int end = query.indexOf("&");
+            return query.substring(start + 1, end);
+        }
+        private String retrieveEmail(String query){
+            return query.substring(query.lastIndexOf("=") + 1);
+        }
     }
 
 
+    public interface TokenReceiver {
+        void onTokenReceived(String email, String token);
+    }
 }

@@ -36,17 +36,14 @@
         android:layout_marginBottom="4dp" />
 
 
-    <Button
-        android:id="@+id/sing_in_google_button"
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:textSize="18sp"
         android:layout_gravity="center_vertical"
-        android:text="@string/sing_in_google"
-        android:textColor="@color/gplus_color"
-        android:layout_below="@+id/sing_in_fb_button"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp" />
+        android:layout_marginRight="40dp"
+        android:layout_below="@+id/sing_in_fb_button"/>
 
     <ImageView
         android:layout_width="200dp"

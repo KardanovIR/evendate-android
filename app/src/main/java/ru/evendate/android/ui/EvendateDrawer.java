@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.EvendateAuthenticator;
+import ru.evendate.android.auth.Authenticator;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
@@ -60,8 +60,8 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
             public void onLoaded(ArrayList<UserDetail> users) {
                 UserDetail user = users.get(0);
                 SharedPreferences sPref =
-                        mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-                String accountName = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+                        mContext.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+                String accountName = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
 
                 getAccountHeader().clear();
                 getAccountHeader().addProfiles(

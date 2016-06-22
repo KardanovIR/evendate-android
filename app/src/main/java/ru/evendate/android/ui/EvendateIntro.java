@@ -7,7 +7,7 @@ import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.AuthActivity;
+import ru.evendate.android.auth.AuthActivity;
 
 /**
  * Created by Dmitry on 14.12.2015.

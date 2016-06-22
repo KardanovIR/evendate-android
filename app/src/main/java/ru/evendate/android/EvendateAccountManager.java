@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import ru.evendate.android.authorization.AuthActivity;
-import ru.evendate.android.authorization.EvendateAuthenticator;
+import ru.evendate.android.auth.AuthActivity;
+import ru.evendate.android.auth.Authenticator;
 
 /**
  * Created by Dmitry on 27.01.2016.
@@ -25,8 +25,8 @@ public class EvendateAccountManager {
         android.accounts.AccountManager accountManager =
                 (android.accounts.AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        SharedPreferences sPref = context.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+        SharedPreferences sPref = context.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
 
         Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {

@@ -1,4 +1,4 @@
-package ru.evendate.android.authorization;
+package ru.evendate.android.auth;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -13,7 +13,7 @@ import android.text.TextUtils;
 /**
  * Created by Dmitry on 07.09.2015.
  */
-public class EvendateAuthenticator extends AbstractAccountAuthenticator {
+public class Authenticator extends AbstractAccountAuthenticator {
     Context mContext;
 
     /**
@@ -24,7 +24,7 @@ public class EvendateAuthenticator extends AbstractAccountAuthenticator {
     public static final String ACCOUNT_PREFERENCES = "account_preferences";
 
     // Simple constructor
-    public EvendateAuthenticator(Context context) {
+    public Authenticator(Context context) {
         super(context);
         mContext = context;
     }

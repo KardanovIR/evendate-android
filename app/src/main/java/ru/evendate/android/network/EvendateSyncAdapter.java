@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.EvendateAuthenticator;
+import ru.evendate.android.auth.Authenticator;
 
 @Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
@@ -126,8 +126,8 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         AccountManager accountManager =
                 (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        SharedPreferences sPref = context.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+        SharedPreferences sPref = context.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
 
         Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {

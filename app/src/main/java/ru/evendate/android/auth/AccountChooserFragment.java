@@ -1,4 +1,4 @@
-package ru.evendate.android.authorization;
+package ru.evendate.android.auth;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
