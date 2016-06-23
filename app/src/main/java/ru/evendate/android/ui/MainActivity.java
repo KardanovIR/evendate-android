@@ -14,6 +14,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
@@ -22,6 +24,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
+import ru.evendate.android.auth.AuthActivity;
+import ru.evendate.android.auth.WebAuthActivity;
 import ru.evendate.android.network.EvendateSyncAdapter;
 
 
@@ -33,17 +37,13 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     Toolbar mToolbar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final int INTRO_REQUEST = 1;
 
-    private SharedPreferences mSharedPreferences = null;
-    public final String APP_PREF = "evendate_pref";
-    public final String FIRST_RUN = "first_run";
-    public boolean isFirstRun = false;
     public static final String TYPE = "type";
     public static final int REEL = 0;
     public static final int CALENDAR = 1;
     public static final int CATALOG = 2;
     private EvendateDrawer mDrawer;
+    private final int REQUEST_AUTH = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +63,10 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             }
         });
 
+        mDrawer = EvendateDrawer.newInstance(this);
         checkPlayServices();
-
         checkAccount();
+
         if (savedInstanceState != null) {
             switch (savedInstanceState.getInt(TYPE)) {
                 case REEL:
@@ -84,17 +85,16 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             ((MainPagerFragment)mFragment).setOnRefreshListener(this);
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
-        mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
-        if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
-            isFirstRun = true;
-            mSharedPreferences.edit().putBoolean(FIRST_RUN, false).apply();
-        } else
-            fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
-        mDrawer = EvendateDrawer.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
         mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         mDrawer.start();
     }
 
@@ -127,20 +127,24 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     /**
-     * check account exists and start intro if no
+     * check account exists and start auth if no
      */
-    private void checkAccount() {
+    private boolean checkAccount() {
         Account account = EvendateSyncAdapter.getSyncAccount(this);
         if (account == null) {
-            Intent introIntent = new Intent(this, EvendateIntro.class);
-            startActivityForResult(introIntent, INTRO_REQUEST);
+            Intent authIntent = new Intent(this, AuthActivity.class);
+            startActivityForResult(authIntent, REQUEST_AUTH);
+            return false;
         }
+        return true;
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == INTRO_REQUEST) {
-            if (resultCode == RESULT_CANCELED) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_AUTH) {
+            if(resultCode == RESULT_CANCELED) {
                 finish();
             }
         }

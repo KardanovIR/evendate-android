@@ -3,10 +3,13 @@ package ru.evendate.android.auth;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
@@ -17,10 +20,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
 
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.gcm.RegistrationGCMIntentService;
 import ru.evendate.android.network.ApiFactory;
@@ -30,7 +41,7 @@ import ru.evendate.android.network.EvendateSyncAdapter;
  * Created by fj on 14.09.2015.
  */
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener, WebAuthFragment.TokenReceiver {
+        View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
     private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.HOST_NAME + "/vkOauthDone.php?mobile=true&response_type=token";
@@ -40,63 +51,101 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
 
     static public String URL_KEY = "url";
-    private static final int RC_SIGN_IN = 9001;
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
+    private final int REQUEST_INTRO = 1;
+    private final int REQUEST_WEB_AUTH = 2;
+    private static final int REQUEST_SIGN_IN = 3;
+
+    @Bind(R.id.sing_in_vk_button) Button SingInVkButton;
+    @Bind(R.id.sing_in_fb_button) Button SingInFbButton;
+    @Bind(R.id.sing_in_google_button) SignInButton SingInGoogleButton;
+
+    public final String APP_PREF = "evendate_pref";
+    public final String FIRST_RUN = "first_run";
+
+    GoogleApiClient apiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        ButterKnife.bind(this);
 
-        AccountChooserFragment fragment = new AccountChooserFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.auth_container, fragment)
-                .commit();
+        SingInVkButton.setOnClickListener(this);
+        SingInFbButton.setOnClickListener(this);
+        SingInGoogleButton.setOnClickListener(this);
+
+        apiClient = getGoogleApiClient();
+        checkFirstRun();
 
         final AccountManager am = AccountManager.get(this);
         // TODO change account
         // temporary we remove function to change accounts
         // delete old account
-        Account oldAccount = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        Account oldAccount = EvendateSyncAdapter.getSyncAccount(this);
         if (oldAccount != null)
             am.removeAccount(oldAccount, null, null);
+
     }
 
-
-    @Override
-    public void onClick(View v) {
-        Bundle args = new Bundle();
-        switch (v.getId()) {
-            case R.id.sing_in_vk_button:
-                args.putString(URL_KEY, VK_URL);
-                break;
-            case R.id.sing_in_fb_button:
-                args.putString(URL_KEY, FB_URL);
-                break;
-            case R.id.sing_in_google_button:
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(getGoogleApiClient());
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-                return;
-        }
-        Log.i(LOG_TAG, "replace fragment");
-        WebAuthFragment fragment = new WebAuthFragment();
-        fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.auth_container, fragment)
-                .commit();
-    }
-
-    private GoogleApiClient getGoogleApiClient(){
+    private GoogleApiClient getGoogleApiClient() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build();
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
+                .build();
+        SingInGoogleButton.setScopes(gso.getScopeArray());
         return new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
 
+    void checkFirstRun() {
+        SharedPreferences preferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
+        if (preferences.getBoolean(FIRST_RUN, true)) {
+            preferences.edit().putBoolean(FIRST_RUN, false).apply();
+            startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
+        }
+    }
+
     @Override
+    protected void onStart() {
+        super.onStart();
+        apiClient.connect();
+        //Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
+        //        new ResultCallback<Status>() {
+        //            @Override
+        //            public void onResult(@NonNull Status status) {
+        //            }
+        //        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        apiClient.disconnect();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sing_in_vk_button:
+                startAuth(VK_URL);
+                break;
+            case R.id.sing_in_fb_button:
+                startAuth(FB_URL);
+                break;
+            case R.id.sing_in_google_button:
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+                startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+        }
+    }
+
+    private void startAuth(String Url) {
+        Intent intent = new Intent(this, WebAuthActivity.class);
+        intent.putExtra(URL_KEY, Url);
+        startActivityForResult(intent, REQUEST_WEB_AUTH);
+    }
+
     public void onTokenReceived(String email, String token) {
 
         final AccountManager manager = AccountManager.get(this);
@@ -109,6 +158,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
             manager.setAuthToken(account, account.type, token);
+
+            //save account email into shared preferences to find current account later
+            SharedPreferences sPref = getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, MODE_PRIVATE);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString(Authenticator.ACTIVE_ACCOUNT_NAME, account.name);
+            ed.apply();
 
         } else {
             Log.i(LOG_TAG, "cannot add account");
@@ -137,37 +192,53 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == REQUEST_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleGoogleSignInResult(result);
+        }
+        if (requestCode == REQUEST_INTRO) {
+            if(resultCode == RESULT_CANCELED) {
+                finish();
+            }
+        }
+        if (requestCode == REQUEST_WEB_AUTH) {
+            if (resultCode == RESULT_OK) {
+                String email = data.getStringExtra(WebAuthActivity.EMAIL);
+                String token = data.getStringExtra(WebAuthActivity.TOKEN);
+                onTokenReceived(email, token);
+            }
+            else{
+                //TODO
+            }
         }
     }
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
         Log.d(LOG_TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
+        GoogleSignInAccount acct = result.getSignInAccount();
+        if (result.isSuccess() && acct != null) {
             new RetrieveTokenTask().execute(acct.getEmail());
         } else {
-            Toast.makeText(this, "Error occured", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
+        //TODO
     }
 
     private class RetrieveTokenTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            String accountName = params[0];
+            String email = params[0];
             String token = null;
             try {
-                token = GoogleAuthUtil.getToken(getApplicationContext(), accountName, GOOGLE_SCOPE);
+                token = GoogleAuthUtil.getToken(getApplicationContext(), email, GOOGLE_SCOPE);
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage());
             } catch (UserRecoverableAuthException e) {
@@ -179,10 +250,16 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.i("retrieve", s);
+        protected void onPostExecute(String token) {
+            super.onPostExecute(token);
+            onGoogleTokenReceived(token);
         }
     }
 
+    private void onGoogleTokenReceived(String token) {
+        String url = ApiFactory.HOST_NAME + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
+                "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
+        url += token;
+        startAuth(url);
+    }
 }

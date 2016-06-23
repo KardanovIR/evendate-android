@@ -42,11 +42,6 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".auth.AuthActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"/>
-
         <!--
         <provider
             android:name=".data.EvendateProvider"
@@ -107,10 +102,20 @@
         <activity android:name=".ui.UserProfileActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"/>
+
+
+
         <activity
-            android:name=".ui.EvendateIntro"
+            android:name=".auth.AuthActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"/>
+        <activity
+            android:name=".auth.IntroActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".auth.WebAuthActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices -->

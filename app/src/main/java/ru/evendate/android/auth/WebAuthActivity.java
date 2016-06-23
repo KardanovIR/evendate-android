@@ -1,13 +1,10 @@
 package ru.evendate.android.auth;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -16,6 +13,7 @@ import android.webkit.WebViewClient;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 
 /**
@@ -23,20 +21,21 @@ import ru.evendate.android.R;
  */
 
 
-public class WebAuthFragment extends Fragment {
-    private final String LOG_TAG = WebAuthFragment.class.getSimpleName();
+public class WebAuthActivity extends AppCompatActivity {
+    private final String LOG_TAG = WebAuthActivity.class.getSimpleName();
 
     private WebView mWebView;
     private String mUrl;
-    private TokenReceiver mContext;
+
+    public final static String EMAIL = "email";
+    public final static String TOKEN = "token";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_web_auth, container, false);
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_web_auth);
 
-        mWebView = (WebView)rootView.findViewById(R.id.auth_web_view);
+        mWebView = (WebView)findViewById(R.id.auth_web_view);
         if (savedInstanceState != null)
             mWebView.restoreState(savedInstanceState);
         else {
@@ -47,11 +46,11 @@ public class WebAuthFragment extends Fragment {
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        Bundle bundle = getArguments();
-        if (bundle != null)
-            mUrl = bundle.getString(AuthActivity.URL_KEY);
+        Intent intent = getIntent();
+        if (intent == null)
+            throw new RuntimeException("no intent with uri");
+        mUrl = intent.getExtras().getString(AuthActivity.URL_KEY);
 
-        return rootView;
     }
 
     @Override
@@ -61,13 +60,7 @@ public class WebAuthFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = (TokenReceiver)context;
-    }
-
-    @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         if (mUrl != null)
             mWebView.loadUrl(mUrl);
@@ -79,11 +72,11 @@ public class WebAuthFragment extends Fragment {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             Log.i(LOG_TAG, url);
-            String oAuth = "/mobileAuthDone.php";
+            final String AUTH_PATH = "/mobileAuthDone.php";
 
             try {
                 URL currentURL = new URL(url);
-                if (currentURL.getPath().equals(oAuth)) {
+                if (currentURL.getPath().equals(AUTH_PATH)) {
 
                     String query = currentURL.getQuery();
                     Log.i(LOG_TAG, "start authorization");
@@ -91,13 +84,20 @@ public class WebAuthFragment extends Fragment {
 
                     String token = retrieveToken(query);
                     String email = retrieveEmail(query);
-                    mContext.onTokenReceived(email, token);
+
+                    Intent intent = new Intent();
+                    intent.putExtra(EMAIL, email);
+                    intent.putExtra(TOKEN, token);
+                    setResult(RESULT_OK, intent);
+                    finish();
 
                     Log.d(LOG_TAG, "token: " + token);
                     Log.i(LOG_TAG, "finish authorization");
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                setResult(RESULT_CANCELED);
+                finish();
             }
         }
 
@@ -106,13 +106,9 @@ public class WebAuthFragment extends Fragment {
             int end = query.indexOf("&");
             return query.substring(start + 1, end);
         }
+
         private String retrieveEmail(String query){
             return query.substring(query.lastIndexOf("=") + 1);
         }
-    }
-
-
-    public interface TokenReceiver {
-        void onTokenReceived(String email, String token);
     }
 }
