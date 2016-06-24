@@ -1,6 +1,9 @@
 package ru.evendate.android.network;
 
+import java.util.List;
+
 import retrofit.Call;
+import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
@@ -14,6 +17,7 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -197,5 +201,12 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("hidden") boolean hidden
+    );
+
+    //statistics
+    @POST(API_PATH + "/statistics/batch")
+    Observable<Response> postStat(
+            @Header("Authorization") String authorization,
+            @Body List<StatisticsEvent> payload
     );
 }

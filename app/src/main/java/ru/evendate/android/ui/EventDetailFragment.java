@@ -51,6 +51,7 @@ import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.Statistics;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
@@ -321,6 +322,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @SuppressWarnings("unused")
     @OnClick(R.id.event_place_button)
     public void onPlaceClick(){
+        Statistics.init(getActivity());
+        Statistics.sendEventOpenMap(eventId);
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
                 "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -331,6 +334,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @SuppressWarnings("unused")
     @OnClick(R.id.event_link_card)
     public void onLinkClick(){
+        Statistics.init(getActivity());
+        Statistics.sendEventOpenSite(eventId);
         if(mAdapter.getEvent() == null)
             return;
         Intent openLink = new Intent(Intent.ACTION_VIEW);
