@@ -7,20 +7,18 @@ package ru.evendate.android.network;
  */
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.auth.Authenticator;
 
 @Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
@@ -108,7 +106,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        Account account = getSyncAccount(context);
+        Account account = EvendateAccountManager.getSyncAccount(context);
         if (account == null) {
             Log.e(LOG_TAG, "no account");
             return;
@@ -116,29 +114,6 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentResolver.requestSync(account,
                 context.getString(R.string.content_authority), bundle);
         Log.d(LOG_TAG, "Scheduled sync");
-    }
-
-    /**
-     * @param context The application context
-     */
-    public static Account getSyncAccount(Context context) {
-        // Get an instance of the Android account manager
-        AccountManager accountManager =
-                (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
-
-        SharedPreferences sPref = context.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
-
-        Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
-        if (accounts.length == 0 || account_name == null) {
-            Log.e(LOG_TAG, "get account: No Accounts");
-            return null;
-        }
-        for (Account account : accounts) {
-            if (account.name.equals(account_name))
-                return account;
-        }
-        return null;
     }
 
     //private static void onAccountCreated(Account newAccount, Context context) {
@@ -157,7 +132,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     //    syncImmediately(context);
     //}
     public static void initializeSyncAdapter(Context context) {
-        getSyncAccount(context);
+        EvendateAccountManager.getSyncAccount(context);
     }
 
 

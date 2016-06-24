@@ -103,8 +103,6 @@
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"/>
 
-
-
         <activity
             android:name=".auth.AuthActivity"
             android:screenOrientation="portrait"

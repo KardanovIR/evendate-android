@@ -1,8 +1,8 @@
 package ru.evendate.android.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.View;
 
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.auth.Authenticator;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
@@ -59,14 +58,14 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
             @Override
             public void onLoaded(ArrayList<UserDetail> users) {
                 UserDetail user = users.get(0);
-                SharedPreferences sPref =
-                        mContext.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-                String accountName = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
+                Account account = EvendateAccountManager.getSyncAccount(context);
+                if(account == null)
+                    return;
 
                 getAccountHeader().clear();
                 getAccountHeader().addProfiles(
                         new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
-                                .withEmail(accountName)
+                                .withEmail(account.name)
                                 .withIcon(user.getAvatarUrl()),
                         new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
                                 .withIcon(R.drawable.exit_icon)

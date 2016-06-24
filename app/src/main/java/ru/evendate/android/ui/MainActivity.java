@@ -3,7 +3,6 @@ package ru.evendate.android.ui;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,8 +13,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
@@ -23,10 +20,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
-import ru.evendate.android.auth.WebAuthActivity;
-import ru.evendate.android.network.EvendateSyncAdapter;
 
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener {
@@ -130,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
      * check account exists and start auth if no
      */
     private boolean checkAccount() {
-        Account account = EvendateSyncAdapter.getSyncAccount(this);
+        Account account = EvendateAccountManager.getSyncAccount(this);
         if (account == null) {
             Intent authIntent = new Intent(this, AuthActivity.class);
             startActivityForResult(authIntent, REQUEST_AUTH);

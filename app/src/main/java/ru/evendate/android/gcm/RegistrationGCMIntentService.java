@@ -15,10 +15,10 @@ import com.google.android.gms.iid.InstanceID;
 import java.io.IOException;
 
 import retrofit.Call;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.EvendateSyncAdapter;
 import ru.evendate.android.network.Response;
 
 /**
@@ -84,7 +84,7 @@ public class RegistrationGCMIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         ApiService apiService = ApiFactory.getEvendateService();
-        Account account = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        Account account = EvendateAccountManager.getSyncAccount(getBaseContext());
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
