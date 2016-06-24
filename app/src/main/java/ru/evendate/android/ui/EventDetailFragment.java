@@ -344,7 +344,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.event_link_card)
+    @OnClick(R.id.fab)
     public void onFabClick(){
         if(mAdapter.getEvent() == null)
             return;
