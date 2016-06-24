@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
@@ -282,6 +283,8 @@ public class OrganizationDetailFragment extends Fragment implements
      * handle place button click and open google map
      */
     public void onPlaceClicked() {
+        Statistics.init(getActivity());
+        Statistics.sendOrgOpenMap(organizationId);
         Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mAdapter.getOrganization().getDefaultAddress());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -305,6 +308,8 @@ public class OrganizationDetailFragment extends Fragment implements
      */
     @Override
     public void onLinkClicked() {
+        Statistics.init(getActivity());
+        Statistics.sendOrgOpenSite(organizationId);
         Intent openLink = new Intent(Intent.ACTION_VIEW);
         openLink.setData(Uri.parse(mAdapter.getOrganization().getSiteUrl()));
         startActivity(openLink);
