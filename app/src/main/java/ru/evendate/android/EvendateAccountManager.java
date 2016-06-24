@@ -18,15 +18,19 @@ public class EvendateAccountManager {
     private static String LOG_TAG = EvendateAccountManager.class.getSimpleName();
 
     /**
-     * @param context The application context
+     * field in preferences that contain active account name
+     * needed for getSyncAccount
      */
+    public static final String ACTIVE_ACCOUNT_NAME = "active_account_name";
+    public static final String ACCOUNT_PREFERENCES = "account_preferences";
+
     public static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         android.accounts.AccountManager accountManager =
                 (android.accounts.AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        SharedPreferences sPref = context.getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(Authenticator.ACTIVE_ACCOUNT_NAME, null);
+        SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        String account_name = sPref.getString(ACTIVE_ACCOUNT_NAME, null);
 
         Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
@@ -38,6 +42,14 @@ public class EvendateAccountManager {
                 return account;
         }
         return null;
+    }
+
+    //save account email into shared preferences to find current account later
+    public static void setActiveAccountName(Context context, String accountName){
+        SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(ACTIVE_ACCOUNT_NAME, accountName);
+        ed.apply();
     }
 
     public static void deleteAccount(Context context) {

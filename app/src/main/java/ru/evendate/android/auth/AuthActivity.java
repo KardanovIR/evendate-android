@@ -23,15 +23,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.common.api.Status;
 
 import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.gcm.RegistrationGCMIntentService;
 import ru.evendate.android.network.ApiFactory;
@@ -75,7 +73,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         SingInFbButton.setOnClickListener(this);
         SingInGoogleButton.setOnClickListener(this);
 
-        apiClient = getGoogleApiClient();
+        apiClient = initGoogleApiClient();
         checkFirstRun();
 
         final AccountManager am = AccountManager.get(this);
@@ -88,7 +86,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     }
 
-    private GoogleApiClient getGoogleApiClient() {
+    private GoogleApiClient initGoogleApiClient() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
                 .build();
@@ -126,6 +124,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     }
 
     @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sing_in_vk_button:
@@ -145,47 +149,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         intent.putExtra(URL_KEY, Url);
         startActivityForResult(intent, REQUEST_WEB_AUTH);
     }
-
-    public void onTokenReceived(String email, String token) {
-
-        final AccountManager manager = AccountManager.get(this);
-        String accountType = getResources().getString(R.string.account_type);
-        Account account = new Account(email, accountType);
-
-        final Bundle result = new Bundle();
-        if (manager.addAccountExplicitly(account, "", new Bundle())) {
-            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-            result.putString(AccountManager.KEY_AUTHTOKEN, token);
-            manager.setAuthToken(account, account.type, token);
-
-            //save account email into shared preferences to find current account later
-            SharedPreferences sPref = getSharedPreferences(Authenticator.ACCOUNT_PREFERENCES, MODE_PRIVATE);
-            SharedPreferences.Editor ed = sPref.edit();
-            ed.putString(Authenticator.ACTIVE_ACCOUNT_NAME, account.name);
-            ed.apply();
-
-        } else {
-            Log.i(LOG_TAG, "cannot add account");
-            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
-
-        Intent intent = new Intent(this, RegistrationGCMIntentService.class);
-        startService(intent);
-        setAccountAuthenticatorResult(result);
-        setResult(RESULT_OK);
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        setResult(RESULT_CANCELED);
-        super.onBackPressed();
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -222,15 +185,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
         }
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
-        //TODO
-    }
-
     private class RetrieveTokenTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -261,5 +215,41 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
         url += token;
         startAuth(url);
+    }
+
+    public void onTokenReceived(String email, String token) {
+
+        final AccountManager manager = AccountManager.get(this);
+        String accountType = getResources().getString(R.string.account_type);
+        Account account = new Account(email, accountType);
+
+        final Bundle result = new Bundle();
+        if (manager.addAccountExplicitly(account, "", new Bundle())) {
+            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+            result.putString(AccountManager.KEY_AUTHTOKEN, token);
+            manager.setAuthToken(account, account.type, token);
+            EvendateAccountManager.setActiveAccountName(this, account.name);
+        } else {
+            Log.i(LOG_TAG, "cannot add account");
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        Intent intent = new Intent(this, RegistrationGCMIntentService.class);
+        startService(intent);
+        setAccountAuthenticatorResult(result);
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
+        //TODO
     }
 }

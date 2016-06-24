@@ -16,13 +16,6 @@ import android.text.TextUtils;
 public class Authenticator extends AbstractAccountAuthenticator {
     Context mContext;
 
-    /**
-     * field in preferences that contain active account name
-     * needed for getSyncAccount
-     */
-    public static final String ACTIVE_ACCOUNT_NAME = "active_account_name";
-    public static final String ACCOUNT_PREFERENCES = "account_preferences";
-
     // Simple constructor
     public Authenticator(Context context) {
         super(context);
