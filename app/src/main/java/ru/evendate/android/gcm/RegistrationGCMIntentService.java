@@ -6,6 +6,7 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmPubSub;
@@ -15,10 +16,10 @@ import com.google.android.gms.iid.InstanceID;
 import java.io.IOException;
 
 import retrofit.Call;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.EvendateSyncAdapter;
 import ru.evendate.android.network.Response;
 
 /**
@@ -84,7 +85,7 @@ public class RegistrationGCMIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         ApiService apiService = ApiFactory.getEvendateService();
-        Account account = EvendateSyncAdapter.getSyncAccount(getBaseContext());
+        Account account = EvendateAccountManager.getSyncAccount(getBaseContext());
         AccountManager accountManager = AccountManager.get(getBaseContext());
         try {
             String authToken = accountManager.blockingGetAuthToken(account, getBaseContext().getString(R.string.account_type), false);
@@ -97,7 +98,8 @@ public class RegistrationGCMIntentService extends IntentService {
 
     public static boolean putDeviceToken(ApiService apiService, String basicAuth, String deviceToken) {
         Call<Response> call =
-                apiService.putDeviceToken(deviceToken, "android", basicAuth);
+                apiService.putDeviceToken(deviceToken, "android",
+                        Build.MANUFACTURER + " " + Build.MODEL, Build.VERSION.RELEASE, basicAuth);
         try {
             retrofit.Response response = call.execute();
             if (response.isSuccess()) {

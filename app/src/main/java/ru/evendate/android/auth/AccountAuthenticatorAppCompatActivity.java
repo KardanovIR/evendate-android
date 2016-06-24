@@ -1,4 +1,4 @@
-package ru.evendate.android.authorization;
+package ru.evendate.android.auth;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;

@@ -91,6 +91,7 @@
     <string name="organization_background_description">Organization background image</string>
 
     <!-- strings for sign in -->
+    <string name="loading">Loading…</string>
     <string name="sing_in_description">Sing in via social network</string>
     <string name="sing_in_vk">Vkontakte</string>
     <string name="sing_in_fb">Facebook</string>

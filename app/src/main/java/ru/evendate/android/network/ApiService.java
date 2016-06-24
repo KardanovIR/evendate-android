@@ -179,6 +179,8 @@ public interface ApiService {
     Call<Response> putDeviceToken(
             @Query("device_token") String deviceToken,
             @Query("client_type") String clientType,
+            @Query("model") String model,
+            @Query("os_version") String OsVersion,
             @Header("Authorization") String authorization
     );
 
