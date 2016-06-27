@@ -13,8 +13,8 @@
     <color name="black_translucent">#50000000</color>
 
     <!--Colors for icons -->
-    <color name="vk_color">#4d7aa3</color>
-    <color name="fb_color">#415fa8</color>
-    <color name="gplus_color">#d95333</color>
+    <color name="vk_color">#567CA4</color>
+    <color name="fb_color">#3B5998</color>
+    <color name="google_plus_color">#DD4B39</color>
 
 </resources>
