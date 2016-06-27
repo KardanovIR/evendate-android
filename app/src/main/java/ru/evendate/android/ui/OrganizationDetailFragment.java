@@ -3,6 +3,8 @@ package ru.evendate.android.ui;
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +16,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -34,6 +38,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -90,11 +95,12 @@ public class OrganizationDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_organization, container, false);
         ButterKnife.bind(this, rootView);
+        setHasOptionsMenu(true);
 
         mToolbar.setTitle("");
-        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
 
         Bundle args = getArguments();
         if (args != null) {
@@ -208,6 +214,32 @@ public class OrganizationDetailFragment extends Fragment implements
             mBackgroundView.setY(-scrollOffset * 0.5f);
         } else
             mBackgroundView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onUpPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //TODO DRY
+    private void onUpPressed(){
+        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
+
+        if(taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
+            Log.i(LOG_TAG, "This is last activity in the stack");
+            getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
+        }
+        else{
+            getActivity().onBackPressed();
+        }
     }
 
     private void loadOrg(){

@@ -30,17 +30,47 @@
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.OrganizationCatalogActivity"
+            android:label="@string/title_activity_organization"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ui.EventDetailActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ui.OrganizationDetailActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ui.UserListActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.UserProfileActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"/>
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        <activity
+            android:name=".auth.AuthActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".auth.IntroActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".auth.WebAuthActivity"
+            android:screenOrientation="portrait"/>
 
         <!--
         <provider
@@ -73,48 +103,6 @@
                 android:resource="@xml/evendate_sync_adapter" />
         </service>
 
-        <activity
-            android:name=".ui.EventDetailActivity"
-            android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.OrganizationDetailActivity"
-            android:label="@string/title_activity_organization"
-            android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.OrganizationCatalogActivity"
-            android:label="@string/title_activity_organization"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".ui.UserListActivity"
-            android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.UserProfileActivity"
-            android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity
-            android:name=".auth.AuthActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
-        <activity
-            android:name=".auth.IntroActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity
-            android:name=".auth.WebAuthActivity"
-            android:screenOrientation="portrait"/>
-
         <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices -->
         <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
@@ -126,7 +114,11 @@
         <service android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false"/>
-        
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <!-- Google Cloud messaging -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
