@@ -100,7 +100,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
-                .withHeaderBackground(R.drawable.default_background)
+                .withHeaderBackground(R.drawable.gradient_profile)
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
