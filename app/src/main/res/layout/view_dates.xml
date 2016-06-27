@@ -15,12 +15,14 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="@string/dates_view_date_label"/>
+                android:text="@string/dates_view_date_label"
+                style="@style/Body2.Light"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="@string/dates_view_time_label"
+                style="@style/Body2.Light"
                 />
         </LinearLayout>
         <LinearLayout
@@ -41,7 +43,7 @@
             android:layout_below="@+id/container"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="16dp">
         </LinearLayout>
         <ToggleButton
             android:id="@+id/expand_button"
@@ -50,14 +52,13 @@
             android:minHeight="0dp"
             android:textOff="@string/dates_view_more"
             android:textOn="@string/dates_view_less"
-            android:textSize="14sp"
-            android:textColor="#ff5f9e"
             android:layout_below="@+id/expand_container"
             android:layout_centerHorizontal="true"
             android:paddingTop="16dp"
             android:paddingRight="48dp"
             android:paddingBottom="16dp"
             android:paddingLeft="48dp"
-            style="?android:attr/borderlessButtonStyle" />
+            style="?android:attr/borderlessButtonStyle"
+            android:textAppearance="@style/Caption.Light"/>
     </RelativeLayout>
 </merge>

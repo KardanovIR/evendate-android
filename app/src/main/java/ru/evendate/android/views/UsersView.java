@@ -3,6 +3,7 @@ package ru.evendate.android.views;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.ImageView;
@@ -94,6 +95,8 @@ public class UsersView extends LinearLayout {
             circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             circleImageView.setImageResource(R.drawable.butterfly);
             circleImageView.setMinimumWidth(getHeight());
+            circleImageView.setBorderWidth(2);
+            circleImageView.setBorderColor(Color.WHITE);
             addView(circleImageView, i, lp);
         }
     }

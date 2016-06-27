@@ -169,7 +169,7 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
         super.onResume();
 
         mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.CALENDAR.type(),
+        mReelFragment = ReelFragment.newInstance(ReelFragment.ReelType.CALENDAR.type(),
                 mCalendarView.getSelectedDate().getDate(), false);
         mReelFragment.setDataListener(this);
         FragmentManager fragmentManager = getChildFragmentManager();
@@ -179,7 +179,7 @@ public class CalendarFragment extends Fragment implements ReelFragment.OnEventsD
     @Override
     public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
-        mReelFragment = ReelFragment.newInstance(ReelFragment.TypeFormat.CALENDAR.type(), date.getDate(), false);
+        mReelFragment = ReelFragment.newInstance(ReelFragment.ReelType.CALENDAR.type(), date.getDate(), false);
         mReelFragment.setDataListener(this);
         mCalendarView.removeDecorator(mOneDayDecorator);
         mOneDayDecorator.setDate(date);

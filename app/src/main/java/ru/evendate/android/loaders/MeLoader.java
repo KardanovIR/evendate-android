@@ -8,9 +8,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.UserDetail;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 
 /**
  * Created by Dmitry on 24.02.2016.
@@ -24,15 +24,15 @@ public class MeLoader extends AbstractLoader<UserDetail> {
 
     protected void onStartLoading() {
         Log.d(LOG_TAG, "getting me");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<UserDetail>> call =
-                evendateService.getMe(peekToken(), UserDetail.FIELDS_LIST);
+        Call<ResponseArray<UserDetail>> call =
+                apiService.getMe(peekToken(), UserDetail.FIELDS_LIST);
         mCall = call;
 
-        call.enqueue(new Callback<EvendateServiceResponseArray<UserDetail>>() {
+        call.enqueue(new Callback<ResponseArray<UserDetail>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<UserDetail>> response,
+            public void onResponse(Response<ResponseArray<UserDetail>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData());

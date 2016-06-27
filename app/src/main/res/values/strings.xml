@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Evendate</string>
     <string name="title_activity_detail">Event</string>
-    <string name="title_activity_organization">Organization</string>
+    <string name="title_activity_organization">Organizer catalog</string>
 
     <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
      <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
@@ -23,8 +23,13 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="log_out">Log out</string>
 
-    <string name="feed">Feed</string>
-    <string name="favorite">Favorite</string>
+
+    <!-- strings for tabs in main activity -->
+    <string name="feed_tab">Feed</string>
+    <string name="favorite_tab">Favorite</string>
+    <string name="recommendation_tab">For you</string>
+
+
     <string name="accounts">Accounts</string>
 
     <string name="progress_dialog_title">First synchronization</string>
@@ -50,6 +55,7 @@
     <string name="event_users_all">ALL</string>
 
     <string name="event_free">Free</string>
+    <string name="event_price_rub">rub</string>
     <string name="event_price_from">From</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
@@ -84,12 +90,6 @@
     <string name="organization_address">Organization address</string>
     <string name="organization_background_description">Organization background image</string>
 
-    <!-- strings for sign in -->
-    <string name="sing_in_description">Sing in via social network</string>
-    <string name="sing_in_vk">Vkontakte</string>
-    <string name="sing_in_fb">Facebook</string>
-    <string name="sing_in_google">Google+</string>
-    <string name="account_already_exists">Evendate account already exist</string>
 
     <string name="subscription_fail_cause_network">No internet connection</string>
     <string name="no_internet_connection">No internet connection</string>
@@ -108,6 +108,12 @@
 
     <string name="calendar_events">events</string>
 
+    <!-- auth strings -->
+    <string name="auth_sign_in">Sing in via social network:</string>
+    <string name="auth_loading">Loading…</string>
+    <string name="account_already_exists">Evendate account already exist</string>
+
+
     <!-- intro strings -->
     <string name="intro_miss">Don\'t miss important event</string>
     <string name="intro_interests">Find out friends interests</string>
@@ -121,6 +127,17 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_check_organizations">Choose organization</string>
+
+
+    <string name="dialog_event_hide">Hide event</string>
+    <string name="dialog_event_fave">Add to favorites</string>
+    <string name="dialog_event_unfave">Remove from favorites</string>
+    <string name="dialog_event_invite_friend">Invite friend</string>
+
+    <string name="toast_event">Event</string>
+    <string name="toast_event_hide">hided</string>
+    <string name="toast_event_fave">added to favorites</string>
+    <string name="toast_event_unfave">removed from favorites</string>
 
     <!-- strings for statistics -->
     <string name="stat_category_event" translatable="false">Event</string>
@@ -136,6 +153,7 @@
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
+    <string name="stat_page_recommendations" translatable="false">Recommendations</string>
     <string name="stat_page_actions" translatable="false">Actions</string>
     <string name="stat_page_subscriptions" translatable="false">Subscriptions</string>
 
@@ -149,4 +167,9 @@
     <string name="action_dislike">Remove events from favorites</string>
     <string name="event_price">Price</string>
     <string name="event_registration">Registration</string>
+    <string name="auth_welcome">Welcome to Evendate!</string>
+    <string name="auth_vk">Sign in via Vkontakte</string>
+    <string name="auth_google">Sign in via G+</string>
+    <string name="auth_fb">Sign in via Facebook</string>
+    <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
 </resources>

@@ -7,13 +7,13 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.DateCalendar;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ResponseArray;
 
 /**
  * Created by Dmitry on 08.02.2016.
  */
 public class DateCalendarLoader extends AbstractLoader<DateCalendar> implements
-        Callback<EvendateServiceResponseArray<DateCalendar>> {
+        Callback<ResponseArray<DateCalendar>> {
     private final String LOG_TAG = DateCalendarLoader.class.getSimpleName();
 
     public DateCalendarLoader(Context context) {
@@ -29,7 +29,7 @@ public class DateCalendarLoader extends AbstractLoader<DateCalendar> implements
     }
 
     @Override
-    public void onResponse(Response<EvendateServiceResponseArray<DateCalendar>> response,
+    public void onResponse(Response<ResponseArray<DateCalendar>> response,
                            Retrofit retrofit) {
         if (response.isSuccess()) {
             onLoaded(response.body().getData());
