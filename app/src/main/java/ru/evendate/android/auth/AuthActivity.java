@@ -136,7 +136,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setMessage(getString(R.string.auth_loading));
             mProgressDialog.setIndeterminate(true);
         }
 

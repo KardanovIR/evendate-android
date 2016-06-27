@@ -90,13 +90,6 @@
     <string name="organization_address">Organization address</string>
     <string name="organization_background_description">Organization background image</string>
 
-    <!-- strings for sign in -->
-    <string name="loading">Loading…</string>
-    <string name="sing_in_description">Sing in via social network</string>
-    <string name="sing_in_vk">Vkontakte</string>
-    <string name="sing_in_fb">Facebook</string>
-    <string name="sing_in_google">Google+</string>
-    <string name="account_already_exists">Evendate account already exist</string>
 
     <string name="subscription_fail_cause_network">No internet connection</string>
     <string name="no_internet_connection">No internet connection</string>
@@ -114,6 +107,12 @@
     <string name="event_all_day">All day</string>
 
     <string name="calendar_events">events</string>
+
+    <!-- auth strings -->
+    <string name="auth_sign_in">Sing in via social network:</string>
+    <string name="auth_loading">Loading…</string>
+    <string name="account_already_exists">Evendate account already exist</string>
+
 
     <!-- intro strings -->
     <string name="intro_miss">Don\'t miss important event</string>
@@ -168,4 +167,9 @@
     <string name="action_dislike">Remove events from favorites</string>
     <string name="event_price">Price</string>
     <string name="event_registration">Registration</string>
+    <string name="auth_welcome">Welcome to Evendate!</string>
+    <string name="auth_vk">Sign in via Vkontakte</string>
+    <string name="auth_google">Sign in via G+</string>
+    <string name="auth_fb">Sign in via Facebook</string>
+    <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
 </resources>

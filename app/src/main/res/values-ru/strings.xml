@@ -3,10 +3,6 @@
     <string name="app_name">Evendate</string>
     <string name="calendar">Календарь</string>
     <string name="event_all_day">Весь день</string>
-    <string name="sing_in_vk">Вконтакте</string>
-    <string name="sing_in_google">Google+</string>
-    <string name="sing_in_fb">Facebook</string>
-    <string name="sing_in_description">Войдите через социальную сеть</string>
     <string name="subscription_fail_cause_network">Нет интернет подключения</string>
     <string name="subscriptions">Мои подписки</string>
     <string name="title_activity_detail">Мероприятие</string>
@@ -101,5 +97,11 @@
     <string name="toast_event_hide">скрыто</string>
     <string name="toast_event_unfave">удалено из избранного</string>
     <string name="recommendation_tab">Для вас</string>
-    <string name="loading">Pfuhe</string>
+    <string name="auth_loading">Загрузка</string>
+    <string name="auth_description">Evendate – это сервис, позволяющий вам оставаться в курсе предстоящий событий в ваших любимых местах.</string>
+    <string name="auth_sign_in">Войдите через социальную сеть:</string>
+    <string name="auth_welcome">Добро пожаловать в Evendate!</string>
+    <string name="auth_vk">Войти через ВКонтакте</string>
+    <string name="auth_google">Войти через Google+</string>
+    <string name="auth_fb">Войти через Facebook</string>
 </resources>
