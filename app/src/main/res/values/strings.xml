@@ -3,17 +3,11 @@
     <string name="title_activity_detail">Event</string>
     <string name="title_activity_organization">Organizer catalog</string>
 
-    <!-- TODO надо выпилить в gradle.buldl или preference и сменить в консоли! -->
-     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        AIzaSyDHLxUykPATBZ8M5oG_teq0rd7Ryu7rqCQ
-    </string>
-    <string name="title_activity_maps">Map</string>
-
-    <!-- strings for sync -->
+    <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
     <string name="account_type" translatable="false">ru.evendate.android.accounts</string>
 
-    <!-- strings for navigation drawer and main activity -->
+    <!-- navigation drawer and main activity strings-->
     <string name="calendar">Calendar</string>
     <string name="reel">My events</string>
     <string name="settings">Settings</string>
@@ -24,7 +18,7 @@
     <string name="log_out">Log out</string>
 
 
-    <!-- strings for tabs in main activity -->
+    <!-- tabs strings in main activity -->
     <string name="feed_tab">Feed</string>
     <string name="favorite_tab">Favorite</string>
     <string name="recommendation_tab">For you</string>
@@ -38,6 +32,12 @@
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
+
+    <string name="feed_empty_header">No nearest events</string>
+    <string name="feed_empty_text">You can view other events when subscribing to other organizers or opening the recommended events</string>
+    <string name="favourites_empty_header">No favorites events</string>
+    <string name="favourites_empty_text">Add event to favorites and it\'ll appear here</string>
+    <string name="recommendation_empty_header">No recommendation for you</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
@@ -139,7 +139,7 @@
     <string name="toast_event_fave">added to favorites</string>
     <string name="toast_event_unfave">removed from favorites</string>
 
-    <!-- strings for statistics -->
+    <!-- statistics strings -->
     <string name="stat_category_event" translatable="false">Event</string>
     <string name="stat_category_organization" translatable="false">Organization</string>
     <string name="stat_category_user" translatable="false">User</string>

@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -54,10 +53,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
 
-    private TextView mFeedEmptyHeader;
-    private TextView mFeedEmptyTextView;
-    private FrameLayout mFrameLayout;
-    private LinearLayout mFeedEmptyLayout;
+    @Bind(R.id.tv_feed_header) TextView mFeedEmptyHeader;
+    @Bind(R.id.tv_feed_emptyText) TextView mFeedEmptyTextView;
+    @Bind(R.id.ll_feed_empty) LinearLayout mFeedEmptyLayout;
 
     static final String TYPE = "type";
     private int type = 0;
@@ -147,11 +145,6 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent),
                 PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.fl_feed_wrapper);
-        mFeedEmptyLayout = (LinearLayout) rootView.findViewById(R.id.ll_feed_empty);
-        mFeedEmptyHeader = (TextView) rootView.findViewById(R.id.tv_feed_header);
-        mFeedEmptyTextView = (TextView) rootView.findViewById(R.id.tv_feed_emptyText);
-
 
         if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
@@ -164,6 +157,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout.setRefreshing(true);
+        setCap();
         loadEvents();
         return rootView;
     }
@@ -204,6 +198,18 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         });
     }
 
+    private void setCap(){
+        ReelType reelType = ReelType.getType(type);
+        if (reelType == ReelType.FEED) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
+            mFeedEmptyTextView.setText(getResources().getString(R.string.feed_empty_text));
+        } else if (reelType == ReelType.FAVORITES) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
+            mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
+        } else if (reelType == ReelType.RECOMMENDATION) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.recommendation_empty_header));
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -242,6 +248,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     }
 
     private void loadEvents(){
+        hideCap();
         ApiService apiService = ApiFactory.getEvendateService();
         Observable<ResponseArray<EventDetail>> observable;
 
@@ -309,22 +316,21 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
-        if (eventList.size() == 0) {
-            mRecyclerView.setVisibility(View.GONE);
-            mFrameLayout.setBackgroundResource(R.color.primary);
-            mFeedEmptyLayout.setVisibility(View.VISIBLE);
-            if (type == TypeFormat.FEED.type) {
-                mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
-                mFeedEmptyTextView.setText(getResources().getString(R.string.feed_empty_text));
-            } else if (type == TypeFormat.FAVORITES.type) {
-                mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
-                mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
-            }
+        if (mAdapter.getList().size() == 0) {
+            displayCap();
         }
     }
 
     @Override
     public void requestNext() {
         loadEvents();
+    }
+
+    private void displayCap(){
+        mFeedEmptyLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void hideCap(){
+        mFeedEmptyLayout.setVisibility(View.GONE);
     }
 }
