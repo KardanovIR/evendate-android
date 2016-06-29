@@ -75,23 +75,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
 
     /**
      * change localize months in rus
-     * TODO move to strings
      */
-    private static DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols() {
-
-        @Override
-        public String[] getMonths() {
-            return new String[]{"январь", "февраль", "март", "апрель", "май", "июнь",
-                    "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"};
-        }
-    };
-
-    class MyTitleFormatter implements TitleFormatter {
-        public CharSequence format(CalendarDay day) {
-            SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy", myDateFormatSymbols);
-            return format.format(day.getDate());
-        }
-    }
+    private static DateFormatSymbols dateFormatMonths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +93,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     private void initToolbar() {
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
@@ -124,9 +110,14 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mOneDayDecorator = new OneDayDecorator();
         mCalendarView.addDecorator(mOneDayDecorator);
         mCalendarView.setShowOtherDates(true);
-        mCalendarView.setTitleFormatter(new MyTitleFormatter());
 
         mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
+
+        dateFormatMonths = new DateFormatSymbols();
+        if(getResources().getConfiguration().locale.getLanguage().equals("ru"))
+            dateFormatMonths.setMonths(
+                    new String[]{"январь", "февраль", "март", "апрель", "май", "июнь",
+                            "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"});
     }
 
     private Date getYesterdayDate() {
@@ -178,6 +169,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     @Override
     public void onStart() {
         super.onStart();
+        setToolbarDate();
         loadDates();
         mDrawer.getDrawer().setSelection(EvendateDrawer.CALENDAR_IDENTIFIER);
         mDrawer.start();
@@ -189,6 +181,15 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         if(errorDialog != null)
             errorDialog.dismiss();
         mDrawer.cancel();
+    }
+
+    private void setToolbarDate(){
+        String month = dateFormatMonths.getMonths()[mCalendarView.getSelectedDate().getMonth() - 1];
+        month = capitalize(month);
+        mToolbar.setTitle(month);
+    }
+    private String capitalize(String str){
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     private void loadDates() {
@@ -227,6 +228,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDateAndReload(date.getDate());
+        setToolbarDate();
     }
 
     @Override
@@ -235,7 +237,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         //TODO нужно как-то изящнее это сделать
         if (mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
             return;
-        mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
+        //mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
         mSelectedDateTextView.setText(simpleDateFormat.format(mCalendarView.getSelectedDate().getDate()));
     }
