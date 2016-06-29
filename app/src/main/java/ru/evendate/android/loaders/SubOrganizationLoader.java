@@ -5,12 +5,11 @@ import android.util.Log;
 
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 
 /**
  * Created by Dmitry on 24.02.2016.
@@ -31,18 +30,18 @@ public class SubOrganizationLoader extends AbstractLoader<Void> {
     @Override
     protected void onStartLoading() {
         Log.d(LOG_TAG, "performing sub");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
-        Call<EvendateServiceResponse> call;
+        ApiService apiService = ApiFactory.getEvendateService();
+        Call<Response> call;
         if (subscribe) {
-            call = evendateService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
+            call = apiService.organizationDeleteSubscription(mOrganization.getEntryId(), peekToken());
         } else {
-            call = evendateService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
+            call = apiService.organizationPostSubscription(mOrganization.getEntryId(), peekToken());
         }
         mCall = call;
 
-        call.enqueue(new Callback<EvendateServiceResponse>() {
+        call.enqueue(new Callback<Response>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponse> response,
+            public void onResponse(retrofit.Response response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     Log.d(LOG_TAG, "performed sub");

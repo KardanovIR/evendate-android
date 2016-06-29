@@ -12,7 +12,7 @@ public class EventDetail extends Event implements EventFeed {
             "organization_type_name,organization_short_name," +
             "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
-            "registration_required,registration_till,is_free,min_price," +
+            "registration_required,registration_till,is_free,min_price,is_same_time,created_at," +
             "dates{fields:'" + DateFull.FIELDS_LIST + "'},tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
     String location;
@@ -47,6 +47,8 @@ public class EventDetail extends Event implements EventFeed {
     boolean isFree;
     @SerializedName("min_price")
     int minPrice;
+    @SerializedName("is_same_time")
+    boolean isSameTime;
 
     @SerializedName("tags")
     ArrayList<Tag> tagList;
@@ -152,5 +154,9 @@ public class EventDetail extends Event implements EventFeed {
     @Override
     public int getMinPrice() {
         return minPrice;
+    }
+
+    public boolean isSameTime() {
+        return isSameTime;
     }
 }

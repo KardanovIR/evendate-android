@@ -8,8 +8,9 @@ import java.util.ArrayList;
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
             "organization_short_name,is_favorite,dates,organization_logo_small_url," +
-            "registration_required,registration_till,is_free,min_price" +
+            "registration_required,registration_till,is_free,min_price,is_same_time" +
             ",created_at";
+    String ORDER_BY_TIME = "created_at";
 
     int getEntryId();
 
@@ -46,4 +47,6 @@ public interface EventFeed {
     boolean isFree();
 
     int getMinPrice();
+
+    boolean isSameTime();
 }

@@ -1,8 +1,8 @@
 package ru.evendate.android.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.View;
 
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.EvendateAuthenticator;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
@@ -38,15 +37,15 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     private MeLoader mMeLoader;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
-    final static int ORGANIZATION_IDENTIFIER = 3;
+    final static int CATALOG_IDENTIFIER = 3;
     Context mContext;
 
     PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
             .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.organizations)
-            .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
+            .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
 
     protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -59,14 +58,14 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
             @Override
             public void onLoaded(ArrayList<UserDetail> users) {
                 UserDetail user = users.get(0);
-                SharedPreferences sPref =
-                        mContext.getSharedPreferences(EvendateAuthenticator.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-                String accountName = sPref.getString(EvendateAuthenticator.ACTIVE_ACCOUNT_NAME, null);
+                Account account = EvendateAccountManager.getSyncAccount(context);
+                if(account == null)
+                    return;
 
                 getAccountHeader().clear();
                 getAccountHeader().addProfiles(
                         new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
-                                .withEmail(accountName)
+                                .withEmail(account.name)
                                 .withIcon(user.getAvatarUrl()),
                         new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
                                 .withIcon(R.drawable.exit_icon)
@@ -101,7 +100,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
-                .withHeaderBackground(R.drawable.default_background)
+                .withHeaderBackground(R.drawable.gradient_profile)
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
@@ -121,6 +120,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         if (Build.VERSION.SDK_INT >= 19) {
             drawer.getDrawer().getDrawerLayout().setFitsSystemWindows(false);
         }
+
         return drawer;
     }
 

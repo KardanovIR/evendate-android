@@ -1,5 +1,6 @@
 package ru.evendate.android.gcm;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 import ru.evendate.android.R;
+import ru.evendate.android.Statistics;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.OrganizationDetailActivity;
@@ -36,9 +38,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
      */
-    //{"data":{"message":"Testing long text:\nСияла призрачно луна,\nМерцаньем звёзд окружена.
-    // \nОставив крепость ту, Аврора\nСкорее поспешила к морю.","event_id":1211,
-    // "image_url":"http://evendate.ru/organizations_images/logos/small/1.png"},"to":"/topics/global"}
+    //{"data":{"message":"Testing long text:\nСияла призрачно луна,\nМерцаньем звёзд окружена.\nОставив крепость ту, Аврора\nСкорее поспешила к морю.","event_id":1211,"image_url":"http://evendate.ru/organizations_images/logos/small/1.png","organization_id":null,"type":"events"},"to":"/topics/global"}
     @Override
     public void onMessageReceived(String from, Bundle data) {
         final String EVENT_ID = "event_id";
@@ -72,22 +72,16 @@ public class EvendateGCMListenerService extends GcmListenerService {
                     intent = new Intent(this, EventDetailActivity.class);
                     int eventId = Integer.valueOf(data.getString(EVENT_ID));
                     intent.setData(EvendateContract.EventEntry.getContentUri(eventId));
-                    intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case ORGANIZATION_TYPE:
                     intent = new Intent(this, OrganizationDetailActivity.class);
                     int orgId = Integer.valueOf(data.getString(ORGANIZATION_ID));
                     intent.setData(EvendateContract.OrganizationEntry.getContentUri(orgId));
-                    intent.putExtra(OrganizationDetailActivity.INTENT_TYPE, OrganizationDetailActivity.NOTIFICATION);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case USER_TYPE:
                     intent = new Intent(this, UserProfileActivity.class);
                     int userId = Integer.valueOf(data.getString(USER_ID));
                     intent.setData(EvendateContract.UserEntry.getContentUri(userId));
-                    intent.putExtra(EventDetailActivity.INTENT_TYPE, EventDetailActivity.NOTIFICATION);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     break;
                 case DEBUG_TYPE:
                     //if (!BuildConfig.DEBUG)
@@ -96,6 +90,9 @@ public class EvendateGCMListenerService extends GcmListenerService {
                     return;
             }
         }
+        intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         /**
          * Production applications would usually process the message here.
          * Eg: - Syncing with server.
@@ -124,6 +121,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
                 .setLargeIcon(loadIcon(imageUrl))
                 .setContentTitle("Evendate")
                 .setContentText(message)
+                //.setGroupSummary(false)
                 //just expand message to multi row
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setAutoCancel(true)
@@ -132,8 +130,8 @@ public class EvendateGCMListenerService extends GcmListenerService {
 
         NotificationManager notificationManager =
                 (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        Notification notification = notificationBuilder.build();
+        notificationManager.notify((int)System.currentTimeMillis(), notification);
     }
 
     private Bitmap loadIcon(String imageUrl) {

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import retrofit.Call;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.AuthActivity;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.auth.AuthActivity;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -83,7 +83,7 @@ public abstract class AbstractLoader<D> {
         onError();
     }
 
-    protected EvendateService getEvendateService() {
-        return EvendateApiFactory.getEvendateService();
+    protected ApiService getEvendateService() {
+        return ApiFactory.getEvendateService();
     }
 }
