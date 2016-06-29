@@ -4,4 +4,6 @@
     <dimen name="event_card_max_width">376dp</dimen>
     <dimen name="organization_card_user_container_height">40dp</dimen>
     <dimen name="event_detail_toolbar_height">64dp</dimen>
+    <dimen name="calendar_slide_height">198dp</dimen>
+    <dimen name="toolbarElevation">4dp</dimen>
 </resources>

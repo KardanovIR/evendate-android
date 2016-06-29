@@ -108,7 +108,6 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
     public void setList(ArrayList<T> list) {
         if (getList() == null || list == null) {
             super.setList(list);
-            notifyDataSetChanged();
         } else {
             for (T item : list)
                 add(item, getList().size());

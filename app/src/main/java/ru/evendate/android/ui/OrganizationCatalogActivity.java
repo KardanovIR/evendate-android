@@ -9,7 +9,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -21,73 +23,129 @@ import java.util.Arrays;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.OrganizationCategoryAdapter;
-import ru.evendate.android.loaders.CatalogLoader;
-import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 28.01.2016.
  */
 public class OrganizationCatalogActivity extends AppCompatActivity
-        implements OrganizationFilterDialog.OnCategorySelectListener,
-        View.OnClickListener, LoaderListener<ArrayList<OrganizationType>> {
-    @Bind(R.id.recyclerView)
-    android.support.v7.widget.RecyclerView mRecyclerView;
-    private CatalogLoader mLoader;
+        implements OrganizationFilterDialog.OnCategorySelectListener {
+    private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
+
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationType> mCategoryList;
-    @Bind(R.id.fab)
-    FloatingActionButton mFAB;
-    @Bind(R.id.progressBar)
-    ProgressBar mProgressBar;
+    @Bind(R.id.fab) FloatingActionButton mFAB;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
     private EvendateDrawer mDrawer;
+    AlertDialog errorDialog;
 
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-
-    @Nullable
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organization_catalog);
         ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
+        initToolbar();
+        initRecyclerView();
+        initProgressBar();
+        initFAB();
+        initDrawer();
+    }
 
-        //just change that fucking home icon
+    private void initToolbar() {
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawer.getDrawer().openDrawer();
-            }
-        });
-        mAdapter = new OrganizationCategoryAdapter(this);
+        mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
+    }
+    private void initRecyclerView(){
         mRecyclerView.setAdapter(mAdapter);
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mLoader = new CatalogLoader(this);
-        mLoader.setLoaderListener(this);
-
-        mFAB.setOnClickListener(this);
+    }
+    private void initFAB(){
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
+    }
+    private void initProgressBar(){
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-        mLoader.startLoading();
+    }
+    private void initDrawer(){
         mDrawer = EvendateDrawer.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
-        mDrawer.getDrawer().setSelection(EvendateDrawer.ORGANIZATION_IDENTIFIER);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadCatalog();
+        mDrawer.getDrawer().setSelection(EvendateDrawer.CATALOG_IDENTIFIER);
         mDrawer.start();
     }
 
     @Override
-    public void onClick(View v) {
+    public void onStop() {
+        super.onStop();
+        mDrawer.cancel();
+        if(errorDialog != null)
+            errorDialog.dismiss();
+    }
+
+    private void loadCatalog(){
+        displayProgress();
+
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<OrganizationType>> observable =
+                apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationType.FIELDS_LIST);
+
+        observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> onLoaded(result.getData()),
+                        this::onError,
+                        this::hideProgress
+                );
+    }
+
+    public void onLoaded(ArrayList<OrganizationType> subList) {
+        Log.i(LOG_TAG, "loaded");
+        mCategoryList = subList;
+        mAdapter.setCategoryList(subList);
+    }
+
+    public void onError(Throwable error) {
+        Log.e(LOG_TAG, error.getMessage());
+        errorDialog = ErrorAlertDialogBuilder.newInstance(this,
+                (DialogInterface dialog, int which) -> {
+                    loadCatalog();
+                    dialog.dismiss();
+                });
+        errorDialog.show();
+    }
+
+    private void displayProgress(){
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+    private void hideProgress(){
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.fab)
+    public void onFabClick(View v) {
         if (v == mFAB) {
             if (mCategoryList == null)
                 return;
@@ -113,38 +171,10 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mAdapter.setCategoryList(newItemSelected);
     }
 
-    @Override
-    public void onLoaded(ArrayList<OrganizationType> subList) {
-        mCategoryList = subList;
-        mAdapter.setCategoryList(subList);
-        mProgressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onError() {
-        mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mLoader.startLoading();
-                mProgressBar.setVisibility(View.VISIBLE);
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mLoader.cancelLoad();
-    }
-
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class CatalogNavigationItemClickListener
-            extends NavigationItemSelectedListener {
+    private class CatalogNavigationItemClickListener extends NavigationItemSelectedListener {
 
         public CatalogNavigationItemClickListener(Context context, Drawer drawer) {
             super(context, drawer);
@@ -154,12 +184,12 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.ORGANIZATION_IDENTIFIER:
+                case EvendateDrawer.CATALOG_IDENTIFIER:
+                    mDrawer.closeDrawer();
                     break;
                 default:
                     super.onItemClick(view, position, drawerItem);
             }
-            mDrawer.closeDrawer();
             return true;
         }
     }

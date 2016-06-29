@@ -37,7 +37,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     private MeLoader mMeLoader;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
-    final static int ORGANIZATION_IDENTIFIER = 3;
+    final static int CATALOG_IDENTIFIER = 3;
     Context mContext;
 
     PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
@@ -45,7 +45,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
-            .withIcon(R.drawable.organization_icon).withIdentifier(ORGANIZATION_IDENTIFIER).withSelectable(true);
+            .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
 
     protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;

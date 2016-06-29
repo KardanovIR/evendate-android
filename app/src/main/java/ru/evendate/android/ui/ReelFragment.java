@@ -196,6 +196,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                     mSwipeRefreshLayout.setEnabled(enable);
             }
         });
+        mRecyclerView.setHasFixedSize(true);
     }
 
     private void setCap(){
@@ -241,10 +242,13 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
      *
      * @param mDate selected date in calendar
      */
-    public void setDate(Date mDate) {
+    public void setDateAndReload(Date mDate) {
         if (type != ReelType.CALENDAR.type())
             return;
         this.mDate = mDate;
+        mAdapterController.reset();
+        mAdapter.reset();
+        loadEvents();
     }
 
     private void loadEvents(){
@@ -328,9 +332,11 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private void displayCap(){
         mFeedEmptyLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 
     private void hideCap(){
         mFeedEmptyLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

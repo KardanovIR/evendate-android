@@ -1,11 +1,26 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
     android:background="@color/window_reel_background">
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        app:mcv_showOtherDates="false"
+        app:mcv_arrowColor="@color/arrow_color"
+        app:mcv_selectionColor="@color/primary"
+        app:mcv_firstDayOfWeek="monday"
+        app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_gravity="top"/>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -22,35 +37,62 @@
             />
     </android.support.design.widget.AppBarLayout>
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        android:id="@+id/sliding_layout"
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingTop="?attr/actionBarSize"
-        sothree:umanoPanelHeight="?attr/actionBarSize"
-        sothree:umanoDragView="@+id/dragToolbar"
-        >
-        <!-- MAIN CONTENT -->
-        <FrameLayout
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+        <RelativeLayout
+            android:id="@+id/dragToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp">
-            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-                android:id="@+id/calendarView"
-                android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            >
+            <TextView
+                android:id="@+id/calendar_date"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                app:mcv_showOtherDates="false"
-                app:mcv_arrowColor="@color/arrow_color"
-                app:mcv_selectionColor="@color/primary"
-                app:mcv_firstDayOfWeek="monday"
-                app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:layout_gravity="top" />
-        </FrameLayout>
-        <!-- SLIDING LAYOUT -->
-        <include layout="@layout/fragment_calendar_sliding"/>
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                tools:text="ПТ, 11 декабря"
+                android:textColor="@color/text_primary"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/calendar_event_count"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                tools:text="4 события"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="14sp" />
+            <ToggleButton
+                android:id="@+id/calendar_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/toggle_calendar"
+                android:textOff="@null"
+                android:textOn="@null"
+                android:clickable="false"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

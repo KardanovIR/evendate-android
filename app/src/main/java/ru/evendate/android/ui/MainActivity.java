@@ -28,15 +28,10 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private Fragment mFragment;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    public static final String TYPE = "type";
-    public static final int REEL = 0;
-    public static final int CALENDAR = 1;
-    public static final int CATALOG = 2;
     private EvendateDrawer mDrawer;
     private final int REQUEST_AUTH = 1;
 
@@ -58,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             }
         });
 
-        mDrawer = EvendateDrawer.newInstance(this);
         checkPlayServices();
         checkAccount();
 
@@ -68,14 +62,15 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
+        mDrawer = EvendateDrawer.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
-        mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -84,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer.cancel();
         super.onDestroy();
     }
-
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
@@ -110,16 +104,13 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     /**
      * check account exists and start auth if no
      */
-    private boolean checkAccount() {
+    private void checkAccount() {
         Account account = EvendateAccountManager.getSyncAccount(this);
         if (account == null) {
             Intent authIntent = new Intent(this, AuthActivity.class);
             startActivityForResult(authIntent, REQUEST_AUTH);
-            return false;
         }
-        return true;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -139,33 +130,21 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class MainNavigationItemClickListener
-            extends NavigationItemSelectedListener {
-        private Context mContext;
+    private class MainNavigationItemClickListener extends NavigationItemSelectedListener {
+
         public MainNavigationItemClickListener(Context context, Drawer drawer) {
             super(context, drawer);
-            mContext = context;
         }
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.REEL_IDENTIFIER: {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    if (!(mFragment instanceof MainPagerFragment)) {
-                        mFragment = new MainPagerFragment();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-                    }
-                    if (Build.VERSION.SDK_INT >= 21)
-                        mToolbar.setElevation(0f);
-                }
-                break;
-                case R.id.settings:
+                case EvendateDrawer.REEL_IDENTIFIER:
+                    mDrawer.closeDrawer();
                     break;
                 default:
                     super.onItemClick(view, position, drawerItem);
             }
-            mDrawer.closeDrawer();
             return true;
         }
     }
