@@ -211,7 +211,7 @@ public interface ApiService {
     );
 
     @POST(API_PATH + "/events/{id}/notifications")
-    Call<EvendateServiceResponse> setNotification(
+    Call<Response> setNotification(
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("notification_time") String notificationTime

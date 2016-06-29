@@ -33,7 +33,7 @@
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
     <string name="custom_notification_added">Notification added</string>
-    <string name="custom_notification_error">Error. Notification didn't added</string>
+    <string name="custom_notification_error">Error. Notification didn\'t added</string>
 
     <string name="feed_empty_header">No nearest events</string>
     <string name="feed_empty_text">You can view other events when subscribing to other organizers or open the recommended events</string>

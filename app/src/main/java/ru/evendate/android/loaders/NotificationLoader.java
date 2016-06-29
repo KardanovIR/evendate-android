@@ -5,11 +5,10 @@ import android.util.Log;
 
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.Response;
 import retrofit.Retrofit;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponse;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 
 /**
  * Created by Dmitry on 15.04.2016.
@@ -27,15 +26,15 @@ public class NotificationLoader extends AbstractLoader<Void> {
 
     protected void onStartLoading() {
         Log.d(LOG_TAG, "posting notification");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ApiService evendateService = ApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponse> call =
+        Call<Response> call =
                 evendateService.setNotification(peekToken(), eventId, datetime);
         mCall = call;
 
-        call.enqueue(new Callback<EvendateServiceResponse>() {
+        call.enqueue(new Callback<Response>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponse> response,
+            public void onResponse(retrofit.Response<Response> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
 
