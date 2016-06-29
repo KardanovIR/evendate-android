@@ -1,11 +1,17 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+
+import java.util.List;
 
 import ru.evendate.android.R;
 
@@ -14,7 +20,7 @@ import ru.evendate.android.R;
  */
 public class UserListActivity extends AppCompatActivity {
     private UserListFragment mUserListFragment;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +43,35 @@ public class UserListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
         fragmentManager.beginTransaction().replace(R.id.main_content, mUserListFragment).commit();
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onUpPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //TODO DRY
+    private void onUpPressed(){
+        ActivityManager activityManager = (ActivityManager)getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
+
+        if(taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(getClass().getName())) {
+            startActivity(NavUtils.getParentActivityIntent(this));
+        }
+        else{
+            onBackPressed();
+        }
     }
 
     @Override

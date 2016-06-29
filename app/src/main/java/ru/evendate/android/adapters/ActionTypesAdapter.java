@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
@@ -18,9 +20,10 @@ import ru.evendate.android.models.ActionType;
  * Created by ds_gordeev on 17.02.2016.
  */
 public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
-
-    public ActionTypesAdapter(Context context) {
+    RecyclerView.RecycledViewPool actionItemsPool;
+    public ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
         super(context);
+        this.actionItemsPool = actionItemsPool;
     }
 
     @Override
@@ -47,6 +50,7 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
                 new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         manager.setAutoMeasureEnabled(false);
         holder.recyclerView.setLayoutManager(manager);
+        holder.recyclerView.setRecycledViewPool(actionItemsPool);
         holder.recyclerView.setAdapter(holder.mActionTargetsAdapter);
         holder.mActionTargetsAdapter.setList(type.getTargetList());
         holder.recyclerView.setNestedScrollingEnabled(false);
@@ -54,19 +58,16 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
 
     public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
-        public TextView mActionTextView;
-        public TextView mUserNameTextView;
-        public CircleImageView mAvatarView;
-        public RecyclerView recyclerView;
+        @Bind(R.id.action_description) TextView mActionTextView;
+        @Bind(R.id.user_name) TextView mUserNameTextView;
+        @Bind(R.id.user_avatar) CircleImageView mAvatarView;
+        @Bind(R.id.recycler_view) RecyclerView recyclerView;
         public ActionTargetsAdapter mActionTargetsAdapter;
 
         public ActionHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
             holderView = itemView;
-            recyclerView = (RecyclerView)itemView.findViewById(R.id.recycler_view);
-            mActionTextView = (TextView)itemView.findViewById(R.id.action_description);
-            mUserNameTextView = (TextView)itemView.findViewById(R.id.user_name);
-            mAvatarView = (CircleImageView)itemView.findViewById(R.id.user_avatar);
             holderView.setOnClickListener(this);
         }
 

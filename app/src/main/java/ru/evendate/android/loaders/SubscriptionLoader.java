@@ -8,9 +8,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import ru.evendate.android.models.Organization;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
-import ru.evendate.android.sync.EvendateServiceResponseArray;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
 
 /**
  * Created by ds_gordeev on 01.02.2016.
@@ -25,15 +25,15 @@ public class SubscriptionLoader extends AbstractLoader<Organization> {
 
     protected void onStartLoading() {
         Log.d(LOG_TAG, "getting subs");
-        EvendateService evendateService = EvendateApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getEvendateService();
 
-        Call<EvendateServiceResponseArray<Organization>> call =
-                evendateService.getSubscriptions(peekToken());
+        Call<ResponseArray<Organization>> call =
+                apiService.getSubscriptions(peekToken());
         mCall = call;
 
-        call.enqueue(new Callback<EvendateServiceResponseArray<Organization>>() {
+        call.enqueue(new Callback<ResponseArray<Organization>>() {
             @Override
-            public void onResponse(Response<EvendateServiceResponseArray<Organization>> response,
+            public void onResponse(Response<ResponseArray<Organization>> response,
                                    Retrofit retrofit) {
                 if (response.isSuccess()) {
                     onLoaded(response.body().getData());

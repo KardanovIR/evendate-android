@@ -1,5 +1,7 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -8,10 +10,13 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,7 +26,10 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
@@ -33,6 +41,7 @@ import ru.evendate.android.models.UserDetail;
  * Created by ds_gordeev on 15.02.2016.
  */
 public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<UserDetail>> {
+    private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
@@ -40,14 +49,14 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     private UserAdapter mUserAdapter;
     private UserLoader mLoader;
 
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
-    private TabLayout mTabLayout;
+    @Bind(R.id.tabs) TabLayout mTabLayout;
 
-    private ImageView mUserImageView;
-    private CollapsingToolbarLayout mCollapsingToolbar;
-    private ProgressBar mProgressBar;
-    EvendateDrawer mDrawer;
+    @Bind(R.id.user_avatar) ImageView mUserImageView;
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    DrawerWrapper mDrawer;
 
     public static final String INTENT_TYPE = "type";
     public static final String NOTIFICATION = "notification";
@@ -56,6 +65,8 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -80,20 +91,14 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             }
             tracker.send(event.build());
         }
-        mCollapsingToolbar = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
-        mUserImageView = (ImageView)findViewById(R.id.user_avatar);
 
         mLoader = new UserLoader(this, userId);
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-        mTabLayout = (TabLayout)findViewById(R.id.tabs);
-
-        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
@@ -111,6 +116,33 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         userId = savedInstanceState.getInt(USER_ID);
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onUpPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //TODO DRY
+    private void onUpPressed(){
+        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
+
+        if(taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(getClass().getName())) {
+            Log.i(LOG_TAG, "This is last activity in the stack");
+            startActivity(NavUtils.getParentActivityIntent(this));
+        }
+        else{
+            onBackPressed();
+        }
     }
 
     @Override

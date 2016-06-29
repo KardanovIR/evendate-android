@@ -3,18 +3,13 @@ package ru.evendate.android.ui;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -23,29 +18,21 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.sync.EvendateSyncAdapter;
+import ru.evendate.android.auth.AuthActivity;
 
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private Fragment mFragment;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final int INTRO_REQUEST = 1;
 
-    private SharedPreferences mSharedPreferences = null;
-    public final String APP_PREF = "evendate_pref";
-    public final String FIRST_RUN = "first_run";
-    public boolean isFirstRun = false;
-    public static final String TYPE = "type";
-    public static final int REEL = 0;
-    public static final int CALENDAR = 1;
-    public static final int CATALOG = 2;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
+    private final int REQUEST_AUTH = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,37 +53,23 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         });
 
         checkPlayServices();
-
         checkAccount();
-        if (savedInstanceState != null) {
-            switch (savedInstanceState.getInt(TYPE)) {
-                case REEL:
-                    mFragment = new MainPagerFragment();
-                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-                    break;
-                case CALENDAR:
-                    mFragment = new CalendarFragment();
-                    break;
-                default:
-                    mFragment = new MainPagerFragment();
-                    ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-            }
-        } else {
-            mFragment = new MainPagerFragment();
-            ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-        }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        mSharedPreferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
-        if (mSharedPreferences.getBoolean(FIRST_RUN, true)) {
-            isFirstRun = true;
-            mSharedPreferences.edit().putBoolean(FIRST_RUN, false).apply();
-        } else
-            fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
-        mDrawer = EvendateDrawer.newInstance(this);
+        mFragment = new MainPagerFragment();
+        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
+
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
-        mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -105,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer.cancel();
         super.onDestroy();
     }
-
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
@@ -129,20 +101,21 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     /**
-     * check account exists and start intro if no
+     * check account exists and start auth if no
      */
     private void checkAccount() {
-        Account account = EvendateSyncAdapter.getSyncAccount(this);
+        Account account = EvendateAccountManager.getSyncAccount(this);
         if (account == null) {
-            Intent introIntent = new Intent(this, EvendateIntro.class);
-            startActivityForResult(introIntent, INTRO_REQUEST);
+            Intent authIntent = new Intent(this, AuthActivity.class);
+            startActivityForResult(authIntent, REQUEST_AUTH);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == INTRO_REQUEST) {
-            if (resultCode == RESULT_CANCELED) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_AUTH) {
+            if(resultCode == RESULT_CANCELED) {
                 finish();
             }
         }
@@ -156,45 +129,21 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class MainNavigationItemClickListener
-            extends NavigationItemSelectedListener {
-        private Context mContext;
+    private class MainNavigationItemClickListener extends NavigationItemSelectedListener {
+
         public MainNavigationItemClickListener(Context context, Drawer drawer) {
             super(context, drawer);
-            mContext = context;
         }
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.REEL_IDENTIFIER: {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    if (!(mFragment instanceof MainPagerFragment)) {
-                        mFragment = new MainPagerFragment();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-                    }
-                    if (Build.VERSION.SDK_INT >= 21)
-                        mToolbar.setElevation(0f);
-                }
-                break;
-                case R.id.settings:
+                case DrawerWrapper.REEL_IDENTIFIER:
+                    mDrawer.closeDrawer();
                     break;
-                case EvendateDrawer.CALENDAR_IDENTIFIER: {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    if (!(mFragment instanceof CalendarFragment)) {
-                        mFragment = new CalendarFragment();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-                    }
-                    // Converts 4 dip into its equivalent px
-                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
-                    if (Build.VERSION.SDK_INT >= 21)
-                        mToolbar.setElevation(px);
-                }
-                break;
                 default:
                     super.onItemClick(view, position, drawerItem);
             }
-            mDrawer.closeDrawer();
             return true;
         }
     }
