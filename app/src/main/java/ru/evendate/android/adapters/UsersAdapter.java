@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.User;
@@ -48,15 +50,14 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
 
     public class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View holderView;
-        public ImageView mUserImageView;
-        public TextView mNameTextView;
+        @Bind(R.id.user_item_image) ImageView mUserImageView;
+        @Bind(R.id.user_item_name) TextView mNameTextView;
         public int id;
 
         public UserHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             holderView = itemView;
-            mUserImageView = (ImageView)itemView.findViewById(R.id.user_item_image);
-            mNameTextView = (TextView)itemView.findViewById(R.id.user_item_name);
             holderView.setOnClickListener(this);
         }
 
