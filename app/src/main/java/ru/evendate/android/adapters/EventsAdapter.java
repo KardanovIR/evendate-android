@@ -1,16 +1,24 @@
 package ru.evendate.android.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -152,7 +160,13 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                mContext.startActivity(intent);
+                if(Build.VERSION.SDK_INT > 21){
+                    Activity activity = (Activity)mContext;
+                    activity.getWindow().setExitTransition(new Fade());
+                    mContext.startActivity(intent);
+                }else{
+                    mContext.startActivity(intent);
+                }
             }
         }
 

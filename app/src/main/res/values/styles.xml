@@ -8,6 +8,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:windowContentTransitions" tools:targetApi="21">true</item>
     </style>
 
     <style name="DialogCustom" parent="Theme.AppCompat.Light.Dialog">

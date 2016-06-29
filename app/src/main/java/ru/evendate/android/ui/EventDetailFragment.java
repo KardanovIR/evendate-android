@@ -20,8 +20,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -148,6 +152,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         initUserFavoriteCard();
 
+        if (Build.VERSION.SDK_INT >= 21){
+            getActivity().getWindow().setEnterTransition(new Explode());
+        }
         mAdapter = new EventAdapter();
         mDrawer = EvendateDrawer.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
