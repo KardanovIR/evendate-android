@@ -29,7 +29,7 @@ import ru.evendate.android.models.UserDetail;
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
+public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private SubscriptionLoader mSubscriptionLoader;
@@ -47,7 +47,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
     PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
             .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
 
-    protected EvendateDrawer(Drawer drawer, AccountHeader accountHeader, final Context context) {
+    protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
         mAccountHeader = accountHeader;
@@ -86,7 +86,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
         });
     }
 
-    public static EvendateDrawer newInstance(Activity context) {
+    public static DrawerWrapper newInstance(Activity context) {
 
         //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
@@ -114,7 +114,7 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
                 .build();
         result.withActivity(context)
                 .withAccountHeader(headerResult);
-        EvendateDrawer drawer = new EvendateDrawer(result.build(), headerResult, context);
+        DrawerWrapper drawer = new DrawerWrapper(result.build(), headerResult, context);
         drawer.setupMenu();
 
         if (Build.VERSION.SDK_INT >= 19) {
@@ -140,9 +140,9 @@ public class EvendateDrawer implements LoaderListener<ArrayList<Organization>> {
 
     private void updateSubs() {
         setupMenu();
-        for (Organization detail : mSubscriptions) {
-            mDrawer.addItem(new SubscriptionDrawerItem().withName(detail.getName())
-                    .withIcon(detail.getLogoUrl()).withTag(detail).withSelectable(false));
+        for (Organization org : mSubscriptions) {
+            mDrawer.addItem(new SubscriptionDrawerItem().withName(org.getShortName())
+                    .withIcon(org.getLogoUrl()).withTag(org).withSelectable(false));
         }
     }
 

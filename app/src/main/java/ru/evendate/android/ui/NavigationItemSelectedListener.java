@@ -30,13 +30,13 @@ public class NavigationItemSelectedListener
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
-            case EvendateDrawer.REEL_IDENTIFIER:
+            case DrawerWrapper.REEL_IDENTIFIER:
                 openReelActivity(); break;
             case R.id.settings:
                 break;
-            case EvendateDrawer.CALENDAR_IDENTIFIER:
+            case DrawerWrapper.CALENDAR_IDENTIFIER:
                 openCalendarActivity(); break;
-            case EvendateDrawer.CATALOG_IDENTIFIER:
+            case DrawerWrapper.CATALOG_IDENTIFIER:
                 openCatalogActivity(); break;
             //case R.id.nav_add_account:
             //    Intent authIntent = new Intent(mContext, AuthActivity.class);

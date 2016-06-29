@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +48,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     @Bind(R.id.fab) FloatingActionButton mFAB;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
     AlertDialog errorDialog;
 
     @Override
@@ -72,6 +71,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
     private void initRecyclerView(){
+        mAdapter = new OrganizationCategoryAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -83,7 +83,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
     }
     private void initDrawer(){
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -92,7 +92,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         loadCatalog();
-        mDrawer.getDrawer().setSelection(EvendateDrawer.CATALOG_IDENTIFIER);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -184,7 +184,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.CATALOG_IDENTIFIER:
+                case DrawerWrapper.CATALOG_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
                 default:

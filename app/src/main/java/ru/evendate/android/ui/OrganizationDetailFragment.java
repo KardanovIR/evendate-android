@@ -85,7 +85,7 @@ public class OrganizationDetailFragment extends Fragment implements
     int toolbarColor = Color.TRANSPARENT;
     boolean isToolbarTransparent = true;
     ValueAnimator colorAnimation;
-    EvendateDrawer mDrawer;
+    DrawerWrapper mDrawer;
 
     private OrganizationEventsAdapter mAdapter;
     private AdapterController mAdapterController;
@@ -115,7 +115,7 @@ public class OrganizationDetailFragment extends Fragment implements
         mRecyclerView.setAdapter(mAdapter);
         initParallax();
         loadOrg();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         mDrawer.start();

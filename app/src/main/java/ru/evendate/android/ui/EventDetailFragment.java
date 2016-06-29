@@ -120,7 +120,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
-    EvendateDrawer mDrawer;
+    DrawerWrapper mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,7 +153,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         initUserFavoriteCard();
 
         mAdapter = new EventAdapter();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         loadEvent();

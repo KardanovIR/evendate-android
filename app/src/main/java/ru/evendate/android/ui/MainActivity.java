@@ -3,7 +3,6 @@ package ru.evendate.android.ui;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
     private final int REQUEST_AUTH = 1;
 
     @Override
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     @Override
     protected void onStart() {
         super.onStart();
-        mDrawer.getDrawer().setSelection(EvendateDrawer.REEL_IDENTIFIER);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.REEL_IDENTIFIER:
+                case DrawerWrapper.REEL_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
                 default:

@@ -2,7 +2,6 @@ package ru.evendate.android.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -29,7 +26,6 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
-import com.prolificinteractive.materialcalendarview.format.TitleFormatter;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.text.DateFormatSymbols;
@@ -70,7 +66,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     private BottomSheetBehavior<View> behavior;
 
     private DateAdapter mAdapter;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
     AlertDialog errorDialog;
 
     /**
@@ -161,7 +157,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
     private void initDrawer() {
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CalendarNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -171,7 +167,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         super.onStart();
         setToolbarDate();
         loadDates();
-        mDrawer.getDrawer().setSelection(EvendateDrawer.CALENDAR_IDENTIFIER);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -383,7 +379,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.CALENDAR_IDENTIFIER:
+                case DrawerWrapper.CALENDAR_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
                 default:

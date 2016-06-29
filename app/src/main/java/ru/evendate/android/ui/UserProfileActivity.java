@@ -56,7 +56,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Bind(R.id.user_avatar) ImageView mUserImageView;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
-    EvendateDrawer mDrawer;
+    DrawerWrapper mDrawer;
 
     public static final String INTENT_TYPE = "type";
     public static final String NOTIFICATION = "notification";
@@ -98,7 +98,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
