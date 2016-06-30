@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.gcm.RegistrationGCMIntentService;
@@ -56,12 +57,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
 
-    @Bind(R.id.sing_in_vk_button) FrameLayout SingInVkButton;
-    @Bind(R.id.sing_in_fb_button) FrameLayout SingInFbButton;
-    @Bind(R.id.sing_in_google_button) FrameLayout SingInGoogleButton;
-
     public final String APP_PREF = "evendate_pref";
     public final String FIRST_RUN = "first_run";
+    private boolean introViewed = false;
 
     GoogleApiClient apiClient;
     private ProgressDialog mProgressDialog;
@@ -72,21 +70,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
 
-        SingInVkButton.setOnClickListener(this);
-        SingInFbButton.setOnClickListener(this);
-        SingInGoogleButton.setOnClickListener(this);
-
         apiClient = initGoogleApiClient();
-        checkFirstRun();
-
-        final AccountManager am = AccountManager.get(this);
-        // TODO change account
-        // temporary we remove function to change accounts
-        // delete old account
-        Account oldAccount = EvendateAccountManager.getSyncAccount(this);
-        if (oldAccount != null)
-            am.removeAccount(oldAccount, null, null);
-
+        //checkFirstRun();
+        deletedOldAccount();
     }
 
     private GoogleApiClient initGoogleApiClient() {
@@ -99,12 +85,22 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 .build();
     }
 
-    void checkFirstRun() {
+    private void checkFirstRun() {
         SharedPreferences preferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
         if (preferences.getBoolean(FIRST_RUN, true)) {
             preferences.edit().putBoolean(FIRST_RUN, false).apply();
             startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
         }
+    }
+
+    private void deletedOldAccount(){
+        final AccountManager am = AccountManager.get(this);
+        // TODO change account
+        // temporary we remove function to change accounts
+        // delete old account
+        Account oldAccount = EvendateAccountManager.getSyncAccount(this);
+        if (oldAccount != null)
+            am.removeAccount(oldAccount, null, null);
     }
 
     @Override
@@ -115,12 +111,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             @Override
             public void onConnected(@Nullable Bundle bundle) {
                 Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
-                        new ResultCallback<Status>() {
-                            @Override
-                            public void onResult(@NonNull Status status) {
-                                hideProgressDialog();
-                            }
-                        });
+                        (@NonNull Status status) -> hideProgressDialog()
+                );
             }
 
             @Override
@@ -128,9 +120,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 hideProgressDialog();
             }
         });
-
         showProgressDialog();
         apiClient.connect();
+
+        if(!introViewed)
+            startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
 
     private void showProgressDialog() {
@@ -139,7 +133,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             mProgressDialog.setMessage(getString(R.string.auth_loading));
             mProgressDialog.setIndeterminate(true);
         }
-
         mProgressDialog.show();
     }
 
@@ -162,7 +155,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         super.onBackPressed();
     }
 
-    @Override
+
+    @SuppressWarnings("unused")
+    @OnClick({R.id.sing_in_vk_button, R.id.sing_in_fb_button, R.id.sing_in_google_button})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sing_in_vk_button:
@@ -187,7 +182,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == REQUEST_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleGoogleSignInResult(result);
@@ -196,6 +190,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             if(resultCode == RESULT_CANCELED) {
                 finish();
             }
+            introViewed = true;
         }
         if (requestCode == REQUEST_WEB_AUTH) {
             if (resultCode == RESULT_OK) {
