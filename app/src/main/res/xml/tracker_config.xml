@@ -15,4 +15,5 @@
     <screenName name="ru.evendate.android.auth.IntroActivity">Intro Screen</screenName>
     <screenName name="ru.evendate.android.ui.UserProfileActivity">User Profile Screen</screenName>
     <screenName name="ru.evendate.android.ui.OrganizationCatalogActivity">Catalog Screen</screenName>
+    <screenName name="ru.evendate.android.ui.CalendarActivity">Calendar Screen</screenName>
 </resources>

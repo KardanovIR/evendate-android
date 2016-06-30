@@ -92,6 +92,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
         }
         intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         /**
          * Production applications would usually process the message here.
          * Eg: - Syncing with server.

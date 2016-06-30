@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,10 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     boolean refreshingEnabled = false;
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
+
+    @Bind(R.id.tv_feed_header) TextView mFeedEmptyHeader;
+    @Bind(R.id.tv_feed_emptyText) TextView mFeedEmptyTextView;
+    @Bind(R.id.ll_feed_empty) LinearLayout mFeedEmptyLayout;
 
     static final String TYPE = "type";
     private int type = 0;
@@ -151,6 +157,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout.setRefreshing(true);
+        setCap();
         loadEvents();
         return rootView;
     }
@@ -189,8 +196,21 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                     mSwipeRefreshLayout.setEnabled(enable);
             }
         });
+        mRecyclerView.setHasFixedSize(true);
     }
 
+    private void setCap(){
+        ReelType reelType = ReelType.getType(type);
+        if (reelType == ReelType.FEED) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
+            mFeedEmptyTextView.setText(getResources().getString(R.string.feed_empty_text));
+        } else if (reelType == ReelType.FAVORITES) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
+            mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
+        } else if (reelType == ReelType.RECOMMENDATION) {
+            mFeedEmptyHeader.setText(getResources().getString(R.string.recommendation_empty_header));
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -222,13 +242,17 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
      *
      * @param mDate selected date in calendar
      */
-    public void setDate(Date mDate) {
+    public void setDateAndReload(Date mDate) {
         if (type != ReelType.CALENDAR.type())
             return;
         this.mDate = mDate;
+        mAdapterController.reset();
+        mAdapter.reset();
+        loadEvents();
     }
 
     private void loadEvents(){
+        hideCap();
         ApiService apiService = ApiFactory.getEvendateService();
         Observable<ResponseArray<EventDetail>> observable;
 
@@ -296,10 +320,23 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
+        if (mAdapter.getList().size() == 0) {
+            displayCap();
+        }
     }
 
     @Override
     public void requestNext() {
         loadEvents();
+    }
+
+    private void displayCap(){
+        mFeedEmptyLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void hideCap(){
+        mFeedEmptyLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

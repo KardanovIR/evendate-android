@@ -1,6 +1,8 @@
 package ru.evendate.android.ui;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -120,7 +124,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
-    EvendateDrawer mDrawer;
+    DrawerWrapper mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,7 +160,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             getActivity().getWindow().setEnterTransition(new Explode());
         }
         mAdapter = new EventAdapter();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
+        mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
         loadEvent();
@@ -405,8 +409,26 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
                 return true;
+            case android.R.id.home:
+                onUpPressed();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //TODO DRY
+    private void onUpPressed(){
+        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
+
+        if(taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
+            Log.i(LOG_TAG, "This is last activity in the stack");
+            getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
+        }
+        else{
+            getActivity().onBackPressed();
         }
     }
 

@@ -28,7 +28,7 @@ public interface ApiService {
     String API_PATH = "/api/v1";
 
     @GET(API_PATH + "/events/dates")
-    Call<ResponseArray<DateCalendar>> getCalendarDates(
+    Observable<ResponseArray<DateCalendar>> getCalendarDates(
             @Header("Authorization") String authorization,
             @Query("unique") boolean unique,
             @Query("my") boolean my,
@@ -174,7 +174,7 @@ public interface ApiService {
      * Get feed event list
      */
     @GET(API_PATH + "/organizations/types")
-    Call<ResponseArray<OrganizationType>> getCatalog(
+    Observable<ResponseArray<OrganizationType>> getCatalog(
             @Header("Authorization") String authorization,
             @Query("fields") String fields
     );

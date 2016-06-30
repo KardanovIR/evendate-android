@@ -3,10 +3,6 @@
     <string name="app_name">Evendate</string>
     <string name="calendar">Календарь</string>
     <string name="event_all_day">Весь день</string>
-    <string name="sing_in_vk">Вконтакте</string>
-    <string name="sing_in_google">Google+</string>
-    <string name="sing_in_fb">Facebook</string>
-    <string name="sing_in_description">Войдите через социальную сеть</string>
     <string name="subscription_fail_cause_network">Нет интернет подключения</string>
     <string name="subscriptions">Мои подписки</string>
     <string name="title_activity_detail">Мероприятие</string>
@@ -31,7 +27,6 @@
     <string name="account_already_exists">Аккаунт уже существует</string>
     <string name="subscription_confirm">Подписка оформлена</string>
     <string name="subscription_fail_cause_error">Произошла ошибка</string>
-    <string name="title_activity_maps">Карта</string>
     <string name="accounts">Аккаунты</string>
     <string name="favorite_confirm">Событие добавлено в избранное</string>
     <string name="remove_favorite_confirm">Событие удалено из избранного</string>
@@ -101,5 +96,16 @@
     <string name="toast_event_hide">скрыто</string>
     <string name="toast_event_unfave">удалено из избранного</string>
     <string name="recommendation_tab">Для вас</string>
-    <string name="loading">Pfuhe</string>
+    <string name="auth_loading">Загрузка</string>
+    <string name="auth_description">Evendate – это сервис, позволяющий вам оставаться в курсе предстоящий событий в ваших любимых местах.</string>
+    <string name="auth_sign_in">Войдите через социальную сеть:</string>
+    <string name="auth_welcome">Добро пожаловать в Evendate!</string>
+    <string name="auth_vk">Войти через ВКонтакте</string>
+    <string name="auth_google">Войти через Google+</string>
+    <string name="auth_fb">Войти через Facebook</string>
+    <string name="feed_empty_header">Ближайших событий нет</string>
+    <string name="feed_empty_text">Вы можете посмотреть другие события, подписавшись на других организаторов, или перейти в раздел рекомендованных событий</string>
+    <string name="favourites_empty_header">Избранных событий нет</string>
+    <string name="favourites_empty_text">Добавьте событие в избранное, чтобы оно появилось здесь!</string>
+    <string name="recommendation_empty_header">Рекомендаций для вас пока нет</string>
 </resources>
