@@ -1,6 +1,7 @@
 package ru.evendate.android.ui;
 
 import android.accounts.Account;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     private DrawerWrapper mDrawer;
     private final int REQUEST_AUTH = 1;
+    private Dialog serviceDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             }
         });
 
-        checkPlayServices();
         checkAccount();
 
         mFragment = new MainPagerFragment();
@@ -74,9 +75,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        super.onStop();
+        if(serviceDialog != null)
+            serviceDialog.dismiss();
         mDrawer.cancel();
-        super.onDestroy();
     }
 
     /**
@@ -89,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
+                serviceDialog = apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
+                serviceDialog.show();
             } else {
                 Log.i(LOG_TAG, "This device is not supported.");
                 finish();
