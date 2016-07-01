@@ -135,5 +135,6 @@
         android:layout_width="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
+        app:layout_anchorGravity="bottom|end"
         />
 </android.support.design.widget.CoordinatorLayout>

@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,9 +24,13 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
 import android.transition.Explode;
 import android.transition.Fade;
+import android.transition.Scene;
 import android.transition.Slide;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -36,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -126,6 +132,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     DrawerWrapper mDrawer;
 
+    private boolean isScene2 = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -214,6 +222,28 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                                 Color.red(color), Color.green(color), Color.blue(color));
                         mEventImageMask.setBackgroundColor(color);
                         mEventOrganizationMask.setBackgroundColor(color);
+
+                        if(mScrollView.getScrollY() > 0 && Build.VERSION.SDK_INT >= 19 && !isScene2)  {
+
+                            // вызываем метод, говорящий о том, что мы хотим анимировать следующие изменения внутри sceneRoot
+                            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+                            // и применим сами изменения
+                            CoordinatorLayout.LayoutParams params =
+                                    (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
+                            params.setAnchorId(View.NO_ID);
+                            mFAB.setLayoutParams(params);
+                            isScene2 = true;
+                        }
+                        else if(mScrollView.getScrollY() == 0 && Build.VERSION.SDK_INT >= 19 && isScene2){
+                            // вызываем метод, говорящий о том, что мы хотим анимировать следующие изменения внутри sceneRoot
+                            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+                            // и применим сами изменения
+                            CoordinatorLayout.LayoutParams params =
+                                    (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
+                            params.setAnchorId(R.id.event_organization_container);
+                            mFAB.setLayoutParams(params);
+                            isScene2 = false;
+                        }
                     }
                 });
             }
@@ -221,15 +251,12 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     private void initUserFavoriteCard(){
-        mUserFavoritedCard.setOnAllButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mUserFavoritedCard.setOnAllButtonListener((View v) -> {
                 Intent intent = new Intent(getContext(), UserListActivity.class);
                 intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
                 intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
                 startActivity(intent);
-            }
         });
     }
 
