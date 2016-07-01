@@ -17,7 +17,7 @@
             app:tabTextColor="#AAFFFFFF"
             app:tabSelectedTextColor="@color/text_primary"
             app:tabIndicatorColor="#FFFFFF"
-            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorHeight="2dp"
             />
     </android.support.design.widget.AppBarLayout>
     <android.support.v4.view.ViewPager

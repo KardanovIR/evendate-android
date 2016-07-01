@@ -26,6 +26,7 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.text.DateFormatSymbols;
@@ -101,7 +102,9 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mCalendarView.setOnDateChangedListener(this);
         yesterdayDate = getYesterdayDate();
         mCalendarView.setMinimumDate(yesterdayDate);
-
+        mCalendarView.setOnMonthChangedListener(
+                (MaterialCalendarView widget, CalendarDay date) -> setToolbarDate(date)
+        );
         mCalendarView.addDecorator(new PrimeDayDisableDecorator());
         mOneDayDecorator = new OneDayDecorator();
         mCalendarView.addDecorator(mOneDayDecorator);
@@ -133,16 +136,16 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
                 if (Build.VERSION.SDK_INT < 21)
                     return;
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        mAppBarLayout.setElevation(0.0f);
+                    mAppBarLayout.setElevation(0.0f);
+                    mToggleButton.setChecked(true);
                 } else {
                     mAppBarLayout.setElevation(getResources().getDimensionPixelSize(R.dimen.toolbarElevation));
+                    mToggleButton.setChecked(false);
                 }
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
     }
     private int getPeekHeightInPx() {
@@ -165,7 +168,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     @Override
     public void onStart() {
         super.onStart();
-        setToolbarDate();
+        setToolbarDate(mCalendarView.getCurrentDate());
         loadDates();
         mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
         mDrawer.start();
@@ -179,8 +182,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mDrawer.cancel();
     }
 
-    private void setToolbarDate(){
-        String month = dateFormatMonths.getMonths()[mCalendarView.getSelectedDate().getMonth() - 1];
+    private void setToolbarDate(CalendarDay date){
+        String month = dateFormatMonths.getMonths()[date.getMonth()];
         month = capitalize(month);
         mToolbar.setTitle(month);
     }
@@ -224,7 +227,6 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDateAndReload(date.getDate());
-        setToolbarDate();
     }
 
     @Override
