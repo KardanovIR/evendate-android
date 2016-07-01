@@ -2,7 +2,9 @@ package ru.evendate.android.auth;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
@@ -22,9 +23,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
@@ -64,9 +65,14 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     GoogleApiClient apiClient;
     private ProgressDialog mProgressDialog;
 
+    @Bind(R.id.sing_in_google_button) View googleButton;
+    private Dialog serviceDialog;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EvendateAccountManager.setAuthRunning(this);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
 
@@ -107,22 +113,23 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onStart() {
         super.onStart();
 
-        apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-            @Override
-            public void onConnected(@Nullable Bundle bundle) {
-                Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
-                        (@NonNull Status status) -> hideProgressDialog()
-                );
-            }
+        if(checkPlayServicesExists()) {
+            apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
+                            (@NonNull Status status) -> hideProgressDialog()
+                    );
+                }
 
-            @Override
-            public void onConnectionSuspended(int i) {
-                hideProgressDialog();
-            }
-        });
-        showProgressDialog();
-        apiClient.connect();
-
+                @Override
+                public void onConnectionSuspended(int i) {
+                    hideProgressDialog();
+                }
+            });
+            showProgressDialog();
+            apiClient.connect();
+        }
         if(!introViewed)
             startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
@@ -146,7 +153,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onStop() {
         super.onStop();
         apiClient.disconnect();
-        mProgressDialog.dismiss();
+        if(mProgressDialog != null)
+            mProgressDialog.dismiss();
+        if(serviceDialog != null)
+            serviceDialog.dismiss();
     }
 
     @Override
@@ -161,10 +171,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sing_in_vk_button:
-                startAuth(VK_URL);
+                startWebAuth(VK_URL);
                 break;
             case R.id.sing_in_fb_button:
-                startAuth(FB_URL);
+                startWebAuth(FB_URL);
                 break;
             case R.id.sing_in_google_button:
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
@@ -172,10 +182,41 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         }
     }
 
-    private void startAuth(String Url) {
+    private void startWebAuth(String Url) {
         Intent intent = new Intent(this, WebAuthActivity.class);
         intent.putExtra(URL_KEY, Url);
         startActivityForResult(intent, REQUEST_WEB_AUTH);
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public boolean checkPlayServicesExists() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                serviceDialog = apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
+                serviceDialog.setOnCancelListener(
+                        (DialogInterface dialogInterface) -> setGoogleInactive()
+                );
+                serviceDialog.setOnDismissListener(
+                        (DialogInterface dialogInterface) -> setGoogleInactive()
+                );
+                serviceDialog.show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
+    }
+    private void setGoogleInactive(){
+        googleButton.setClickable(false);
+        googleButton.setEnabled(false);
+        googleButton.setBackground(getResources().getDrawable(R.drawable.auth_google_inactive));
     }
 
     @Override
@@ -208,13 +249,14 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         Log.d(LOG_TAG, "handleSignInResult:" + result.isSuccess());
         GoogleSignInAccount acct = result.getSignInAccount();
         if (result.isSuccess() && acct != null) {
-            new RetrieveTokenTask().execute(acct.getEmail());
+            new RetrieveGoogleTokenTask().execute(acct.getEmail());
         } else {
             if(result.getStatus().isCanceled())
             Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
         }
     }
-    private class RetrieveTokenTask extends AsyncTask<String, Void, String> {
+
+    private class RetrieveGoogleTokenTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -243,7 +285,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         String url = ApiFactory.HOST_NAME + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
         url += token;
-        startAuth(url);
+        startWebAuth(url);
     }
 
     public void onTokenReceived(String email, String token) {
@@ -280,5 +322,11 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         // be available.
         Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
         //TODO
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EvendateAccountManager.setAuthDone(this);
     }
 }

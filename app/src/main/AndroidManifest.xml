@@ -19,6 +19,9 @@
     <!-- gcm_permissions -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <!-- for up button -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
 
     <application
         android:name=".EvendateApplication"

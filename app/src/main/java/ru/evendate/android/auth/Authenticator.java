@@ -6,7 +6,6 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -34,13 +33,13 @@ public class Authenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
                              String[] requiredFeatures, Bundle options)
             throws NetworkErrorException {
-        final Intent intent = new Intent(mContext, AuthActivity.class);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        //final Intent intent = new Intent(mContext, AuthActivity.class);
+        //intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         if (options != null) {
             bundle.putAll(options);
         }
-        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        //bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
 
     }
@@ -54,7 +53,6 @@ public class Authenticator extends AbstractAccountAuthenticator {
         return null;
     }
 
-    // Getting an authentication token is not supported
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType,
                                Bundle options) throws NetworkErrorException {
@@ -76,12 +74,12 @@ public class Authenticator extends AbstractAccountAuthenticator {
         // If we get here, then we couldn't access the user's password - so we
         // need to re-prompt them for their credentials. We do that by creating
         // an intent to display our AuthenticatorActivity.
-        final Intent intent = new Intent(mContext, AuthActivity.class);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        //final Intent intent = new Intent(mContext, AuthActivity.class);
+        //intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         //intent.putExtra(AuthActivity.ARG_ACCOUNT_TYPE, account.type);
         //intent.putExtra(AuthActivity.ARG_AUTH_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
-        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        //bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
     }
 
