@@ -160,13 +160,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(Build.VERSION.SDK_INT > 21){
-                    Activity activity = (Activity)mContext;
-                    activity.getWindow().setExitTransition(new Fade());
-                    mContext.startActivity(intent);
-                }else{
-                    mContext.startActivity(intent);
-                }
+                mContext.startActivity(intent);
             }
         }
 

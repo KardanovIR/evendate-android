@@ -4,11 +4,13 @@ import android.accounts.Account;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.View;
 
@@ -42,9 +44,21 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
+        initToolbar();
+        initTransitions();
+        initDrawer();
 
-        //just change that fucking home icon
+        mFragment = new MainPagerFragment();
+        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
+
+        checkAccount();
+
+    }
+
+    private void initToolbar(){
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -53,15 +67,14 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                 mDrawer.getDrawer().openDrawer();
             }
         });
-
-        checkAccount();
-
-        mFragment = new MainPagerFragment();
-        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
-
+    }
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT > 21){
+            getWindow().setExitTransition(new Fade());
+            getWindow().setEnterTransition(new Fade());
+        }
+    }
+    private void initDrawer(){
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));

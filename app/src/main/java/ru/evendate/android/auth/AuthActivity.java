@@ -8,10 +8,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -76,11 +80,17 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
 
+        initTransitions();
         apiClient = initGoogleApiClient();
-        //checkFirstRun();
         deletedOldAccount();
     }
 
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT > 21){
+            getWindow().setExitTransition(new Slide(Gravity.START));
+            getWindow().setEnterTransition(new Slide(Gravity.END));
+        }
+    }
     private GoogleApiClient initGoogleApiClient() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
@@ -89,14 +99,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-    }
-
-    private void checkFirstRun() {
-        SharedPreferences preferences = getSharedPreferences(APP_PREF, MODE_PRIVATE);
-        if (preferences.getBoolean(FIRST_RUN, true)) {
-            preferences.edit().putBoolean(FIRST_RUN, false).apply();
-            startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
-        }
     }
 
     private void deletedOldAccount(){
