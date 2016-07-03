@@ -2,7 +2,6 @@ package ru.evendate.android.loaders;
 
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -10,9 +9,8 @@ import java.util.ArrayList;
 import retrofit.Call;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.authorization.AuthActivity;
-import ru.evendate.android.sync.EvendateApiFactory;
-import ru.evendate.android.sync.EvendateService;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
 
 /**
  * Created by Dmitry on 04.02.2016.
@@ -33,20 +31,7 @@ public abstract class AbstractLoader<D> {
     }
 
     protected String peekToken() {
-        AccountManager accountManager = AccountManager.get(mContext);
-        String token = null;
-        try {
-            token = accountManager.peekAuthToken(EvendateAccountManager.getSyncAccount(mContext),
-                    mContext.getString(R.string.account_type));
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error with peeking token");
-            e.fillInStackTrace();
-            mListener.onError();
-        }
-        if (token == null) {
-            mContext.startActivity(new Intent(mContext, AuthActivity.class));
-        }
-        return token;
+        return EvendateAccountManager.peekToken(mContext);
     }
 
     protected void invalidateToken() {
@@ -83,7 +68,7 @@ public abstract class AbstractLoader<D> {
         onError();
     }
 
-    protected EvendateService getEvendateService() {
-        return EvendateApiFactory.getEvendateService();
+    protected ApiService getEvendateService() {
+        return ApiFactory.getEvendateService();
     }
 }

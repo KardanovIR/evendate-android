@@ -17,22 +17,21 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="8dp"
             android:maxLines="1" />
         <TextView
             android:id="@+id/all_users"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
             android:text="@string/user_card_all"
-            android:textColor="#ff5f9e"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="30dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="20dp"
-            android:paddingBottom="20dp" />
+            android:paddingBottom="20dp"
+            style="@style/Caption.Light" />
         <ru.evendate.android.views.UsersView
             android:id="@+id/user_container"
             android:layout_width="match_parent"

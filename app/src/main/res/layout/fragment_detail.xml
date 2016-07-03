@@ -37,19 +37,13 @@
                     android:textColor="#fff"
                     android:layout_marginLeft="16dp"
                     android:layout_marginStart="72dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:paddingRight="8dp"
-                    android:paddingEnd="8dp"
-                    tools:text="Очередной тренинг"
+                    tools:text="ArtFlection: Ярмарка подарков ручной работы"
                     android:textSize="20sp"
-                    android:paddingLeft="8dp"
-                    android:paddingStart="8dp"
                     android:textIsSelectable="false"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
                     android:layout_gravity="bottom"
-                    android:textStyle="bold" />
+                    android:fontFamily="sans-serif"/>
                 <View
                     android:id="@+id/event_image_mask"
                     android:layout_width="match_parent"
@@ -58,13 +52,13 @@
             <FrameLayout
             android:id="@+id/event_organization_container"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/event_detail_toolbar_height"
             android:background="?attr/colorPrimaryDark"
             android:layout_gravity="bottom">
             <FrameLayout
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
-                android:padding="4dp">
+                android:padding="8dp">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -83,20 +77,14 @@
                 android:textColor="#fff"
                 android:layout_marginLeft="72dp"
                 android:layout_marginStart="72dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:paddingRight="8dp"
-                android:paddingEnd="8dp"
-                tools:text="Очередной организатор тренингов"
+                tools:text="Digital October"
                 android:textSize="16sp"
-                android:paddingLeft="8dp"
-                android:paddingStart="8dp"
                 android:textIsSelectable="false"
                 android:layout_gravity="center_vertical" />
             <View
                 android:id="@+id/event_organization_mask"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"/>
         </FrameLayout>
             <FrameLayout
                 android:layout_width="match_parent"

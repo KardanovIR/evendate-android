@@ -1,4 +1,5 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
@@ -6,16 +7,19 @@
     android:layout_height="match_parent"
     android:background="#eeeeee"
     android:fitsSystemWindows="false">
+
     <ImageView
         android:id="@+id/organization_image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/organization_background_height"
         android:scaleType="centerCrop"
-        tools:src="@drawable/butterfly" />
+        tools:src="@drawable/butterfly"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/organization_background_height"
-        android:background="@drawable/toolbar_gradient" />
+        android:background="@drawable/toolbar_gradient"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -25,19 +29,32 @@
         android:scrollbars="vertical"
         tools:listitem="@layout/card_event"/>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:visibility="gone"
+        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchorGravity="center"
+        tools:visibility="visible"/>
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         android:background="@color/translucent"
+        android:fitsSystemWindows="true"
         app:elevation="0dp">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextColor="#fff">
+
             <TextView
                 android:id="@+id/organization_toolbar_title"
                 android:layout_width="wrap_content"
@@ -48,7 +65,7 @@
                 android:textColor="#FFF"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                tools:text="Organization" />
+                tools:text="Organization"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>
