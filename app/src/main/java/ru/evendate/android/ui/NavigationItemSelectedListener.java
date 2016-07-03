@@ -1,7 +1,12 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -19,10 +24,10 @@ import ru.evendate.android.models.Organization;
 
 public class NavigationItemSelectedListener
         implements Drawer.OnDrawerItemClickListener {
-    protected Context mContext;
+    protected Activity mContext;
     protected Drawer mDrawer;
 
-    public NavigationItemSelectedListener(Context context, Drawer drawer) {
+    public NavigationItemSelectedListener(Activity context, Drawer drawer) {
         mContext = context;
         mDrawer = drawer;
     }
@@ -51,24 +56,32 @@ public class NavigationItemSelectedListener
 
     private void openReelActivity(){
         Intent reelIntent = new Intent(mContext, MainActivity.class);
-        mContext.startActivity(reelIntent);
+        openActivity(reelIntent);
     }
     private void openCalendarActivity(){
         Intent calendarIntent = new Intent(mContext, CalendarActivity.class);
-        mContext.startActivity(calendarIntent);
+        openActivity(calendarIntent);
     }
     private void openCatalogActivity(){
         Intent orgIntent = new Intent(mContext, OrganizationCatalogActivity.class);
-        mContext.startActivity(orgIntent);
+        openActivity(orgIntent);
     }
     private void openOrganizationFromSub(IDrawerItem drawerItem){
         int id = getOrgIdFromDrawerItem(drawerItem);
         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                 .buildUpon().appendPath(Long.toString(id)).build());
-        mContext.startActivity(detailIntent);
+        openActivity(detailIntent);
     }
     private int getOrgIdFromDrawerItem(IDrawerItem drawerItem){
         return ((Organization)drawerItem.getTag()).getEntryId();
+    }
+    private void openActivity(Intent intent){
+
+        if(Build.VERSION.SDK_INT >= 21){
+            mContext.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(mContext).toBundle());
+        }
+        else
+            mContext.startActivity(intent);
     }
 }

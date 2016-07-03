@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -373,7 +374,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
      */
     private class CalendarNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CalendarNavigationItemClickListener(Context context, Drawer drawer) {
+        public CalendarNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }

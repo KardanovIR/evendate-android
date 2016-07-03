@@ -3,6 +3,7 @@ package ru.evendate.android.ui;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.auth.AuthActivity;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.MeLoader;
 import ru.evendate.android.loaders.SubscriptionLoader;
@@ -73,6 +75,8 @@ public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
                                     @Override
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         EvendateAccountManager.deleteAccount(mContext);
+                                        //todo ditch
+                                        ((Activity)context).startActivityForResult(new Intent(context, AuthActivity.class), MainActivity.REQUEST_AUTH);
                                         return false;
                                     }
                                 })

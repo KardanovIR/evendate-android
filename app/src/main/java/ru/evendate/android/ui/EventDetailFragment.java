@@ -151,29 +151,31 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        initTransitions();
+        initToolbarAnimation();
+        initUserFavoriteCard();
+        mAdapter = new EventAdapter();
+        mDrawer = DrawerWrapper.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+
+        return rootView;
+    }
+
+    private void initToolbar(){
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
 
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-
-        initToolbarAnimation();
-
-        initUserFavoriteCard();
-
-        if (Build.VERSION.SDK_INT >= 21){
+    }
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
             getActivity().getWindow().setEnterTransition(new Explode());
+            getActivity().getWindow().setExitTransition(new Explode());
         }
-        mAdapter = new EventAdapter();
-        mDrawer = DrawerWrapper.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
-        loadEvent();
-        mDrawer.start();
-        return rootView;
     }
 
     private void initToolbarAnimation(){
@@ -248,6 +250,14 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 });
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mProgressBar.setVisibility(View.VISIBLE);
+        loadEvent();
+        mDrawer.start();
     }
 
     private void initUserFavoriteCard(){

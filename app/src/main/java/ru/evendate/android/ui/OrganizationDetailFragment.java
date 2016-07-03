@@ -22,12 +22,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -97,10 +103,8 @@ public class OrganizationDetailFragment extends Fragment implements
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
-        mToolbar.setTitle("");
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        initToolbar();
+        initTransitions();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -114,18 +118,30 @@ public class OrganizationDetailFragment extends Fragment implements
         mAdapterController = new AdapterController(this, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
         initParallax();
-        loadOrg();
-        mDrawer = DrawerWrapper.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
-        mDrawer.start();
+        initDrawer();
 
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
+
         return rootView;
     }
-
+    private void initToolbar(){
+        mToolbar.setTitle("");
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+    }
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
+            getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
+            getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
+        }
+    }
+    private void initDrawer(){
+        mDrawer = DrawerWrapper.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+    }
     private void initParallax(){
         mToolbar.setBackgroundColor(toolbarColor);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -225,6 +241,14 @@ public class OrganizationDetailFragment extends Fragment implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadOrg();
+        mDrawer.start();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     //TODO DRY
@@ -371,17 +395,16 @@ public class OrganizationDetailFragment extends Fragment implements
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+        //todo on destroy can leak
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                (DialogInterface dialog, int which) -> {
                         loadOrg();
                         dialog.dismiss();
                     }
-                });
+        );
         mAdapterController.notLoadedCauseError();
         mAdapterController.disableNext();
-        dialog.show();
+        alertDialog.show();
     }
 
     @Override

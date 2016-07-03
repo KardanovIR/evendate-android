@@ -58,7 +58,6 @@ public class EvendateAccountManager {
     public static void deleteAccount(Context context) {
         AccountManager accountManager = (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
         accountManager.removeAccount(getSyncAccount(context), null, null);
-        context.startActivity(new Intent(context, AuthActivity.class));
     }
 
     public static String peekToken(Context context) {

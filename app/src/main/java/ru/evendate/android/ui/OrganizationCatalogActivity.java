@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
@@ -176,7 +177,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
      */
     private class CatalogNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CatalogNavigationItemClickListener(Context context, Drawer drawer) {
+        public CatalogNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }
