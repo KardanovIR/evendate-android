@@ -1,11 +1,15 @@
 package ru.evendate.android.ui;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -15,15 +19,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,17 +72,28 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     public static final String NOTIFICATION = "notification";
 
     @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt(USER_ID, userId);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        userId = savedInstanceState.getInt(USER_ID);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
-        //make status bar transparent
-        //((AppBarLayout)findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new StatusBarColorChanger(this));
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -102,22 +123,24 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
+        initTransitions();
+        mUserImageView.setVisibility(View.INVISIBLE);
+    }
+
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
+            getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
+            getWindow().setExitTransition(new Slide(Gravity.TOP));
+        }
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         mLoader.startLoading();
         mDrawer.start();
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putInt(USER_ID, userId);
-        super.onSaveInstanceState(outState, outPersistentState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        userId = savedInstanceState.getInt(USER_ID);
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -181,13 +204,44 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         }
 
         private void setUserInfo() {
+            final Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mUserImageView.setImageBitmap(bitmap);
+                    revealView(mUserImageView);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
             String userName = mUserDetail.getFirstName() + " " + mUserDetail.getLastName();
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
                     .load(mUserDetail.getAvatarUrl())
                     .error(R.drawable.default_background)
-                    .into(mUserImageView);
+                    .into(target);
         }
+    }
+
+    private void revealView(View view){
+        if(view.getVisibility() == View.VISIBLE)
+            return;
+        view.setVisibility(View.VISIBLE);
+        if(Build.VERSION.SDK_INT < 21)
+            return;
+        int cx = (view.getLeft() + view.getRight()) / 2;
+        int cy = (view.getTop() + view.getBottom()) / 2;
+
+        int finalRadius = Math.max(view.getWidth(), view.getHeight());
+        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+        animation.start();
     }
 
     private void setupStat() {

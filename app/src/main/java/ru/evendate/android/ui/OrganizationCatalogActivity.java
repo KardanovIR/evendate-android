@@ -1,7 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.OrganizationCategoryAdapter;
-import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
@@ -45,7 +44,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
-    private ArrayList<OrganizationType> mCategoryList;
+    private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -63,6 +62,8 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         initProgressBar();
         initFAB();
         initDrawer();
+        displayProgress();
+        mFAB.setVisibility(View.INVISIBLE);
     }
 
     private void initToolbar() {
@@ -106,11 +107,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void loadCatalog(){
-        displayProgress();
-
         ApiService apiService = ApiFactory.getEvendateService();
-        Observable<ResponseArray<OrganizationType>> observable =
-                apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationType.FIELDS_LIST);
+        Observable<ResponseArray<OrganizationCategory>> observable =
+                apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationCategory.FIELDS_LIST);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -121,10 +120,11 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 );
     }
 
-    public void onLoaded(ArrayList<OrganizationType> subList) {
+    public void onLoaded(ArrayList<OrganizationCategory> subList) {
         Log.i(LOG_TAG, "loaded");
         mCategoryList = subList;
         mAdapter.setCategoryList(subList);
+        mFAB.show();
     }
 
     public void onError(Throwable error) {
@@ -163,7 +163,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
     @Override
     public void onCategorySelected(boolean[] itemsSelected) {
-        ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
+        ArrayList<OrganizationCategory> newItemSelected = new ArrayList<>();
         mSelectedItems = itemsSelected;
         for (int i = 0; i < itemsSelected.length; i++) {
             if (itemsSelected[i])

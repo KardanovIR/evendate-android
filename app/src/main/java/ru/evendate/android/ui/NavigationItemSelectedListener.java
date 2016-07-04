@@ -77,7 +77,6 @@ public class NavigationItemSelectedListener
         return ((Organization)drawerItem.getTag()).getEntryId();
     }
     private void openActivity(Intent intent){
-
         if(Build.VERSION.SDK_INT >= 21){
             mContext.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(mContext).toBundle());
         }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 08.02.2016.
  */
-public class OrganizationType extends DataModel {
+public class OrganizationCategory extends DataModel {
     public static final String FIELDS_LIST = "organizations{fields:'" + OrganizationSubscription.FIELDS_LIST + "'}";
 
     @SerializedName("id")

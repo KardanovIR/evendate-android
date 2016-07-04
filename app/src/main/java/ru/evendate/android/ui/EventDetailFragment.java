@@ -1,20 +1,24 @@
 package ru.evendate.android.ui;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -22,15 +26,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.transition.ChangeBounds;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Scene;
 import android.transition.Slide;
 import android.transition.TransitionManager;
-import android.transition.TransitionSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -39,19 +39,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-        import com.google.android.gms.analytics.HitBuilders;
-        import com.google.android.gms.analytics.Tracker;
-        import com.squareup.picasso.Picasso;
-        import com.squareup.picasso.Target;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -109,12 +111,15 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     @Bind(R.id.event_image) ImageView mEventImageView;
     @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
+    @Bind(R.id.event_organization_icon_container) View mOrganizationIconContainer;
     @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
     @Bind(R.id.event_description) TextView mDescriptionTextView;
     @Bind(R.id.event_title) TextView mTitleTextView;
     @Bind(R.id.event_place_button) View mPlaceButtonView;
     @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
     @Bind(R.id.event_link_card) View mLinkCard;
+    @Bind(R.id.event_organization_container) View mOrganizationContainer;
+    @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
 
     @Bind(R.id.tag_layout) TagsView mTagsView;
     @Bind(R.id.event_price_card) android.support.v7.widget.CardView mPriceCard;
@@ -125,6 +130,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
     @Bind(R.id.event_time) TextView mEventTimeTextView;
 
+    @Bind(R.id.event_content_container) View mEventContentContainer;
+    @Bind(R.id.event_image_container) View mEventImageContainer;
+
     @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
 
     @BindString(R.string.event_free) String eventFreeLabel;
@@ -132,29 +140,10 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
     DrawerWrapper mDrawer;
+    Dialog alertDialog;
 
-    private boolean isScene2 = false;
+    private int mColor;
 
-
-    final Target target = new Target() {
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            if(bitmap == null)
-                return;
-            mEventImageView.setImageBitmap(bitmap);
-            palette(bitmap);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-            return;
-        }
-    };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,14 +163,21 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+        initToolbar();
         initTransitions();
         initToolbarAnimation();
         initUserFavoriteCard();
+        initDrawer();
         mAdapter = new EventAdapter();
-        mDrawer = DrawerWrapper.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
 
+        mColor = getResources().getColor(R.color.primary);
+
+        mFAB.setVisibility(View.INVISIBLE);
+        mEventImageContainer.setVisibility(View.INVISIBLE);
+        mOrganizationIconContainer.setVisibility(View.INVISIBLE);
+        mEventContentContainer.setVisibility(View.INVISIBLE);
+        mTitleTextView.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
 
@@ -190,12 +186,11 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
-
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
-            getActivity().getWindow().setEnterTransition(new Explode());
-            getActivity().getWindow().setExitTransition(new Explode());
+            getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
+            getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
     }
 
@@ -204,90 +199,92 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mToolbarTitle.setAlpha(0f);
         if (Build.VERSION.SDK_INT >= 21)
             mAppBarLayout.setElevation(0);
-        mScrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                ViewTreeObserver observer = mScrollView.getViewTreeObserver();
-                observer.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                    @Override
-                    public void onScrollChanged() {
-                        if (mScrollView.getScrollY() >= mEventImageView.getHeight()) {
-                            mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
-                            if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
-                                mTitleDisappearAnimation.cancel();
-                            if (mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()) {
-                                mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
-                                        mToolbarTitle.getAlpha(), 1f);
-                                mTitleAppearAnimation.setDuration(200);
-                                mTitleAppearAnimation.start();
-                                if (Build.VERSION.SDK_INT >= 21) {
-                                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
-                                            getResources().getDisplayMetrics());
-                                    mAppBarLayout.setElevation(px);
-                                }
-                            }
-                        } else {
-                            mToolbar.setBackgroundColor(Color.TRANSPARENT);
-                            if (mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
-                                mTitleAppearAnimation.cancel();
-                            if (mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
-                                mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
-                                        mToolbarTitle.getAlpha(), 0f);
-                                mTitleDisappearAnimation.setDuration(200);
-                                mTitleDisappearAnimation.start();
-                                if (Build.VERSION.SDK_INT >= 21)
-                                    mAppBarLayout.setElevation(0);
-                            }
-                        }
-                        int color = getResources().getColor(R.color.primary);
-                        color = Color.argb(
-                                (int)(((float)mScrollView.getScrollY() / mEventImageView.getHeight()) * 255),
-                                Color.red(color), Color.green(color), Color.blue(color));
-                        mEventImageMask.setBackgroundColor(color);
-                        mEventOrganizationMask.setBackgroundColor(color);
-
-                        if(mScrollView.getScrollY() > 0 && Build.VERSION.SDK_INT >= 19 && !isScene2)  {
-
-                            // вызываем метод, говорящий о том, что мы хотим анимировать следующие изменения внутри sceneRoot
-                            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-                            // и применим сами изменения
-                            CoordinatorLayout.LayoutParams params =
-                                    (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
-                            params.setAnchorId(View.NO_ID);
-                            mFAB.setLayoutParams(params);
-                            isScene2 = true;
-                        }
-                        else if(mScrollView.getScrollY() == 0 && Build.VERSION.SDK_INT >= 19 && isScene2){
-                            // вызываем метод, говорящий о том, что мы хотим анимировать следующие изменения внутри sceneRoot
-                            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-                            // и применим сами изменения
-                            CoordinatorLayout.LayoutParams params =
-                                    (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
-                            params.setAnchorId(R.id.event_organization_container);
-                            mFAB.setLayoutParams(params);
-                            isScene2 = false;
-                        }
-                    }
-                });
-            }
+        mScrollView.post(() -> {
+            ViewTreeObserver observer = mScrollView.getViewTreeObserver();
+            observer.addOnScrollChangedListener(() -> {
+                if (mScrollView.getScrollY() >= mEventImageView.getHeight()) {
+                    animateAppearToolbar();
+                } else {
+                    animateDisappearToolbar();
+                }
+                paintMask(mScrollView.getScrollY());
+            });
         });
+    }
+
+    private void animateAppearToolbar(){
+        mToolbar.setBackgroundColor(mColor);
+        if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
+            mTitleDisappearAnimation.cancel();
+        if (mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()) {
+            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                    mToolbarTitle.getAlpha(), 1f);
+            mTitleAppearAnimation.setDuration(200);
+            mTitleAppearAnimation.start();
+            if (Build.VERSION.SDK_INT >= 21) {
+                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                        getResources().getDisplayMetrics());
+                mAppBarLayout.setElevation(px);
+            }
+        }
+    }
+    private void animateDisappearToolbar(){
+        mToolbar.setBackgroundColor(Color.TRANSPARENT);
+        if (mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
+            mTitleAppearAnimation.cancel();
+        if (mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
+            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                    mToolbarTitle.getAlpha(), 0f);
+            mTitleDisappearAnimation.setDuration(200);
+            mTitleDisappearAnimation.start();
+            if (Build.VERSION.SDK_INT >= 21)
+                mAppBarLayout.setElevation(0);
+        }
+    }
+
+    private void paintMask(float scrolled){
+        int height = mEventImageView.getHeight();
+        int maskColor = Color.argb(
+                (int)((scrolled / height) * 255),
+                Color.red(mColor), Color.green(mColor), Color.blue(mColor));
+        mEventImageMask.setBackgroundColor(maskColor);
+        mEventOrganizationMask.setBackgroundColor(maskColor);
+    }
+
+    private void initDrawer(){
+        mDrawer = DrawerWrapper.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mProgressBar.setVisibility(View.VISIBLE);
         loadEvent();
         mDrawer.start();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(alertDialog != null)
+            alertDialog.dismiss();
+    }
+
     private void initUserFavoriteCard(){
         mUserFavoritedCard.setOnAllButtonListener((View v) -> {
-                Intent intent = new Intent(getContext(), UserListActivity.class);
-                intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+            if(mAdapter.getEvent() == null)
+                return;
+            Intent intent = new Intent(getContext(), UserListActivity.class);
+            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-                intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
-                startActivity(intent);
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+            if(Build.VERSION.SDK_INT >= 21){
+                getActivity().startActivity(intent,
+                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+            }
+            else
+                getActivity().startActivity(intent);
         });
     }
 
@@ -331,14 +328,45 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             mTitleTextView.setText(mEvent.getTitle());
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
+            final Target target = new Target() {
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    if(bitmap == null)
+                        return;
+                    mEventImageView.setImageBitmap(bitmap);
+                    palette(bitmap);
+                    revealView(mEventImageContainer);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {}
+            };
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
                     .into(target);
+            Target target2 = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mOrganizationIconView.setImageBitmap(bitmap);
+                    revealView(mOrganizationIconContainer);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {}
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {}
+            };
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
-                    .into(mOrganizationIconView);
+                    .into(target2);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
             if (mEvent.getUserList().size() == 0) {
                 mUserFavoritedCard.setVisibility(View.GONE);
@@ -369,13 +397,32 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     @SuppressWarnings("deprecation")
     private void setFabIcon() {
+        mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_done));
+            mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
+            mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_grade_white_48dp));
         } else {
-            mFAB.setImageDrawable(this.getResources().getDrawable(R.mipmap.ic_add_white));
+            mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+            Drawable drawable = getResources().getDrawable(R.drawable.ic_grade_black_48dp);
+            drawable.setAlpha(138);
+            mFAB.setImageDrawable(drawable);
         }
     }
 
+    private void revealView(View view){
+        if(view.getVisibility() == View.VISIBLE)
+            return;
+        view.setVisibility(View.VISIBLE);
+        if(Build.VERSION.SDK_INT < 21)
+            return;
+        int cx = (view.getLeft() + view.getRight()) / 2;
+        int cy = (view.getTop() + view.getBottom()) / 2;
+
+        int finalRadius = Math.max(view.getWidth(), view.getHeight());
+        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+
+        animation.start();
+    }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.event_organization_container)
@@ -385,7 +432,12 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
         intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
-        startActivity(intent);
+        if(Build.VERSION.SDK_INT >= 21){
+            getActivity().startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        }
+        else
+            getActivity().startActivity(intent);
     }
 
     @SuppressWarnings("unused")
@@ -530,6 +582,10 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         mProgressBar.setVisibility(View.GONE);
+        if(Build.VERSION.SDK_INT > 19)
+            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mEventContentContainer.setVisibility(View.VISIBLE);
+        mTitleTextView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -537,27 +593,31 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                (DialogInterface dialog, int which) -> {
                 loadEvent();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
-            }
         });
-        dialog.show();
+        alertDialog.show();
     }
 
     public void palette(Bitmap bitmap) {
         if (bitmap == null)
             return;
-        Palette palette = Palette.generate(bitmap);
-        int vibrant = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
-        int vibrantDark = Color.argb(255, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
-        int vibrantDarkEnd = Color.argb(50, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
-        getActivity().findViewById(R.id.event_organization_container).setBackgroundColor(vibrant);
-        GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{vibrantDark, vibrantDarkEnd});
-        ((ImageView)getActivity().findViewById(R.id.iv_image_foreground)).setImageDrawable(g);
+        Palette palette = Palette.from(bitmap).generate();
+        mColor = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
+        int red = (int)(Color.red(mColor) * 0.8);
+        int blue = (int)(Color.blue(mColor) * 0.8);
+        int green = (int)(Color.green(mColor) * 0.8);
+
+        int vibrantDark = Color.argb(255, red, green, blue);
+        int vibrantDarkEnd = Color.argb(50, red, green, blue);
+
+        mOrganizationContainer.setBackgroundColor(mColor);
+        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                new int[]{vibrantDark, vibrantDarkEnd});
+        mEventForegroundImage.setImageDrawable(shadow);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getActivity().getWindow();
@@ -568,7 +628,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy");
         mDrawer.cancel();
     }
 }

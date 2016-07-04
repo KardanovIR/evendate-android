@@ -16,7 +16,7 @@ import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
@@ -139,7 +139,7 @@ public interface ApiService {
     );
 
     @GET(API_PATH + "/users/me")
-    Call<ResponseArray<UserDetail>> getMe(
+    Observable<ResponseArray<UserDetail>> getMe(
             @Header("Authorization") String authorization,
             @Query("fields") String fields
     );
@@ -155,8 +155,9 @@ public interface ApiService {
      * Get subscriptions
      */
     @GET(API_PATH + "/organizations/subscriptions")
-    Call<ResponseArray<Organization>> getSubscriptions(
-            @Header("Authorization") String authorization
+    Observable<ResponseArray<OrganizationFull>> getSubscriptions(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
     );
 
     @POST(API_PATH + "/organizations/{id}/subscriptions")
@@ -174,7 +175,7 @@ public interface ApiService {
      * Get feed event list
      */
     @GET(API_PATH + "/organizations/types")
-    Observable<ResponseArray<OrganizationType>> getCatalog(
+    Observable<ResponseArray<OrganizationCategory>> getCatalog(
             @Header("Authorization") String authorization,
             @Query("fields") String fields
     );

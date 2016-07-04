@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -22,21 +23,25 @@ import java.util.ArrayList;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
-import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.MeLoader;
-import ru.evendate.android.loaders.SubscriptionLoader;
 import ru.evendate.android.models.Organization;
+import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.models.UserDetail;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
+public class DrawerWrapper{
+    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
-    private SubscriptionLoader mSubscriptionLoader;
-    ArrayList<Organization> mSubscriptions;
-    private MeLoader mMeLoader;
+    ArrayList<OrganizationSubscription> mSubscriptions;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
@@ -53,41 +58,6 @@ public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
         mContext = context;
         mDrawer = drawer;
         mAccountHeader = accountHeader;
-        mSubscriptionLoader = new SubscriptionLoader(context);
-        mSubscriptionLoader.setLoaderListener(this);
-        mMeLoader = new MeLoader(context);
-        mMeLoader.setLoaderListener(new LoaderListener<ArrayList<UserDetail>>() {
-            @Override
-            public void onLoaded(ArrayList<UserDetail> users) {
-                UserDetail user = users.get(0);
-                Account account = EvendateAccountManager.getSyncAccount(context);
-                if(account == null)
-                    return;
-
-                getAccountHeader().clear();
-                getAccountHeader().addProfiles(
-                        new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
-                                .withEmail(account.name)
-                                .withIcon(user.getAvatarUrl()),
-                        new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
-                                .withIcon(R.drawable.exit_icon)
-                                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                    @Override
-                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                        EvendateAccountManager.deleteAccount(mContext);
-                                        //todo ditch
-                                        ((Activity)context).startActivityForResult(new Intent(context, AuthActivity.class), MainActivity.REQUEST_AUTH);
-                                        return false;
-                                    }
-                                })
-                );
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
     }
 
     public static DrawerWrapper newInstance(Activity context) {
@@ -144,27 +114,85 @@ public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
 
     private void updateSubs() {
         setupMenu();
-        for (Organization org : mSubscriptions) {
+        for (OrganizationSubscription org : mSubscriptions) {
             mDrawer.addItem(new SubscriptionDrawerItem().withName(org.getShortName())
-                    .withIcon(org.getLogoUrl()).withTag(org).withSelectable(false));
+                    .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false));
         }
+        getDrawer().getRecyclerView().smoothScrollToPosition(0);
     }
 
     protected Drawer getDrawer() {
         return mDrawer;
     }
 
-    @Override
-    public void onLoaded(ArrayList<Organization> subList) {
+    public void loadSubs(){
+        ApiService service = ApiFactory.getEvendateService();
+        Observable<ResponseArray<OrganizationFull>> subsObservable =
+                service.getSubscriptions(EvendateAccountManager.peekToken(mContext), OrganizationSubscription.FIELDS_LIST);
+
+        subsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk())
+                        onLoaded(new ArrayList<>(result.getData()));
+                    else
+                        onError();
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                });
+    }
+
+    public void loadMe(){
+        ApiService service = ApiFactory.getEvendateService();
+        Observable<ResponseArray<UserDetail>> subsObservable =
+                service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
+
+        subsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk()){
+                        UserDetail user = result.getData().get(0);
+                        Account account = EvendateAccountManager.getSyncAccount(mContext);
+                        if(account == null)
+                            return;
+
+                        getAccountHeader().clear();
+                        getAccountHeader().addProfiles(
+                                new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
+                                        .withEmail(account.name)
+                                        .withIcon(user.getAvatarUrl()),
+                                new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
+                                        .withIcon(R.drawable.exit_icon)
+                                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                EvendateAccountManager.deleteAccount(mContext);
+                                                //todo ditch
+                                                ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
+                                                return false;
+                                            }
+                                        })
+                            );
+                        }
+                    else
+                        onError();
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                });
+    }
+    public void onLoaded(ArrayList<OrganizationSubscription> subList) {
         mSubscriptions = subList;
         updateSubs();
     }
 
     public void update() {
-        mSubscriptionLoader.startLoading();
+        loadSubs();
     }
 
-    @Override
     public void onError() {
         //if(isDestroyed())
         //    return;
@@ -179,12 +207,10 @@ public class DrawerWrapper implements LoaderListener<ArrayList<Organization>> {
     }
 
     public void cancel() {
-        mMeLoader.cancelLoad();
-        mSubscriptionLoader.cancelLoad();
     }
 
     public void start() {
-        mSubscriptionLoader.startLoading();
-        mMeLoader.startLoading();
+        loadSubs();
+        loadMe();
     }
 }

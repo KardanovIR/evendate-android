@@ -68,7 +68,6 @@ public class AdapterController {
 
     public void reset() {
         offset = 0;
-        isDisable = false;
     }
 
     public void requestNext() {
@@ -80,13 +79,26 @@ public class AdapterController {
         isRequesting = true;
     }
     public void loaded(ArrayList list){
-        if (list.size() < getLength()) {
-            disableNext();
-        }
-        mAdapter.setList(list);
+        checkNextShouldBeDisable(list.size());
+        mAdapter.add(list);
         isRequesting = false;
         mAdapter.setLoaded();
         increaseOffset();
+    }
+    public void reloaded(ArrayList list){
+        checkNextShouldBeDisable(list.size());
+        mAdapter.replace(list);
+        isRequesting = false;
+        mAdapter.setLoaded();
+        increaseOffset();
+    }
+
+    private void checkNextShouldBeDisable(int size){
+        if (size < getLength()) {
+            disableNext();
+        }
+        else
+            isDisable = false;
     }
 
     public void loaded(){

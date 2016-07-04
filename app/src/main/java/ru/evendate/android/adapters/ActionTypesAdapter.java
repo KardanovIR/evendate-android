@@ -34,9 +34,7 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
 
     @Override
     public void onBindViewHolder(ActionHolder holder, int position) {
-        if (getList() == null)
-            return;
-        ActionType type = getList().get(position);
+        ActionType type = getItem(position);
         holder.mActionTextView.setText(type.getTypeName(mContext));
         String name = type.getUser().getFirstName() + " " + type.getUser().getLastName();
         holder.mUserNameTextView.setText(name);
@@ -44,16 +42,7 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
                 .load(type.getUser().getAvatarUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mAvatarView);
-
-        holder.mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
-        WrapLinearLayoutManager manager =
-                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        manager.setAutoMeasureEnabled(false);
-        holder.recyclerView.setLayoutManager(manager);
-        holder.recyclerView.setRecycledViewPool(actionItemsPool);
-        holder.recyclerView.setAdapter(holder.mActionTargetsAdapter);
-        holder.mActionTargetsAdapter.setList(type.getTargetList());
-        holder.recyclerView.setNestedScrollingEnabled(false);
+        holder.mActionTargetsAdapter.replace(type.getTargetList());
     }
 
     public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,6 +58,15 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
             ButterKnife.bind(this,itemView);
             holderView = itemView;
             holderView.setOnClickListener(this);
+
+            mActionTargetsAdapter = new ActionTargetsAdapter(mContext);
+            WrapLinearLayoutManager manager =
+                    new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+            manager.setAutoMeasureEnabled(false);
+            recyclerView.setLayoutManager(manager);
+            recyclerView.setRecycledViewPool(actionItemsPool);
+            recyclerView.setAdapter(mActionTargetsAdapter);
+            recyclerView.setNestedScrollingEnabled(false);
         }
 
         @Override

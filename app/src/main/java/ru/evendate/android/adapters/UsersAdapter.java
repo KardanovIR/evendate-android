@@ -1,7 +1,10 @@
 package ru.evendate.android.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,9 +39,7 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
 
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {
-        if (getList() == null)
-            return;
-        User userEntry = getList().get(position);
+        User userEntry = getItem(position);
         holder.id = userEntry.getEntryId();
         String name = userEntry.getLastName() + " " + userEntry.getFirstName();
         holder.mNameTextView.setText(name);
@@ -66,7 +67,12 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
             if (v == holderView) {
                 Intent intent = new Intent(mContext, UserProfileActivity.class);
                 intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
-                mContext.startActivity(intent);
+                if(Build.VERSION.SDK_INT >= 21){
+                    mContext.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
+                }
+                else
+                    mContext.startActivity(intent);
             }
         }
 
