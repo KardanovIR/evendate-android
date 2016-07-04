@@ -26,10 +26,12 @@
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/butterfly"/>
-                <View
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/gradient_event"/>
+                    app:layout_collapseMode="none"
+                    android:id="@+id/iv_image_foreground"/>
+
                 <TextView
                     android:id="@+id/event_title"
                     android:layout_width="match_parent"
@@ -50,42 +52,42 @@
                     android:layout_height="match_parent"/>
             </FrameLayout>
             <FrameLayout
-            android:id="@+id/event_organization_container"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/event_detail_toolbar_height"
-            android:background="?attr/colorPrimaryDark"
-            android:layout_gravity="bottom">
-            <FrameLayout
-                android:layout_width="72dp"
-                android:layout_height="match_parent"
-                android:padding="8dp">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="match_parent"
+                android:id="@+id/event_organization_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/event_detail_toolbar_height"
+                android:background="?attr/colorPrimaryDark"
+                android:layout_gravity="bottom">
+                <FrameLayout
+                    android:layout_width="72dp"
                     android:layout_height="match_parent"
-                    app:civ_border_width="0dp"
-                    android:src="#FFFFFF"/>
-                <ImageView
-                    android:id="@+id/event_organization_icon"
+                    android:padding="8dp">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:civ_border_width="0dp"
+                        android:src="#FFFFFF"/>
+                    <ImageView
+                        android:id="@+id/event_organization_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp" />
+                </FrameLayout>
+                <TextView
+                    android:id="@+id/event_organization_name"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp" />
+                    android:layout_height="wrap_content"
+                    android:textColor="#fff"
+                    android:layout_marginLeft="72dp"
+                    android:layout_marginStart="72dp"
+                    tools:text="Digital October"
+                    android:textSize="16sp"
+                    android:textIsSelectable="false"
+                    android:layout_gravity="center_vertical" />
+                <View
+                    android:id="@+id/event_organization_mask"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
             </FrameLayout>
-            <TextView
-                android:id="@+id/event_organization_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:layout_marginLeft="72dp"
-                android:layout_marginStart="72dp"
-                tools:text="Digital October"
-                android:textSize="16sp"
-                android:textIsSelectable="false"
-                android:layout_gravity="center_vertical" />
-            <View
-                android:id="@+id/event_organization_mask"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </FrameLayout>
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

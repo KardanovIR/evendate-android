@@ -48,9 +48,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.squareup.picasso.Picasso;
+        import com.google.android.gms.analytics.HitBuilders;
+        import com.google.android.gms.analytics.Tracker;
+        import com.squareup.picasso.Picasso;
+        import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -134,6 +135,26 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     private boolean isScene2 = false;
 
+
+    final Target target = new Target() {
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if(bitmap == null)
+                return;
+            mEventImageView.setImageBitmap(bitmap);
+            palette(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            return;
+        }
+    };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -313,7 +334,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
-                    .into(mEventImageView);
+                    .into(target);
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
@@ -527,6 +548,23 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         dialog.show();
     }
 
+    public void palette(Bitmap bitmap) {
+        if (bitmap == null)
+            return;
+        Palette palette = Palette.generate(bitmap);
+        int vibrant = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
+        int vibrantDark = Color.argb(255, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
+        int vibrantDarkEnd = Color.argb(50, (int)(Color.red(vibrant) * 0.8), (int)(Color.green(vibrant) * 0.8), (int)(Color.blue(vibrant) * 0.8));
+        getActivity().findViewById(R.id.event_organization_container).setBackgroundColor(vibrant);
+        GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{vibrantDark, vibrantDarkEnd});
+        ((ImageView)getActivity().findViewById(R.id.iv_image_foreground)).setImageDrawable(g);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(vibrantDark);
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
