@@ -141,6 +141,11 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     DrawerWrapper mDrawer;
     Dialog alertDialog;
+    int mFabHeight;
+    boolean isFabDown = false;
+
+    ObjectAnimator mFabUpAnimation;
+    ObjectAnimator mFabDownAnimation;
 
     private int mColor;
 
@@ -169,10 +174,26 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         initUserFavoriteCard();
         initDrawer();
         mAdapter = new EventAdapter();
+        ViewTreeObserver vto = mCoordinatorLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mCoordinatorLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int bottom = mOrganizationContainer.getBottom();
+                int size = mFAB.getHeight();
+                mFabHeight = bottom - size / 2;
+                if(Build.VERSION.SDK_INT > 19)
+                    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+                //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
+                //params.setMargins(params.leftMargin, 0, params.rightMargin, mFabHeight);
+                //mFAB.setLayoutParams(params);
+                mFAB.setY(mFabHeight);
+            }
+        });
 
         mColor = getResources().getColor(R.color.primary);
 
-        mFAB.setVisibility(View.INVISIBLE);
+        mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconContainer.setVisibility(View.INVISIBLE);
         mEventContentContainer.setVisibility(View.INVISIBLE);
@@ -207,6 +228,11 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 } else {
                     animateDisappearToolbar();
                 }
+                if(mScrollView.getScrollY() > 0) {
+                    animateFabDown();
+                } else {
+                    animateFabUp();
+                }
                 paintMask(mScrollView.getScrollY());
             });
         });
@@ -240,6 +266,25 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             if (Build.VERSION.SDK_INT >= 21)
                 mAppBarLayout.setElevation(0);
         }
+    }
+
+    private void animateFabUp(){
+        if(mFabDownAnimation != null && mFabDownAnimation.isRunning())
+            mFabDownAnimation.cancel();
+        mFabUpAnimation = ObjectAnimator.ofFloat(mFAB, "y", mFAB.getY(), mFabHeight);
+        mFabUpAnimation.setDuration(200);
+        mFabUpAnimation.start();
+        isFabDown = false;
+    }
+    private void animateFabDown(){
+        if(isFabDown)
+            return;
+        if(mFabUpAnimation != null && mFabUpAnimation.isRunning())
+            mFabUpAnimation.cancel();
+        mFabUpAnimation = ObjectAnimator.ofFloat(mFAB, "translationY", mFAB.getTranslationY(), 0);
+        mFabUpAnimation.setDuration(200);
+        mFabUpAnimation.start();
+        isFabDown = true;
     }
 
     private void paintMask(float scrolled){
@@ -349,6 +394,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
+                    .noFade()
                     .into(target);
             Target target2 = new Target() {
                 @Override

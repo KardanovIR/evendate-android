@@ -64,6 +64,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Bind(R.id.tabs) TabLayout mTabLayout;
 
     @Bind(R.id.user_avatar) ImageView mUserImageView;
+    @Bind(R.id.avatar_container) View mUserImageContainer;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     DrawerWrapper mDrawer;
@@ -124,7 +125,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
         initTransitions();
-        mUserImageView.setVisibility(View.INVISIBLE);
+        mUserImageContainer.setVisibility(View.INVISIBLE);
     }
 
     private void initTransitions(){
@@ -208,7 +209,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     mUserImageView.setImageBitmap(bitmap);
-                    revealView(mUserImageView);
+                    revealView(mUserImageContainer);
                 }
 
                 @Override

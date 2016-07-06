@@ -32,6 +32,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/gradient_profile"/>
             <FrameLayout
+                android:id="@+id/avatar_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -62,7 +63,7 @@
             app:tabTextColor="#AAFFFFFF"
             app:tabSelectedTextColor="@color/text_primary"
             app:tabIndicatorColor="#FFFFFF"
-            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorHeight="2dp"
             />
     </android.support.design.widget.AppBarLayout>
     <FrameLayout

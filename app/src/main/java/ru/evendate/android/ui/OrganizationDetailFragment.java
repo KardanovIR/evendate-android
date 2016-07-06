@@ -432,10 +432,9 @@ public class OrganizationDetailFragment extends Fragment implements
         Picasso.with(getActivity())
                 .load(organization.getBackgroundMediumUrl())
                 .error(R.drawable.default_background)
+                .noFade()
                 .into(backgroundTarget);
         mToolbarTitle.setText(organization.getShortName());
-        if(Build.VERSION.SDK_INT >= 19)
-            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mOrganizationImageContainer.setVisibility(View.VISIBLE);
     }
 
