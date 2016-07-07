@@ -42,6 +42,14 @@
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
         />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_gravity="center_horizontal" />
     <com.nirhart.parallaxscroll.views.ParallaxScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -126,19 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </FrameLayout>
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/fragment_detail_content"/>
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:progressDrawable="@drawable/circular_progress_bar"
-                    android:layout_gravity="center_horizontal" />
-            </FrameLayout>
+            <include layout="@layout/fragment_detail_content"/>
         </LinearLayout>
     </com.nirhart.parallaxscroll.views.ParallaxScrollView>
 </android.support.design.widget.CoordinatorLayout>

@@ -196,9 +196,10 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconContainer.setVisibility(View.INVISIBLE);
-        mEventContentContainer.setVisibility(View.INVISIBLE);
+        //mEventContentContainer.setVisibility(View.INVISIBLE);
         mTitleTextView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
+        mScrollView.setVisibility(View.INVISIBLE);
         return rootView;
     }
 
@@ -630,7 +631,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mProgressBar.setVisibility(View.GONE);
         if(Build.VERSION.SDK_INT > 19)
             TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-        mEventContentContainer.setVisibility(View.VISIBLE);
+        mScrollView.setVisibility(View.VISIBLE);
         mTitleTextView.setVisibility(View.VISIBLE);
     }
 

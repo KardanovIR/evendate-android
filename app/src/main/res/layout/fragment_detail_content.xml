@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
+    android:paddingTop="72dp"
     android:paddingBottom="72dp"
     android:background="@color/window_reel_background">
     <ru.evendate.android.views.UserFavoritedCard
@@ -215,7 +215,6 @@
                 android:minHeight="20dp"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
-
     <android.support.v7.widget.CardView
         android:id="@+id/event_link_card"
         android:layout_width="match_parent"
