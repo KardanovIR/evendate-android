@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +25,11 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.EventsAdapter;
+import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
@@ -49,7 +50,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Bind(R.id.recyclerView) android.support.v7.widget.RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
-    boolean refreshingEnabled = false;
+    boolean refreshTurnOn = false;
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
 
@@ -102,14 +103,14 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         ReelFragment reel = new ReelFragment();
         reel.type = type;
         reel.organizationId = organizationId;
-        reel.refreshingEnabled = enableRefreshing;
+        reel.refreshTurnOn = enableRefreshing;
         return reel;
     }
 
     public static ReelFragment newInstance(int type, boolean enableRefreshing) {
         ReelFragment reel = new ReelFragment();
         reel.type = type;
-        reel.refreshingEnabled = enableRefreshing;
+        reel.refreshTurnOn = enableRefreshing;
         return reel;
     }
 
@@ -117,7 +118,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         ReelFragment reel = new ReelFragment();
         reel.type = type;
         reel.mDate = date;
-        reel.refreshingEnabled = enableRefreshing;
+        reel.refreshTurnOn = enableRefreshing;
         return reel;
     }
 
@@ -134,6 +135,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            type = savedInstanceState.getInt(TYPE);
+        }
     }
 
     @Override
@@ -144,30 +148,21 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
         mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent),
                 PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-
-        if (savedInstanceState != null) {
-            type = savedInstanceState.getInt(TYPE);
-        }
 
         initRefresh();
         initRecyclerView();
         mAdapter = new EventsAdapter(getActivity(), mRecyclerView, type);
         mAdapterController = new AdapterController(this, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
-
-        mSwipeRefreshLayout.setRefreshing(true);
         setCap();
-        loadEvents();
+        mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
 
     private void initRefresh() {
-        if (!refreshingEnabled)
+        if (!refreshTurnOn)
             mSwipeRefreshLayout.setEnabled(false);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
                 mAdapterController.reset();
                 loadEvents();
                 if (mRefreshListenerList != null) {
@@ -175,12 +170,11 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                         listener.onRefresh();
                     }
                 }
-            }
         });
     }
 
     private void initRecyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
         /**
          * listener that let using refresh on top of the event list
          */
@@ -192,11 +186,12 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 if (recyclerView.getChildCount() > 0) {
                     enable = recyclerView.computeVerticalScrollOffset() == 0;
                 }
-                if (refreshingEnabled)
+                if (refreshTurnOn)
                     mSwipeRefreshLayout.setEnabled(enable);
             }
         });
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new LandingAnimator());
     }
 
     private void setCap(){
@@ -218,8 +213,10 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         outState.putInt(TYPE, type);
     }
 
-    public ArrayList<EventFeed> getEventList() {
-        return mAdapter.getList();
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadEvents();
     }
 
     public EventsAdapter getAdapter() {
@@ -249,6 +246,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mAdapterController.reset();
         mAdapter.reset();
         loadEvents();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private void loadEvents(){
@@ -276,7 +274,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 }, error -> {
                     mSwipeRefreshLayout.setRefreshing(false);
                     mProgressBar.setVisibility(View.GONE);
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                 }, () -> Log.i(LOG_TAG, "Complete!"));
     }
 
@@ -313,14 +311,15 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     public void onLoaded(ArrayList<EventFeed> events) {
         if (mSwipeRefreshLayout.isRefreshing()) {
-            mAdapter.reset();
+            mAdapterController.reloaded(events);
         }
+        else
+            mAdapterController.loaded(events);
         mSwipeRefreshLayout.setRefreshing(false);
-        mAdapterController.loaded(events);
         mProgressBar.setVisibility(View.GONE);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
-        if (mAdapter.getList().size() == 0) {
+        if (mAdapter.isEmpty()) {
             displayCap();
         }
     }

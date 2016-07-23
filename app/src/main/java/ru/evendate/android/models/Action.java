@@ -5,12 +5,13 @@ import android.net.Uri;
 import com.google.gson.annotations.SerializedName;
 
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.ui.OrganizationFilterDialog;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
 public class Action extends DataModel implements ActionTarget, Comparable<Action> {
-    public static final String FIELDS_LIST = "name,created_at,event,organization,user{fields:'" + User.FIELDS_LIST + "'}";
+    public static final String FIELDS_LIST = "name,created_at,event,organization{fields:'" + OrganizationSubscription.FIELDS_LIST + "'},user{fields:'" + User.FIELDS_LIST + "'}";
     public static final String ORDER_BY = "-created_at";
 
     public enum Type {
@@ -49,7 +50,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     long createdAt;
 
     Event event;
-    Organization organization;
+    OrganizationFull organization;
     User user;
 
     @Override
@@ -89,7 +90,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
         return event;
     }
 
-    public Organization getOrganization() {
+    public OrganizationSubscription getOrganization() {
         return organization;
     }
 
@@ -122,7 +123,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
         if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
             return getEvent().getImageHorizontalUrl();
         else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
-            return organization.getLogoUrl();
+            return organization.getLogoSmallUrl();
         else
             return null;
     }

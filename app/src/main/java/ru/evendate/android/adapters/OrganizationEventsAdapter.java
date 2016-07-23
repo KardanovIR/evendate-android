@@ -47,9 +47,15 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     }
 
     public void setOrganization(OrganizationDetail organization) {
-        mOrganization = organization;
+        if(mOrganization == null){
+            mOrganization = organization;
+            notifyItemRangeInserted(0, 1);
+        }
+        else{
+            mOrganization = organization;
+            notifyItemRangeChanged(0, 1);
+        }
         //super.setList(organization.getEventsList());
-        notifyDataSetChanged();
     }
 
     public OrganizationDetail getOrganization() {

@@ -1,8 +1,11 @@
 package ru.evendate.android.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +37,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
 
     @Override
     public int getItemViewType(int position) {
-        int type = getList().get(position).getTargetType();
+        int type = getItem(position).getTargetType();
         if (type == ActionTarget.TYPE_EVENT)
             return R.layout.item_action_target_event;
         else
@@ -43,9 +46,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
 
     @Override
     public void onBindViewHolder(ActionTargetHolder holder, int position) {
-        if (getList() == null)
-            return;
-        ActionTarget action = getList().get(position);
+        ActionTarget action = getItem(position);
         holder.mNameTextView.setText(action.getTargetName());
         holder.mUri = action.getTargetUri();
         holder.type = action.getTargetType();
@@ -79,7 +80,11 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
                 else
                     intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri);
-                mContext.startActivity(intent);
+                if(Build.VERSION.SDK_INT > 21)
+                    mContext.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
+                else
+                    mContext.startActivity(intent);
             }
         }
 
