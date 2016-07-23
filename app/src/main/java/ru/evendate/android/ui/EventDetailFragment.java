@@ -276,6 +276,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mFabUpAnimation.setDuration(200);
         mFabUpAnimation.start();
         isFabDown = false;
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
+        layoutParams.setBehavior(null);
+        mFAB.setLayoutParams(layoutParams);
     }
     private void animateFabDown(){
         if(isFabDown)
@@ -286,6 +289,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mFabUpAnimation.setDuration(200);
         mFabUpAnimation.start();
         isFabDown = true;
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
+        layoutParams.setBehavior(new FloatingActionButton.Behavior(getActivity(), null));
+        mFAB.setLayoutParams(layoutParams);
     }
 
     private void paintMask(float scrolled){
@@ -444,14 +450,14 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     @SuppressWarnings("deprecation")
     private void setFabIcon() {
-        mFAB.show();
+        if(!mFAB.isShown())
+            mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
             mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_grade_white_48dp));
         } else {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            Drawable drawable = getResources().getDrawable(R.drawable.ic_grade_black_48dp);
-            drawable.setAlpha(138);
+            Drawable drawable = getResources().getDrawable(R.drawable.ic_star_contur);
             mFAB.setImageDrawable(drawable);
         }
     }
@@ -538,10 +544,10 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mAdapter.getEvent().favore();
         if (mAdapter.getEvent().isFavorite()) {
             event.setAction(getActivity().getString(R.string.stat_action_like));
-            Snackbar.make(mCoordinatorLayout, R.string.favorite_confirm, Snackbar.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.favorite_confirm, Toast.LENGTH_SHORT).show();
         } else {
             event.setAction(getActivity().getString(R.string.stat_action_dislike));
-            Snackbar.make(mCoordinatorLayout, R.string.remove_favorite_confirm, Snackbar.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.remove_favorite_confirm, Toast.LENGTH_SHORT).show();
         }
         tracker.send(event.build());
         mAdapter.setEventInfo();
