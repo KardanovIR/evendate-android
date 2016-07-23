@@ -36,11 +36,11 @@ public class Organization extends DataModel {
         return shortName;
     }
 
-    public String getLogoUrl() {
+    public String getLogoLargeUrl() {
         return logoLargeUrl;
     }
 
-    public String getBackgroundUrl() {
+    public String getBackgroundLargeUrl() {
         return backgroundLargeUrl;
     }
 

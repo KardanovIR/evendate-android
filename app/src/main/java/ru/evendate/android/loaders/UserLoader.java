@@ -16,7 +16,7 @@ import ru.evendate.android.network.ResponseArray;
  * Created by ds_gordeev on 15.02.2016.
  */
 public class UserLoader extends AbstractLoader<UserDetail> {
-    private final String LOG_TAG = SubscriptionLoader.class.getSimpleName();
+    private final String LOG_TAG = UserLoader.class.getSimpleName();
     int userId;
 
     public UserLoader(Context context, int userId) {

@@ -1,16 +1,21 @@
 package ru.evendate.android.ui;
 
 import android.accounts.Account;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -33,35 +38,42 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private DrawerWrapper mDrawer;
-    private final int REQUEST_AUTH = 1;
+    public static final int REQUEST_AUTH = 1;
     private Dialog serviceDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTransitions();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
-
-        //just change that fucking home icon
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawer.getDrawer().openDrawer();
-            }
-        });
-
-        checkAccount();
+        initToolbar();
+        initDrawer();
 
         mFragment = new MainPagerFragment();
         ((MainPagerFragment)mFragment).setOnRefreshListener(this);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
+        checkAccount();
+
+    }
+
+    private void initToolbar(){
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
+    }
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
+            getWindow().setEnterTransition(new Fade());
+            getWindow().setReenterTransition(new Fade());
+            getWindow().setExitTransition(new Fade());
+        }
+    }
+    private void initDrawer(){
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
@@ -110,7 +122,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         Account account = EvendateAccountManager.getSyncAccount(this);
         if (account == null) {
             Intent authIntent = new Intent(this, AuthActivity.class);
-            startActivityForResult(authIntent, REQUEST_AUTH);
+
+            //if(Build.VERSION.SDK_INT >= 21) {
+                //startActivityForResult(authIntent, REQUEST_AUTH, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            //}else
+                startActivityForResult(authIntent, REQUEST_AUTH);
         }
     }
 
@@ -134,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
      */
     private class MainNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public MainNavigationItemClickListener(Context context, Drawer drawer) {
+        public MainNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
         }
 

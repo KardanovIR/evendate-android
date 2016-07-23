@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.SubscriptionsAdapter;
 import ru.evendate.android.models.UserDetail;
 
@@ -35,7 +36,7 @@ public class UserSubscriptionsFragment extends Fragment {
         mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView);
         mAdapter = new SubscriptionsAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
         mAdapter.setSubscriptionList(mUser.getSubscriptions());
         return rootView;
     }

@@ -11,55 +11,41 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.OrganizationCategory;
 
 /**
  * Created by Dmitry on 30.11.2015.
  */
-public class OrganizationCategoryAdapter extends RecyclerView.Adapter<OrganizationCategoryAdapter.CategoryHolder> {
+public class OrganizationCategoryAdapter extends AbstractAdapter<OrganizationCategory, OrganizationCategoryAdapter.CategoryHolder> {
 
-    private Context mContext;
-    private ArrayList<OrganizationType> mCategoryList;
+    RecyclerView.RecycledViewPool mRecycledViewPool;
 
     public OrganizationCategoryAdapter(Context context) {
-        this.mContext = context;
+        super(context);
+        mRecycledViewPool = new RecyclerView.RecycledViewPool();
+        mRecycledViewPool.setMaxRecycledViews(R.layout.item_organization_category, 80);
     }
 
-    public void setCategoryList(ArrayList<OrganizationType> categoryList) {
-        mCategoryList = categoryList;
-        notifyDataSetChanged();
-    }
-
-    public ArrayList<OrganizationType> getCategoryList() {
-        return mCategoryList;
+    public void setCategoryList(ArrayList<OrganizationCategory> categoryList) {
+        super.replace(categoryList);
     }
 
     @Override
     public CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CategoryHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_organization_category, parent, false));
+                .inflate(viewType, parent, false));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return R.layout.item_organization_category;
     }
 
     @Override
     public void onBindViewHolder(CategoryHolder holder, int position) {
-        if (mCategoryList == null)
-            return;
-        String category = mCategoryList.get(position).getName();
-        holder.mCategoryTextView.setText(category);
-        holder.mAdapter = new OrganizationCatalogAdapter(mContext);
-        holder.mAdapter.setOrganizationList(mCategoryList.get(position).getOrganizations());
-        holder.mContainer.setAdapter(holder.mAdapter);
-        WrapLinearLayoutManager manager =
-                new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        manager.setAutoMeasureEnabled(false);
-        holder.mContainer.setLayoutManager(manager);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mCategoryList == null)
-            return 0;
-        return mCategoryList.size();
+        OrganizationCategory category = getItem(position);
+        holder.mCategoryTextView.setText(category.getName());
+        holder.mAdapter.setOrganizationList(category.getOrganizations());
     }
 
     @Override
@@ -76,6 +62,13 @@ public class OrganizationCategoryAdapter extends RecyclerView.Adapter<Organizati
             super(itemView);
             mCategoryTextView = (TextView)itemView.findViewById(R.id.organization_category);
             mContainer = (RecyclerView)itemView.findViewById(R.id.container);
+            mAdapter = new OrganizationCatalogAdapter(mContext);
+            mContainer.setAdapter(mAdapter);
+            mContainer.setRecycledViewPool(mRecycledViewPool);
+            WrapLinearLayoutManager manager =
+                    new WrapLinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+            manager.setAutoMeasureEnabled(false);
+            mContainer.setLayoutManager(manager);
         }
     }
 }
