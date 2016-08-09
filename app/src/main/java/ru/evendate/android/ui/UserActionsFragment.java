@@ -17,10 +17,12 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AggregateDate;
 import ru.evendate.android.adapters.DatesAdapter;
+import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.ActionConverter;
 import ru.evendate.android.models.ActionType;
@@ -54,17 +56,25 @@ public class UserActionsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_user_actions, container, false);
         ButterKnife.bind(this, rootView);
 
-        mAdapter = new DatesAdapter(getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        initRecyclerView();
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        loadActions();
         return rootView;
     }
 
+    private void initRecyclerView(){
+        mAdapter = new DatesAdapter(getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setItemAnimator(new LandingAnimator());
+        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadActions();
+    }
 
     public void loadActions(){
         ApiService evendateService = ApiFactory.getEvendateService();
@@ -89,7 +99,7 @@ public class UserActionsFragment extends Fragment {
     public void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
         mProgressBar.setVisibility(View.GONE);
-        mAdapter.setList(convertedList);
+        mAdapter.replace(convertedList);
     }
 
     public void onError() {

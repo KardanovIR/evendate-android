@@ -1,13 +1,14 @@
 package ru.evendate.android.auth;
 
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.view.Gravity;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 import ru.evendate.android.R;
-import ru.evendate.android.auth.AuthActivity;
 
 /**
  * Created by Dmitry on 14.12.2015.
@@ -37,6 +38,14 @@ public class IntroActivity extends AppIntro {
         // Hide Skip/Done button
         showSkipButton(true);
         showDoneButton(true);
+        initTransitions();
+    }
+
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT > 21){
+            getWindow().setExitTransition(new Slide(Gravity.START));
+            getWindow().setEnterTransition(new Slide(Gravity.END));
+        }
     }
 
     @Override

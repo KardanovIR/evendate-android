@@ -9,6 +9,7 @@ import ru.evendate.android.ui.AdapterController;
  */
 public interface OrganizationDetail {
     String FIELDS_LIST = "description,site_url,img_medium_url,subscribed_count,is_subscribed,default_address," +
+            "background_medium_img_url," +
             "subscribed,events{filters:'future=true',fields:'" + EventFeed.FIELDS_LIST + "',length:" +
             AdapterController.EVENTS_LENGTH + ",order_by:'" + EventFeed.ORDER_BY_TIME + "'}";
 
@@ -19,11 +20,9 @@ public interface OrganizationDetail {
 
     String getShortName();
 
-    String getLogoUrl();
-
     String getLogoMediumUrl();
 
-    String getBackgroundUrl();
+    String getBackgroundMediumUrl();
 
     ArrayList<UserDetail> getSubscribedUsersList();
 

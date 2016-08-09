@@ -7,6 +7,49 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/window_reel_background">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:textColorSecondary="#FFFFFF"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="#fff"
+            >
+            <TextView
+                android:id="@+id/event_toolbar_title"
+                android:layout_centerInParent="true"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Event"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:clickable="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_gravity="center_horizontal" />
     <com.nirhart.parallaxscroll.views.ParallaxScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -17,6 +60,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <FrameLayout
+                android:id="@+id/event_image_container"
                 android:layout_width="match_parent"
                 android:layout_height="198dp">
                 <ImageView
@@ -26,10 +70,11 @@
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/butterfly"/>
-                <View
+                <ImageView
+                    android:id="@+id/event_image_foreground"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_event"/>
+                    android:layout_height="match_parent"/>
+
                 <TextView
                     android:id="@+id/event_title"
                     android:layout_width="match_parent"
@@ -56,6 +101,7 @@
             android:background="?attr/colorPrimaryDark"
             android:layout_gravity="bottom">
             <FrameLayout
+                android:id="@+id/event_organization_icon_container"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
                 android:padding="8dp">
@@ -80,61 +126,15 @@
                 tools:text="Digital October"
                 android:textSize="16sp"
                 android:textIsSelectable="false"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="72dp"
+                android:fontFamily="sans-serif"/>
             <View
                 android:id="@+id/event_organization_mask"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </FrameLayout>
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/fragment_detail_content"/>
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:progressDrawable="@drawable/circular_progress_bar"
-                    android:layout_gravity="center_horizontal" />
-            </FrameLayout>
+            <include layout="@layout/fragment_detail_content"/>
         </LinearLayout>
     </com.nirhart.parallaxscroll.views.ParallaxScrollView>
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="#fff"
-            >
-            <TextView
-                android:id="@+id/event_toolbar_title"
-                android:layout_centerInParent="true"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FFF"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Event"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:clickable="true"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        />
 </android.support.design.widget.CoordinatorLayout>

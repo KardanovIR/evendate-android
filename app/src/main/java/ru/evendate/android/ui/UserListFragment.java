@@ -2,13 +2,17 @@ package ru.evendate.android.ui;
 
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.OrganizationDetail;
@@ -68,6 +73,14 @@ public class UserListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(TYPE, type);
+        outState.putInt(EVENT_ID, eventId);
+        outState.putInt(ORGANIZATION_ID, organizationId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_list, container, false);
@@ -76,27 +89,22 @@ public class UserListFragment extends Fragment {
         if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
         }
-
+        initTransitions();
         mAdapter = new UsersAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
 
         mProgressBar.getProgressDrawable()
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
-        if (type == TypeFormat.event.nativeInt)
-            loadEvent();
-        else
-            loadOrganization();
         return rootView;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(TYPE, type);
-        outState.putInt(EVENT_ID, eventId);
-        outState.putInt(ORGANIZATION_ID, organizationId);
-        super.onSaveInstanceState(outState);
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
+            getActivity().getWindow().setEnterTransition(new Explode());
+            getActivity().getWindow().setExitTransition(new Explode());
+        }
     }
 
     @Override
@@ -107,6 +115,15 @@ public class UserListFragment extends Fragment {
         type = savedInstanceState.getInt(TYPE);
         eventId = savedInstanceState.getInt(EVENT_ID);
         organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (type == TypeFormat.event.nativeInt)
+            loadEvent();
+        else
+            loadOrganization();
     }
 
     private void loadOrganization() {
@@ -126,7 +143,7 @@ public class UserListFragment extends Fragment {
                         return;
                     }
                     OrganizationDetail organization = result.getData().get(0);
-                    mAdapter.setList(organization.getSubscribedUsersList());
+                    mAdapter.replace(organization.getSubscribedUsersList());
                     mProgressBar.setVisibility(View.GONE);
                 }, error -> {
                     onError();
@@ -151,7 +168,7 @@ public class UserListFragment extends Fragment {
                         return;
                     }
                     EventDetail event = result.getData().get(0);
-                    mAdapter.setList(event.getUserList());
+                    mAdapter.replace(event.getUserList());
                     mProgressBar.setVisibility(View.GONE);
                 }, error -> {
                     onError();
@@ -162,14 +179,12 @@ public class UserListFragment extends Fragment {
     private void onError(){
         if (!isAdded())
             return;
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                (DialogInterface dialog, int which) -> {
                 loadEvent();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
-            }
         });
-        dialog.show();
+        alertDialog.show();
     }
 }

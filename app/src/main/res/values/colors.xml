@@ -17,5 +17,6 @@
     <color name="vk_color">#567CA4</color>
     <color name="fb_color">#3B5998</color>
     <color name="google_plus_color">#DD4B39</color>
+    <color name="google_plus_color_inactive">#BDBDBD</color>
 
 </resources>

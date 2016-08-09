@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import ru.evendate.android.auth.AuthActivity;
-import ru.evendate.android.auth.Authenticator;
 
 /**
  * Created by Dmitry on 27.01.2016.
@@ -29,8 +28,7 @@ public class EvendateAccountManager {
         android.accounts.AccountManager accountManager =
                 (android.accounts.AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
-        String account_name = sPref.getString(ACTIVE_ACCOUNT_NAME, null);
+        String account_name = getActiveAccountName(context);
 
         Account[] accounts = accountManager.getAccountsByType(context.getString(R.string.account_type));
         if (accounts.length == 0 || account_name == null) {
@@ -44,6 +42,11 @@ public class EvendateAccountManager {
         return null;
     }
 
+    public static String getActiveAccountName(Context context){
+        SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+        return sPref.getString(ACTIVE_ACCOUNT_NAME, null);
+    }
+
     //save account email into shared preferences to find current account later
     public static void setActiveAccountName(Context context, String accountName){
         SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
@@ -55,7 +58,6 @@ public class EvendateAccountManager {
     public static void deleteAccount(Context context) {
         AccountManager accountManager = (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
         accountManager.removeAccount(getSyncAccount(context), null, null);
-        context.startActivity(new Intent(context, AuthActivity.class));
     }
 
     public static String peekToken(Context context) {
@@ -69,8 +71,32 @@ public class EvendateAccountManager {
             e.fillInStackTrace();
         }
         if (token == null) {
-            context.startActivity(new Intent(context, AuthActivity.class));
+            startAuth(context);
         }
         return token;
+    }
+
+    private static void startAuth(Context context){
+        if(!isAuthRunning(context))
+            context.startActivity(new Intent(context, AuthActivity.class));
+    }
+
+    public static void setAuthRunning(Context context){
+        SharedPreferences.Editor edit = getAuthPreference(context).edit();
+        edit.putBoolean("active", true);
+        edit.apply();
+    }
+    public static void setAuthDone(Context context){
+        SharedPreferences.Editor edit = getAuthPreference(context).edit();
+        edit.putBoolean("active", false);
+        edit.apply();
+    }
+    private static SharedPreferences getAuthPreference(Context context){
+        return context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+    }
+
+    //true cause first start in main activity
+    public static boolean isAuthRunning(Context context){
+        return getAuthPreference(context).getBoolean("auth", true);
     }
 }

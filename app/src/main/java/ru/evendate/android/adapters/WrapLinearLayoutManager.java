@@ -10,13 +10,14 @@ import android.view.ViewGroup;
  * layout manager for nested recycler view
  * http://stackoverflow.com/questions/26649406/nested-recycler-view-height-doesnt-wrap-its-content
  */
-public class WrapLinearLayoutManager extends LinearLayoutManager {
+public class WrapLinearLayoutManager extends NpaLinearLayoutManager {
+
+    private int[] mMeasuredDimension = new int[2];
 
     public WrapLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }
 
-    private int[] mMeasuredDimension = new int[2];
 
     @Override
     public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state,

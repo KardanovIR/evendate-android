@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import ru.evendate.android.R;
 import ru.evendate.android.ui.AdapterController;
@@ -92,38 +93,6 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
         if (holder instanceof ProgressViewHolder) {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
-    }
-
-    /**
-     * clear adapter item list
-     */
-    public void reset() {
-        setList(null);
-    }
-
-    /**
-     * set items list if it's null or append items to exist list
-     */
-    @Override
-    public void setList(ArrayList<T> list) {
-        if (getList() == null || list == null) {
-            super.setList(list);
-        } else {
-            for (T item : list)
-                add(item, getList().size());
-        }
-    }
-
-    private void add(T item, int position) {
-        getList().add(position, item);
-        //TODO потенциальная проблема
-        notifyItemInserted(getItemCount());
-    }
-
-    protected void remove(T item) {
-        int position = getList().indexOf(item);
-        getList().remove(position);
-        notifyItemRemoved(position);
     }
 
     public void setLoaded() {
