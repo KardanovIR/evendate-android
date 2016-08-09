@@ -108,4 +108,5 @@
     <string name="favourites_empty_header">Избранных событий нет</string>
     <string name="favourites_empty_text">Добавьте событие в избранное, чтобы оно появилось здесь!</string>
     <string name="recommendation_empty_header">Рекомендаций для вас пока нет</string>
+    <string name="action_user_link">Профиль в социальной сети</string>
 </resources>
