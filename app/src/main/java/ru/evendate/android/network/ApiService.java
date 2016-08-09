@@ -216,9 +216,10 @@ public interface ApiService {
      * Get notifications for event
      */
     @GET(API_PATH + "/events/{id}/notifications?fields=notification_type")
-    Call<EvendateServiceResponseArray<EventNotification>> getNotifications(
+    Call<ResponseArray<EventNotification>> getNotifications(
             @Header("Authorization") String authorization,
-            @Path("id") int eventId
+            @Path("id") int eventId,
+            @Query("fields") String fields
     );
 
     @POST(API_PATH + "/events/{id}/notifications")

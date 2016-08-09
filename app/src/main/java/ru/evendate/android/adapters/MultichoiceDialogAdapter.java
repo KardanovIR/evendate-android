@@ -17,43 +17,43 @@ import ru.evendate.android.models.EventNotification;
  * Created by mrZizik on 25/05/16.
  */
 public class MultichoiceDialogAdapter extends ArrayAdapter<EventNotification> {
-        private final Context context;
-        private final ArrayList<EventNotification> values;
+    private final Context context;
+    private final ArrayList<EventNotification> notifications;
 
-        public MultichoiceDialogAdapter(Context context, ArrayList<EventNotification> values) {
-            super(context, R.layout.item_multichoise, values);
-            this.context = context;
-            this.values = values;
+    public MultichoiceDialogAdapter(Context context, ArrayList<EventNotification> notifications) {
+        super(context, R.layout.item_multichoice, notifications);
+        this.context = context;
+        this.notifications = notifications;
+    }
+
+    static class ViewHolder {
+        CheckBox checkBox;
+        TextView textView;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        View rowView = convertView;
+        if (rowView == null) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(R.layout.item_multichoice, parent, false);
+            holder = new ViewHolder();
+            holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
+            holder.textView = (TextView) rowView.findViewById(R.id.tv_checkboxtext);
+            rowView.setTag(holder);
+        } else {
+            holder = (ViewHolder) rowView.getTag();
         }
-
-        static class ViewHolder {
-            CheckBox checkBox;
-            TextView textView;
+        EventNotification notification = notifications.get(position);
+        if (notification.getUuid() == null) {
+            holder.checkBox.setVisibility(View.INVISIBLE);
         }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            View rowView = convertView;
-            if (rowView == null) {
-                LayoutInflater inflater = (LayoutInflater) context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                rowView = inflater.inflate(R.layout.item_multichoise, parent, false);
-                holder = new ViewHolder();
-                holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
-                holder.textView = (TextView) rowView.findViewById(R.id.tv_checkboxtext);
-                rowView.setTag(holder);
-            } else {
-                holder = (ViewHolder) rowView.getTag();
-            }
-            EventNotification notification = values.get(position);
-            if (notification.getEntryId()!=0) {
-                holder.checkBox.setVisibility(View.INVISIBLE);
-            }
-            holder.textView.setText(""+notification.getNotificationTime());
+        holder.textView.setText("" + notification.getNotificationTime());
 
 
-            return rowView;
-        }
+        return rowView;
+    }
 
 }
