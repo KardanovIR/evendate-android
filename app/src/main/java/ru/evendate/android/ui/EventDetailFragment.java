@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -82,7 +81,7 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
-import ru.evendate.android.adapters.MultichoiseDialogAdapter;
+import ru.evendate.android.adapters.MultichoiceDialogAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
@@ -217,8 +216,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mTitleTextView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mScrollView.setVisibility(View.INVISIBLE);
-
-        //loadNotifications();
         return rootView;
     }
 
@@ -727,9 +724,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     public void initDialog(ArrayList<EventNotification> notifications) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View convertView = (View) inflater.inflate(R.layout.dialog_multichoice, null);
+        View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
         alertDialog.setView(convertView);
-        alertDialog.setTitle(getString(R.string.action_notifications));
+        alertDialog.setTitle(getString(R.string.action_add_notification));
         alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -737,24 +734,24 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             }
         });
         ListView lv = (ListView) convertView.findViewById(R.id.listView);
-        MultichoiseDialogAdapter adapter = new MultichoiseDialogAdapter(getActivity(), notifications);
+        MultichoiceDialogAdapter adapter = new MultichoiceDialogAdapter(getActivity(), notifications);
         lv.setAdapter(adapter);
         alertDialog.show();
     }
 
-
-public static class DatePickerFragment extends DialogFragment
+    public static class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
-    Calendar calendar = Calendar.getInstance();
-    int eventId;
-    Context context;
+        Calendar calendar = Calendar.getInstance();
+        int eventId;
+        Context context;
 
-    public static DatePickerFragment getInstance(Context context, int eventId) {
-        DatePickerFragment fragment = new DatePickerFragment();
-        fragment.eventId = eventId;
-        fragment.context = context;
-        return fragment;
-    }
+        public static DatePickerFragment getInstance(Context context, int eventId) {
+            DatePickerFragment fragment = new DatePickerFragment();
+            fragment.eventId = eventId;
+            fragment.context = context;
+            return fragment;
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
