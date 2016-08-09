@@ -20,7 +20,7 @@ import ru.evendate.android.R;
  */
 public class UserListActivity extends AppCompatActivity {
     private UserListFragment mUserListFragment;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class UserListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
         fragmentManager.beginTransaction().replace(R.id.main_content, mUserListFragment).commit();
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }

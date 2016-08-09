@@ -5,13 +5,17 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -22,11 +26,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -36,16 +45,20 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
+import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.LoaderListener;
@@ -70,6 +83,7 @@ public class OrganizationDetailFragment extends Fragment implements
 
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.organization_image_container) View mOrganizationImageContainer;
 
     private int organizationId = -1;
     public static final String URI = "uri";
@@ -85,10 +99,38 @@ public class OrganizationDetailFragment extends Fragment implements
     int toolbarColor = Color.TRANSPARENT;
     boolean isToolbarTransparent = true;
     ValueAnimator colorAnimation;
-    EvendateDrawer mDrawer;
+    DrawerWrapper mDrawer;
 
     private OrganizationEventsAdapter mAdapter;
     private AdapterController mAdapterController;
+
+    final Target backgroundTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            mBackgroundView.setImageBitmap(bitmap);
+            revealView(mBackgroundView);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            mBackgroundView.setImageDrawable(errorDrawable);
+            revealView(mBackgroundView);
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {}
+    };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            mUri = Uri.parse(args.getString(URI));
+            organizationId = Integer.parseInt(mUri.getLastPathSegment());
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,35 +139,45 @@ public class OrganizationDetailFragment extends Fragment implements
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
 
+        initToolbar();
+        initTransitions();
+        initDrawer();
+        initRecyclerView();
+
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+
+        mOrganizationImageContainer.setVisibility(View.INVISIBLE);
+        mBackgroundView.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        return rootView;
+    }
+    private void initToolbar(){
         mToolbar.setTitle("");
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
-
-        Bundle args = getArguments();
-        if (args != null) {
-            mUri = Uri.parse(args.getString(URI));
-            organizationId = Integer.parseInt(mUri.getLastPathSegment());
+    }
+    private void initTransitions(){
+        if(Build.VERSION.SDK_INT >= 21){
+            getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
+            getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
-
-        mLayoutManager = new LinearLayoutManager(getActivity());
+    }
+    private void initDrawer(){
+        mDrawer = DrawerWrapper.newInstance(getActivity());
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+    }
+    private void initRecyclerView(){
+        mLayoutManager = new NpaLinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(new LandingAnimator());
         mAdapter = new OrganizationEventsAdapter(getContext(), mRecyclerView, this);
         mAdapterController = new AdapterController(this, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
         initParallax();
-        loadOrg();
-        mDrawer = EvendateDrawer.newInstance(getActivity());
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
-        mDrawer.start();
-
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-        return rootView;
     }
-
     private void initParallax(){
         mToolbar.setBackgroundColor(toolbarColor);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -189,7 +241,6 @@ public class OrganizationDetailFragment extends Fragment implements
         //    }
         //});
     }
-
     private boolean checkOrgCardScrolling(RecyclerView recyclerView) {
         float imageHeight = getResources().getDimension(R.dimen.organization_background_height);
         float actionBarHeight = 0;
@@ -201,12 +252,10 @@ public class OrganizationDetailFragment extends Fragment implements
         return mAdapter.getItemViewType(index) == R.layout.card_organization_detail
                 && (Math.abs(recyclerView.computeVerticalScrollOffset()) + actionBarHeight) < imageHeight;
     }
-
     private boolean checkOrgCardVisible() {
         int index = mLayoutManager.findFirstVisibleItemPosition();
         return mAdapter.getItemViewType(index) == R.layout.card_organization_detail;
     }
-
     private void setImageViewY(RecyclerView recyclerView) {
         scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
         if (checkOrgCardVisible()) {
@@ -225,6 +274,13 @@ public class OrganizationDetailFragment extends Fragment implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadOrg();
+        mDrawer.start();
     }
 
     //TODO DRY
@@ -311,6 +367,20 @@ public class OrganizationDetailFragment extends Fragment implements
         subOrganizationLoader.startLoading();
     }
 
+    private void revealView(View view){
+        if(view.getVisibility() == View.VISIBLE)
+            return;
+        view.setVisibility(View.VISIBLE);
+        if(Build.VERSION.SDK_INT < 21)
+            return;
+        int cx = (view.getLeft() + view.getRight()) / 2;
+        int cy = (view.getTop() + view.getBottom()) / 2;
+
+        int finalRadius = Math.max(view.getWidth(), view.getHeight());
+        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+        animation.start();
+    }
+
     /**
      * handle place button click and open google map
      */
@@ -332,7 +402,12 @@ public class OrganizationDetailFragment extends Fragment implements
         intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getOrganization().getEntryId())).build());
         intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.organization.nativeInt);
-        startActivity(intent);
+        if(Build.VERSION.SDK_INT >= 21){
+            getActivity().startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        }
+        else
+            getActivity().startActivity(intent);
     }
 
     /**
@@ -353,12 +428,14 @@ public class OrganizationDetailFragment extends Fragment implements
         mProgressBar.setVisibility(View.GONE);
         OrganizationDetail organization = organizations.get(0);
         mAdapter.setOrganization(organization);
-        mAdapterController.loaded(organization.getEventsList());
+        mAdapterController.reloaded(organization.getEventsList());
         Picasso.with(getActivity())
-                .load(organization.getBackgroundUrl())
+                .load(organization.getBackgroundMediumUrl())
                 .error(R.drawable.default_background)
-                .into(mBackgroundView);
+                .noFade()
+                .into(backgroundTarget);
         mToolbarTitle.setText(organization.getShortName());
+        mOrganizationImageContainer.setVisibility(View.VISIBLE);
     }
 
     public void onLoadedEvents(ArrayList<EventFeed> events) {
@@ -371,17 +448,16 @@ public class OrganizationDetailFragment extends Fragment implements
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+        //todo on destroy can leak
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                (DialogInterface dialog, int which) -> {
                         loadOrg();
                         dialog.dismiss();
                     }
-                });
+        );
         mAdapterController.notLoadedCauseError();
         mAdapterController.disableNext();
-        dialog.show();
+        alertDialog.show();
     }
 
     @Override

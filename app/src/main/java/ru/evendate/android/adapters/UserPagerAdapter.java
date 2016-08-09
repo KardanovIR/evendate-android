@@ -27,10 +27,10 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0: {
-                return UserActionsFragment.newInstance(mUser.getEntryId());
+                return UserSubscriptionsFragment.newInstance(mUser);
             }
             case 1: {
-                return UserSubscriptionsFragment.newInstance(mUser);
+                return UserActionsFragment.newInstance(mUser.getEntryId());
             }
             default:
                 throw new IllegalArgumentException("invalid page number");
@@ -46,9 +46,9 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return mContext.getString(R.string.tab_actions);
-            case 1:
                 return mContext.getString(R.string.tab_subscriptions);
+            case 1:
+                return mContext.getString(R.string.tab_actions);
             default:
                 return null;
         }
@@ -63,9 +63,9 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter {
     public String getPageLabel(int position) {
         switch (position) {
             case 0:
-                return mContext.getString(R.string.stat_page_actions);
-            case 1:
                 return mContext.getString(R.string.stat_page_subscriptions);
+            case 1:
+                return mContext.getString(R.string.stat_page_actions);
             default:
                 return null;
         }

@@ -1,10 +1,9 @@
 package ru.evendate.android.ui;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +26,7 @@ import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.OrganizationCategoryAdapter;
-import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
@@ -45,11 +44,11 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
-    private ArrayList<OrganizationType> mCategoryList;
+    private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
-    private EvendateDrawer mDrawer;
+    private DrawerWrapper mDrawer;
     AlertDialog errorDialog;
 
     @Override
@@ -63,6 +62,8 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         initProgressBar();
         initFAB();
         initDrawer();
+        displayProgress();
+        mFAB.setVisibility(View.INVISIBLE);
     }
 
     private void initToolbar() {
@@ -72,6 +73,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
     private void initRecyclerView(){
+        mAdapter = new OrganizationCategoryAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -83,7 +85,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
     }
     private void initDrawer(){
-        mDrawer = EvendateDrawer.newInstance(this);
+        mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -92,7 +94,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         loadCatalog();
-        mDrawer.getDrawer().setSelection(EvendateDrawer.CATALOG_IDENTIFIER);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -105,11 +107,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void loadCatalog(){
-        displayProgress();
-
         ApiService apiService = ApiFactory.getEvendateService();
-        Observable<ResponseArray<OrganizationType>> observable =
-                apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationType.FIELDS_LIST);
+        Observable<ResponseArray<OrganizationCategory>> observable =
+                apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationCategory.FIELDS_LIST);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -120,10 +120,11 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 );
     }
 
-    public void onLoaded(ArrayList<OrganizationType> subList) {
+    public void onLoaded(ArrayList<OrganizationCategory> subList) {
         Log.i(LOG_TAG, "loaded");
         mCategoryList = subList;
         mAdapter.setCategoryList(subList);
+        mFAB.show();
     }
 
     public void onError(Throwable error) {
@@ -162,7 +163,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
     @Override
     public void onCategorySelected(boolean[] itemsSelected) {
-        ArrayList<OrganizationType> newItemSelected = new ArrayList<>();
+        ArrayList<OrganizationCategory> newItemSelected = new ArrayList<>();
         mSelectedItems = itemsSelected;
         for (int i = 0; i < itemsSelected.length; i++) {
             if (itemsSelected[i])
@@ -176,7 +177,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
      */
     private class CatalogNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CatalogNavigationItemClickListener(Context context, Drawer drawer) {
+        public CatalogNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }
@@ -184,7 +185,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case EvendateDrawer.CATALOG_IDENTIFIER:
+                case DrawerWrapper.CATALOG_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
                 default:
