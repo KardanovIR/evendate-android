@@ -14,6 +14,7 @@ import retrofit.http.Query;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationCategory;
@@ -209,6 +210,15 @@ public interface ApiService {
     Observable<Response> postStat(
             @Header("Authorization") String authorization,
             @Body List<StatisticsEvent> payload
+    );
+
+    /**
+     * Get notifications for event
+     */
+    @GET(API_PATH + "/events/{id}/notifications?fields=notification_type")
+    Call<EvendateServiceResponseArray<EventNotification>> getNotifications(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId
     );
 
     @POST(API_PATH + "/events/{id}/notifications")

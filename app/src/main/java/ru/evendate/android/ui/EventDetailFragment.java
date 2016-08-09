@@ -51,6 +51,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -81,12 +82,15 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
+import ru.evendate.android.adapters.MultichoiseDialogAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.loaders.NotificationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
@@ -213,6 +217,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mTitleTextView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mScrollView.setVisibility(View.INVISIBLE);
+
+        //loadNotifications();
         return rootView;
     }
 
@@ -589,8 +595,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 onUpPressed();
                 return true;
             case R.id.action_add_notification:
-                DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
-                newFragment.show(getChildFragmentManager(), "datePicker");
+                loadNotifications();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -701,19 +706,55 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mDrawer.cancel();
     }
 
-    public static class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-        Calendar calendar = Calendar.getInstance();
-        int eventId;
-        Context context;
 
-        public static DatePickerFragment getInstance(Context context, int eventId) {
-            DatePickerFragment fragment = new DatePickerFragment();
-            fragment.eventId = eventId;
-            fragment.context = context;
-            return fragment;
-        }
+    public void loadNotifications() {
+        EventNotificationsLoader mEventNotificationsLoader = new EventNotificationsLoader(getActivity(), eventId);
+        mEventNotificationsLoader.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
+            @Override
+            public void onLoaded(ArrayList<EventNotification> subList) {
+                initDialog(subList);
+            }
 
+            @Override
+            public void onError() {
+
+            }
+        });
+        mEventNotificationsLoader.startLoading();
+    }
+
+
+    public void initDialog(ArrayList<EventNotification> notifications) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.dialog_multichoice, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle(getString(R.string.action_notifications));
+        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        ListView lv = (ListView) convertView.findViewById(R.id.listView);
+        MultichoiseDialogAdapter adapter = new MultichoiseDialogAdapter(getActivity(), notifications);
+        lv.setAdapter(adapter);
+        alertDialog.show();
+    }
+
+
+public static class DatePickerFragment extends DialogFragment
+        implements DatePickerDialog.OnDateSetListener {
+    Calendar calendar = Calendar.getInstance();
+    int eventId;
+    Context context;
+
+    public static DatePickerFragment getInstance(Context context, int eventId) {
+        DatePickerFragment fragment = new DatePickerFragment();
+        fragment.eventId = eventId;
+        fragment.context = context;
+        return fragment;
+    }
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
