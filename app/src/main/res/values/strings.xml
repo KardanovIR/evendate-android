@@ -170,9 +170,20 @@
     <string name="action_dislike">Remove events from favorites</string>
     <string name="event_price">Price</string>
     <string name="event_registration">Registration</string>
+
+    <!-- auth strings -->
     <string name="auth_welcome">Welcome to Evendate!</string>
     <string name="auth_vk">Sign in via Vkontakte</string>
     <string name="auth_google">Sign in via G+</string>
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
+
+    <!-- notification strings -->
+    <string name="notification_before_three_hours">Before three hours</string>
+    <string name="notification_before_quarter_of_hour">Before quarter of hour</string>
+    <string name="notification_before_day">Before a day</string>
+    <string name="notification_before_three_days">Before three days</string>
+    <string name="notification_before_week">Before a week</string>
+    <string name="notification_add_custom">Add custom time</string>
+
 </resources>

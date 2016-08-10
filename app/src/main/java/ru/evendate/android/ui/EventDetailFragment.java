@@ -48,6 +48,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -68,9 +69,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -81,18 +82,19 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
-import ru.evendate.android.adapters.MultichoiceDialogAdapter;
+import ru.evendate.android.adapters.NotificationConverter;
+import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.NotificationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.TagsView;
@@ -165,6 +167,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     private int mColor;
 
+    private AlertDialog notificationDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,7 +227,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
@@ -720,23 +723,33 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mEventNotificationsLoader.startLoading();
     }
 
-
     public void initDialog(ArrayList<EventNotification> notifications) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        NotificationListAdapter adapter;
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.NotificationDialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
         alertDialog.setView(convertView);
         alertDialog.setTitle(getString(R.string.action_add_notification));
-        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
+        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        addNotificationButton.setOnClickListener((View view) -> {
+            DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
+            newFragment.show(getChildFragmentManager(), "datePicker");
+            //todo when update list not close
+            notificationDialog.dismiss();
         });
+
         ListView lv = (ListView) convertView.findViewById(R.id.listView);
-        MultichoiceDialogAdapter adapter = new MultichoiceDialogAdapter(getActivity(), notifications);
+        adapter = new NotificationListAdapter(getActivity(),
+                NotificationConverter.convertNotificationList(notifications), eventId);
         lv.setAdapter(adapter);
-        alertDialog.show();
+        alertDialog.setPositiveButton("Ok", (DialogInterface d, int which) -> {
+            adapter.update();
+        });
+        alertDialog.setNegativeButton("Cancel", (DialogInterface d, int which) -> {
+            notificationDialog.dismiss();
+        });
+        notificationDialog = alertDialog.show();
     }
 
     public static class DatePickerFragment extends DialogFragment
@@ -774,20 +787,24 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     calendar.set(year, month, day, hourOfDay, minute, 0);
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                    NotificationLoader notificationLoader = new NotificationLoader(context, eventId,
-                            df.format(new Date(calendar.getTimeInMillis())));
-                    notificationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
-                        @Override
-                        public void onLoaded(ArrayList<Void> subList) {
-                            Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
-                        }
 
-                        @Override
-                        public void onError() {
-                            Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    notificationLoader.startLoading();
+                    ApiService apiService = ApiFactory.getEvendateService();
+                    Observable<Response> notificationObservervable =
+                            apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
+
+                    notificationObservervable.subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(result -> {
+                                Log.i(LOG_TAG, "loaded");
+                                if(result.isOk())
+                                    //todo update notification list cause new list in return answer
+                                    Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                            }, error -> {
+                                Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                                Log.e(LOG_TAG, error.getMessage());
+                            }, () -> Log.i(LOG_TAG, "completed"));
                 }
             }, 0, 0, true);
             newFragment2.show();
