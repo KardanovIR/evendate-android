@@ -24,6 +24,10 @@ public class EventNotification extends DataModel {
         return notificationTime;
     }
 
+    public long getNotificationTimeInMillis() {
+        return notificationTime * 1000;
+    }
+
     public String getNotificationType() {
         return notificationType;
     }

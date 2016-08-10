@@ -17,6 +17,7 @@ import ru.evendate.android.network.ResponseArray;
 /**
  * downloading notifications for events from server
  */
+@Deprecated
 public class EventNotificationsLoader extends AbstractLoader<EventNotification> implements Callback<ResponseArray<EventNotification>> {
     private final String LOG_TAG = EventNotificationsLoader.class.getSimpleName();
     private int eventId;
