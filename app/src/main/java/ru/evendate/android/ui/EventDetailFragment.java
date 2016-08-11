@@ -731,14 +731,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         alertDialog.setView(convertView);
         alertDialog.setTitle(getString(R.string.action_add_notification));
 
-        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
-        addNotificationButton.setOnClickListener((View view) -> {
-            DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
-            newFragment.show(getChildFragmentManager(), "datePicker");
-            //todo when update list not close
-            notificationDialog.dismiss();
-        });
-
         ListView lv = (ListView) convertView.findViewById(R.id.listView);
         adapter = new NotificationListAdapter(getActivity(),
                 NotificationConverter.convertNotificationList(notifications), eventId);
@@ -747,6 +739,14 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             adapter.update();
         });
         alertDialog.setNegativeButton("Cancel", (DialogInterface d, int which) -> {
+            notificationDialog.dismiss();
+        });
+
+        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        addNotificationButton.setOnClickListener((View view) -> {
+            DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
+            newFragment.show(getChildFragmentManager(), "datePicker");
+            adapter.update();
             notificationDialog.dismiss();
         });
         notificationDialog = alertDialog.show();

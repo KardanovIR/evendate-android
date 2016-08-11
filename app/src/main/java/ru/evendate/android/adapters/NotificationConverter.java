@@ -41,11 +41,12 @@ public class NotificationConverter {
 
     static String[] getDefaultTypes(){
         return new String[]{
-                NotificationType.BEFORE_THREE_DAYS.type,
+                NotificationType.BEFORE_QUARTER_OF_HOUR.type,
+                NotificationType.BEFORE_THREE_HOURS.type,
                 NotificationType.BEFORE_DAY.type,
                 NotificationType.BEFORE_THREE_DAYS.type,
-                NotificationType.BEFORE_WEEK.type,
-                NotificationType.BEFORE_QUARTER_OF_HOUR.type};
+                NotificationType.BEFORE_WEEK.type
+        };
     }
 
     static EventNotification getNotificationWithType(Set<EventNotification> set, String type){
