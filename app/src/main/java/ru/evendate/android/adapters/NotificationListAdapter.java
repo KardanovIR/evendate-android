@@ -78,6 +78,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     public static class Notification {
         public String type;
         public boolean checked = false;
+        public boolean newChecked = false;
         public EventNotification notification;
         public boolean changed = false;
 
@@ -106,7 +107,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         holder.textView.setText(getTypeString(notification));
         holder.checkBox.setChecked(notification.checked);
         holder.checkBox.setOnCheckedChangeListener((CompoundButton compoundButton, boolean b) -> {
-            notification.checked = b;
+            notification.newChecked = b;
             notification.changed = true;
         });
 
@@ -136,7 +137,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
 
     public void update(){
         for (Notification notification : notifications) {
-            if(!notification.changed)
+            if(!notification.changed && notification.checked != notification.newChecked)
                 continue;
             if(notification.checked){
                 ApiService apiService = ApiFactory.getEvendateService();

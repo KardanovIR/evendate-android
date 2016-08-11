@@ -179,10 +179,10 @@
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
 
     <!-- notification strings -->
-    <string name="notification_before_three_hours">Before three hours</string>
-    <string name="notification_before_quarter_of_hour">Before quarter of hour</string>
+    <string name="notification_before_three_hours">Before 3 hours</string>
+    <string name="notification_before_quarter_of_hour">Before 15 minutes</string>
     <string name="notification_before_day">Before a day</string>
-    <string name="notification_before_three_days">Before three days</string>
+    <string name="notification_before_three_days">Before 3 days</string>
     <string name="notification_before_week">Before a week</string>
     <string name="notification_add_custom">Add custom time</string>
 

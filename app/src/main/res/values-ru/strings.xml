@@ -112,9 +112,9 @@
     <string name="custom_notification_added">Напоминание добавлено</string>
     <string name="custom_notification_error">Ошибка. Напоминание не было добавлено</string>
     <string name="notification_before_day">За день</string>
-    <string name="notification_before_quarter_of_hour">За четверть часа</string>
-    <string name="notification_before_three_days">За три дня</string>
-    <string name="notification_before_three_hours">За три часа</string>
+    <string name="notification_before_quarter_of_hour">За 15 минут</string>
+    <string name="notification_before_three_days">За 3 дня</string>
+    <string name="notification_before_three_hours">За 3 часа</string>
     <string name="notification_before_week">За неделю</string>
     <string name="notification_add_custom">Добавить свое время</string>
 </resources>
