@@ -463,6 +463,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     private void revealView(View view){
+        if(!isAdded())
+            return;
         if(view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);
