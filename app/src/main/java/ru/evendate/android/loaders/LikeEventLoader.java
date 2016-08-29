@@ -11,6 +11,7 @@ import ru.evendate.android.network.Response;
 /**
  * Created by ds_gordeev on 14.03.2016.
  */
+@Deprecated
 public class LikeEventLoader extends AbstractLoader<Void> implements Callback<Response> {
     private final String LOG_TAG = LikeEventLoader.class.getSimpleName();
     Event mEvent;

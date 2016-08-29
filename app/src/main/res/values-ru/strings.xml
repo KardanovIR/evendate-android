@@ -108,4 +108,14 @@
     <string name="favourites_empty_header">Избранных событий нет</string>
     <string name="favourites_empty_text">Добавьте событие в избранное, чтобы оно появилось здесь!</string>
     <string name="recommendation_empty_header">Рекомендаций для вас пока нет</string>
+    <string name="action_add_notification">Напомнить о событии</string>
+    <string name="custom_notification_added">Напоминание добавлено</string>
+    <string name="custom_notification_error">Ошибка. Напоминание не было добавлено</string>
+    <string name="notification_before_day">За день</string>
+    <string name="notification_before_quarter_of_hour">За 15 минут</string>
+    <string name="notification_before_three_days">За 3 дня</string>
+    <string name="notification_before_three_hours">За 3 часа</string>
+    <string name="notification_before_week">За неделю</string>
+    <string name="notification_add_custom">Добавить свое время</string>
+    <string name="action_user_link">Profile in social net</string>
 </resources>

@@ -368,6 +368,8 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     private void revealView(View view){
+        if(!isAdded())
+            return;
         if(view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);

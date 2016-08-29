@@ -24,6 +24,8 @@ import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -144,10 +146,26 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onUpPressed();
+                return true;
+            case R.id.action_user_link:
+                if(mUserAdapter.getUser() != null)
+                {
+                    String url = mUserAdapter.getUser().getLink();
+                    Intent linkIntent = new Intent(Intent.ACTION_VIEW);
+                    linkIntent.setData(Uri.parse(url));
+                    startActivity(linkIntent);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
