@@ -139,7 +139,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         for (Notification notification : notifications) {
             if(!notification.changed && notification.checked != notification.newChecked)
                 continue;
-            if(notification.checked){
+            if(notification.newChecked){
                 ApiService apiService = ApiFactory.getEvendateService();
 
                 Observable<Response> notificationObservable =
