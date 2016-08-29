@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_share_black"
         android:title="@string/action_share"
         app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/action_add_notification"
+        android:icon="@drawable/notifications"
+        android:title="@string/action_add_notification"
+        app:showAsAction="withText"/>
 </menu>

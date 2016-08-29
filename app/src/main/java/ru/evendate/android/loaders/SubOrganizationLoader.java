@@ -15,6 +15,7 @@ import ru.evendate.android.network.Response;
  * Created by Dmitry on 24.02.2016.
  * performing subscribe
  */
+@Deprecated
 public class SubOrganizationLoader extends AbstractLoader<Void> {
     private final String LOG_TAG = SubOrganizationLoader.class.getSimpleName();
     OrganizationDetail mOrganization;

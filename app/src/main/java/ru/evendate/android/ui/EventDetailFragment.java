@@ -5,7 +5,10 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -19,10 +22,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -44,10 +48,14 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -58,8 +66,13 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -69,14 +82,19 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
+import ru.evendate.android.adapters.NotificationConverter;
+import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.loaders.EventNotificationsLoader;
 import ru.evendate.android.loaders.LikeEventLoader;
 import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.TagsView;
@@ -149,6 +167,8 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     private int mColor;
 
+    private AlertDialog notificationDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,7 +227,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
@@ -577,6 +596,9 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             case android.R.id.home:
                 onUpPressed();
                 return true;
+            case R.id.action_add_notification:
+                loadNotifications();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -684,5 +706,110 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     public void onDestroy() {
         super.onDestroy();
         mDrawer.cancel();
+    }
+
+
+    public void loadNotifications() {
+        EventNotificationsLoader mEventNotificationsLoader = new EventNotificationsLoader(getActivity(), eventId);
+        mEventNotificationsLoader.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
+            @Override
+            public void onLoaded(ArrayList<EventNotification> subList) {
+                initDialog(subList);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+        mEventNotificationsLoader.startLoading();
+    }
+
+    public void initDialog(ArrayList<EventNotification> notifications) {
+        NotificationListAdapter adapter;
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.NotificationDialog);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle(getString(R.string.action_add_notification));
+
+        ListView lv = (ListView) convertView.findViewById(R.id.listView);
+        adapter = new NotificationListAdapter(getActivity(),
+                NotificationConverter.convertNotificationList(notifications), eventId);
+        lv.setAdapter(adapter);
+        alertDialog.setPositiveButton("Ok", (DialogInterface d, int which) -> {
+            adapter.update();
+        });
+        alertDialog.setNegativeButton("Cancel", (DialogInterface d, int which) -> {
+            notificationDialog.dismiss();
+        });
+
+        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        addNotificationButton.setOnClickListener((View view) -> {
+            DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
+            newFragment.show(getChildFragmentManager(), "datePicker");
+            adapter.update();
+            notificationDialog.dismiss();
+        });
+        notificationDialog = alertDialog.show();
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+        implements DatePickerDialog.OnDateSetListener {
+        Calendar calendar = Calendar.getInstance();
+        int eventId;
+        Context context;
+
+        public static DatePickerFragment getInstance(Context context, int eventId) {
+            DatePickerFragment fragment = new DatePickerFragment();
+            fragment.eventId = eventId;
+            fragment.context = context;
+            return fragment;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
+            pickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
+            return  pickerDialog;
+        }
+
+        public void onDateSet(DatePicker view, final int year, final int month, final int day) {
+            calendar.set(year, month, day);
+            TimePickerDialog newFragment2 = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    calendar.set(year, month, day, hourOfDay, minute, 0);
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+                    ApiService apiService = ApiFactory.getEvendateService();
+                    Observable<Response> notificationObservervable =
+                            apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
+
+                    notificationObservervable.subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(result -> {
+                                Log.i(LOG_TAG, "loaded");
+                                if(result.isOk())
+                                    //todo update notification list cause new list in return answer
+                                    Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                            }, error -> {
+                                Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                                Log.e(LOG_TAG, error.getMessage());
+                            }, () -> Log.i(LOG_TAG, "completed"));
+                }
+            }, 0, 0, true);
+            newFragment2.show();
+        }
     }
 }

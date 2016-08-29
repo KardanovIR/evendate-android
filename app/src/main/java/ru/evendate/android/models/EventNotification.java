@@ -2,17 +2,19 @@ package ru.evendate.android.models;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by Ali Abdulmadzhidov on 16.05.2016.
- */
 public class EventNotification extends DataModel {
+    public static final String FIELDS_LIST = "notification_type";
 
     @SerializedName("uuid")
-    int uuid;
+    String uuid;
     @SerializedName("event_id")
     int eventId;
     @SerializedName("notification_time")
     long notificationTime;
+
+    @SerializedName("notification_type")
+    String notificationType;
+
 
     public int getEventId() {
         return eventId;
@@ -22,9 +24,20 @@ public class EventNotification extends DataModel {
         return notificationTime;
     }
 
+    public long getNotificationTimeInMillis() {
+        return notificationTime * 1000;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
 
     @Override
     public int getEntryId() {
-        return uuid;
+        return 0;
     }
 }
