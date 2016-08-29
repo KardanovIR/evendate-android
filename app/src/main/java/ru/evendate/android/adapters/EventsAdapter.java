@@ -1,16 +1,24 @@
 package ru.evendate.android.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,11 +85,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         super.onBindViewHolder(viewHolder, position);
-        if (getList() == null || !(viewHolder instanceof EventHolder))
+        if (!(viewHolder instanceof EventHolder))
             return;
-        EventFeed eventEntry = getList().get(position);
+        EventFeed eventEntry = getItem(position);
         EventHolder holder = (EventHolder)viewHolder;
-        holder.id = eventEntry.getEntryId();
+        holder.event = eventEntry;
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
@@ -120,6 +128,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
 
     public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public View holderView;
+        public EventFeed event;
         @Bind(R.id.event_item_image)
         public ImageView mEventImageView;
         @Bind(R.id.event_item_title)
@@ -135,7 +144,6 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         private boolean isFavorited;
         @Bind(R.id.event_item_favorite_indicator)
         public View mFavoriteIndicator;
-        public int id;
         @BindString(R.string.event_free)
         public String eventFreeLabel;
 
@@ -151,8 +159,13 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         public void onClick(View v) {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
-                intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                mContext.startActivity(intent);
+                intent.setData(mUri.buildUpon().appendPath(Long.toString(event.getEntryId())).build());
+                if(Build.VERSION.SDK_INT >= 21){
+                    mContext.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
+                }
+                else
+                    mContext.startActivity(intent);
             }
         }
 
@@ -169,11 +182,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                                     " «" + mTitleTextView.getText() + "» ";
                             switch (which){
                                 case HIDE_ID:
-                                    hideEvent(id);
+                                    hideEvent(event);
                                     toastText += mContext.getString(R.string.toast_event_hide);
                                     break;
                                 case FAVE_ID:
-                                    likeEvent(isFavorited, id);
+                                    likeEvent(event);
                                     if(isFavorited) {
                                         toastText += mContext.getString(R.string.toast_event_unfave);
                                     } else {
@@ -203,29 +216,26 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     }
 
 
-    private void hideEvent(int id){
+    private void hideEvent(EventFeed event){
         ApiService apiService = ApiFactory.getEvendateService();
         Observable<Response> hideObservable =
                 apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
-                        id, true);
-        Log.i(LOG_TAG, "hiding event " + id);
+                        event.getEntryId(), true);
+        Log.i(LOG_TAG, "hiding event " + event.getEntryId());
         hideObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> Log.i(LOG_TAG, "event hided")
-                        ,error -> Log.e(LOG_TAG, error.getMessage()));
-
-        for (EventFeed event: getList()) {
-            if(event.getEntryId() == id){
-                remove(event);
-                break;
-            }
-        }
+                .subscribe(
+                        result -> Log.i(LOG_TAG, "event hided"),
+                        error -> Log.e(LOG_TAG, error.getMessage())
+                );
+        remove(event);
     }
 
-    private void likeEvent(boolean isFavorited, int id){
+    private void likeEvent(EventFeed event){
         ApiService apiService = ApiFactory.getEvendateService();
         Observable<Response> likeObservable;
-        if(isFavorited) {
+        int id = event.getEntryId();
+        if(event.isFavorite()) {
             likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
             Log.i(LOG_TAG, "disliking event " + id);
         } else {
@@ -235,15 +245,12 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
 
         likeObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> Log.i(LOG_TAG, "event liked/disliked")
-                        ,error -> Log.e(LOG_TAG, error.getMessage()));
+                .subscribe(
+                        result -> Log.i(LOG_TAG, "event liked/disliked"),
+                        error -> Log.e(LOG_TAG, error.getMessage())
+                );
 
-        for (EventFeed event: getList()) {
-            if(event.getEntryId() == id){
-                event.setIsFavorite(!event.isFavorite());
-                notifyItemChanged(getList().indexOf(event));
-                break;
-            }
-        }
+        event.setIsFavorite(!event.isFavorite());
+        update(event);
     }
 }

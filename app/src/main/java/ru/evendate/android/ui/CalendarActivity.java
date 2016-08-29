@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -227,17 +228,21 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mOneDayDecorator.setDate(date);
         mCalendarView.addDecorator(mOneDayDecorator);
         mReelFragment.setDateAndReload(date.getDate());
+        setSelectedDate();
+    }
+
+    private void setSelectedDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
+        mSelectedDateTextView.setText(dateFormat.format(mCalendarView.getSelectedDate().getDate()));
     }
 
     @Override
     public void onEventsDataLoaded() {
         Log.i(LOG_TAG, "data loaded");
         //TODO нужно как-то изящнее это сделать
-        if (mReelFragment.getAdapter() != null && mReelFragment.getEventList() == null)
+        if (mReelFragment.getAdapter() != null && mReelFragment.getAdapter().isEmpty())
             return;
         //mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
-        mSelectedDateTextView.setText(simpleDateFormat.format(mCalendarView.getSelectedDate().getDate()));
     }
 
     class DateAdapter {
@@ -373,7 +378,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
      */
     private class CalendarNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CalendarNavigationItemClickListener(Context context, Drawer drawer) {
+        public CalendarNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }

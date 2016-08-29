@@ -33,9 +33,7 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
 
     @Override
     public void onBindViewHolder(DateHolder holder, int position) {
-        if (getList() == null)
-            return;
-        AggregateDate<ActionType> entry = getList().get(position);
+        AggregateDate<ActionType> entry = getItem(position);
         String date = EventFormatter.formatDay(entry.getDate()) + " " +
                 EventFormatter.formatMonth(entry.getDate());
         holder.mDateTextView.setText(date);
@@ -46,7 +44,7 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
         holder.actionsListView.setLayoutManager(manager);
         holder.actionsListView.setRecycledViewPool(dateItemsPool);
         holder.actionsListView.setAdapter(holder.mActionsAdapter);
-        holder.mActionsAdapter.setList(entry.getList());
+        holder.mActionsAdapter.add(entry.getList());
         holder.actionsListView.setNestedScrollingEnabled(false);
     }
 

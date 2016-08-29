@@ -9,19 +9,19 @@ import android.support.v7.app.AlertDialog;
 import java.util.ArrayList;
 
 import ru.evendate.android.R;
-import ru.evendate.android.models.OrganizationType;
+import ru.evendate.android.models.OrganizationCategory;
 
 /**
  * Created by ds_gordeev on 05.02.2016.
  * contain list of categories that user choose
  */
 public class OrganizationFilterDialog extends DialogFragment {
-    private ArrayList<OrganizationType> mItemsList;
+    private ArrayList<OrganizationCategory> mItemsList;
     private boolean[] mSelectedItems;
     private OnCategorySelectListener mCategorySelectListener;
 
 
-    public static OrganizationFilterDialog newInstance(ArrayList<OrganizationType> itemsList,
+    public static OrganizationFilterDialog newInstance(ArrayList<OrganizationCategory> itemsList,
                                                        boolean[] selectedItems) {
         OrganizationFilterDialog fragment = new OrganizationFilterDialog();
         fragment.mItemsList = itemsList;

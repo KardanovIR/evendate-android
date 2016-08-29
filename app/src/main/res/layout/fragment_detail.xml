@@ -7,100 +7,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/window_reel_background">
-    <com.nirhart.parallaxscroll.views.ParallaxScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:parallax_factor="1.9">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="198dp">
-                <ImageView
-                    android:id="@+id/event_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
-                    android:scaleType="centerCrop"
-                    tools:src="@drawable/butterfly"/>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_event"/>
-                <TextView
-                    android:id="@+id/event_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="72dp"
-                    tools:text="ArtFlection: Ярмарка подарков ручной работы"
-                    android:textSize="20sp"
-                    android:textIsSelectable="false"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_gravity="bottom"
-                    android:fontFamily="sans-serif"/>
-                <View
-                    android:id="@+id/event_image_mask"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </FrameLayout>
-            <FrameLayout
-            android:id="@+id/event_organization_container"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/event_detail_toolbar_height"
-            android:background="?attr/colorPrimaryDark"
-            android:layout_gravity="bottom">
-            <FrameLayout
-                android:layout_width="72dp"
-                android:layout_height="match_parent"
-                android:padding="8dp">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:civ_border_width="0dp"
-                    android:src="#FFFFFF"/>
-                <ImageView
-                    android:id="@+id/event_organization_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp" />
-            </FrameLayout>
-            <TextView
-                android:id="@+id/event_organization_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:layout_marginLeft="72dp"
-                android:layout_marginStart="72dp"
-                tools:text="Digital October"
-                android:textSize="16sp"
-                android:textIsSelectable="false"
-                android:layout_gravity="center_vertical" />
-            <View
-                android:id="@+id/event_organization_mask"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </FrameLayout>
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/fragment_detail_content"/>
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:progressDrawable="@drawable/circular_progress_bar"
-                    android:layout_gravity="center_horizontal" />
-            </FrameLayout>
-        </LinearLayout>
-    </com.nirhart.parallaxscroll.views.ParallaxScrollView>
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -136,4 +42,99 @@
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
         />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_gravity="center_horizontal" />
+    <com.nirhart.parallaxscroll.views.ParallaxScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:parallax_factor="1.9">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <FrameLayout
+                android:id="@+id/event_image_container"
+                android:layout_width="match_parent"
+                android:layout_height="198dp">
+                <ImageView
+                    android:id="@+id/event_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/butterfly"/>
+                <ImageView
+                    android:id="@+id/event_image_foreground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/event_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#fff"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="72dp"
+                    tools:text="ArtFlection: Ярмарка подарков ручной работы"
+                    android:textSize="20sp"
+                    android:textIsSelectable="false"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="bottom"
+                    android:fontFamily="sans-serif"/>
+                <View
+                    android:id="@+id/event_image_mask"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </FrameLayout>
+            <FrameLayout
+            android:id="@+id/event_organization_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/event_detail_toolbar_height"
+            android:background="?attr/colorPrimaryDark"
+            android:layout_gravity="bottom">
+            <FrameLayout
+                android:id="@+id/event_organization_icon_container"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:padding="8dp">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:civ_border_width="0dp"
+                    android:src="#FFFFFF"/>
+                <ImageView
+                    android:id="@+id/event_organization_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/event_organization_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:layout_marginLeft="72dp"
+                android:layout_marginStart="72dp"
+                tools:text="Digital October"
+                android:textSize="16sp"
+                android:textIsSelectable="false"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="72dp"
+                android:fontFamily="sans-serif"/>
+            <View
+                android:id="@+id/event_organization_mask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
+            <include layout="@layout/fragment_detail_content"/>
+        </LinearLayout>
+    </com.nirhart.parallaxscroll.views.ParallaxScrollView>
 </android.support.design.widget.CoordinatorLayout>

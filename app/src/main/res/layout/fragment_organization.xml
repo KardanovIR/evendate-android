@@ -8,18 +8,22 @@
     android:background="#eeeeee"
     android:fitsSystemWindows="false">
 
-    <ImageView
-        android:id="@+id/organization_image"
+    <FrameLayout
+        android:id="@+id/organization_image_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/organization_background_height"
-        android:scaleType="centerCrop"
-        tools:src="@drawable/butterfly"/>
+        android:layout_height="@dimen/organization_background_height">
+        <ImageView
+            android:id="@+id/organization_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/butterfly"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/organization_background_height"
-        android:background="@drawable/toolbar_gradient"/>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/toolbar_gradient"/>
+    </FrameLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
