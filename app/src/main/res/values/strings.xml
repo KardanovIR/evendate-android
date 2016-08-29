@@ -172,4 +172,6 @@
     <string name="auth_google">Sign in via G+</string>
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
+
+    <string name="action_user_link">Profile in social net</string>
 </resources>
