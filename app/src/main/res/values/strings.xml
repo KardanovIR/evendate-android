@@ -32,6 +32,8 @@
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
+    <string name="custom_notification_added">Notification added</string>
+    <string name="custom_notification_error">Error. Notification didn\'t added</string>
 
     <string name="feed_empty_header">No nearest events</string>
     <string name="feed_empty_text">You can view other events when subscribing to other organizers or open the recommended events</string>
@@ -49,6 +51,7 @@
     <string name="event_link">More</string>
 
     <string name="action_share">Share</string>
+    <string name="action_add_notification">Notify about event</string>
 
     <string name="event_word_users_and">users and</string>
     <string name="event_word_friends_add">friends added to favorite</string>
@@ -160,6 +163,8 @@
     <!-- user profile strings -->
     <string name="tab_subscriptions">Subscriptions</string>
     <string name="tab_actions">Activity</string>
+    <string name="action_user_link">Profile in social net</string>
+
 
     <string name="action_subscribe">Subscribe to organizations</string>
     <string name="action_unsubscribe">Unsubscribe from organizations</string>
@@ -167,11 +172,20 @@
     <string name="action_dislike">Remove events from favorites</string>
     <string name="event_price">Price</string>
     <string name="event_registration">Registration</string>
+
+    <!-- auth strings -->
     <string name="auth_welcome">Welcome to Evendate!</string>
     <string name="auth_vk">Sign in via Vkontakte</string>
     <string name="auth_google">Sign in via G+</string>
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
 
-    <string name="action_user_link">Profile in social net</string>
+    <!-- notification strings -->
+    <string name="notification_before_three_hours">Before 3 hours</string>
+    <string name="notification_before_quarter_of_hour">Before 15 minutes</string>
+    <string name="notification_before_day">Before a day</string>
+    <string name="notification_before_three_days">Before 3 days</string>
+    <string name="notification_before_week">Before a week</string>
+    <string name="notification_add_custom">Add custom time</string>
+
 </resources>

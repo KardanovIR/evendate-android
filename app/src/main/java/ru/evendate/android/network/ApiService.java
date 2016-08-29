@@ -14,9 +14,9 @@ import retrofit.http.Query;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.Organization;
-import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
@@ -210,4 +210,37 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Body List<StatisticsEvent> payload
     );
+
+    /**
+     * Get notifications for event
+     */
+    @GET(API_PATH + "/events/{id}/notifications")
+    Call<ResponseArray<EventNotification>> getNotifications(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("fields") String fields
+    );
+
+    @POST(API_PATH + "/events/{id}/notifications")
+    Observable<Response> setNotificationByTime(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("notification_time") String notificationTime
+    );
+
+    @POST(API_PATH + "/events/{id}/notifications")
+    Observable<Response> setNotificationByType(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("notification_type") String notificationType
+    );
+
+    @DELETE(API_PATH + "/events/{id}/notifications/{uuid}")
+    Observable<Response> deleteNotification(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String uuid
+    );
+
+
 }
