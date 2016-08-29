@@ -67,12 +67,11 @@
                     android:textColor="#fff"
                     android:layout_marginLeft="16dp"
                     tools:text="Drake Moscow 2016"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     android:textIsSelectable="false"
-                    android:layout_marginRight="48dp"
+                    android:layout_marginRight="64dp"
                     android:fontFamily="sans-serif"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_gravity="center_vertical" />
             <View
                 android:id="@+id/event_title_mask"
                 android:layout_width="match_parent"
