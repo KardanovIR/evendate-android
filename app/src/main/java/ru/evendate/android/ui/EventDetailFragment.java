@@ -22,7 +22,6 @@ import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -102,7 +101,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @Bind(R.id.scroll_view) ScrollView mScrollView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.event_image_mask) View mEventImageMask;
-    @Bind(R.id.event_organization_mask) View mEventOrganizationMask;
+    @Bind(R.id.event_title_mask) View mEventTitleMask;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
     ObjectAnimator mTitleAppearAnimation;
@@ -118,7 +117,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     @Bind(R.id.event_place_button) View mPlaceButtonView;
     @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
     @Bind(R.id.event_link_card) View mLinkCard;
-    @Bind(R.id.event_organization_container) View mOrganizationContainer;
+    @Bind(R.id.event_title_container) View mTitleContainer;
     @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
 
     @Bind(R.id.tag_layout) TagsView mTagsView;
@@ -170,7 +169,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
         initToolbar();
         initTransitions();
-        initToolbarAnimation();
+        initToolbarAndFabAnimation();
         initUserFavoriteCard();
         initDrawer();
         mAdapter = new EventAdapter();
@@ -179,7 +178,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             @Override
             public void onGlobalLayout() {
                 mCoordinatorLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int bottom = mOrganizationContainer.getBottom();
+                int bottom = mTitleContainer.getBottom();
                 int size = mFAB.getHeight();
                 mFabHeight = bottom - size / 2;
                 if(Build.VERSION.SDK_INT > 19)
@@ -216,7 +215,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         }
     }
 
-    private void initToolbarAnimation(){
+    private void initToolbarAndFabAnimation(){
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         mToolbarTitle.setAlpha(0f);
         if (Build.VERSION.SDK_INT >= 21)
@@ -300,7 +299,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
                 (int)((scrolled / height) * 255),
                 Color.red(mColor), Color.green(mColor), Color.blue(mColor));
         mEventImageMask.setBackgroundColor(maskColor);
-        mEventOrganizationMask.setBackgroundColor(maskColor);
+        mEventTitleMask.setBackgroundColor(maskColor);
     }
 
     private void initDrawer(){
@@ -480,7 +479,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.event_organization_container)
+    @OnClick(R.id.event_title_container)
     public void onOrganizationClick(View v) {
         if (mAdapter.getEvent() == null)
             return;
@@ -667,11 +666,12 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         int green = (int)(Color.green(mColor) * 0.8);
 
         int vibrantDark = Color.argb(255, red, green, blue);
-        int vibrantDarkEnd = Color.argb(50, red, green, blue);
+        int colorShadow = Color.argb(150, red, green, blue);
+        int colorShadowEnd = Color.argb(0, red, green, blue);
 
-        mOrganizationContainer.setBackgroundColor(mColor);
-        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                new int[]{vibrantDark, vibrantDarkEnd});
+        mTitleContainer.setBackgroundColor(mColor);
+        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{colorShadow, colorShadowEnd, colorShadowEnd, colorShadowEnd});
         mEventForegroundImage.setImageDrawable(shadow);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
