@@ -53,7 +53,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         BEFORE_THREE_DAYS("notification-before-three-days"),
         BEFORE_DAY("notification-before-day"),
         BEFORE_WEEK("notification-before-week"),
-        BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour");
+        BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
+        EVENT_CHANGED_PRICE("notification-event-changed-price");
 
         final String type;
 
@@ -68,7 +69,9 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                     return type;
                 }
             }
-            throw new RuntimeException("unknown type");
+            //todo могут добавляться новые
+            //throw new RuntimeException("unknown type");
+            return null;
         }
         public String type() {
             return type;
