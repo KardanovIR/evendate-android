@@ -43,6 +43,8 @@ public class NavigationItemSelectedListener
                 openCalendarActivity(); break;
             case DrawerWrapper.CATALOG_IDENTIFIER:
                 openCatalogActivity(); break;
+            case DrawerWrapper.FRIENDS_IDENTIFIER:
+                openFriendsActivity(); break;
             //case R.id.nav_add_account:
             //    Intent authIntent = new Intent(mContext, AuthActivity.class);
             //    mContext.startActivity(authIntent);
@@ -65,6 +67,11 @@ public class NavigationItemSelectedListener
     private void openCatalogActivity(){
         Intent orgIntent = new Intent(mContext, OrganizationCatalogActivity.class);
         openActivity(orgIntent);
+    }
+    private void openFriendsActivity(){
+        Intent friendsIntent = new Intent(mContext, UserListActivity.class);
+        friendsIntent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.FRIENDS.type());
+        openActivity(friendsIntent);
     }
     private void openOrganizationFromSub(IDrawerItem drawerItem){
         int id = getOrgIdFromDrawerItem(drawerItem);

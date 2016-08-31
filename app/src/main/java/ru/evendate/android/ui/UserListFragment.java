@@ -7,12 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +24,7 @@ import ru.evendate.android.adapters.UsersAdapter;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
@@ -51,24 +49,42 @@ public class UserListFragment extends Fragment {
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
 
     public enum TypeFormat {
-        event(0),
-        organization(1);
+        EVENT(0),
+        ORGANIZATION(1),
+        FRIENDS(2);
 
+        final int type;
         TypeFormat(int nativeInt) {
-            this.nativeInt = nativeInt;
+            this.type = nativeInt;
         }
 
-        final int nativeInt;
+        static public TypeFormat getType(int pType) {
+            for (TypeFormat type: TypeFormat.values()) {
+                if (type.type() == pType) {
+                    return type;
+                }
+            }
+            throw new RuntimeException("unknown type");
+        }
+        public int type() {
+            return type;
+        }
     }
 
     public static UserListFragment newInstance(int type, int id) {
         UserListFragment userListFragment = new UserListFragment();
         userListFragment.type = type;
-        if (type == TypeFormat.event.nativeInt) {
+        if (type == TypeFormat.EVENT.type) {
             userListFragment.eventId = id;
         } else {
             userListFragment.organizationId = id;
         }
+        return userListFragment;
+    }
+
+    public static UserListFragment newFriendsInstance(int type) {
+        UserListFragment userListFragment = new UserListFragment();
+        userListFragment.type = type;
         return userListFragment;
     }
 
@@ -120,10 +136,18 @@ public class UserListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (type == TypeFormat.event.nativeInt)
-            loadEvent();
-        else
-            loadOrganization();
+
+        switch (UserListFragment.TypeFormat.getType(type)){
+            case EVENT:
+                loadEvent();
+                break;
+            case ORGANIZATION:
+                loadOrganization();
+                break;
+            case FRIENDS:
+                loadFriends();
+                break;
+        }
     }
 
     private void loadOrganization() {
@@ -169,6 +193,29 @@ public class UserListFragment extends Fragment {
                     }
                     EventDetail event = result.getData().get(0);
                     mAdapter.replace(event.getUserList());
+                    mProgressBar.setVisibility(View.GONE);
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, error.getMessage());
+                }, () -> Log.i(LOG_TAG, "completed"));
+    }
+
+    private void loadFriends(){
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<UserDetail>> friendsObservable =
+                apiService.getFriends(EvendateAccountManager.peekToken(getActivity()), UserDetail.FIELDS_LIST);
+
+        friendsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if (!isAdded())
+                        return;
+                    if(!result.isOk()){
+                        onError();
+                        return;
+                    }
+                    mAdapter.replace(result.getData());
                     mProgressBar.setVisibility(View.GONE);
                 }, error -> {
                     onError();

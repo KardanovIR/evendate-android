@@ -18,6 +18,7 @@ import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.StatisticsEvent;
+import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -243,4 +244,12 @@ public interface ApiService {
     );
 
 
+    /**
+     * Get friends
+     */
+    @GET(API_PATH + "/users/friends")
+    Observable<ResponseArray<UserDetail>> getFriends(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
+    );
 }
