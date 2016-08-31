@@ -81,7 +81,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     public static class Notification {
         public String type;
         public boolean checked = false;
-        public boolean newChecked = false;
+        public Boolean newChecked = null;
         public EventNotification notification;
         public boolean changed = false;
 
@@ -140,7 +140,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
 
     public void update(){
         for (Notification notification : notifications) {
-            if(!notification.changed && notification.checked != notification.newChecked)
+            if(!notification.changed && notification.newChecked == null)
                 continue;
             if(notification.newChecked){
                 ApiService apiService = ApiFactory.getEvendateService();

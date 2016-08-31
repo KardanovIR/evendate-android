@@ -32,7 +32,7 @@ public class EventNotificationsLoader extends AbstractLoader<EventNotification> 
 
     @SuppressWarnings("unchecked")
     protected void onStartLoading() {
-        Log.d(LOG_TAG, "getting events");
+        Log.d(LOG_TAG, "getting notifications");
         ApiService evendateService = ApiFactory.getEvendateService();
         mCall = evendateService.getNotifications(peekToken(), eventId,
                 EventNotification.FIELDS_LIST);
