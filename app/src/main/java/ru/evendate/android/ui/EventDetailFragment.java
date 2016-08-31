@@ -349,7 +349,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.EVENT.type());
             if(Build.VERSION.SDK_INT >= 21){
                 getActivity().startActivity(intent,
                         ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
