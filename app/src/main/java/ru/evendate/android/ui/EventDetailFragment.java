@@ -499,7 +499,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.event_title_container)
+    @OnClick(R.id.event_org_card)
     public void onOrganizationClick(View v) {
         if (mAdapter.getEvent() == null)
             return;
