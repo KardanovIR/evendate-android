@@ -2,6 +2,7 @@
     <string name="app_name">Evendate</string>
     <string name="title_activity_detail">Event</string>
     <string name="title_activity_organization">Organizer catalog</string>
+    <string name="title_activity_friends">Friends</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
