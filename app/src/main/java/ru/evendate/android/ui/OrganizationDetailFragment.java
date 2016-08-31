@@ -403,7 +403,7 @@ public class OrganizationDetailFragment extends Fragment implements
         Intent intent = new Intent(getContext(), UserListActivity.class);
         intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getOrganization().getEntryId())).build());
-        intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.organization.nativeInt);
+        intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
         if(Build.VERSION.SDK_INT >= 21){
             getActivity().startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());

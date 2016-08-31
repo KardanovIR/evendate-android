@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
-import ru.evendate.android.models.Organization;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.models.UserDetail;
@@ -45,6 +44,7 @@ public class DrawerWrapper{
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
+    final static int FRIENDS_IDENTIFIER = 4;
     Context mContext;
 
     PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
@@ -53,6 +53,8 @@ public class DrawerWrapper{
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
             .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.title_activity_friends)
+            .withIcon(R.drawable.friends_icon).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -103,6 +105,7 @@ public class DrawerWrapper{
         mDrawer.addItems(
                 reelItem,
                 calendarItem,
+                friendsItem,
                 organizationsItem,
                 new SectionDrawerItem().withName(R.string.subscriptions)
         );
