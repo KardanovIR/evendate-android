@@ -15,6 +15,7 @@ import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -120,7 +121,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -159,8 +160,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
                 onUpPressed();
                 return true;
             case R.id.action_user_link:
-                if(mUserAdapter.getUser() != null)
-                {
+                if(mUserAdapter.getUser() != null) {
                     String url = mUserAdapter.getUser().getLink();
                     Intent linkIntent = new Intent(Intent.ACTION_VIEW);
                     linkIntent.setData(Uri.parse(url));
@@ -199,15 +199,12 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Override
     public void onError() {
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(this, (DialogInterface dialog, int which) -> {
                 mLoader.startLoading();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
-            }
         });
-        dialog.show();
+        alertDialog.show();
     }
 
     private class UserAdapter {

@@ -7,6 +7,7 @@ package ru.evendate.android.ui;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -146,7 +147,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
         ButterKnife.bind(this, rootView);
 
-        mProgressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.accent),
+        mProgressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent),
                 PorterDuff.Mode.SRC_IN);
 
         initRefresh();
