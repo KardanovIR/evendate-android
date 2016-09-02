@@ -189,4 +189,6 @@
     <string name="notification_before_week">Before a week</string>
     <string name="notification_add_custom">Add custom time</string>
 
+    <string name="toast_notification_event_started">The event has already started</string>
+
 </resources>
