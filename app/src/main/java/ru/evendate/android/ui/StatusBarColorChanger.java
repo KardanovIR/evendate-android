@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 
 import ru.evendate.android.R;
@@ -27,7 +28,7 @@ public class StatusBarColorChanger implements AppBarLayout.OnOffsetChangedListen
             if (Math.abs(verticalOffset) + actionBarHeight > appBarLayout.getTotalScrollRange()) {
                 mContext.getWindow().setStatusBarColor(Color.TRANSPARENT);
             } else {
-                mContext.getWindow().setStatusBarColor(mContext.getResources().getColor(R.color.black_translucent));
+                mContext.getWindow().setStatusBarColor(ContextCompat.getColor(mContext, R.color.black_translucent));
             }
         }
     }

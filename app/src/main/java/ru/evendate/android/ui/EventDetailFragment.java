@@ -29,6 +29,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
@@ -187,7 +188,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
         initToolbar();
         initTransitions();
         initToolbarAndFabAnimation();
@@ -728,7 +729,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
     public void initDialog(ArrayList<EventNotification> notifications) {
         NotificationListAdapter adapter;
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.NotificationDialog);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
         alertDialog.setView(convertView);
@@ -738,10 +739,10 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         adapter = new NotificationListAdapter(getActivity(),
                 NotificationConverter.convertNotificationList(notifications), eventId);
         lv.setAdapter(adapter);
-        alertDialog.setPositiveButton("Ok", (DialogInterface d, int which) -> {
+        alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> {
             adapter.update();
         });
-        alertDialog.setNegativeButton("Cancel", (DialogInterface d, int which) -> {
+        alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> {
             notificationDialog.dismiss();
         });
 
@@ -785,30 +786,27 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         public void onDateSet(DatePicker view, final int year, final int month, final int day) {
             calendar.set(year, month, day);
-            TimePickerDialog newFragment2 = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    calendar.set(year, month, day, hourOfDay, minute, 0);
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            TimePickerDialog newFragment2 = new TimePickerDialog(context, (TimePicker v, int hourOfDay, int minute) -> {
+                calendar.set(year, month, day, hourOfDay, minute, 0);
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
-                    ApiService apiService = ApiFactory.getEvendateService();
-                    Observable<Response> notificationObservervable =
-                            apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
+                ApiService apiService = ApiFactory.getEvendateService();
+                Observable<Response> notificationObservable =
+                        apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
 
-                    notificationObservervable.subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(result -> {
-                                Log.i(LOG_TAG, "loaded");
-                                if(result.isOk())
-                                    //todo update notification list cause new list in return answer
-                                    Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
-                            }, error -> {
+                notificationObservable.subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> {
+                            Log.i(LOG_TAG, "loaded");
+                            if(result.isOk())
+                                //todo update notification list cause new list in return answer
+                                Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
+                            else
                                 Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
-                                Log.e(LOG_TAG, error.getMessage());
-                            }, () -> Log.i(LOG_TAG, "completed"));
-                }
+                        }, error -> {
+                            Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                            Log.e(LOG_TAG, error.getMessage());
+                        }, () -> Log.i(LOG_TAG, "completed"));
             }, 0, 0, true);
             newFragment2.show();
         }
