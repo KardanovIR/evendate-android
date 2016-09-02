@@ -737,7 +737,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         ListView lv = (ListView) convertView.findViewById(R.id.listView);
         adapter = new NotificationListAdapter(getActivity(),
-                NotificationConverter.convertNotificationList(notifications), eventId);
+                NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
         lv.setAdapter(adapter);
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> {
             adapter.update();
