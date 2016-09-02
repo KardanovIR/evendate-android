@@ -45,16 +45,19 @@ public class DrawerWrapper{
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
     final static int FRIENDS_IDENTIFIER = 4;
+    final static int SETTINGS_IDENTIFIER = 5;
     Context mContext;
 
-    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
+    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
+    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
             .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.drawer_organizations)
             .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.title_activity_friends)
+    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.drawer_friends)
             .withIcon(R.drawable.friends_icon).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
+            .withIcon(R.drawable.settings_icon).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -106,8 +109,9 @@ public class DrawerWrapper{
                 reelItem,
                 calendarItem,
                 friendsItem,
+                settingsItem,
                 organizationsItem,
-                new SectionDrawerItem().withName(R.string.subscriptions)
+                new SectionDrawerItem().withName(R.string.drawer_subscriptions)
         );
     }
 
@@ -167,7 +171,7 @@ public class DrawerWrapper{
                                 new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
                                         .withEmail(account.name)
                                         .withIcon(user.getAvatarUrl()),
-                                new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
+                                new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
                                         .withIcon(R.drawable.exit_icon)
                                         .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override

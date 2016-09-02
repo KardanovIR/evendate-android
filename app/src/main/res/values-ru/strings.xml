@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Evendate</string>
-    <string name="calendar">Календарь</string>
+    <string name="drawer_calendar">Календарь</string>
     <string name="event_all_day">Весь день</string>
     <string name="subscription_fail_cause_network">Нет интернет подключения</string>
-    <string name="subscriptions">Мои подписки</string>
+    <string name="drawer_subscriptions">Мои подписки</string>
     <string name="title_activity_detail">Мероприятие</string>
     <string name="title_activity_organization">Каталог организаторов</string>
-    <string name="settings">Настройки</string>
-    <string name="reel">Мои мероприятия</string>
-    <string name="organizations">Каталог организаций</string>
+    <string name="drawer_settings">Настройки</string>
+    <string name="drawer_reel">Мои мероприятия</string>
+    <string name="drawer_organizations">Каталог организаций</string>
     <string name="nav_add_account">Сменить аккаунт</string>
     <string name="nav_account_management">Управление аккаунтами</string>
-    <string name="help">Помощь</string>
-    <string name="feedback">Оставить отзыв</string>
     <string name="favorite_tab">Избранное</string>
     <string name="organization_event_number">мероприятий</string>
     <string name="organization_friends">друзей</string>
@@ -83,7 +81,7 @@
     <string name="dates_view_less">МЕНЬШЕ</string>
     <string name="event_price">Цена</string>
     <string name="event_registration">Регистрация</string>
-    <string name="log_out">Выйти из аккаунта</string>
+    <string name="drawer_log_out">Выйти из аккаунта</string>
     <string name="organization_word_friends">друзья</string>
     <string name="event_price_rub">руб</string>
     <string name="dialog_event_fave">Добавить в избранное</string>
@@ -119,4 +117,5 @@
     <string name="notification_add_custom">Добавить свое время</string>
     <string name="action_user_link">Profile in social net</string>
     <string name="title_activity_friends">Друзья</string>
+    <string name="drawer_friends">Друзья</string>
 </resources>

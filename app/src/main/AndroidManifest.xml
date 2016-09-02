@@ -52,7 +52,7 @@
         </activity>
         <activity
             android:name=".ui.CalendarActivity"
-            android:label="@string/calendar"
+            android:label="@string/drawer_calendar"
             android:screenOrientation="portrait">
         </activity>
         <activity
@@ -95,6 +95,12 @@
             android:name=".ui.UserProfileActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PreferenceScreen"
+            />
 
         <activity
             android:name=".auth.AuthActivity"
