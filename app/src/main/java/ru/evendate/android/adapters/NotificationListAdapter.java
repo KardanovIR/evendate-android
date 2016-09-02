@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
@@ -135,6 +136,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     }
     String formatNotificationTime(long timeInMillis){
         DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date(timeInMillis));
     }
 

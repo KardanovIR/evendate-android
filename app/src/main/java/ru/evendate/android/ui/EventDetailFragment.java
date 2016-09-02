@@ -789,10 +789,12 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             TimePickerDialog newFragment2 = new TimePickerDialog(context, (TimePicker v, int hourOfDay, int minute) -> {
                 calendar.set(year, month, day, hourOfDay, minute, 0);
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String date = df.format(new Date(calendar.getTimeInMillis()));
+                Log.d(LOG_TAG, "date: " + date);
 
                 ApiService apiService = ApiFactory.getEvendateService();
                 Observable<Response> notificationObservable =
-                        apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
+                        apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, date);
 
                 notificationObservable.subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
