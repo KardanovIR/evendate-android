@@ -55,7 +55,9 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         BEFORE_DAY("notification-before-day"),
         BEFORE_WEEK("notification-before-week"),
         BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
-        EVENT_CHANGED_PRICE("notification-event-changed-price");
+        EVENT_CHANGED_PRICE("notification-event-changed-price"),
+
+        NOTIFICATION_UNDEFINED("undefined");
 
         final String type;
 
@@ -70,9 +72,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                     return type;
                 }
             }
-            //todo могут добавляться новые
-            //throw new RuntimeException("unknown type");
-            return null;
+            return NOTIFICATION_UNDEFINED;
         }
         public String type() {
             return type;
@@ -120,7 +120,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
 
     String getTypeString(Notification notification){
         switch (NotificationType.getType(notification.type)){
-            case BEFORE_THREE_HOURS: return context.getString(R.string.notification_before_three_hours);
+            case BEFORE_THREE_HOURS:
+                return context.getString(R.string.notification_before_three_hours);
             case BEFORE_DAY:
                 return context.getString(R.string.notification_before_day);
             case BEFORE_THREE_DAYS:
