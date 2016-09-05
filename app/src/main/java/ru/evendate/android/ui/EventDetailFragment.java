@@ -86,9 +86,6 @@ import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.EventNotificationsLoader;
-import ru.evendate.android.loaders.LikeEventLoader;
-import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventNotification;
@@ -107,7 +104,7 @@ import rx.schedulers.Schedulers;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements LoaderListener<ArrayList<EventDetail>> {
+public class EventDetailFragment extends Fragment{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -544,34 +541,44 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     public void onFabClick(){
         if(mAdapter.getEvent() == null)
             return;
+        EventDetail event = mAdapter.getEvent();
+
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<Response> LikeEventObservable;
+
+        if (event.isFavorite()){
+            LikeEventObservable = apiService.eventDeleteFavorite(event.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        } else {
+            LikeEventObservable = apiService.eventPostFavorite(event.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        }
+        LikeEventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    if(result.isOk())
+                        Log.i(LOG_TAG, "performed like");
+                    else
+                        Log.e(LOG_TAG, "Error with response with like");
+                }, error -> {
+                    Log.e(LOG_TAG, error.getMessage());
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                });
+
+        event.favore();
+
         Tracker tracker = EvendateApplication.getTracker();
-        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+        HitBuilders.EventBuilder statEvent = new HitBuilders.EventBuilder()
                 .setCategory(getActivity().getString(R.string.stat_category_event))
-                .setLabel((Long.toString(mAdapter.getEvent().getEntryId())));
-
-        LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
-                mAdapter.getEvent().isFavorite());
-        likeEventLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
-            @Override
-            public void onLoaded(ArrayList<Void> subList) {
-
-            }
-
-            @Override
-            public void onError() {
-                Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        likeEventLoader.startLoading();
-        mAdapter.getEvent().favore();
-        if (mAdapter.getEvent().isFavorite()) {
-            event.setAction(getActivity().getString(R.string.stat_action_like));
+                .setLabel((Long.toString(event.getEntryId())));
+        if (event.isFavorite()) {
+            statEvent.setAction(getActivity().getString(R.string.stat_action_like));
             Toast.makeText(getActivity(), R.string.favorite_confirm, Toast.LENGTH_SHORT).show();
         } else {
-            event.setAction(getActivity().getString(R.string.stat_action_dislike));
+            statEvent.setAction(getActivity().getString(R.string.stat_action_dislike));
             Toast.makeText(getActivity(), R.string.remove_favorite_confirm, Toast.LENGTH_SHORT).show();
         }
-        tracker.send(event.build());
+        tracker.send(statEvent.build());
         mAdapter.setEventInfo();
     }
 
@@ -652,7 +659,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         return bmpUri;
     }
 
-    @Override
     public void onLoaded(ArrayList<EventDetail> events) {
         if (!isAdded())
             return;
@@ -666,7 +672,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mTitleTextView.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void onError() {
         if (!isAdded())
             return;
@@ -712,19 +717,22 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
 
     public void loadNotifications() {
-        EventNotificationsLoader mEventNotificationsLoader = new EventNotificationsLoader(getActivity(), eventId);
-        mEventNotificationsLoader.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
-            @Override
-            public void onLoaded(ArrayList<EventNotification> subList) {
-                initDialog(subList);
-            }
+        ApiService apiService = ApiFactory.getEvendateService();
 
-            @Override
-            public void onError() {
+        Observable<ResponseArray<EventNotification>> eventObservable =
+                apiService.getNotifications(EvendateAccountManager.peekToken(getActivity()),
+                        eventId, EventNotification.FIELDS_LIST);
 
-            }
-        });
-        mEventNotificationsLoader.startLoading();
+        eventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk())
+                        initDialog(result.getData());
+                }, error -> {
+                    Log.e(LOG_TAG, "Error with response with notification");
+                    Log.e(LOG_TAG, error.getMessage());
+                });
     }
 
     public void initDialog(ArrayList<EventNotification> notifications) {

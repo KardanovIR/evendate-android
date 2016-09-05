@@ -84,7 +84,7 @@ public class EvendateAccountManager {
             try {
                 InstanceID instanceID = InstanceID.getInstance(context);
                 instanceID.deleteInstanceID();
-                Log.d(LOG_TAG, "deleted gcm registration");
+                Log.d(LOG_TAG, "GCM UNREGISTERED");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(LOG_TAG, "can't delete gcm registration");
@@ -107,6 +107,11 @@ public class EvendateAccountManager {
             startAuth(context);
         }
         return token;
+    }
+
+    protected void invalidateToken(Context context) {
+        AccountManager accountManager = AccountManager.get(context);
+        accountManager.invalidateAuthToken(context.getString(R.string.account_type), peekToken(context));
     }
 
     private static void startAuth(Context context){
