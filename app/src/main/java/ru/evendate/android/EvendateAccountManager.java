@@ -5,9 +5,17 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.IOException;
+
 import ru.evendate.android.auth.AuthActivity;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 27.01.2016.
@@ -58,6 +66,31 @@ public class EvendateAccountManager {
     public static void deleteAccount(Context context) {
         AccountManager accountManager = (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE);
         accountManager.removeAccount(getSyncAccount(context), null, null);
+
+        UnregisterGCMTask task = new UnregisterGCMTask(context);
+        task.execute();
+        Log.i(LOG_TAG, "account removed");
+    }
+
+    static  class UnregisterGCMTask extends AsyncTask<Void, Void, Void> {
+        Context context;
+
+        public UnregisterGCMTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                InstanceID instanceID = InstanceID.getInstance(context);
+                instanceID.deleteInstanceID();
+                Log.d(LOG_TAG, "deleted gcm registration");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(LOG_TAG, "can't delete gcm registration");
+            }
+            return null;
+        }
     }
 
     public static String peekToken(Context context) {
