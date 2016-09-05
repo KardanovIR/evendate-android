@@ -10,9 +10,11 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
+import butterknife.Bind;
 import ru.evendate.android.R;
 
 /**
@@ -21,6 +23,7 @@ import ru.evendate.android.R;
 public class UserListActivity extends AppCompatActivity {
     private UserListFragment mUserListFragment;
     private DrawerWrapper mDrawer;
+    @Bind(R.id.ll_feed_empty) LinearLayout mFeedEmptyLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

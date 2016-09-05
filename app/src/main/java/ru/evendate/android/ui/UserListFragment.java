@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import butterknife.Bind;
@@ -48,6 +49,7 @@ public class UserListFragment extends Fragment {
     private int organizationId;
     private int eventId;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.ll_feed_empty) View mFeedEmptyLayout;
 
     public enum TypeFormat {
         EVENT(0),
@@ -138,6 +140,8 @@ public class UserListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        hideCap();
+
         switch (UserListFragment.TypeFormat.getType(type)){
             case EVENT:
                 loadEvent();
@@ -195,6 +199,9 @@ public class UserListFragment extends Fragment {
                     EventDetail event = result.getData().get(0);
                     mAdapter.replace(event.getUserList());
                     mProgressBar.setVisibility(View.GONE);
+                    if (mAdapter.isEmpty()) {
+                        displayCap();
+                    }
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
@@ -218,6 +225,9 @@ public class UserListFragment extends Fragment {
                     }
                     mAdapter.replace(result.getData());
                     mProgressBar.setVisibility(View.GONE);
+                    if (mAdapter.isEmpty()) {
+                        displayCap();
+                    }
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
@@ -234,5 +244,15 @@ public class UserListFragment extends Fragment {
                 dialog.dismiss();
         });
         alertDialog.show();
+    }
+
+    private void displayCap(){
+        mFeedEmptyLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void hideCap(){
+        mFeedEmptyLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

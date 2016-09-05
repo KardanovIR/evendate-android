@@ -41,6 +41,7 @@
     <string name="favourites_empty_header">No favorites events</string>
     <string name="favourites_empty_text">Add event to favorites and it\'ll appear here</string>
     <string name="recommendation_empty_header">No recommendation for you</string>
+    <string name="users_empty_text">No users</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
