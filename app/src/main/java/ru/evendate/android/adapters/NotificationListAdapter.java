@@ -9,15 +9,19 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
@@ -30,17 +34,18 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     private static String LOG_TAG = NotificationListAdapter.class.getSimpleName();
 
     private final Context context;
-    private int eventId;
+    private EventDetail mEvent;
     private List<Notification> notifications;
 
-    public NotificationListAdapter(Context context, List<Notification> eventNotifications, int eventId) {
+    public NotificationListAdapter(Context context, List<Notification> eventNotifications, EventDetail event) {
         super(context, R.layout.item_multichoice, eventNotifications);
         this.context = context;
-        this.eventId = eventId;
+        mEvent = event;
         notifications = eventNotifications;
     }
 
     static class ViewHolder {
+        public View holderView;
         CheckBox checkBox;
         TextView textView;
     }
@@ -54,7 +59,9 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         BEFORE_DAY("notification-before-day"),
         BEFORE_WEEK("notification-before-week"),
         BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
-        EVENT_CHANGED_PRICE("notification-event-changed-price");
+        EVENT_CHANGED_PRICE("notification-event-changed-price"),
+
+        NOTIFICATION_UNDEFINED("undefined");
 
         final String type;
 
@@ -69,9 +76,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                     return type;
                 }
             }
-            //todo могут добавляться новые
-            //throw new RuntimeException("unknown type");
-            return null;
+            return NOTIFICATION_UNDEFINED;
         }
         public String type() {
             return type;
@@ -88,6 +93,33 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         public Notification(String notificationType) {
             type = notificationType;
         }
+
+        public boolean checkNotificationAble(EventDetail event){
+            Date date = new Date(event.getFirstDate() * 1000);
+            Calendar notificationTime = Calendar.getInstance();
+            notificationTime.setTime(date);
+            switch (NotificationType.getType(type)){
+                case BEFORE_THREE_HOURS:
+                    notificationTime.add(Calendar.HOUR, -3);
+                    break;
+                case BEFORE_DAY:
+                    notificationTime.add(Calendar.DATE, -1);
+                    break;
+                case BEFORE_THREE_DAYS:
+                    notificationTime.add(Calendar.DATE, -3);
+                    break;
+                case BEFORE_WEEK:
+                    notificationTime.add(Calendar.WEEK_OF_MONTH, -1);
+                    break;
+                case BEFORE_QUARTER_OF_HOUR:
+                    notificationTime.add(Calendar.MINUTE, -15);
+                    break;
+                default:
+                    return true;
+            }
+            Calendar now = Calendar.getInstance();
+            return notificationTime.getTimeInMillis() > now.getTimeInMillis();
+        }
     }
 
     @Override
@@ -99,12 +131,14 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.item_multichoice, parent, false);
             holder = new ViewHolder();
+            holder.holderView = rowView;
             holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
             holder.textView = (TextView) rowView.findViewById(R.id.tv_checkboxtext);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();
             holder.checkBox.setOnCheckedChangeListener(null);
+            holder.holderView.setOnClickListener(null);
         }
         Notification notification = getItem(position);
         holder.textView.setText(getTypeString(notification));
@@ -113,13 +147,18 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             notification.newChecked = b;
             notification.changed = true;
         });
+        if(!notification.checkNotificationAble(mEvent)){
+            holder.checkBox.setEnabled(false);
+            holder.holderView.setOnClickListener((View v) -> toastEventStarted());
+        }
 
         return rowView;
     }
 
     String getTypeString(Notification notification){
         switch (NotificationType.getType(notification.type)){
-            case BEFORE_THREE_HOURS: return context.getString(R.string.notification_before_three_hours);
+            case BEFORE_THREE_HOURS:
+                return context.getString(R.string.notification_before_three_hours);
             case BEFORE_DAY:
                 return context.getString(R.string.notification_before_day);
             case BEFORE_THREE_DAYS:
@@ -135,7 +174,12 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     }
     String formatNotificationTime(long timeInMillis){
         DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date(timeInMillis));
+    }
+
+    private void toastEventStarted(){
+        Toast.makeText(context, context.getString(R.string.toast_notification_event_started), Toast.LENGTH_SHORT).show();
     }
 
     public void update(){
@@ -146,7 +190,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                 ApiService apiService = ApiFactory.getEvendateService();
 
                 Observable<Response> notificationObservable =
-                        apiService.setNotificationByType(EvendateAccountManager.peekToken(context), eventId, notification.type);
+                        apiService.setNotificationByType(EvendateAccountManager.peekToken(context), mEvent.getEntryId(), notification.type);
                 notificationObservable.subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(result -> Log.i(LOG_TAG, "notification added"),
@@ -159,7 +203,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                 ApiService apiService = ApiFactory.getEvendateService();
 
                 Observable<Response> notificationObservable =
-                        apiService.deleteNotification(EvendateAccountManager.peekToken(context), eventId, notification.notification.getUuid());
+                        apiService.deleteNotification(EvendateAccountManager.peekToken(context), mEvent.getEntryId(), notification.notification.getUuid());
                 notificationObservable.subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(result -> Log.i(LOG_TAG, "notification removed"),

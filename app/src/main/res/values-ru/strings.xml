@@ -118,4 +118,6 @@
     <string name="action_user_link">Profile in social net</string>
     <string name="title_activity_friends">Друзья</string>
     <string name="drawer_friends">Друзья</string>
+    <string name="toast_notification_event_started">Событие уже началось</string>
+    <string name="users_empty_text">Нет пользователей</string>
 </resources>

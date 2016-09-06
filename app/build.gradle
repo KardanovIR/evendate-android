@@ -3,7 +3,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "ru.evendate.android"
         minSdkVersion 16
@@ -19,6 +19,13 @@ android {
             // cause bug in google play-services libraries
             // https://code.google.com/p/analytics-issues/issues/detail?id=733
             lintOptions { disable 'MissingTranslation' }
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(
+                            output.outputFile.parent,
+                            output.outputFile.name.replace("app-release", "Evendate ${variant.versionName}"))
+                }
+            }
         }
     }
     dexOptions {

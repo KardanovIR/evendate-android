@@ -40,6 +40,7 @@
     <string name="favourites_empty_header">No favorites events</string>
     <string name="favourites_empty_text">Add event to favorites and it\'ll appear here</string>
     <string name="recommendation_empty_header">No recommendation for you</string>
+    <string name="users_empty_text">No users</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
@@ -187,5 +188,7 @@
     <string name="notification_before_three_days">Before 3 days</string>
     <string name="notification_before_week">Before a week</string>
     <string name="notification_add_custom">Add custom time</string>
+
+    <string name="toast_notification_event_started">The event has already started</string>
 
 </resources>
