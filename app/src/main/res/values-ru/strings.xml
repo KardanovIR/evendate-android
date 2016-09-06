@@ -118,4 +118,7 @@
     <string name="notification_before_week">За неделю</string>
     <string name="notification_add_custom">Добавить свое время</string>
     <string name="action_user_link">Profile in social net</string>
+    <string name="title_activity_friends">Друзья</string>
+    <string name="toast_notification_event_started">Событие уже началось</string>
+    <string name="users_empty_text">Нет пользователей</string>
 </resources>

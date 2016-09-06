@@ -18,6 +18,7 @@ import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.StatisticsEvent;
+import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -99,12 +100,12 @@ public interface ApiService {
     );
 
     @POST(API_PATH + "/events/{id}/favorites")
-    Call<Response> eventPostFavorite(
+    Observable<Response> eventPostFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
 
     @DELETE(API_PATH + "/events/{id}/favorites")
-    Call<Response> eventDeleteFavorite(
+    Observable<Response> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
     @POST(API_PATH + "/events/{id}/favorites")
@@ -132,7 +133,7 @@ public interface ApiService {
     );
 
     @GET(API_PATH + "/users/{id}")
-    Call<ResponseArray<UserDetail>> getUser(
+    Observable<ResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,
             @Path("id") int userId,
             @Query("fields") String fields
@@ -161,13 +162,13 @@ public interface ApiService {
     );
 
     @POST(API_PATH + "/organizations/{id}/subscriptions")
-    Call<Response> organizationPostSubscription(
+    Observable<Response> orgPostSubscription(
             @Path("id") int organizationId,
             @Header("Authorization") String authorization
     );
 
     @DELETE(API_PATH + "/organizations/{id}/subscriptions")
-    Call<Response> organizationDeleteSubscription(
+    Observable<Response> orgDeleteSubscription(
             @Path("id") int organizationId, @Header("Authorization") String authorization
     );
 
@@ -181,12 +182,12 @@ public interface ApiService {
     );
 
     @PUT(API_PATH + "/users/me/devices")
-    Call<Response> putDeviceToken(
+    Observable<Response> putDeviceToken(
+            @Header("Authorization") String authorization,
             @Query("device_token") String deviceToken,
             @Query("client_type") String clientType,
             @Query("model") String model,
-            @Query("os_version") String OsVersion,
-            @Header("Authorization") String authorization
+            @Query("os_version") String OsVersion
     );
 
     @GET(API_PATH + "/users/{id}/actions")
@@ -215,7 +216,7 @@ public interface ApiService {
      * Get notifications for event
      */
     @GET(API_PATH + "/events/{id}/notifications")
-    Call<ResponseArray<EventNotification>> getNotifications(
+    Observable<ResponseArray<EventNotification>> getNotifications(
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("fields") String fields
@@ -243,4 +244,12 @@ public interface ApiService {
     );
 
 
+    /**
+     * Get friends
+     */
+    @GET(API_PATH + "/users/friends")
+    Observable<ResponseArray<UserDetail>> getFriends(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields
+    );
 }

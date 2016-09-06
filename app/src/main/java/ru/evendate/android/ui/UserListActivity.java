@@ -10,9 +10,11 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
+import butterknife.Bind;
 import ru.evendate.android.R;
 
 /**
@@ -21,24 +23,34 @@ import ru.evendate.android.R;
 public class UserListActivity extends AppCompatActivity {
     private UserListFragment mUserListFragment;
     private DrawerWrapper mDrawer;
+    @Bind(R.id.ll_feed_empty) LinearLayout mFeedEmptyLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         Intent intent = getIntent();
         if (intent != null) {
             Uri uri = intent.getData();
             int type = intent.getIntExtra(UserListFragment.TYPE, 0);
-            int id = Integer.parseInt(uri.getLastPathSegment());
-            if (type == UserListFragment.TypeFormat.event.nativeInt) {
-                mUserListFragment = UserListFragment.newInstance(type, id);
-            } else {
-                mUserListFragment = UserListFragment.newInstance(type, id);
+            int id;
+            switch (UserListFragment.TypeFormat.getType(type)){
+                case EVENT:
+                    id = Integer.parseInt(uri.getLastPathSegment());
+                    mUserListFragment = UserListFragment.newInstance(type, id);
+                    break;
+                case ORGANIZATION:
+                    id = Integer.parseInt(uri.getLastPathSegment());
+                    mUserListFragment = UserListFragment.newInstance(type, id);
+                    break;
+                case FRIENDS:
+                    mUserListFragment = UserListFragment.newFriendsInstance(type);
+                    toolbar.setTitle(getString(R.string.title_activity_friends));
+                    break;
             }
         }
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);

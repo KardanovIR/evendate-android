@@ -29,6 +29,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
@@ -85,9 +86,6 @@ import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.EventNotificationsLoader;
-import ru.evendate.android.loaders.LikeEventLoader;
-import ru.evendate.android.loaders.LoaderListener;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventNotification;
@@ -106,7 +104,7 @@ import rx.schedulers.Schedulers;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements LoaderListener<ArrayList<EventDetail>> {
+public class EventDetailFragment extends Fragment{
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -187,7 +185,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
         initToolbar();
         initTransitions();
         initToolbarAndFabAnimation();
@@ -349,7 +347,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                         .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
-            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.event.nativeInt);
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.EVENT.type());
             if(Build.VERSION.SDK_INT >= 21){
                 getActivity().startActivity(intent,
                         ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
@@ -499,7 +497,7 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.event_title_container)
+    @OnClick(R.id.event_org_card)
     public void onOrganizationClick(View v) {
         if (mAdapter.getEvent() == null)
             return;
@@ -543,34 +541,44 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
     public void onFabClick(){
         if(mAdapter.getEvent() == null)
             return;
+        EventDetail event = mAdapter.getEvent();
+
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<Response> LikeEventObservable;
+
+        if (event.isFavorite()){
+            LikeEventObservable = apiService.eventDeleteFavorite(event.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        } else {
+            LikeEventObservable = apiService.eventPostFavorite(event.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        }
+        LikeEventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    if(result.isOk())
+                        Log.i(LOG_TAG, "performed like");
+                    else
+                        Log.e(LOG_TAG, "Error with response with like");
+                }, error -> {
+                    Log.e(LOG_TAG, error.getMessage());
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                });
+
+        event.favore();
+
         Tracker tracker = EvendateApplication.getTracker();
-        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
+        HitBuilders.EventBuilder statEvent = new HitBuilders.EventBuilder()
                 .setCategory(getActivity().getString(R.string.stat_category_event))
-                .setLabel((Long.toString(mAdapter.getEvent().getEntryId())));
-
-        LikeEventLoader likeEventLoader = new LikeEventLoader(getActivity(), mAdapter.getEvent(),
-                mAdapter.getEvent().isFavorite());
-        likeEventLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
-            @Override
-            public void onLoaded(ArrayList<Void> subList) {
-
-            }
-
-            @Override
-            public void onError() {
-                Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        likeEventLoader.startLoading();
-        mAdapter.getEvent().favore();
-        if (mAdapter.getEvent().isFavorite()) {
-            event.setAction(getActivity().getString(R.string.stat_action_like));
+                .setLabel((Long.toString(event.getEntryId())));
+        if (event.isFavorite()) {
+            statEvent.setAction(getActivity().getString(R.string.stat_action_like));
             Toast.makeText(getActivity(), R.string.favorite_confirm, Toast.LENGTH_SHORT).show();
         } else {
-            event.setAction(getActivity().getString(R.string.stat_action_dislike));
+            statEvent.setAction(getActivity().getString(R.string.stat_action_dislike));
             Toast.makeText(getActivity(), R.string.remove_favorite_confirm, Toast.LENGTH_SHORT).show();
         }
-        tracker.send(event.build());
+        tracker.send(statEvent.build());
         mAdapter.setEventInfo();
     }
 
@@ -651,7 +659,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         return bmpUri;
     }
 
-    @Override
     public void onLoaded(ArrayList<EventDetail> events) {
         if (!isAdded())
             return;
@@ -665,7 +672,6 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
         mTitleTextView.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void onError() {
         if (!isAdded())
             return;
@@ -711,24 +717,27 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
 
     public void loadNotifications() {
-        EventNotificationsLoader mEventNotificationsLoader = new EventNotificationsLoader(getActivity(), eventId);
-        mEventNotificationsLoader.setLoaderListener(new LoaderListener<ArrayList<EventNotification>>() {
-            @Override
-            public void onLoaded(ArrayList<EventNotification> subList) {
-                initDialog(subList);
-            }
+        ApiService apiService = ApiFactory.getEvendateService();
 
-            @Override
-            public void onError() {
+        Observable<ResponseArray<EventNotification>> eventObservable =
+                apiService.getNotifications(EvendateAccountManager.peekToken(getActivity()),
+                        eventId, EventNotification.FIELDS_LIST);
 
-            }
-        });
-        mEventNotificationsLoader.startLoading();
+        eventObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if(result.isOk())
+                        initDialog(result.getData());
+                }, error -> {
+                    Log.e(LOG_TAG, "Error with response with notification");
+                    Log.e(LOG_TAG, error.getMessage());
+                });
     }
 
     public void initDialog(ArrayList<EventNotification> notifications) {
         NotificationListAdapter adapter;
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.NotificationDialog);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
         alertDialog.setView(convertView);
@@ -736,12 +745,12 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         ListView lv = (ListView) convertView.findViewById(R.id.listView);
         adapter = new NotificationListAdapter(getActivity(),
-                NotificationConverter.convertNotificationList(notifications), eventId);
+                NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
         lv.setAdapter(adapter);
-        alertDialog.setPositiveButton("Ok", (DialogInterface d, int which) -> {
+        alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> {
             adapter.update();
         });
-        alertDialog.setNegativeButton("Cancel", (DialogInterface d, int which) -> {
+        alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> {
             notificationDialog.dismiss();
         });
 
@@ -785,30 +794,29 @@ public class EventDetailFragment extends Fragment implements LoaderListener<Arra
 
         public void onDateSet(DatePicker view, final int year, final int month, final int day) {
             calendar.set(year, month, day);
-            TimePickerDialog newFragment2 = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    calendar.set(year, month, day, hourOfDay, minute, 0);
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            TimePickerDialog newFragment2 = new TimePickerDialog(context, (TimePicker v, int hourOfDay, int minute) -> {
+                calendar.set(year, month, day, hourOfDay, minute, 0);
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String date = df.format(new Date(calendar.getTimeInMillis()));
+                Log.d(LOG_TAG, "date: " + date);
 
-                    ApiService apiService = ApiFactory.getEvendateService();
-                    Observable<Response> notificationObservervable =
-                            apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, df.format(new Date(calendar.getTimeInMillis())));
+                ApiService apiService = ApiFactory.getEvendateService();
+                Observable<Response> notificationObservable =
+                        apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, date);
 
-                    notificationObservervable.subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(result -> {
-                                Log.i(LOG_TAG, "loaded");
-                                if(result.isOk())
-                                    //todo update notification list cause new list in return answer
-                                    Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
-                            }, error -> {
+                notificationObservable.subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> {
+                            Log.i(LOG_TAG, "loaded");
+                            if(result.isOk())
+                                //todo update notification list cause new list in return answer
+                                Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
+                            else
                                 Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
-                                Log.e(LOG_TAG, error.getMessage());
-                            }, () -> Log.i(LOG_TAG, "completed"));
-                }
+                        }, error -> {
+                            Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                            Log.e(LOG_TAG, error.getMessage());
+                        }, () -> Log.i(LOG_TAG, "completed"));
             }, 0, 0, true);
             newFragment2.show();
         }
