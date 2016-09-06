@@ -7,33 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/window_reel_background">
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="#fff"
-            >
-            <TextView
-                android:id="@+id/event_toolbar_title"
-                android:layout_centerInParent="true"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FFF"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Event"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:clickable="true"
@@ -75,66 +49,63 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
-                <TextView
-                    android:id="@+id/event_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="72dp"
-                    tools:text="ArtFlection: Ярмарка подарков ручной работы"
-                    android:textSize="20sp"
-                    android:textIsSelectable="false"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_gravity="bottom"
-                    android:fontFamily="sans-serif"/>
                 <View
                     android:id="@+id/event_image_mask"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
             </FrameLayout>
             <FrameLayout
-            android:id="@+id/event_organization_container"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/event_detail_toolbar_height"
-            android:background="?attr/colorPrimaryDark"
-            android:layout_gravity="bottom">
-            <FrameLayout
-                android:id="@+id/event_organization_icon_container"
-                android:layout_width="72dp"
-                android:layout_height="match_parent"
-                android:padding="8dp">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:civ_border_width="0dp"
-                    android:src="#FFFFFF"/>
-                <ImageView
-                    android:id="@+id/event_organization_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8dp" />
-            </FrameLayout>
-            <TextView
-                android:id="@+id/event_organization_name"
+                android:id="@+id/event_title_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:layout_marginLeft="72dp"
-                android:layout_marginStart="72dp"
-                tools:text="Digital October"
-                android:textSize="16sp"
-                android:textIsSelectable="false"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="72dp"
-                android:fontFamily="sans-serif"/>
+                android:layout_height="@dimen/event_detail_toolbar_height"
+                android:background="?attr/colorPrimaryDark"
+                android:layout_gravity="bottom">
+                <TextView
+                    android:id="@+id/event_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#fff"
+                    android:layout_marginLeft="16dp"
+                    tools:text="Drake Moscow 2016"
+                    android:textSize="22sp"
+                    android:textIsSelectable="false"
+                    android:layout_marginRight="64dp"
+                    android:fontFamily="sans-serif"
+                    android:layout_gravity="center_vertical" />
             <View
-                android:id="@+id/event_organization_mask"
+                android:id="@+id/event_title_mask"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </FrameLayout>
             <include layout="@layout/fragment_detail_content"/>
         </LinearLayout>
     </com.nirhart.parallaxscroll.views.ParallaxScrollView>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:textColorSecondary="#FFFFFF"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="#fff"
+            app:theme="@style/ThemeToolbar"
+            >
+            <TextView
+                android:id="@+id/event_toolbar_title"
+                android:layout_centerInParent="true"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Event"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>
