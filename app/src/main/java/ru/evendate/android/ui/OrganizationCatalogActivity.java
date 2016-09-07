@@ -108,7 +108,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void loadCatalog(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<OrganizationCategory>> observable =
                 apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationCategory.FIELDS_LIST);
 

@@ -252,7 +252,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private void loadEvents(){
         hideCap();
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> observable;
 
         final int length = mAdapterController.getLength();

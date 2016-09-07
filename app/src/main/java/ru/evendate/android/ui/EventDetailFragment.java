@@ -209,7 +209,7 @@ public class EventDetailFragment extends Fragment{
             }
         });
 
-        mColor = getResources().getColor(R.color.primary);
+        mColor = ContextCompat.getColor(getActivity(), R.color.primary);
 
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
@@ -358,7 +358,7 @@ public class EventDetailFragment extends Fragment{
     }
 
     public void loadEvent(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
                         eventId, EventDetail.FIELDS_LIST);
@@ -543,7 +543,7 @@ public class EventDetailFragment extends Fragment{
             return;
         EventDetail event = mAdapter.getEvent();
 
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<Response> LikeEventObservable;
 
         if (event.isFavorite()){
@@ -686,10 +686,12 @@ public class EventDetailFragment extends Fragment{
     }
 
     public void palette(Bitmap bitmap) {
+        if(!isAdded())
+            return;
         if (bitmap == null)
             return;
         Palette palette = Palette.from(bitmap).generate();
-        mColor = palette.getDarkMutedColor(getResources().getColor(R.color.primary));
+        mColor = palette.getDarkMutedColor(ContextCompat.getColor(getActivity(), R.color.primary));
         int red = (int)(Color.red(mColor) * 0.8);
         int blue = (int)(Color.blue(mColor) * 0.8);
         int green = (int)(Color.green(mColor) * 0.8);
@@ -717,7 +719,7 @@ public class EventDetailFragment extends Fragment{
 
 
     public void loadNotifications() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
 
         Observable<ResponseArray<EventNotification>> eventObservable =
                 apiService.getNotifications(EvendateAccountManager.peekToken(getActivity()),
@@ -800,7 +802,7 @@ public class EventDetailFragment extends Fragment{
                 String date = df.format(new Date(calendar.getTimeInMillis()));
                 Log.d(LOG_TAG, "date: " + date);
 
-                ApiService apiService = ApiFactory.getEvendateService();
+                ApiService apiService = ApiFactory.getService(context);
                 Observable<Response> notificationObservable =
                         apiService.setNotificationByTime(EvendateAccountManager.peekToken(context), eventId, date);
 

@@ -296,7 +296,7 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     private void loadOrg(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<OrganizationFull>> organizationObservable =
                 apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, OrganizationDetail.FIELDS_LIST);
@@ -311,7 +311,7 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     private void loadEvents(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> observable =
                 apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, true, EventDetail.FIELDS_LIST, "created_at",
@@ -335,7 +335,7 @@ public class OrganizationDetailFragment extends Fragment implements
     public void onSubscribed() {
         OrganizationDetail organization = mAdapter.getOrganization();
 
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<Response> subOrganizationObservable;
 
         if (organization.isSubscribed()) {

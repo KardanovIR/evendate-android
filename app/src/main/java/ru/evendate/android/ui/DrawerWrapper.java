@@ -133,7 +133,7 @@ public class DrawerWrapper{
     }
 
     public void loadSubs(){
-        ApiService service = ApiFactory.getEvendateService();
+        ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<OrganizationFull>> subsObservable =
                 service.getSubscriptions(EvendateAccountManager.peekToken(mContext), OrganizationSubscription.FIELDS_LIST);
 
@@ -152,7 +152,7 @@ public class DrawerWrapper{
     }
 
     public void loadMe(){
-        ApiService service = ApiFactory.getEvendateService();
+        ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<UserDetail>> subsObservable =
                 service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
 

@@ -187,7 +187,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             if(!notification.changed && notification.newChecked == null)
                 continue;
             if(notification.newChecked){
-                ApiService apiService = ApiFactory.getEvendateService();
+                ApiService apiService = ApiFactory.getService(context);
 
                 Observable<Response> notificationObservable =
                         apiService.setNotificationByType(EvendateAccountManager.peekToken(context), mEvent.getEntryId(), notification.type);
@@ -200,7 +200,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             else{
                 if(notification.notification == null)
                     return;
-                ApiService apiService = ApiFactory.getEvendateService();
+                ApiService apiService = ApiFactory.getService(context);
 
                 Observable<Response> notificationObservable =
                         apiService.deleteNotification(EvendateAccountManager.peekToken(context), mEvent.getEntryId(), notification.notification.getUuid());

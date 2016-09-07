@@ -1,7 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
@@ -27,7 +26,6 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
-import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.text.DateFormatSymbols;
@@ -193,7 +191,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     private void loadDates() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<DateCalendar>> observable =
                 apiService.getCalendarDates(EvendateAccountManager.peekToken(this), true, true, true, null);
 

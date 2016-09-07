@@ -10,15 +10,10 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -217,7 +212,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
 
 
     private void hideEvent(EventFeed event){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> hideObservable =
                 apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
                         event.getEntryId(), true);
@@ -232,7 +227,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     }
 
     private void likeEvent(EventFeed event){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> likeObservable;
         int id = event.getEntryId();
         if(event.isFavorite()) {

@@ -2,7 +2,6 @@ package ru.evendate.android.network;
 
 import java.util.List;
 
-import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -17,8 +16,8 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
-import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -243,7 +242,6 @@ public interface ApiService {
             @Path("uuid") String uuid
     );
 
-
     /**
      * Get friends
      */
@@ -251,5 +249,16 @@ public interface ApiService {
     Observable<ResponseArray<UserDetail>> getFriends(
             @Header("Authorization") String authorization,
             @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/users/settings")
+    Observable<ResponseArray<Settings>> getSettings(
+            @Header("Authorization") String authorization
+    );
+
+    @POST(API_PATH + "/users/settings")
+    Observable<Response> setSettings(
+            @Header("Authorization") String authorization,
+            @Query("show-to-friends") boolean feedPrivacy
     );
 }

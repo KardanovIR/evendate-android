@@ -5,11 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
@@ -22,13 +25,13 @@ import ru.evendate.android.Statistics;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.OrganizationDetailActivity;
+import ru.evendate.android.ui.SettingsActivity;
 import ru.evendate.android.ui.UserProfileActivity;
 
 /**
  * Created by Dmitry on 29.11.2015.
  */
 public class EvendateGCMListenerService extends GcmListenerService {
-
     private static final String LOG_TAG = EvendateGCMListenerService.class.getSimpleName();
 
     /**
@@ -93,17 +96,6 @@ public class EvendateGCMListenerService extends GcmListenerService {
         intent.putExtra(Statistics.INTENT_TYPE, Statistics.NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         sendNotification(message, intent, imageUrl);
     }
 
@@ -119,7 +111,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
                 .setLargeIcon(loadIcon(imageUrl))
-                .setContentTitle("Evendate")
+                .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 //.setGroupSummary(false)
                 //just expand message to multi row
@@ -127,6 +119,19 @@ public class EvendateGCMListenerService extends GcmListenerService {
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
+
+        int accentColor = ContextCompat.getColor(getBaseContext(), R.color.accent);
+
+        notificationBuilder.setColor(accentColor);
+        if(isVibrateOn()) {
+            notificationBuilder.setVibrate(new long[]{200, 500, 200, 500});
+        }
+        if(isLedOn()){
+            notificationBuilder.setLights(getLedColor(), 1000, 200);
+        }
+        if(!isNotificationOn()) {
+            return;
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
@@ -139,11 +144,26 @@ public class EvendateGCMListenerService extends GcmListenerService {
         try {
             icon = Picasso.with(getBaseContext())
                     .load(imageUrl)
-                    .error(R.drawable.default_background)
                     .get();
-        } catch (IOException e) {
+        } catch (IOException|IllegalStateException e) {
             icon = null;
         }
         return icon;
+    }
+
+    private boolean isVibrateOn(){
+        return getPreferences().getBoolean(SettingsActivity.KEY_VIBRATION, SettingsActivity.KEY_VIBRATION_DEFAULT);
+    }
+    private boolean isNotificationOn(){
+        return getPreferences().getBoolean(SettingsActivity.KEY_NOTIFICATION, SettingsActivity.KEY_NOTIFICATION_DEFAULT);
+    }
+    private boolean isLedOn(){
+        return getPreferences().getBoolean(SettingsActivity.KEY_INDICATOR, SettingsActivity.KEY_INDICATOR_DEFAULT);
+    }
+    private int getLedColor(){
+        return getPreferences().getInt(SettingsActivity.KEY_INDICATOR_COLOR, SettingsActivity.KEY_INDICATOR_COLOR_DEFAULT);
+    }
+    private SharedPreferences getPreferences(){
+        return PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     }
 }

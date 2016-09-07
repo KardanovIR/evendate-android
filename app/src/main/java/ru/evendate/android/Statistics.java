@@ -126,7 +126,7 @@ public class Statistics {
     }
 
     private static void postEvent(List<StatisticsEvent> events){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(sContext);
         Observable<Response> eventObservable =
                 apiService.postStat(EvendateAccountManager.peekToken(sContext), events);
         eventObservable.subscribeOn(Schedulers.newThread())

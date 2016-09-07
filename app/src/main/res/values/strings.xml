@@ -191,4 +191,21 @@
 
     <string name="toast_notification_event_started">The event has already started</string>
 
+    <!-- settings strings -->
+    <string name="settings_dialog_led_color">Indicator color</string>
+    <string name="settings_dialog_about">About program</string>
+    <string name="settings_dialog_about_version">Version</string>
+
+    <string name="settings_category_notification">Notifications</string>
+    <string name="settings_category_main">Main</string>
+
+    <string name="settings_alert">Alert</string>
+    <string name="settings_led">Indicator</string>
+    <string name="settings_vibration">Vibration</string>
+    <string name="settings_led_color">Indicator color</string>
+    <string name="settings_https">Security connection</string>
+    <string name="settings_https_description">Use HTTPS protocol</string>
+    <string name="settings_about">About program</string>
+    <string name="settings_feed_privacy">Show my favorite events to friends</string>
+
 </resources>

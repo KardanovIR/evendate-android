@@ -50,9 +50,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
-    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.HOST_NAME + "/vkOauthDone.php?mobile=true&response_type=token";
-    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.HOST_NAME + "/fbOauthDone.php?mobile=true";
-    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.HOST_NAME + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    private String VK_URL;
+    private String FB_URL;
+    private String GOOGLE_URL;
 
     private final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
 
@@ -76,6 +76,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initLinks();
         EvendateAccountManager.setAuthRunning(this);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
@@ -83,6 +85,14 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         initTransitions();
         apiClient = initGoogleApiClient();
         deletedOldAccount();
+    }
+
+    private void initLinks(){
+        //todo change to https (when move testing to prod server?)
+        VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.getHostName(this) + "/vkOauthDone.php?mobile=true&response_type=token";
+        FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
+        GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(this) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+
     }
 
     private void initTransitions(){
@@ -284,7 +294,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     }
 
     private void onGoogleTokenReceived(String token) {
-        String url = ApiFactory.HOST_NAME + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
+        String url = ApiFactory.getHostName(this) + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
         url += token;
         startWebAuth(url);

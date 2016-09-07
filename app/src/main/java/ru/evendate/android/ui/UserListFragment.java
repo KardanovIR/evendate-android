@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import butterknife.Bind;
@@ -156,7 +155,7 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadOrganization() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<OrganizationFull>> eventObservable =
                 apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
                         organizationId, OrganizationDetail.FIELDS_LIST);
@@ -181,7 +180,7 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadEvent() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
                         eventId, EventDetail.FIELDS_LIST);
@@ -209,7 +208,7 @@ public class UserListFragment extends Fragment {
     }
 
     private void loadFriends(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<UserDetail>> friendsObservable =
                 apiService.getFriends(EvendateAccountManager.peekToken(getActivity()), UserDetail.FIELDS_LIST);
 

@@ -187,7 +187,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void loadUser(){
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<UserDetail>> organizationObservable =
                 apiService.getUser(EvendateAccountManager.peekToken(this),
                         userId, UserDetail.FIELDS_LIST);

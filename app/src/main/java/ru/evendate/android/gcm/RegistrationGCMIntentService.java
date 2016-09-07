@@ -1,9 +1,5 @@
 package ru.evendate.android.gcm;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Build;
@@ -14,17 +10,12 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import retrofit.Call;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
-import ru.evendate.android.network.ResponseArray;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -58,7 +49,7 @@ public class RegistrationGCMIntentService extends IntentService {
     }
 
     private void sendRegistrationToServer(String token) {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(getBaseContext());
         String deviceModel = Build.MANUFACTURER + " " + Build.MODEL;
         Observable<Response> deviceObservable =
                 apiService.putDeviceToken(EvendateAccountManager.peekToken(getBaseContext()),

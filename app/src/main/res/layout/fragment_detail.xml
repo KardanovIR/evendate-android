@@ -90,10 +90,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="#fff"
-            app:theme="@style/ThemeToolbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark"
             >
             <TextView
                 android:id="@+id/event_toolbar_title"
