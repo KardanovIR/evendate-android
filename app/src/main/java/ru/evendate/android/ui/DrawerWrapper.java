@@ -36,7 +36,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class DrawerWrapper{
+public class DrawerWrapper {
     private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
@@ -66,22 +66,15 @@ public class DrawerWrapper{
 
         //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        return true;
-                    }
+                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
+                    return true;
                 });
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
                 .withHeaderBackground(R.drawable.gradient_profile)
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
+                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> {
+                    return false;
                 })
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
@@ -128,7 +121,7 @@ public class DrawerWrapper{
         return mDrawer;
     }
 
-    public void loadSubs(){
+    public void loadSubs() {
         ApiService service = ApiFactory.getEvendateService();
         Observable<ResponseArray<OrganizationFull>> subsObservable =
                 service.getSubscriptions(EvendateAccountManager.peekToken(mContext), OrganizationSubscription.FIELDS_LIST);
@@ -137,7 +130,7 @@ public class DrawerWrapper{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(new ArrayList<>(result.getData()));
                     else
                         onError();
@@ -147,7 +140,7 @@ public class DrawerWrapper{
                 });
     }
 
-    public void loadMe(){
+    public void loadMe() {
         ApiService service = ApiFactory.getEvendateService();
         Observable<ResponseArray<UserDetail>> subsObservable =
                 service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
@@ -156,10 +149,10 @@ public class DrawerWrapper{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk()){
+                    if (result.isOk()) {
                         UserDetail user = result.getData().get(0);
                         Account account = EvendateAccountManager.getSyncAccount(mContext);
-                        if(account == null)
+                        if (account == null)
                             return;
 
                         getAccountHeader().clear();
@@ -169,24 +162,21 @@ public class DrawerWrapper{
                                         .withIcon(user.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
                                         .withIcon(R.drawable.exit_icon)
-                                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                            @Override
-                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
                                                 EvendateAccountManager.deleteAccount(mContext);
                                                 //todo ditch
                                                 ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
                                                 return false;
-                                            }
                                         })
-                            );
-                        }
-                    else
+                        );
+                    } else
                         onError();
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
                 });
     }
+
     public void onLoaded(ArrayList<OrganizationSubscription> subList) {
         mSubscriptions = subList;
         updateSubs();

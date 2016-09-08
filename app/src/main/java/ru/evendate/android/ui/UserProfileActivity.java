@@ -257,7 +257,7 @@ public class UserProfileActivity extends AppCompatActivity {
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
                     .load(mUserDetail.getAvatarUrl())
-                    .error(R.drawable.default_background)
+                    .error(R.drawable.evendate_logo)
                     .into(target);
         }
     }
