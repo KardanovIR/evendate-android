@@ -2,29 +2,30 @@ package ru.evendate.android.auth;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-
-/**
- * Created by fj on 14.08.2015.
- */
-
 
 public class WebAuthActivity extends AppCompatActivity {
     private final String LOG_TAG = WebAuthActivity.class.getSimpleName();
 
-    private WebView mWebView;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.auth_web_view) WebView mWebView;
     private String mUrl;
 
     public final static String EMAIL = "email";
@@ -33,37 +34,42 @@ public class WebAuthActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_web_auth);
+        setContentView(R.layout.activity_web_auth);
+        ButterKnife.bind(this);
 
-        mWebView = (WebView)findViewById(R.id.auth_web_view);
         if (savedInstanceState != null)
             mWebView.restoreState(savedInstanceState);
         else {
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.removeAllCookie();
         }
-        mWebView.setWebViewClient(new MyWebViewClient());
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
 
         Intent intent = getIntent();
         if (intent == null)
             throw new RuntimeException("no intent with uri");
         mUrl = intent.getExtras().getString(AuthActivity.URL_KEY);
 
+        mWebView.setWebViewClient(new MyWebViewClient());
+        WebSettings webSettings = mWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        initProgressBar();
+
+        if (mUrl != null)
+            mWebView.loadUrl(mUrl);
+    }
+
+    private void initProgressBar() {
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
+        if(!mUrl.equals(AuthActivity.GOOGLE_URL))
+            mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mWebView.saveState(outState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mUrl != null)
-            mWebView.loadUrl(mUrl);
     }
 
     protected class MyWebViewClient extends WebViewClient {
@@ -99,6 +105,12 @@ public class WebAuthActivity extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
                 finish();
             }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            mProgressBar.setVisibility(View.INVISIBLE);
         }
 
         private String retrieveToken(String query){
