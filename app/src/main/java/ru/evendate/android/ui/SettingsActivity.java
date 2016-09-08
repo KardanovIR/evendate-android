@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_HTTPS = "key_https";
     public static final boolean KEY_HTTPS_DEFAULT = false;
 
-    private static final String KEY_PRIVACY_FEED = "key_indicator_color";
+    private static final String KEY_PRIVACY_FEED = "key_feed_privacy";
     private static final String KEY_INFO = "key_info";
 
     @Override
@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
             ApiService apiService = ApiFactory.getService(context);
             Observable<ResponseArray<Settings>> notificationObservable =
-                    apiService.getSettings(EvendateAccountManager.peekToken(context));
+                    apiService.getSettings(EvendateAccountManager.peekToken(context), true);
 
             //todo refactor and add a progress bar
             notificationObservable.subscribeOn(Schedulers.newThread())

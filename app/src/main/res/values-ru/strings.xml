@@ -125,7 +125,6 @@
     <string name="settings_dialog_about">О программе</string>
     <string name="settings_dialog_about_version">Версия</string>
     <string name="settings_dialog_led_color">Цвета индикатора</string>
-    <string name="settings_feed_privacy">Показывать друзьям избранные мной события</string>
     <string name="settings_https">Защищенное соединение</string>
     <string name="settings_https_description">Использовать протокол HTTPS</string>
     <string name="settings_led">Индикатор</string>
@@ -133,4 +132,7 @@
     <string name="settings_vibration">Вибрация</string>
     <string name="settings_category_main">Основные</string>
     <string name="settings_category_notification">Уведомления</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="settings_feed_privacy_description">Показывать друзьям избранные мной события</string>
+    <string name="settings_feed_privacy">Приватность</string>
 </resources>

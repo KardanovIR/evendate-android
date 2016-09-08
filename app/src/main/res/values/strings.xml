@@ -3,6 +3,7 @@
     <string name="title_activity_detail">Event</string>
     <string name="title_activity_organization">Organizer catalog</string>
     <string name="title_activity_friends">Friends</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -206,6 +207,7 @@
     <string name="settings_https">Security connection</string>
     <string name="settings_https_description">Use HTTPS protocol</string>
     <string name="settings_about">About program</string>
-    <string name="settings_feed_privacy">Show my favorite events to friends</string>
+    <string name="settings_feed_privacy">Privacy</string>
+    <string name="settings_feed_privacy_description">Show my favorite events to friends</string>
 
 </resources>

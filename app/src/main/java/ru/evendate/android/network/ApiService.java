@@ -253,12 +253,13 @@ public interface ApiService {
 
     @GET(API_PATH + "/users/settings")
     Observable<ResponseArray<Settings>> getSettings(
-            @Header("Authorization") String authorization
+            @Header("Authorization") String authorization,
+            @Query("as_array") boolean asArray
     );
 
-    @POST(API_PATH + "/users/settings")
+    @PUT(API_PATH + "/users/settings")
     Observable<Response> setSettings(
             @Header("Authorization") String authorization,
-            @Query("show-to-friends") boolean feedPrivacy
+            @Query("show_to_friends") boolean feedPrivacy
     );
 }

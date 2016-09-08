@@ -29,7 +29,8 @@
         <CheckBoxPreference
             android:key="key_feed_privacy"
             android:title="@string/settings_feed_privacy"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            android:summary="@string/settings_feed_privacy_description"/>
         <Preference
             android:key="key_info"
             android:title="@string/settings_about" />
