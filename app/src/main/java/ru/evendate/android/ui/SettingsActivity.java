@@ -144,8 +144,12 @@ public class SettingsActivity extends AppCompatActivity {
             dialogPreference.setOnPreferenceClickListener((Preference preference) -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
 
-                builder.setTitle(R.string.settings_dialog_about);
-                builder.setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME);
+                builder.setTitle(R.string.settings_dialog_about)
+                    .setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME)
+                    .setPositiveButton(getString(R.string.dialog_ok),
+                            (DialogInterface dialog, int which) -> {
+                                dialog.dismiss();
+                    });
                 //LayoutInflater factory = LayoutInflater.from(context);
                 //final View view = factory.inflate(R.layout.dialog_version, null);
                 //builder.setView(view);
@@ -174,6 +178,10 @@ public class SettingsActivity extends AppCompatActivity {
                             editor.putInt(KEY_INDICATOR_COLOR, selectedColor);
                             editor.commit();
                             indicatorColor = selectedColor;
+                        })
+                        .setNegativeButton(getString(R.string.dialog_cancel),
+                                (DialogInterface dialog, int which) -> {
+                                    dialog.cancel();
                         })
                         .build()
                         .show();
