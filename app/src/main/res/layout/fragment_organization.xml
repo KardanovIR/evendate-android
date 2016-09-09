@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:progressDrawable="@drawable/circular_progress_bar"
         android:visibility="gone"
-        app:layout_anchor="@+id/recycle_view"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="center"
         tools:visibility="visible"/>
 

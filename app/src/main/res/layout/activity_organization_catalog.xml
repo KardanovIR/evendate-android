@@ -34,11 +34,11 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:progressDrawable="@drawable/circular_progress_bar"
-        app:layout_anchor="@+id/recycle_view"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="center"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:layout_anchor="@+id/recycle_view"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="end|bottom|right"
         android:clickable="true"
         android:layout_height="wrap_content"
