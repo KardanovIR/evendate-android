@@ -15,15 +15,15 @@ import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -40,24 +40,28 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.UserPagerAdapter;
-import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.UserLoader;
 import ru.evendate.android.models.UserDetail;
+import ru.evendate.android.network.ApiFactory;
+import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.ResponseArray;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoaderListener<ArrayList<UserDetail>> {
+public class UserProfileActivity extends AppCompatActivity {
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
     private UserAdapter mUserAdapter;
-    private UserLoader mLoader;
 
     @Bind(R.id.pager) ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
@@ -114,11 +118,9 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             tracker.send(event.build());
         }
 
-        mLoader = new UserLoader(this, userId);
-        mLoader.setLoaderListener(this);
         mUserAdapter = new UserAdapter();
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
         mProgressBar.setVisibility(View.VISIBLE);
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -139,8 +141,15 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Override
     protected void onStart() {
         super.onStart();
-        mLoader.startLoading();
+        loadUser();
         mDrawer.start();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+
     }
 
     @Override
@@ -148,6 +157,14 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         switch (item.getItemId()) {
             case android.R.id.home:
                 onUpPressed();
+                return true;
+            case R.id.action_user_link:
+                if(mUserAdapter.getUser() != null) {
+                    String url = mUserAdapter.getUser().getLink();
+                    Intent linkIntent = new Intent(Intent.ACTION_VIEW);
+                    linkIntent.setData(Uri.parse(url));
+                    startActivity(linkIntent);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -169,7 +186,25 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         }
     }
 
-    @Override
+    public void loadUser(){
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<ResponseArray<UserDetail>> organizationObservable =
+                apiService.getUser(EvendateAccountManager.peekToken(this),
+                        userId, UserDetail.FIELDS_LIST);
+
+        organizationObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    if(result.isOk())
+                        onLoaded(result.getData());
+                    else
+                        Log.e(LOG_TAG, "Error with response with user");
+                }, error -> {
+                    Log.e(LOG_TAG, error.getMessage());
+                    onError();
+                });
+    }
+
     public void onLoaded(ArrayList<UserDetail> users) {
         mUserAdapter.setUser(users.get(0));
         mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, mUserAdapter.getUser());
@@ -178,18 +213,14 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
         mProgressBar.setVisibility(View.GONE);
     }
 
-    @Override
     public void onError() {
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mLoader.startLoading();
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(this, (DialogInterface dialog, int which) -> {
+                loadUser();
                 mProgressBar.setVisibility(View.VISIBLE);
                 dialog.dismiss();
-            }
         });
-        dialog.show();
+        alertDialog.show();
     }
 
     private class UserAdapter {
@@ -226,7 +257,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
                     .load(mUserDetail.getAvatarUrl())
-                    .error(R.drawable.default_background)
+                    .error(R.drawable.evendate_logo)
                     .into(target);
         }
     }
@@ -266,7 +297,6 @@ public class UserProfileActivity extends AppCompatActivity implements LoaderList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoader.cancelLoad();
         mDrawer.cancel();
     }
 }

@@ -59,11 +59,33 @@
             android:name=".ui.EventDetailActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="evendate.ru"
+                    android:pathPrefix="/event/" />
+                <data android:scheme="https"
+                    android:host="evendate.ru"
+                    android:pathPrefix="/event/" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.OrganizationDetailActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="evendate.ru"
+                    android:pathPrefix="/organization/" />
+                <data android:scheme="https"
+                    android:host="evendate.ru"
+                    android:pathPrefix="/organization/" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.UserListActivity"

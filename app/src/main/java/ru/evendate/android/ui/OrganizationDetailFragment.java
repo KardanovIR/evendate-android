@@ -21,14 +21,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
 import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -47,7 +46,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,14 +59,13 @@ import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.loaders.LoaderListener;
-import ru.evendate.android.loaders.SubOrganizationLoader;
 import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -145,7 +142,7 @@ public class OrganizationDetailFragment extends Fragment implements
         initRecyclerView();
 
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
 
         mOrganizationImageContainer.setVisibility(View.INVISIBLE);
         mBackgroundView.setVisibility(View.INVISIBLE);
@@ -306,12 +303,11 @@ public class OrganizationDetailFragment extends Fragment implements
         organizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
                     onLoaded(new ArrayList<>(result.getData()));
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "Complete!"));
+                });
     }
 
     private void loadEvents(){
@@ -338,20 +334,31 @@ public class OrganizationDetailFragment extends Fragment implements
      */
     public void onSubscribed() {
         OrganizationDetail organization = mAdapter.getOrganization();
-        SubOrganizationLoader subOrganizationLoader = new SubOrganizationLoader(getActivity(),
-                organization, organization.isSubscribed());
-        subOrganizationLoader.setLoaderListener(new LoaderListener<ArrayList<Void>>() {
-            @Override
-            public void onLoaded(ArrayList<Void> subList) {
 
-            }
+        ApiService apiService = ApiFactory.getEvendateService();
+        Observable<Response> subOrganizationObservable;
 
-            @Override
-            public void onError() {
-                Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (organization.isSubscribed()) {
+            subOrganizationObservable = apiService.orgDeleteSubscription(organization.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        } else {
+            subOrganizationObservable = apiService.orgPostSubscription(organization.getEntryId(),
+                    EvendateAccountManager.peekToken(getActivity()));
+        }
+        subOrganizationObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    if(result.isOk())
+                        Log.i(LOG_TAG, "subscription applied");
+                    else
+                        Log.e(LOG_TAG, "Error with response with organization sub");
+                }, error -> {
+                    Log.e(LOG_TAG, error.getMessage());
+                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
+                });
+
         organization.subscribe();
+
         Tracker tracker = EvendateApplication.getTracker();
         HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
                 .setCategory(getActivity().getString(R.string.stat_category_organization))
@@ -364,10 +371,11 @@ public class OrganizationDetailFragment extends Fragment implements
             Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
         tracker.send(event.build());
-        subOrganizationLoader.startLoading();
     }
 
     private void revealView(View view){
+        if(!isAdded())
+            return;
         if(view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);
@@ -401,7 +409,7 @@ public class OrganizationDetailFragment extends Fragment implements
         Intent intent = new Intent(getContext(), UserListActivity.class);
         intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getOrganization().getEntryId())).build());
-        intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.organization.nativeInt);
+        intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
         if(Build.VERSION.SDK_INT >= 21){
             getActivity().startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());

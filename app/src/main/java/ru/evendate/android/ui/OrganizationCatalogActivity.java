@@ -1,12 +1,16 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -80,19 +84,23 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
-    private void initRecyclerView(){
+
+    private void initRecyclerView() {
         mAdapter = new OrganizationCategoryAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-    private void initFAB(){
+
+    private void initFAB() {
         mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
     }
-    private void initProgressBar(){
+
+    private void initProgressBar() {
         mProgressBar.getProgressDrawable()
-                .setColorFilter(getResources().getColor(R.color.accent), PorterDuff.Mode.SRC_IN);
+                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
     }
-    private void initDrawer(){
+
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
@@ -135,11 +143,11 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     public void onStop() {
         super.onStop();
         mDrawer.cancel();
-        if(errorDialog != null)
+        if (errorDialog != null)
             errorDialog.dismiss();
     }
 
-    private void loadCatalog(){
+    private void loadCatalog() {
         ApiService apiService = ApiFactory.getEvendateService();
         Observable<ResponseArray<OrganizationCategory>> observable =
                 apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationCategory.FIELDS_LIST);
@@ -170,12 +178,14 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         errorDialog.show();
     }
 
-    private void displayProgress(){
+    private void displayProgress() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
-    private void hideProgress(){
+
+    private void hideProgress() {
         mProgressBar.setVisibility(View.GONE);
     }
+
 
     @SuppressWarnings("unused")
     @OnClick(R.id.fab)

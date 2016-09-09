@@ -52,7 +52,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.HOST_NAME + "/vkOauthDone.php?mobile=true&response_type=token";
     private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.HOST_NAME + "/fbOauthDone.php?mobile=true";
-    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.HOST_NAME + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    public static final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.HOST_NAME + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
 
     private final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
 
@@ -62,9 +62,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
 
-    public final String APP_PREF = "evendate_pref";
-    public final String FIRST_RUN = "first_run";
     private boolean introViewed = false;
+    private boolean isGoogleServicesAvailable = false;
 
     GoogleApiClient apiClient;
     private ProgressDialog mProgressDialog;
@@ -83,6 +82,25 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         initTransitions();
         apiClient = initGoogleApiClient();
         deletedOldAccount();
+
+        if(checkPlayServicesExists()) {
+            isGoogleServicesAvailable = true;
+            apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
+                            (@NonNull Status status) -> hideProgressDialog()
+                    );
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+                    hideProgressDialog();
+                }
+            });
+            showProgressDialog();
+            apiClient.connect();
+        }
     }
 
     private void initTransitions(){
@@ -115,23 +133,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onStart() {
         super.onStart();
 
-        if(checkPlayServicesExists()) {
-            apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                @Override
-                public void onConnected(@Nullable Bundle bundle) {
-                    Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
-                            (@NonNull Status status) -> hideProgressDialog()
-                    );
-                }
-
-                @Override
-                public void onConnectionSuspended(int i) {
-                    hideProgressDialog();
-                }
-            });
-            showProgressDialog();
-            apiClient.connect();
-        }
         if(!introViewed)
             startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
@@ -179,8 +180,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 startWebAuth(FB_URL);
                 break;
             case R.id.sing_in_google_button:
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
-                startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                if (isGoogleServicesAvailable) {
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+                    startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                } else {
+                    startWebAuth(GOOGLE_URL);
+                }
         }
     }
 
