@@ -229,7 +229,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
 
         Observable<ResponseArray<EventDetail>> observable =
                 apiService.findEvents(EvendateAccountManager.peekToken(this), query, true,
-                        EventDetail.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                        EventDetail.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
