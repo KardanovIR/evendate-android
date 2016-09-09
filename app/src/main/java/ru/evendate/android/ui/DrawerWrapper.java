@@ -66,16 +66,12 @@ public class DrawerWrapper {
 
         //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
-                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
-                    return true;
-                });
+                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> true);
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
                 .withHeaderBackground(R.drawable.gradient_profile)
-                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> {
-                    return false;
-                })
+                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> false)
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
                 .withProfileImagesClickable(false)

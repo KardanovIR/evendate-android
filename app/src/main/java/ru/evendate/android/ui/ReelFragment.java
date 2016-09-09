@@ -48,7 +48,7 @@ import rx.schedulers.Schedulers;
 public class ReelFragment extends Fragment implements AdapterController.AdapterContext{
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
-    @Bind(R.id.recyclerView) android.support.v7.widget.RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     boolean refreshTurnOn = false;

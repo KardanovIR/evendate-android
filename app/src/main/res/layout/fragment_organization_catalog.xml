@@ -8,7 +8,7 @@
     android:background="@color/window_reel_background">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/item_organization_category"/>
@@ -19,11 +19,11 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:progressDrawable="@drawable/circular_progress_bar"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycle_view"
         app:layout_anchorGravity="center|top"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycle_view"
         app:layout_anchorGravity="end|bottom|right"
         android:clickable="true"
         android:layout_height="wrap_content"

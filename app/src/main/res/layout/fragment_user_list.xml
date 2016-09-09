@@ -28,7 +28,7 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_gravity="center_horizontal|top"
         tools:listitem="@layout/item_user_list"
         android:background="@color/window_reel_background"/>

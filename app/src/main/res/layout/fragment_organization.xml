@@ -25,7 +25,7 @@
             android:background="@drawable/toolbar_gradient"/>
     </FrameLayout>
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:progressDrawable="@drawable/circular_progress_bar"
         android:visibility="gone"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycle_view"
         app:layout_anchorGravity="center"
         tools:visibility="visible"/>
 

@@ -192,4 +192,11 @@
 
     <string name="toast_notification_event_started">The event has already started</string>
 
+    <!-- search strings -->
+    <string name="search_hint">Search</string>
+    <string name="search_cap_hint">Begin your search by typing a query into the search box</string>
+    <string name="search_empty_org_header"></string>
+    <string name="search_empty_org_desc"></string>
+    <string name="search_empty_event_header"></string>
+    <string name="search_empty_event_desc"></string>
 </resources>

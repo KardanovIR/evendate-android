@@ -121,4 +121,9 @@
     <string name="title_activity_friends">Друзья</string>
     <string name="toast_notification_event_started">Событие уже началось</string>
     <string name="users_empty_text">Нет пользователей</string>
+    <string name="search_cap_hint">Начните поиск, введя запрос в строку поиска</string>
+    <string name="search_empty_event_desc"></string>
+    <string name="search_empty_event_header">События не найдены</string>
+    <string name="search_empty_org_header">Организации не найдены</string>
+    <string name="search_empty_org_desc"></string>
 </resources>

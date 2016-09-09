@@ -78,7 +78,7 @@ public class OrganizationDetailFragment extends Fragment implements
         OrganizationEventsAdapter.OrganizationCardController, AdapterController.AdapterContext{
     private final String LOG_TAG = "OrganizationFragment";
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.organization_image_container) View mOrganizationImageContainer;
 
