@@ -396,7 +396,7 @@ public class EventDetailFragment extends Fragment{
                 return;
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
-            mTitleTextView.setText(mEvent.getTitle());
+            setAdaptiveTitle();
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
             final Target target = new Target() {
@@ -453,7 +453,14 @@ public class EventDetailFragment extends Fragment{
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
                     eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }
-
+        private void setAdaptiveTitle(){
+            String title = mEvent.getTitle();
+            if(title.length() > 24)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            if(title.length() > 64)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            mTitleTextView.setText(mEvent.getTitle());
+        }
         private void setDates(){
             if (mEvent.isSameTime()) {
                 mDatesLightView.setVisibility(View.VISIBLE);

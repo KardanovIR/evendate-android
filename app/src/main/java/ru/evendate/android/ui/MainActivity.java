@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
         checkAccount();
 
-        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
-        mDrawer.start();
     }
 
     private void initToolbar() {
@@ -76,6 +74,14 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //TODO cause auth flow
+        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
+        mDrawer.start();
     }
 
     @Override

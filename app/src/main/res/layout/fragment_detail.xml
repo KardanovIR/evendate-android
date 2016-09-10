@@ -67,7 +67,7 @@
                     android:textColor="#fff"
                     android:layout_marginLeft="16dp"
                     tools:text="Drake Moscow 2016"
-                    android:textSize="22sp"
+                    android:textSize="24sp"
                     android:textIsSelectable="false"
                     android:layout_marginRight="64dp"
                     android:fontFamily="sans-serif"
