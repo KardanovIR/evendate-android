@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import butterknife.Bind;
@@ -137,9 +136,8 @@ public class UserListFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         hideCap();
 
         switch (UserListFragment.TypeFormat.getType(type)){

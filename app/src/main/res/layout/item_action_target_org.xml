@@ -13,7 +13,7 @@
         android:id="@+id/action_target_image"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        tools:src="@drawable/evendate_logo"
+        tools:src="@mipmap/ic_launcher"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"

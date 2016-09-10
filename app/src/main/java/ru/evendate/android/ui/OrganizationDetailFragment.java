@@ -153,7 +153,7 @@ public class OrganizationDetailFragment extends Fragment implements
         mToolbar.setTitle("");
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
@@ -274,8 +274,8 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         loadOrg();
         mDrawer.start();
     }

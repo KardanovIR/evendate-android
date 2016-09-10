@@ -10,15 +10,10 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,7 +103,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (holder.mOrganizationLogo != null)
             Picasso.with(mContext)
                     .load(eventEntry.getOrganizationLogoSmallUrl())
-                    .error(R.drawable.evendate_logo)
+                    .error(R.mipmap.ic_launcher)
                     .into(holder.mOrganizationLogo);
         if(holder.mPriceTextView != null)
             holder.mPriceTextView.setText(eventEntry.isFree() ?

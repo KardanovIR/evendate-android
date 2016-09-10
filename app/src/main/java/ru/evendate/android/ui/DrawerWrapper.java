@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 
@@ -47,15 +48,17 @@ public class DrawerWrapper {
     final static int FRIENDS_IDENTIFIER = 4;
     Context mContext;
 
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
-            .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
+            .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
-            .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
+            .withIcon(R.drawable.ic_insert_invitation_black).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
-            .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
+            .withIcon(R.drawable.ic_account_balance_black).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.title_activity_friends)
-            .withIcon(R.drawable.friends_icon).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
-
+            .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
@@ -159,9 +162,10 @@ public class DrawerWrapper {
                         getAccountHeader().addProfiles(
                                 new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
                                         .withEmail(account.name)
+                                        .withIcon(R.drawable.ic_avatar_cap)
                                         .withIcon(user.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.log_out))
-                                        .withIcon(R.drawable.exit_icon)
+                                        .withIcon(R.drawable.ic_exit_to_app_black)
                                         .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
                                                 EvendateAccountManager.deleteAccount(mContext);
                                                 //todo ditch

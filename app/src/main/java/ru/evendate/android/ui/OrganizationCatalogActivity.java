@@ -1,13 +1,10 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -73,7 +70,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
 
@@ -84,7 +81,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void initFAB() {
-        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
+        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white));
     }
 
     private void initProgressBar() {

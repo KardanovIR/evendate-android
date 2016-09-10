@@ -32,8 +32,9 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
             app:layout_collapseMode="pin"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             />
     </android.support.design.widget.AppBarLayout>
 

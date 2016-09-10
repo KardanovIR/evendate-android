@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -225,6 +226,7 @@ public class EventDetailFragment extends Fragment{
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
@@ -327,8 +329,8 @@ public class EventDetailFragment extends Fragment{
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         loadEvent();
         mDrawer.start();
     }
@@ -471,11 +473,10 @@ public class EventDetailFragment extends Fragment{
             mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
-            mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_grade_white_48dp));
+            mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
         } else {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            Drawable drawable = getResources().getDrawable(R.drawable.ic_star_contur);
-            mFAB.setImageDrawable(drawable);
+            mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border));
         }
     }
 

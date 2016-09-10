@@ -93,7 +93,7 @@ public class UsersView extends LinearLayout {
         for (int i = 0; i < userLimit; i++) {
             CircleImageView circleImageView = new CircleImageView(getContext());
             circleImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            circleImageView.setImageResource(R.drawable.butterfly);
+            circleImageView.setImageResource(R.mipmap.ic_launcher);
             circleImageView.setMinimumWidth(getHeight());
             circleImageView.setBorderWidth(2);
             circleImageView.setBorderColor(Color.WHITE);

@@ -31,7 +31,7 @@
                     android:id="@+id/event_organization_icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    tools:src="@drawable/evendate_logo"
+                    tools:src="@mipmap/ic_launcher"
                     android:padding="8dp" />
             </FrameLayout>
             <TextView

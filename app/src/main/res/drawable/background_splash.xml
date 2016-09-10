@@ -4,7 +4,7 @@
     <item
         android:drawable="@color/primary"/>
 
-    <item>
+    <item android:bottom="@dimen/splash_logo_margin_bottom">
         <bitmap
             android:gravity="center"
             android:src="@drawable/logo_outlines"/>
