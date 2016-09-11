@@ -65,7 +65,7 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
     private void initDrawer(){
@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity {
                 //LayoutInflater factory = LayoutInflater.from(context);
                 //final View view = factory.inflate(R.layout.dialog_version, null);
                 //builder.setView(view);
-                builder.setIcon(R.drawable.evendate_logo);
+                builder.setIcon(R.mipmap.ic_launcher);
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 return true;

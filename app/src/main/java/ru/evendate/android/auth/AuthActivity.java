@@ -4,15 +4,14 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
@@ -52,9 +51,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     private String VK_URL;
     private String FB_URL;
-    private String GOOGLE_URL;
 
-    private final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
+    private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
 
     static public String URL_KEY = "url";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
@@ -109,8 +107,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         //todo change to https (when move testing to prod server?)
         VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.getHostName(this) + "/vkOauthDone.php?mobile=true&response_type=token";
         FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
-        GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(this) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
 
+    }
+    public static String getGoogleUrl(Context context){
+        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
     }
 
     private void initTransitions(){
@@ -194,7 +194,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
                     startActivityForResult(signInIntent, REQUEST_SIGN_IN);
                 } else {
-                    startWebAuth(GOOGLE_URL);
+                    startWebAuth(getGoogleUrl(this));
                 }
         }
     }

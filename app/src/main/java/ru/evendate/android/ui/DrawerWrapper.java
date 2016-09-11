@@ -52,16 +52,16 @@ public class DrawerWrapper {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
-    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
+    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
+    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
             .withIcon(R.drawable.ic_insert_invitation_black).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.drawer_organizations)
             .withIcon(R.drawable.ic_account_balance_black).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.title_activity_friends)
+    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.drawer_friends)
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
-            .withIcon(R.drawable.settings_icon).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
+            .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
@@ -69,19 +69,13 @@ public class DrawerWrapper {
     }
 
     public static DrawerWrapper newInstance(Activity context) {
-
-        //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
-                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
-                    return true;
-                });
+                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> true);
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
                 .withHeaderBackground(R.drawable.gradient_profile)
-                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> {
-                    return false;
-                })
+                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> false)
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
                 .withProfileImagesClickable(false)
@@ -169,7 +163,7 @@ public class DrawerWrapper {
                                         .withIcon(R.drawable.ic_avatar_cap)
                                         .withIcon(user.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
-                                        .withIcon(R.drawable.exit_icon)
+                                        .withIcon(R.drawable.ic_exit_to_app_black)
                                         .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) ->{
                                             EvendateAccountManager.deleteAccount(mContext);
                                             //todo ditch

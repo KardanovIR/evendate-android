@@ -62,7 +62,7 @@ public class WebAuthActivity extends AppCompatActivity {
     private void initProgressBar() {
         mProgressBar.getProgressDrawable()
                 .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
-        if(!mUrl.equals(AuthActivity.GOOGLE_URL))
+        if(!mUrl.equals(AuthActivity.getGoogleUrl(this)))
             mProgressBar.setVisibility(View.VISIBLE);
     }
 

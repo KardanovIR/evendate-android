@@ -58,13 +58,8 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
             android:background="?attr/colorPrimary"
-            app:tabTextColor="#AAFFFFFF"
-            app:tabSelectedTextColor="@color/text_primary"
-            app:tabIndicatorColor="#FFFFFF"
-            app:tabIndicatorHeight="2dp"
+            android:theme="@style/TabStyle"
             />
     </android.support.design.widget.AppBarLayout>
     <FrameLayout
