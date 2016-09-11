@@ -24,12 +24,11 @@ public class SplashActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, MainActivity.class);
 
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setAllowEnterTransitionOverlap(true);
             getWindow().setExitTransition(new Fade());
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        }
-        else
+        } else
             startActivity(intent);
         finish();
     }

@@ -24,7 +24,7 @@ import ru.evendate.android.R;
 public class WebAuthActivity extends AppCompatActivity {
     private final String LOG_TAG = WebAuthActivity.class.getSimpleName();
 
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.auth_web_view) WebView mWebView;
     private String mUrl;
 
@@ -62,7 +62,7 @@ public class WebAuthActivity extends AppCompatActivity {
     private void initProgressBar() {
         mProgressBar.getProgressDrawable()
                 .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
-        if(!mUrl.equals(AuthActivity.getGoogleUrl(this)))
+        if (!mUrl.equals(AuthActivity.getGoogleUrl(this)))
             mProgressBar.setVisibility(View.VISIBLE);
     }
 
@@ -113,13 +113,13 @@ public class WebAuthActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
 
-        private String retrieveToken(String query){
+        private String retrieveToken(String query) {
             int start = query.indexOf("=");
             int end = query.indexOf("&");
             return query.substring(start + 1, end);
         }
 
-        private String retrieveEmail(String query){
+        private String retrieveEmail(String query) {
             return query.substring(query.lastIndexOf("=") + 1);
         }
     }

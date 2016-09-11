@@ -85,6 +85,7 @@ public interface ApiService {
             @Query("length") int length,
             @Query("offset") int offset
     );
+
     /**
      * Get recommended events
      */
@@ -107,6 +108,7 @@ public interface ApiService {
     Observable<Response> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
+
     @POST(API_PATH + "/events/{id}/favorites")
     Observable<Response> likeEvent(
             @Path("id") int eventId, @Header("Authorization") String authorization

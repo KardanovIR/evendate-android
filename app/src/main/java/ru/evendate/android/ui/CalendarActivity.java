@@ -93,6 +93,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mDrawer.start();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);

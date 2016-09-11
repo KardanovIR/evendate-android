@@ -75,7 +75,7 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
             if (v == holderView) {
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(Build.VERSION.SDK_INT > 21)
+                if (Build.VERSION.SDK_INT > 21)
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
                 else

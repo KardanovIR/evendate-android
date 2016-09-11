@@ -14,15 +14,12 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import ru.evendate.android.ui.SettingsActivity;
 
-/**
- * Created by Dmitry on 18.10.2015.
- */
 public class ApiFactory {
 
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
-    private static final String HOST_NAME = "test.evendate.ru";
+    private static final String HOST_NAME = "evendate.ru";
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
 
@@ -46,13 +43,12 @@ public class ApiFactory {
                 .client(CLIENT).build();
     }
 
-    public static String getHostName(Context context){
+    public static String getHostName(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         boolean https = sp.getBoolean(SettingsActivity.KEY_HTTPS, SettingsActivity.KEY_HTTPS_DEFAULT);
-        if(https) {
+        if (https) {
             return "https://" + HOST_NAME;
-        }
-        else {
+        } else {
             return "http://" + HOST_NAME;
         }
     }

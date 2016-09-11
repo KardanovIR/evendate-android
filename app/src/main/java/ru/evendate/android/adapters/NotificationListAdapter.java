@@ -71,13 +71,14 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         }
 
         static public NotificationType getType(String pType) {
-            for (NotificationType type: NotificationType.values()) {
+            for (NotificationType type : NotificationType.values()) {
                 if (type.type().equals(pType)) {
                     return type;
                 }
             }
             return NOTIFICATION_UNDEFINED;
         }
+
         public String type() {
             return type;
         }
@@ -94,11 +95,11 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             type = notificationType;
         }
 
-        public boolean checkNotificationAble(EventDetail event){
+        public boolean checkNotificationAble(EventDetail event) {
             Date date = new Date(event.getFirstDate() * 1000);
             Calendar notificationTime = Calendar.getInstance();
             notificationTime.setTime(date);
-            switch (NotificationType.getType(type)){
+            switch (NotificationType.getType(type)) {
                 case BEFORE_THREE_HOURS:
                     notificationTime.add(Calendar.HOUR, -3);
                     break;
@@ -127,16 +128,16 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         ViewHolder holder;
         View rowView = convertView;
         if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
+            LayoutInflater inflater = (LayoutInflater)context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.item_multichoice, parent, false);
             holder = new ViewHolder();
             holder.holderView = rowView;
-            holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
-            holder.textView = (TextView) rowView.findViewById(R.id.tv_checkboxtext);
+            holder.checkBox = (CheckBox)rowView.findViewById(R.id.checkBox);
+            holder.textView = (TextView)rowView.findViewById(R.id.tv_checkboxtext);
             rowView.setTag(holder);
         } else {
-            holder = (ViewHolder) rowView.getTag();
+            holder = (ViewHolder)rowView.getTag();
             holder.checkBox.setOnCheckedChangeListener(null);
             holder.holderView.setOnClickListener(null);
         }
@@ -147,7 +148,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             notification.newChecked = b;
             notification.changed = true;
         });
-        if(!notification.checkNotificationAble(mEvent)){
+        if (!notification.checkNotificationAble(mEvent)) {
             holder.checkBox.setEnabled(false);
             holder.holderView.setOnClickListener((View v) -> toastEventStarted());
         }
@@ -155,8 +156,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         return rowView;
     }
 
-    String getTypeString(Notification notification){
-        switch (NotificationType.getType(notification.type)){
+    String getTypeString(Notification notification) {
+        switch (NotificationType.getType(notification.type)) {
             case BEFORE_THREE_HOURS:
                 return context.getString(R.string.notification_before_three_hours);
             case BEFORE_DAY:
@@ -172,21 +173,22 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         }
         return null;
     }
-    String formatNotificationTime(long timeInMillis){
+
+    String formatNotificationTime(long timeInMillis) {
         DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date(timeInMillis));
     }
 
-    private void toastEventStarted(){
+    private void toastEventStarted() {
         Toast.makeText(context, context.getString(R.string.toast_notification_event_started), Toast.LENGTH_SHORT).show();
     }
 
-    public void update(){
+    public void update() {
         for (Notification notification : notifications) {
-            if(!notification.changed && notification.newChecked == null)
+            if (!notification.changed && notification.newChecked == null)
                 continue;
-            if(notification.newChecked){
+            if (notification.newChecked) {
                 ApiService apiService = ApiFactory.getService(context);
 
                 Observable<Response> notificationObservable =
@@ -196,9 +198,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                         .subscribe(result -> Log.i(LOG_TAG, "notification added"),
                                 error -> Log.e(LOG_TAG, error.getMessage()),
                                 () -> Log.i(LOG_TAG, "completed"));
-            }
-            else{
-                if(notification.notification == null)
+            } else {
+                if (notification.notification == null)
                     return;
                 ApiService apiService = ApiFactory.getService(context);
 

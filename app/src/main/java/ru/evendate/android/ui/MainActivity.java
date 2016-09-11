@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

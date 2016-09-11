@@ -24,7 +24,6 @@
         android:layout_width="276dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_alignParentEnd="false"
         android:paddingBottom="64dp">
 
         <TextView
@@ -46,8 +45,8 @@
             android:fontFamily="sans-serif"
             android:textSize="14sp"
             android:textColor="#222"
-            android:gravity="center_horizontal"
-            android:text="@string/search_cap_hint" />
+            android:gravity="center"
+            android:text="@string/search_cap_hint"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

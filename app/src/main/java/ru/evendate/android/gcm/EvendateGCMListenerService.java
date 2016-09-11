@@ -123,13 +123,13 @@ public class EvendateGCMListenerService extends GcmListenerService {
         int accentColor = ContextCompat.getColor(getBaseContext(), R.color.accent);
 
         notificationBuilder.setColor(accentColor);
-        if(isVibrateOn()) {
+        if (isVibrateOn()) {
             notificationBuilder.setVibrate(new long[]{200, 500, 200, 500});
         }
-        if(isLedOn()){
+        if (isLedOn()) {
             notificationBuilder.setLights(getLedColor(), 1000, 200);
         }
-        if(!isNotificationOn()) {
+        if (!isNotificationOn()) {
             return;
         }
 
@@ -145,25 +145,29 @@ public class EvendateGCMListenerService extends GcmListenerService {
             icon = Picasso.with(getBaseContext())
                     .load(imageUrl)
                     .get();
-        } catch (IOException|IllegalStateException e) {
+        } catch (IOException | IllegalStateException e) {
             icon = null;
         }
         return icon;
     }
 
-    private boolean isVibrateOn(){
+    private boolean isVibrateOn() {
         return getPreferences().getBoolean(SettingsActivity.KEY_VIBRATION, SettingsActivity.KEY_VIBRATION_DEFAULT);
     }
-    private boolean isNotificationOn(){
+
+    private boolean isNotificationOn() {
         return getPreferences().getBoolean(SettingsActivity.KEY_NOTIFICATION, SettingsActivity.KEY_NOTIFICATION_DEFAULT);
     }
-    private boolean isLedOn(){
+
+    private boolean isLedOn() {
         return getPreferences().getBoolean(SettingsActivity.KEY_INDICATOR, SettingsActivity.KEY_INDICATOR_DEFAULT);
     }
-    private int getLedColor(){
+
+    private int getLedColor() {
         return getPreferences().getInt(SettingsActivity.KEY_INDICATOR_COLOR, SettingsActivity.KEY_INDICATOR_COLOR_DEFAULT);
     }
-    private SharedPreferences getPreferences(){
+
+    private SharedPreferences getPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     }
 }

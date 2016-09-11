@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/item_organization_category"/>
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

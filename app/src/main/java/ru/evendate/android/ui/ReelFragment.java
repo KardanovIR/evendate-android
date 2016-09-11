@@ -46,12 +46,12 @@ import rx.schedulers.Schedulers;
  * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment implements AdapterController.AdapterContext{
+public class ReelFragment extends Fragment implements AdapterController.AdapterContext {
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     boolean refreshTurnOn = false;
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
@@ -85,13 +85,14 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         }
 
         static public ReelType getType(int pType) {
-            for (ReelType type: ReelType.values()) {
+            for (ReelType type : ReelType.values()) {
                 if (type.type() == pType) {
                     return type;
                 }
             }
             throw new RuntimeException("unknown type");
         }
+
         public int type() {
             return type;
         }
@@ -165,13 +166,13 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         if (!refreshTurnOn)
             mSwipeRefreshLayout.setEnabled(false);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-                mAdapterController.reset();
-                loadEvents();
-                if (mRefreshListenerList != null) {
-                    for (OnRefreshListener listener : mRefreshListenerList) {
-                        listener.onRefresh();
-                    }
+            mAdapterController.reset();
+            loadEvents();
+            if (mRefreshListenerList != null) {
+                for (OnRefreshListener listener : mRefreshListenerList) {
+                    listener.onRefresh();
                 }
+            }
         });
     }
 
@@ -196,7 +197,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mRecyclerView.setItemAnimator(new LandingAnimator());
     }
 
-    private void setCap(){
+    private void setCap() {
         ReelType reelType = ReelType.getType(type);
         if (reelType == ReelType.FEED) {
             mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
@@ -251,7 +252,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
-    private void loadEvents(){
+    private void loadEvents() {
         hideCap();
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> observable;
@@ -259,13 +260,24 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         final int length = mAdapterController.getLength();
         final int offset = mAdapterController.getOffset();
 
-        switch (ReelType.getType(type)){
-            case FEED: observable = getFeed(apiService, length, offset); break;
-            case FAVORITES: observable = getFavorite(apiService, length, offset); break;
-            case ORGANIZATION: observable = getOrgEvent(apiService, length, offset, organizationId); break;
-            case CALENDAR: observable = getCalendarEvent(apiService, length, offset, mDate); break;
-            case RECOMMENDATION: observable = getRecommendation(apiService, length, offset); break;
-            default: throw new RuntimeException("unknown type");
+        switch (ReelType.getType(type)) {
+            case FEED:
+                observable = getFeed(apiService, length, offset);
+                break;
+            case FAVORITES:
+                observable = getFavorite(apiService, length, offset);
+                break;
+            case ORGANIZATION:
+                observable = getOrgEvent(apiService, length, offset, organizationId);
+                break;
+            case CALENDAR:
+                observable = getCalendarEvent(apiService, length, offset, mDate);
+                break;
+            case RECOMMENDATION:
+                observable = getRecommendation(apiService, length, offset);
+                break;
+            default:
+                throw new RuntimeException("unknown type");
         }
 
         observable.subscribeOn(Schedulers.newThread())
@@ -281,32 +293,32 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     }
 
     private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
-                                                                     int length, int offset){
+                                                           int length, int offset) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getFavorite(ApiService apiService,
-                                                               int length, int offset){
+                                                               int length, int offset) {
         return apiService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getOrgEvent(
-            ApiService apiService, int length, int offset, int organizationId){
+            ApiService apiService, int length, int offset, int organizationId) {
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                 organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getCalendarEvent(ApiService apiService,
-                                                                      int length, int offset, Date date){
+                                                                    int length, int offset, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
                 dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getRecommendation(ApiService apiService,
-                                                                     int length, int offset){
+                                                                     int length, int offset) {
         return apiService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
@@ -314,8 +326,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     public void onLoaded(ArrayList<EventFeed> events) {
         if (mSwipeRefreshLayout.isRefreshing()) {
             mAdapterController.reloaded(events);
-        }
-        else
+        } else
             mAdapterController.loaded(events);
         mSwipeRefreshLayout.setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
@@ -331,12 +342,12 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         loadEvents();
     }
 
-    private void displayCap(){
+    private void displayCap() {
         mFeedEmptyLayout.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
     }
 
-    private void hideCap(){
+    private void hideCap() {
         mFeedEmptyLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }

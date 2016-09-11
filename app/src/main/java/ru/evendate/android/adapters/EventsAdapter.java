@@ -56,7 +56,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     @Override
     public int getItemViewType(int position) {
         int layoutItemId;
-        switch (ReelFragment.ReelType.getType(type)){
+        switch (ReelFragment.ReelType.getType(type)) {
             case ORGANIZATION:
                 layoutItemId = R.layout.card_event_organization;
                 break;
@@ -72,15 +72,15 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             default:
                 layoutItemId = R.layout.card_event_feed;
         }
-        if(isLoading() && position == super.getItemCount() - 1)
+        if (isLoading() && position == super.getItemCount() - 1)
             layoutItemId = AppendableAdapter.PROGRESS_VIEW_TYPE;
         return layoutItemId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == AppendableAdapter.PROGRESS_VIEW_TYPE)
-            return super.onCreateViewHolder(parent,viewType);
+        if (viewType == AppendableAdapter.PROGRESS_VIEW_TYPE)
+            return super.onCreateViewHolder(parent, viewType);
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
     }
 
@@ -112,7 +112,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                     .load(eventEntry.getOrganizationLogoSmallUrl())
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mOrganizationLogo);
-        if(holder.mPriceTextView != null)
+        if (holder.mPriceTextView != null)
             holder.mPriceTextView.setText(eventEntry.isFree() ?
                     holder.eventFreeLabel : EventFormatter.formatPrice(mContext, eventEntry.getMinPrice()));
     }
@@ -162,11 +162,10 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(event.getEntryId())).build());
-                if(Build.VERSION.SDK_INT >= 21){
+                if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
-                }
-                else
+                } else
                     mContext.startActivity(intent);
             }
         }
@@ -182,14 +181,14 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                         public void onClick(DialogInterface dialog, int which) {
                             String toastText = mContext.getString(R.string.toast_event) +
                                     " «" + mTitleTextView.getText() + "» ";
-                            switch (which){
+                            switch (which) {
                                 case HIDE_ID:
                                     hideEvent(event);
                                     toastText += mContext.getString(R.string.toast_event_hide);
                                     break;
                                 case FAVE_ID:
                                     likeEvent(event);
-                                    if(isFavorited) {
+                                    if (isFavorited) {
                                         toastText += mContext.getString(R.string.toast_event_unfave);
                                     } else {
                                         toastText += mContext.getString(R.string.toast_event_fave);
@@ -205,7 +204,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             return true;
         }
 
-        private CharSequence[] getDialogTextItems(){
+        private CharSequence[] getDialogTextItems() {
             String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
                     mContext.getString(R.string.dialog_event_fave);
             CharSequence[] items = {
@@ -218,7 +217,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     }
 
 
-    private void hideEvent(EventFeed event){
+    private void hideEvent(EventFeed event) {
         ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> hideObservable =
                 apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
@@ -233,11 +232,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         remove(event);
     }
 
-    private void likeEvent(EventFeed event){
+    private void likeEvent(EventFeed event) {
         ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> likeObservable;
         int id = event.getEntryId();
-        if(event.isFavorite()) {
+        if (event.isFavorite()) {
             likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
             Log.i(LOG_TAG, "disliking event " + id);
         } else {

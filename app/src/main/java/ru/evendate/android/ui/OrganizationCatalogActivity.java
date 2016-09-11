@@ -51,7 +51,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     private DrawerWrapper mDrawer;
     AlertDialog errorDialog;
@@ -75,6 +75,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mDrawer.start();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

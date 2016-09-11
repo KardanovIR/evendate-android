@@ -52,6 +52,7 @@ public class DrawerWrapper {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+
     PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
@@ -62,6 +63,7 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
+
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
@@ -164,7 +166,7 @@ public class DrawerWrapper {
                                         .withIcon(user.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
                                         .withIcon(R.drawable.ic_exit_to_app_black)
-                                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) ->{
+                                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
                                             EvendateAccountManager.deleteAccount(mContext);
                                             //todo ditch
                                             ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);

@@ -67,11 +67,10 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
             if (v == holderView) {
                 Intent intent = new Intent(mContext, UserProfileActivity.class);
                 intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
-                if(Build.VERSION.SDK_INT >= 21){
+                if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
-                }
-                else
+                } else
                     mContext.startActivity(intent);
             }
         }

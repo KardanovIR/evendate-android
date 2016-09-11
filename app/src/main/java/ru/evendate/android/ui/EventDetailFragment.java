@@ -112,7 +112,7 @@ public class EventDetailFragment extends Fragment {
 
     private Uri mUri;
     private int eventId;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     private EventAdapter mAdapter;
 
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
@@ -174,7 +174,7 @@ public class EventDetailFragment extends Fragment {
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            if(bitmap == null)
+            if (bitmap == null)
                 return;
             mEventImageView.setImageBitmap(bitmap);
             palette(bitmap);
@@ -209,7 +209,6 @@ public class EventDetailFragment extends Fragment {
         mEventDetailActivity = (EventDetailActivity)getActivity();
     }
 
-    @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -241,19 +240,22 @@ public class EventDetailFragment extends Fragment {
         return rootView;
     }
 
-    private void initToolbar(){
+    @SuppressWarnings("ConstantConditions")
+    private void initToolbar() {
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT >= 21){
+
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT >= 21) {
             getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
             getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
     }
-    private void initFabY(){
+
+    private void initFabY() {
         ViewTreeObserver vto = mCoordinatorLayout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -262,14 +264,14 @@ public class EventDetailFragment extends Fragment {
                 int bottom = mTitleContainer.getBottom();
                 int size = mFAB.getHeight();
                 mFabHeight = bottom - size / 2;
-                if(Build.VERSION.SDK_INT > 19)
+                if (Build.VERSION.SDK_INT > 19)
                     TransitionManager.beginDelayedTransition(mCoordinatorLayout);
                 mFAB.setY(mFabHeight);
             }
         });
     }
 
-    private void initToolbarAndFabAnimation(){
+    private void initToolbarAndFabAnimation() {
         mScrollView.setOverScrollMode(ScrollView.OVER_SCROLL_NEVER);
         mToolbarTitle.setAlpha(0f);
         if (Build.VERSION.SDK_INT >= 21)
@@ -282,7 +284,7 @@ public class EventDetailFragment extends Fragment {
                 } else {
                     animateDisappearToolbar();
                 }
-                if(mScrollView.getScrollY() > 0) {
+                if (mScrollView.getScrollY() > 0) {
                     animateFabDown();
                 } else {
                     animateFabUp();
@@ -292,7 +294,7 @@ public class EventDetailFragment extends Fragment {
         });
     }
 
-    private void animateAppearToolbar(){
+    private void animateAppearToolbar() {
         mToolbar.setBackgroundColor(mColor);
         if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
             mTitleDisappearAnimation.cancel();
@@ -308,7 +310,8 @@ public class EventDetailFragment extends Fragment {
             }
         }
     }
-    private void animateDisappearToolbar(){
+
+    private void animateDisappearToolbar() {
         mToolbar.setBackgroundColor(Color.TRANSPARENT);
         if (mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
             mTitleAppearAnimation.cancel();
@@ -322,18 +325,19 @@ public class EventDetailFragment extends Fragment {
         }
     }
 
-    private void animateFabUp(){
-        if(mFabDownAnimation != null && mFabDownAnimation.isRunning())
+    private void animateFabUp() {
+        if (mFabDownAnimation != null && mFabDownAnimation.isRunning())
             mFabDownAnimation.cancel();
         mFabUpAnimation = ObjectAnimator.ofFloat(mFAB, "y", mFAB.getY(), mFabHeight);
         mFabUpAnimation.setDuration(200);
         mFabUpAnimation.start();
         isFabDown = false;
     }
-    private void animateFabDown(){
-        if(isFabDown)
+
+    private void animateFabDown() {
+        if (isFabDown)
             return;
-        if(mFabUpAnimation != null && mFabUpAnimation.isRunning())
+        if (mFabUpAnimation != null && mFabUpAnimation.isRunning())
             mFabUpAnimation.cancel();
         mFabUpAnimation = ObjectAnimator.ofFloat(mFAB, "translationY", mFAB.getTranslationY(), 0);
         mFabUpAnimation.setDuration(200);
@@ -341,7 +345,7 @@ public class EventDetailFragment extends Fragment {
         isFabDown = true;
     }
 
-    private void paintMask(float scrolled){
+    private void paintMask(float scrolled) {
         int height = mEventImageView.getHeight();
         int maskColor = Color.argb(
                 (int)((scrolled / height) * 255),
@@ -350,7 +354,7 @@ public class EventDetailFragment extends Fragment {
         mEventTitleMask.setBackgroundColor(maskColor);
     }
 
-    private void initDrawer(){
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
@@ -366,28 +370,27 @@ public class EventDetailFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(alertDialog != null)
+        if (alertDialog != null)
             alertDialog.dismiss();
     }
 
-    private void initUserFavoriteCard(){
+    private void initUserFavoriteCard() {
         mUserFavoritedCard.setOnAllButtonListener((View v) -> {
-            if(mAdapter.getEvent() == null)
+            if (mAdapter.getEvent() == null)
                 return;
             Intent intent = new Intent(getContext(), UserListActivity.class);
             intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                        .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+                    .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
             intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.EVENT.type());
-            if(Build.VERSION.SDK_INT >= 21){
+            if (Build.VERSION.SDK_INT >= 21) {
                 getActivity().startActivity(intent,
                         ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-            }
-            else
+            } else
                 getActivity().startActivity(intent);
         });
     }
 
-    public void loadEvent(){
+    public void loadEvent() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
@@ -397,7 +400,7 @@ public class EventDetailFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(result.getData());
                     else
                         onError();
@@ -414,7 +417,7 @@ public class EventDetailFragment extends Fragment {
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         mProgressBar.setVisibility(View.GONE);
-        if(Build.VERSION.SDK_INT > 19)
+        if (Build.VERSION.SDK_INT > 19)
             TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mScrollView.setVisibility(View.VISIBLE);
         mTitleTextView.setVisibility(View.VISIBLE);
@@ -477,15 +480,17 @@ public class EventDetailFragment extends Fragment {
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
                     eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }
-        private void setAdaptiveTitle(){
+
+        private void setAdaptiveTitle() {
             String title = mEvent.getTitle();
-            if(title.length() > 24)
+            if (title.length() > 24)
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            if(title.length() > 64)
+            if (title.length() > 64)
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             mTitleTextView.setText(mEvent.getTitle());
         }
-        private void setDates(){
+
+        private void setDates() {
             if (mEvent.isSameTime()) {
                 mDatesLightView.setVisibility(View.VISIBLE);
                 mEventTimeTextView.setText(EventFormatter.formatEventTime(getContext(), mEvent.getDateList().get(0)));
@@ -499,7 +504,7 @@ public class EventDetailFragment extends Fragment {
     }
 
     private void setFabIcon() {
-        if(!mFAB.isShown())
+        if (!mFAB.isShown())
             mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.accent)));
@@ -511,13 +516,13 @@ public class EventDetailFragment extends Fragment {
         }
     }
 
-    private void revealView(View view){
-        if(!isAdded())
+    private void revealView(View view) {
+        if (!isAdded())
             return;
-        if(view.getVisibility() == View.VISIBLE)
+        if (view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);
-        if(Build.VERSION.SDK_INT < 21)
+        if (Build.VERSION.SDK_INT < 21)
             return;
         int cx = (view.getLeft() + view.getRight()) / 2;
         int cy = (view.getTop() + view.getBottom()) / 2;
@@ -536,17 +541,16 @@ public class EventDetailFragment extends Fragment {
         Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
         intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getActivity().startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-        }
-        else
+        } else
             getActivity().startActivity(intent);
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.event_place_button)
-    public void onPlaceClick(){
+    public void onPlaceClick() {
         Statistics.init(getActivity());
         Statistics.sendEventOpenMap(eventId);
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
@@ -558,10 +562,10 @@ public class EventDetailFragment extends Fragment {
 
     @SuppressWarnings("unused")
     @OnClick(R.id.event_link_card)
-    public void onLinkClick(){
+    public void onLinkClick() {
         Statistics.init(getActivity());
         Statistics.sendEventOpenSite(eventId);
-        if(mAdapter.getEvent() == null)
+        if (mAdapter.getEvent() == null)
             return;
         Intent openLink = new Intent(Intent.ACTION_VIEW);
         openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
@@ -570,15 +574,15 @@ public class EventDetailFragment extends Fragment {
 
     @SuppressWarnings("unused")
     @OnClick(R.id.fab)
-    public void onFabClick(){
-        if(mAdapter.getEvent() == null)
+    public void onFabClick() {
+        if (mAdapter.getEvent() == null)
             return;
         EventDetail event = mAdapter.getEvent();
 
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<Response> LikeEventObservable;
 
-        if (event.isFavorite()){
+        if (event.isFavorite()) {
             LikeEventObservable = apiService.eventDeleteFavorite(event.getEntryId(),
                     EvendateAccountManager.peekToken(getActivity()));
         } else {
@@ -588,7 +592,7 @@ public class EventDetailFragment extends Fragment {
         LikeEventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    if(result.isOk())
+                    if (result.isOk())
                         Log.i(LOG_TAG, "performed like");
                     else
                         Log.e(LOG_TAG, "Error with response with like");
@@ -645,16 +649,15 @@ public class EventDetailFragment extends Fragment {
     }
 
     //TODO DRY
-    private void onUpPressed(){
-        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
+    private void onUpPressed() {
+        ActivityManager activityManager = (ActivityManager)getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
 
-        if(taskList.get(0).numActivities == 1 &&
+        if (taskList.get(0).numActivities == 1 &&
                 taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
             Log.i(LOG_TAG, "This is last activity in the stack");
             getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
-        }
-        else{
+        } else {
             getActivity().onBackPressed();
         }
     }
@@ -692,7 +695,7 @@ public class EventDetailFragment extends Fragment {
     }
 
     public void palette(Bitmap bitmap) {
-        if(!isAdded())
+        if (!isAdded())
             return;
         if (bitmap == null)
             return;
@@ -717,12 +720,6 @@ public class EventDetailFragment extends Fragment {
             window.setStatusBarColor(vibrantDark);
         }
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mDrawer.cancel();
-    }
-
 
     public void loadNotifications() {
         ApiService apiService = ApiFactory.getService(getActivity());
@@ -735,15 +732,15 @@ public class EventDetailFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
-                        initDialog(result.getData());
+                    if (result.isOk())
+                        initNotificationDialog(result.getData());
                 }, error -> {
                     Log.e(LOG_TAG, "Error with response with notification");
                     Log.e(LOG_TAG, error.getMessage());
                 });
     }
 
-    public void initDialog(ArrayList<EventNotification> notifications) {
+    public void initNotificationDialog(ArrayList<EventNotification> notifications) {
         NotificationListAdapter adapter;
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -751,7 +748,7 @@ public class EventDetailFragment extends Fragment {
         alertDialog.setView(convertView);
         alertDialog.setTitle(getString(R.string.action_add_notification));
 
-        ListView lv = (ListView) convertView.findViewById(R.id.listView);
+        ListView lv = (ListView)convertView.findViewById(R.id.listView);
         adapter = new NotificationListAdapter(getActivity(),
                 NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
         lv.setAdapter(adapter);
@@ -773,7 +770,7 @@ public class EventDetailFragment extends Fragment {
     }
 
     public static class DatePickerFragment extends DialogFragment
-        implements DatePickerDialog.OnDateSetListener {
+            implements DatePickerDialog.OnDateSetListener {
         Calendar calendar = Calendar.getInstance();
         int eventId;
         Context context;
@@ -797,7 +794,7 @@ public class EventDetailFragment extends Fragment {
             // Create a new instance of DatePickerDialog and return it
             DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
             pickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
-            return  pickerDialog;
+            return pickerDialog;
         }
 
         public void onDateSet(DatePicker view, final int year, final int month, final int day) {
@@ -816,7 +813,7 @@ public class EventDetailFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(result -> {
                             Log.i(LOG_TAG, "loaded");
-                            if(result.isOk())
+                            if (result.isOk())
                                 //todo update notification list cause new list in return answer
                                 Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
                             else
@@ -824,7 +821,7 @@ public class EventDetailFragment extends Fragment {
                         }, error -> {
                             Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
                             Log.e(LOG_TAG, error.getMessage());
-                        }, () -> Log.i(LOG_TAG, "completed"));
+                        });
             }, 0, 0, true);
             newFragment2.show();
         }

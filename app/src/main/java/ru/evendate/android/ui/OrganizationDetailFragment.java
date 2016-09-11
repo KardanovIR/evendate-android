@@ -75,11 +75,11 @@ import rx.schedulers.Schedulers;
  * Contain details of organization
  */
 public class OrganizationDetailFragment extends Fragment implements
-        OrganizationEventsAdapter.OrganizationCardController, AdapterController.AdapterContext{
+        OrganizationEventsAdapter.OrganizationCardController, AdapterController.AdapterContext {
     private final String LOG_TAG = "OrganizationFragment";
 
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.organization_image_container) View mOrganizationImageContainer;
 
     private int organizationId = -1;
@@ -151,24 +151,29 @@ public class OrganizationDetailFragment extends Fragment implements
         mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
-    private void initToolbar(){
+
+    @SuppressWarnings("ConstantConditions")
+    private void initToolbar() {
         mToolbar.setTitle("");
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT >= 21){
+
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT >= 21) {
             getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
             getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
     }
-    private void initDrawer(){
+
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
-    private void initRecyclerView(){
+
+    private void initRecyclerView() {
         mLayoutManager = new NpaLinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new LandingAnimator());
@@ -177,7 +182,8 @@ public class OrganizationDetailFragment extends Fragment implements
         mRecyclerView.setAdapter(mAdapter);
         initParallax();
     }
-    private void initParallax(){
+
+    private void initParallax() {
         mToolbar.setBackgroundColor(toolbarColor);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -230,6 +236,7 @@ public class OrganizationDetailFragment extends Fragment implements
             }
         });
     }
+
     private boolean checkOrgCardScrolling(RecyclerView recyclerView) {
         float imageHeight = getResources().getDimension(R.dimen.organization_background_height);
         float actionBarHeight = 0;
@@ -241,10 +248,12 @@ public class OrganizationDetailFragment extends Fragment implements
         return mAdapter.getItemViewType(index) == R.layout.card_organization_detail
                 && (Math.abs(recyclerView.computeVerticalScrollOffset()) + actionBarHeight) < imageHeight;
     }
+
     private boolean checkOrgCardVisible() {
         int index = mLayoutManager.findFirstVisibleItemPosition();
         return mAdapter.getItemViewType(index) == R.layout.card_organization_detail;
     }
+
     private void setImageViewY(RecyclerView recyclerView) {
         scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
         if (checkOrgCardVisible()) {
@@ -273,21 +282,20 @@ public class OrganizationDetailFragment extends Fragment implements
     }
 
     //TODO DRY
-    private void onUpPressed(){
-        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
+    private void onUpPressed() {
+        ActivityManager activityManager = (ActivityManager)getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
 
-        if(taskList.get(0).numActivities == 1 &&
+        if (taskList.get(0).numActivities == 1 &&
                 taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
             Log.i(LOG_TAG, "This is last activity in the stack");
             getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
-        }
-        else{
+        } else {
             getActivity().onBackPressed();
         }
     }
 
-    private void loadOrg(){
+    private void loadOrg() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<OrganizationFull>> organizationObservable =
                 apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
@@ -302,7 +310,7 @@ public class OrganizationDetailFragment extends Fragment implements
                 });
     }
 
-    private void loadEvents(){
+    private void loadEvents() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> observable =
                 apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
@@ -340,7 +348,7 @@ public class OrganizationDetailFragment extends Fragment implements
         subOrganizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    if(result.isOk())
+                    if (result.isOk())
                         Log.i(LOG_TAG, "subscription applied");
                     else
                         Log.e(LOG_TAG, "Error with response with organization sub");
@@ -365,13 +373,13 @@ public class OrganizationDetailFragment extends Fragment implements
         tracker.send(event.build());
     }
 
-    private void revealView(View view){
-        if(!isAdded())
+    private void revealView(View view) {
+        if (!isAdded())
             return;
-        if(view.getVisibility() == View.VISIBLE)
+        if (view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);
-        if(Build.VERSION.SDK_INT < 21)
+        if (Build.VERSION.SDK_INT < 21)
             return;
         int cx = (view.getLeft() + view.getRight()) / 2;
         int cy = (view.getTop() + view.getBottom()) / 2;
@@ -402,11 +410,10 @@ public class OrganizationDetailFragment extends Fragment implements
         intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mAdapter.getOrganization().getEntryId())).build());
         intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getActivity().startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-        }
-        else
+        } else
             getActivity().startActivity(intent);
     }
 
@@ -450,9 +457,9 @@ public class OrganizationDetailFragment extends Fragment implements
         mProgressBar.setVisibility(View.GONE);
         alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                 (DialogInterface dialog, int which) -> {
-                        loadOrg();
-                        dialog.dismiss();
-                    }
+                    loadOrg();
+                    dialog.dismiss();
+                }
         );
         mAdapterController.notLoadedCauseError();
         mAdapterController.disableNext();

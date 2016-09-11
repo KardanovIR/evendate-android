@@ -47,11 +47,10 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     }
 
     public void setOrganization(OrganizationDetail organization) {
-        if(mOrganization == null){
+        if (mOrganization == null) {
             mOrganization = organization;
             notifyItemRangeInserted(0, 1);
-        }
-        else{
+        } else {
             mOrganization = organization;
             notifyItemRangeChanged(0, 1);
         }
@@ -100,7 +99,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
                     .error(R.mipmap.ic_launcher)
                     .into(holder.mLogoView);
             holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
-            if(mOrganization.getSubscribedUsersList().size() == 0)
+            if (mOrganization.getSubscribedUsersList().size() == 0)
                 holder.mUserContainer.setVisibility(View.GONE);
 
         } else {

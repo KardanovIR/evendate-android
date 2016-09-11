@@ -80,7 +80,7 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
                 else
                     intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri);
-                if(Build.VERSION.SDK_INT > 21)
+                if (Build.VERSION.SDK_INT > 21)
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
                 else

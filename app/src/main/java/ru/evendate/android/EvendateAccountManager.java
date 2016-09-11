@@ -8,14 +8,11 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
 import ru.evendate.android.auth.AuthActivity;
-import rx.Observable;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 27.01.2016.
@@ -50,13 +47,13 @@ public class EvendateAccountManager {
         return null;
     }
 
-    public static String getActiveAccountName(Context context){
+    public static String getActiveAccountName(Context context) {
         SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
         return sPref.getString(ACTIVE_ACCOUNT_NAME, null);
     }
 
     //save account email into shared preferences to find current account later
-    public static void setActiveAccountName(Context context, String accountName){
+    public static void setActiveAccountName(Context context, String accountName) {
         SharedPreferences sPref = context.getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(ACTIVE_ACCOUNT_NAME, accountName);
@@ -72,7 +69,7 @@ public class EvendateAccountManager {
         Log.i(LOG_TAG, "account removed");
     }
 
-    static  class UnregisterGCMTask extends AsyncTask<Void, Void, Void> {
+    static class UnregisterGCMTask extends AsyncTask<Void, Void, Void> {
         Context context;
 
         public UnregisterGCMTask(Context context) {
@@ -114,27 +111,29 @@ public class EvendateAccountManager {
         accountManager.invalidateAuthToken(context.getString(R.string.account_type), peekToken(context));
     }
 
-    private static void startAuth(Context context){
-        if(!isAuthRunning(context))
+    private static void startAuth(Context context) {
+        if (!isAuthRunning(context))
             context.startActivity(new Intent(context, AuthActivity.class));
     }
 
-    public static void setAuthRunning(Context context){
+    public static void setAuthRunning(Context context) {
         SharedPreferences.Editor edit = getAuthPreference(context).edit();
         edit.putBoolean("active", true);
         edit.apply();
     }
-    public static void setAuthDone(Context context){
+
+    public static void setAuthDone(Context context) {
         SharedPreferences.Editor edit = getAuthPreference(context).edit();
         edit.putBoolean("active", false);
         edit.apply();
     }
-    private static SharedPreferences getAuthPreference(Context context){
+
+    private static SharedPreferences getAuthPreference(Context context) {
         return context.getSharedPreferences("auth", Context.MODE_PRIVATE);
     }
 
     //true cause first start in main activity
-    public static boolean isAuthRunning(Context context){
+    public static boolean isAuthRunning(Context context) {
         return getAuthPreference(context).getBoolean("auth", true);
     }
 }

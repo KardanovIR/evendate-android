@@ -43,7 +43,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class SearchResultsActivity extends AppCompatActivity implements AdapterController.AdapterContext{
+public class SearchResultsActivity extends AppCompatActivity implements AdapterController.AdapterContext {
     private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
 
     String query = "";
@@ -73,17 +73,19 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         }
 
         static public SearchType getType(int pType) {
-            for (SearchType type: SearchType.values()) {
+            for (SearchType type : SearchType.values()) {
                 if (type.type() == pType) {
                     return type;
                 }
             }
             throw new RuntimeException("unknown type");
         }
+
         public int type() {
             return type;
         }
     }
+
     public static final String SEARCH_TYPE = "search_type";
 
     @Override
@@ -98,6 +100,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         handleIntent(getIntent());
         initRecyclerView();
         displayCap();
+
+        mDrawer.start();
     }
 
     @Override
@@ -112,13 +116,12 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
                 Log.d(LOG_TAG, query);
                 this.query = query;
                 setSearchQuery(query);
-            }
-            else{
+            } else {
                 type = SearchType.getType(intent.getIntExtra(SEARCH_TYPE, 0));
             }
         }
-        if(!query.equals("")){
-            if(mAdapterController != null){
+        if (!query.equals("")) {
+            if (mAdapterController != null) {
                 mAdapterController.reset();
                 mAdapter.reset();
             }
@@ -127,6 +130,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -164,8 +168,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        mSearchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         setSearchQuery(query);
@@ -175,15 +179,9 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         return true;
     }
 
-    private void setSearchQuery(String query){
-        if(mSearchView != null)
+    private void setSearchQuery(String query) {
+        if (mSearchView != null)
             mSearchView.setQuery(query, false);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mDrawer.start();
     }
 
     @Override
@@ -196,7 +194,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
     private void loadData() {
         hideCap();
         setCap();
-        switch (type){
+        switch (type) {
             case EVENT:
                 loadEvents();
                 break;
@@ -207,7 +205,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
     }
 
     private void loadOrg() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<OrganizationFull>> observable =
                 apiService.findOrganizations(EvendateAccountManager.peekToken(this), query,
                         OrganizationSubscription.FIELDS_LIST);
@@ -222,7 +220,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
     }
 
     private void loadEvents() {
-        ApiService apiService = ApiFactory.getEvendateService();
+        ApiService apiService = ApiFactory.getService(this);
 
         final int length = mAdapterController.getLength();
         final int offset = mAdapterController.getOffset();
@@ -279,23 +277,23 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterC
         mProgressBar.setVisibility(View.GONE);
     }
 
-    private void setCap(){
-        switch (type){
+    private void setCap() {
+        switch (type) {
             case EVENT:
-                mEmptyDescription.setText(getResources().getString(R.string.search_empty_event_desc));
+                mEmptyDescription.setText(getResources().getString(R.string.search_empty_event_header));
                 break;
             case ORGANIZATION:
-                mEmptyDescription.setText(getResources().getString(R.string.search_empty_org_desc));
+                mEmptyDescription.setText(getResources().getString(R.string.search_empty_org_header));
                 break;
         }
     }
 
-    private void displayCap(){
+    private void displayCap() {
         mEmptyLayout.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
     }
 
-    private void hideCap(){
+    private void hideCap() {
         mEmptyLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }

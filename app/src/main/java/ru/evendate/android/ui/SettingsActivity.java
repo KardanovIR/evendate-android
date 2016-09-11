@@ -61,18 +61,21 @@ public class SettingsActivity extends AppCompatActivity {
         mDrawer.start();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
-    private void initDrawer(){
+
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new SettingsNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
+
     private class SettingsNavigationItemClickListener extends NavigationItemSelectedListener {
 
         public SettingsNavigationItemClickListener(Activity context, Drawer drawer) {
@@ -114,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
             notificationObservable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> {
-                        if(result.isOk())
+                        if (result.isOk())
                             feedPrivacyPreference.setChecked(result.getData().get(0).isFeedShowedToFriend());
                     }, error -> {
                         Log.e(LOG_TAG, error.getMessage());
@@ -125,11 +128,11 @@ public class SettingsActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
 
                 builder.setTitle(R.string.settings_dialog_about)
-                    .setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME)
-                    .setPositiveButton(getString(R.string.dialog_ok),
-                            (DialogInterface dialog, int which) -> {
-                                dialog.dismiss();
-                    });
+                        .setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME)
+                        .setPositiveButton(getString(R.string.dialog_ok),
+                                (DialogInterface dialog, int which) -> {
+                                    dialog.dismiss();
+                                });
                 //LayoutInflater factory = LayoutInflater.from(context);
                 //final View view = factory.inflate(R.layout.dialog_version, null);
                 //builder.setView(view);
@@ -154,22 +157,22 @@ public class SettingsActivity extends AppCompatActivity {
                         .density(10)
                         .setPositiveButton(getString(R.string.dialog_ok),
                                 (DialogInterface dialog, int selectedColor, Integer[] allColors) -> {
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putInt(KEY_INDICATOR_COLOR, selectedColor);
-                            editor.commit();
-                            indicatorColor = selectedColor;
-                        })
+                                    SharedPreferences.Editor editor = sp.edit();
+                                    editor.putInt(KEY_INDICATOR_COLOR, selectedColor);
+                                    editor.commit();
+                                    indicatorColor = selectedColor;
+                                })
                         .setNegativeButton(getString(R.string.dialog_cancel),
                                 (DialogInterface dialog, int which) -> {
                                     dialog.cancel();
-                        })
+                                })
                         .build()
                         .show();
                 return true;
             });
         }
 
-        private void updateFeedPrivacy(boolean newValue){
+        private void updateFeedPrivacy(boolean newValue) {
             ApiService apiService = ApiFactory.getService(getActivity());
             Observable<Response> notificationObservable =
                     apiService.setSettings(EvendateAccountManager.peekToken(getActivity()), newValue);

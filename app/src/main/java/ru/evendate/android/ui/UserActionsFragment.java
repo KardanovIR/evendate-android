@@ -43,7 +43,8 @@ public class UserActionsFragment extends Fragment {
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private int userId;
-    @Bind(R.id.progressBarAction) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
+    AlertDialog dialog;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment fragment = new UserActionsFragment();
@@ -58,17 +59,21 @@ public class UserActionsFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         initRecyclerView();
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
+        initProgressBar();
         return rootView;
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new LandingAnimator());
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
+    }
+
+    private void initProgressBar() {
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -77,7 +82,7 @@ public class UserActionsFragment extends Fragment {
         loadActions();
     }
 
-    public void loadActions(){
+    public void loadActions() {
         ApiService evendateService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<Action>> actionObservable =
                 evendateService.getActions(EvendateAccountManager.peekToken(getActivity()),
@@ -87,7 +92,7 @@ public class UserActionsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(result.getData());
                     else
                         onError();
@@ -107,14 +112,17 @@ public class UserActionsFragment extends Fragment {
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                loadActions();
-                dialog.dismiss();
-            }
+        dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), (DialogInterface dialog, int which) -> {
+            loadActions();
+            dialog.dismiss();
         });
         dialog.show();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (dialog != null)
+            dialog.dismiss();
+    }
 }

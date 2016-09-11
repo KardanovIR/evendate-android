@@ -33,9 +33,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by Dmitry on 04.02.2016.
- */
 public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
@@ -47,7 +44,7 @@ public class UserListFragment extends Fragment {
     private int type = 0;
     private int organizationId;
     private int eventId;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.ll_feed_empty) View mFeedEmptyLayout;
 
     public enum TypeFormat {
@@ -56,18 +53,20 @@ public class UserListFragment extends Fragment {
         FRIENDS(2);
 
         final int type;
+
         TypeFormat(int nativeInt) {
             this.type = nativeInt;
         }
 
         static public TypeFormat getType(int pType) {
-            for (TypeFormat type: TypeFormat.values()) {
+            for (TypeFormat type : TypeFormat.values()) {
                 if (type.type() == pType) {
                     return type;
                 }
             }
             throw new RuntimeException("unknown type");
         }
+
         public int type() {
             return type;
         }
@@ -118,8 +117,8 @@ public class UserListFragment extends Fragment {
         return rootView;
     }
 
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT >= 21){
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT >= 21) {
             getActivity().getWindow().setEnterTransition(new Explode());
             getActivity().getWindow().setExitTransition(new Explode());
         }
@@ -140,7 +139,7 @@ public class UserListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         hideCap();
 
-        switch (UserListFragment.TypeFormat.getType(type)){
+        switch (UserListFragment.TypeFormat.getType(type)) {
             case EVENT:
                 loadEvent();
                 break;
@@ -165,7 +164,7 @@ public class UserListFragment extends Fragment {
                     Log.i(LOG_TAG, "loaded");
                     if (!isAdded())
                         return;
-                    if(!result.isOk()){
+                    if (!result.isOk()) {
                         onError();
                         return;
                     }
@@ -190,7 +189,7 @@ public class UserListFragment extends Fragment {
                     Log.i(LOG_TAG, "loaded");
                     if (!isAdded())
                         return;
-                    if(!result.isOk()){
+                    if (!result.isOk()) {
                         onError();
                         return;
                     }
@@ -206,7 +205,7 @@ public class UserListFragment extends Fragment {
                 }, () -> Log.i(LOG_TAG, "completed"));
     }
 
-    private void loadFriends(){
+    private void loadFriends() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<UserDetail>> friendsObservable =
                 apiService.getFriends(EvendateAccountManager.peekToken(getActivity()), UserDetail.FIELDS_LIST);
@@ -217,7 +216,7 @@ public class UserListFragment extends Fragment {
                     Log.i(LOG_TAG, "loaded");
                     if (!isAdded())
                         return;
-                    if(!result.isOk()){
+                    if (!result.isOk()) {
                         onError();
                         return;
                     }
@@ -232,24 +231,24 @@ public class UserListFragment extends Fragment {
                 }, () -> Log.i(LOG_TAG, "completed"));
     }
 
-    private void onError(){
+    private void onError() {
         if (!isAdded())
             return;
         AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                 (DialogInterface dialog, int which) -> {
-                loadEvent();
-                mProgressBar.setVisibility(View.VISIBLE);
-                dialog.dismiss();
-        });
+                    loadEvent();
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    dialog.dismiss();
+                });
         alertDialog.show();
     }
 
-    private void displayCap(){
+    private void displayCap() {
         mFeedEmptyLayout.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
     }
 
-    private void hideCap(){
+    private void hideCap() {
         mFeedEmptyLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
