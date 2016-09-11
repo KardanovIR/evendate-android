@@ -104,7 +104,7 @@ import rx.schedulers.Schedulers;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment{
+public class EventDetailFragment extends Fragment {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -188,33 +188,17 @@ public class EventDetailFragment extends Fragment{
                 .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
         initToolbar();
         initTransitions();
+        initFabY();
         initToolbarAndFabAnimation();
         initUserFavoriteCard();
         initDrawer();
         mAdapter = new EventAdapter();
-        ViewTreeObserver vto = mCoordinatorLayout.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mCoordinatorLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int bottom = mTitleContainer.getBottom();
-                int size = mFAB.getHeight();
-                mFabHeight = bottom - size / 2;
-                if(Build.VERSION.SDK_INT > 19)
-                    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-                //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
-                //params.setMargins(params.leftMargin, 0, params.rightMargin, mFabHeight);
-                //mFAB.setLayoutParams(params);
-                mFAB.setY(mFabHeight);
-            }
-        });
 
         mColor = ContextCompat.getColor(getActivity(), R.color.primary);
 
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconContainer.setVisibility(View.INVISIBLE);
-        //mEventContentContainer.setVisibility(View.INVISIBLE);
         mTitleTextView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mScrollView.setVisibility(View.INVISIBLE);
@@ -231,6 +215,21 @@ public class EventDetailFragment extends Fragment{
             getActivity().getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
             getActivity().getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
+    }
+    private void initFabY(){
+        ViewTreeObserver vto = mCoordinatorLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mCoordinatorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int bottom = mTitleContainer.getBottom();
+                int size = mFAB.getHeight();
+                mFabHeight = bottom - size / 2;
+                if(Build.VERSION.SDK_INT > 19)
+                    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+                mFAB.setY(mFabHeight);
+            }
+        });
     }
 
     private void initToolbarAndFabAnimation(){
@@ -293,9 +292,6 @@ public class EventDetailFragment extends Fragment{
         mFabUpAnimation.setDuration(200);
         mFabUpAnimation.start();
         isFabDown = false;
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
-        layoutParams.setBehavior(null);
-        mFAB.setLayoutParams(layoutParams);
     }
     private void animateFabDown(){
         if(isFabDown)
@@ -306,9 +302,6 @@ public class EventDetailFragment extends Fragment{
         mFabUpAnimation.setDuration(200);
         mFabUpAnimation.start();
         isFabDown = true;
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)mFAB.getLayoutParams();
-        layoutParams.setBehavior(new FloatingActionButton.Behavior(getActivity(), null));
-        mFAB.setLayoutParams(layoutParams);
     }
 
     private void paintMask(float scrolled){
@@ -374,7 +367,33 @@ public class EventDetailFragment extends Fragment{
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                });
+    }
+
+    public void onLoaded(ArrayList<EventDetail> events) {
+        if (!isAdded())
+            return;
+        EventDetail event = events.get(0);
+        mAdapter.setEvent(event);
+        mAdapter.setEventInfo();
+        mProgressBar.setVisibility(View.GONE);
+        if(Build.VERSION.SDK_INT > 19)
+            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mScrollView.setVisibility(View.VISIBLE);
+        mTitleTextView.setVisibility(View.VISIBLE);
+    }
+
+    public void onError() {
+        if (!isAdded())
+            return;
+        mProgressBar.setVisibility(View.GONE);
+        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+                (DialogInterface dialog, int which) -> {
+                    loadEvent();
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    dialog.dismiss();
+                });
+        alertDialog.show();
     }
 
     private class EventAdapter {
@@ -436,6 +455,7 @@ public class EventDetailFragment extends Fragment{
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
+                    .noFade()
                     .into(target2);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
             if (mEvent.getUserList().size() == 0) {
@@ -465,16 +485,15 @@ public class EventDetailFragment extends Fragment{
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void setFabIcon() {
         if(!mFAB.isShown())
             mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
-            mFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
-            mFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_grade_white_48dp));
+            mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.accent)));
+            mFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_grade_white_48dp));
         } else {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            Drawable drawable = getResources().getDrawable(R.drawable.ic_star_contur);
+            Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_star_contur);
             mFAB.setImageDrawable(drawable);
         }
     }
@@ -657,32 +676,6 @@ public class EventDetailFragment extends Fragment{
             e.printStackTrace();
         }
         return bmpUri;
-    }
-
-    public void onLoaded(ArrayList<EventDetail> events) {
-        if (!isAdded())
-            return;
-        EventDetail event = events.get(0);
-        mAdapter.setEvent(event);
-        mAdapter.setEventInfo();
-        mProgressBar.setVisibility(View.GONE);
-        if(Build.VERSION.SDK_INT > 19)
-            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-        mScrollView.setVisibility(View.VISIBLE);
-        mTitleTextView.setVisibility(View.VISIBLE);
-    }
-
-    public void onError() {
-        if (!isAdded())
-            return;
-        mProgressBar.setVisibility(View.GONE);
-        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                (DialogInterface dialog, int which) -> {
-                loadEvent();
-                mProgressBar.setVisibility(View.VISIBLE);
-                dialog.dismiss();
-        });
-        alertDialog.show();
     }
 
     public void palette(Bitmap bitmap) {

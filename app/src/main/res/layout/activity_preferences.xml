@@ -18,10 +18,10 @@
             app:theme="@style/ThemeOverlay.AppCompat.Dark"/>
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/main_content"
+    <fragment
+        android:name="ru.evendate.android.ui.SettingsActivity$SettingsFragment"
+        android:tag=".SettingsFragment"
         android:layout_below="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="match_parent" />
 </RelativeLayout>

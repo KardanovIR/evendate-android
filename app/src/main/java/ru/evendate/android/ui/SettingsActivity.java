@@ -1,23 +1,18 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
+import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
@@ -62,8 +57,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         initToolbar();
         initDrawer();
-
-        getFragmentManager().beginTransaction().replace(R.id.main_content, new SettingsFragment()).commit();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.SETTINGS_IDENTIFIER);
+        mDrawer.start();
     }
 
     private void initToolbar() {
@@ -98,37 +93,22 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.SETTINGS_IDENTIFIER);
-        mDrawer.start();
-    }
-
     public static class SettingsFragment extends PreferenceFragment {
-        Context context;
         private int indicatorColor;
 
         @Override
-        public void onAttach(Context context) {
-            super.onAttach(context);
-            this.context = context;
-        }
-
-        @Override
-        public void onCreate(final Bundle savedInstanceState){
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle bundle, String s) {
             addPreferencesFromResource(R.xml.preferences);
 
             CheckBoxPreference feedPrivacyPreference = (CheckBoxPreference)getPreferenceScreen().findPreference(KEY_PRIVACY_FEED);
-
             feedPrivacyPreference.setOnPreferenceChangeListener((Preference preference, Object newValue) -> {
                 updateFeedPrivacy((boolean)newValue);
                 return true;
             });
-            ApiService apiService = ApiFactory.getService(context);
+
+            ApiService apiService = ApiFactory.getService(getActivity());
             Observable<ResponseArray<Settings>> notificationObservable =
-                    apiService.getSettings(EvendateAccountManager.peekToken(context), true);
+                    apiService.getSettings(EvendateAccountManager.peekToken(getActivity()), true);
 
             //todo refactor and add a progress bar
             notificationObservable.subscribeOn(Schedulers.newThread())
@@ -142,7 +122,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             Preference dialogPreference = getPreferenceScreen().findPreference(KEY_INFO);
             dialogPreference.setOnPreferenceClickListener((Preference preference) -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
 
                 builder.setTitle(R.string.settings_dialog_about)
                     .setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME)
@@ -160,13 +140,13 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
 
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
             indicatorColor = sp.getInt(SettingsActivity.KEY_INDICATOR_COLOR, KEY_INDICATOR_COLOR_DEFAULT);
 
             Preference colorPreference = getPreferenceScreen().findPreference(KEY_INDICATOR_COLOR);
             colorPreference.setOnPreferenceClickListener((Preference preference) -> {
                 ColorPickerDialogBuilder
-                        .with(context, R.style.AlertDialogCustom)
+                        .with(getActivity(), R.style.AlertDialogCustom)
                         .noSliders()
                         .setTitle(R.string.settings_dialog_led_color)
                         .initialColor(indicatorColor)
@@ -190,9 +170,9 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         private void updateFeedPrivacy(boolean newValue){
-            ApiService apiService = ApiFactory.getService(context);
+            ApiService apiService = ApiFactory.getService(getActivity());
             Observable<Response> notificationObservable =
-                    apiService.setSettings(EvendateAccountManager.peekToken(context), newValue);
+                    apiService.setSettings(EvendateAccountManager.peekToken(getActivity()), newValue);
 
             notificationObservable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
