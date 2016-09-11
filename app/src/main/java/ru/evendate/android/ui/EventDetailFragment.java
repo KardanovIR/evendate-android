@@ -168,6 +168,41 @@ public class EventDetailFragment extends Fragment {
 
     private AlertDialog notificationDialog;
 
+    final Target eventTarget = new Target() {
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {}
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if(bitmap == null)
+                return;
+            mEventImageView.setImageBitmap(bitmap);
+            palette(bitmap);
+            revealView(mEventImageContainer);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {}
+    };
+    final Target orgTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            Log.d(LOG_TAG, "onBitmapLoaded");
+            mOrganizationIconView.setImageBitmap(bitmap);
+            revealView(mOrganizationIconContainer);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            Log.d(LOG_TAG, "onBitmapFailed");
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+            Log.d(LOG_TAG, "onPrepareLoad");
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -418,47 +453,16 @@ public class EventDetailFragment extends Fragment {
             setAdaptiveTitle();
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
-            final Target target = new Target() {
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    if(bitmap == null)
-                        return;
-                    mEventImageView.setImageBitmap(bitmap);
-                    palette(bitmap);
-                    revealView(mEventImageContainer);
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {}
-            };
             Picasso.with(getContext())
                     .load(mEvent.getImageHorizontalUrl())
                     .error(R.drawable.default_background)
                     .noFade()
-                    .into(target);
-            Target target2 = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    mOrganizationIconView.setImageBitmap(bitmap);
-                    revealView(mOrganizationIconContainer);
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {}
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {}
-            };
+                    .into(eventTarget);
             Picasso.with(getContext())
                     .load(mEvent.getOrganizationLogoUrl())
                     .error(R.mipmap.ic_launcher)
                     .noFade()
-                    .into(target2);
+                    .into(orgTarget);
             mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mEvent.getUserList()));
             if (mEvent.getUserList().size() == 0) {
                 mUserFavoritedCard.setVisibility(View.GONE);
