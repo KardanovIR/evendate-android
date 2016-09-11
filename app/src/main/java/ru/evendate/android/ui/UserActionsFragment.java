@@ -40,7 +40,7 @@ import rx.schedulers.Schedulers;
 public class UserActionsFragment extends Fragment {
     private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private int userId;
     @Bind(R.id.progressBarAction) ProgressBar mProgressBar;

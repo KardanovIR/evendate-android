@@ -19,7 +19,7 @@ import ru.evendate.android.models.UserDetail;
  */
 public class UserSubscriptionsFragment extends Fragment {
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private SubscriptionsAdapter mAdapter;
     private UserDetail mUser;
 

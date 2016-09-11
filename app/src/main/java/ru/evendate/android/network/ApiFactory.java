@@ -22,7 +22,7 @@ public class ApiFactory {
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
-    private static final String HOST_NAME = "evendate.ru";
+    private static final String HOST_NAME = "test.evendate.ru";
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
 

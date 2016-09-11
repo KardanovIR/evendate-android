@@ -262,4 +262,23 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Query("show_to_friends") boolean feedPrivacy
     );
+
+
+    @GET(API_PATH + "/organizations")
+    Observable<ResponseArray<OrganizationFull>> findOrganizations(
+            @Header("Authorization") String authorization,
+            @Query("q") String query,
+            @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<EventDetail>> findEvents(
+            @Header("Authorization") String authorization,
+            @Query("q") String query,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
 }

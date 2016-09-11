@@ -10,16 +10,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-        <!--
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
-            >
-            -->
+        android:layout_height="wrap_content">
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -34,7 +26,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/item_organization_category"
@@ -47,11 +39,11 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:progressDrawable="@drawable/circular_progress_bar"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="center"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="end|bottom|right"
         android:clickable="true"
         android:layout_height="wrap_content"

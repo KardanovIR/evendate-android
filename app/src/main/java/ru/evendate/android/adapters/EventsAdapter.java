@@ -56,14 +56,21 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     @Override
     public int getItemViewType(int position) {
         int layoutItemId;
-        if (type == ReelFragment.ReelType.ORGANIZATION.type()) {
-            layoutItemId = R.layout.card_event_organization;
-        } else if (type == ReelFragment.ReelType.FAVORITES.type()) {
-            layoutItemId = R.layout.card_event_feed;
-        } else if (type == ReelFragment.ReelType.CALENDAR.type()) {
-            layoutItemId = R.layout.card_event;
-        } else {
-            layoutItemId = R.layout.card_event_feed;
+        switch (ReelFragment.ReelType.getType(type)){
+            case ORGANIZATION:
+                layoutItemId = R.layout.card_event_organization;
+                break;
+            case FAVORITES:
+                layoutItemId = R.layout.card_event_feed;
+                break;
+            case CALENDAR:
+                layoutItemId = R.layout.card_event;
+                break;
+            case RECOMMENDATION:
+                layoutItemId = R.layout.card_event_feed;
+                break;
+            default:
+                layoutItemId = R.layout.card_event_feed;
         }
         if(isLoading() && position == super.getItemCount() - 1)
             layoutItemId = AppendableAdapter.PROGRESS_VIEW_TYPE;

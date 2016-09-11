@@ -39,7 +39,7 @@ import rx.schedulers.Schedulers;
 public class UserListFragment extends Fragment {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private UsersAdapter mAdapter;
     public static final String TYPE = "type";
     public static final String EVENT_ID = "event_id";
