@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 
@@ -36,7 +37,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Dmitry on 11.02.2016.
  */
-public class DrawerWrapper{
+public class DrawerWrapper {
     private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
@@ -48,17 +49,19 @@ public class DrawerWrapper{
     final static int SETTINGS_IDENTIFIER = 5;
     Context mContext;
 
-    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
-            .withIcon(R.drawable.event_icon).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
-            .withIcon(R.drawable.calendar_icon).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.drawer_organizations)
-            .withIcon(R.drawable.organization_icon).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.drawer_friends)
-            .withIcon(R.drawable.friends_icon).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.reel)
+            .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.calendar)
+            .withIcon(R.drawable.ic_insert_invitation_black).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.title_activity_organization)
+            .withIcon(R.drawable.ic_account_balance_black).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
+    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.title_activity_friends)
+            .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.settings_icon).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
-
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
         mDrawer = drawer;
@@ -69,22 +72,15 @@ public class DrawerWrapper{
 
         //create the drawer and remember the `Drawer` result object
         DrawerBuilder result = new DrawerBuilder()
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        return true;
-                    }
+                .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
+                    return true;
                 });
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
                 .withCompactStyle(false)
                 .withHeaderBackground(R.drawable.gradient_profile)
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
+                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> {
+                    return false;
                 })
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
@@ -132,7 +128,7 @@ public class DrawerWrapper{
         return mDrawer;
     }
 
-    public void loadSubs(){
+    public void loadSubs() {
         ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<OrganizationFull>> subsObservable =
                 service.getSubscriptions(EvendateAccountManager.peekToken(mContext), OrganizationSubscription.FIELDS_LIST);
@@ -141,7 +137,7 @@ public class DrawerWrapper{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(new ArrayList<>(result.getData()));
                     else
                         onError();
@@ -151,7 +147,7 @@ public class DrawerWrapper{
                 });
     }
 
-    public void loadMe(){
+    public void loadMe() {
         ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<UserDetail>> subsObservable =
                 service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
@@ -160,37 +156,35 @@ public class DrawerWrapper{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk()){
+                    if (result.isOk()) {
                         UserDetail user = result.getData().get(0);
                         Account account = EvendateAccountManager.getSyncAccount(mContext);
-                        if(account == null)
+                        if (account == null)
                             return;
 
                         getAccountHeader().clear();
                         getAccountHeader().addProfiles(
                                 new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
                                         .withEmail(account.name)
+                                        .withIcon(R.drawable.ic_avatar_cap)
                                         .withIcon(user.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
                                         .withIcon(R.drawable.exit_icon)
-                                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                            @Override
-                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                                EvendateAccountManager.deleteAccount(mContext);
-                                                //todo ditch
-                                                ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
-                                                return false;
-                                            }
+                                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) ->{
+                                            EvendateAccountManager.deleteAccount(mContext);
+                                            //todo ditch
+                                            ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
+                                            return false;
                                         })
-                            );
-                        }
-                    else
+                        );
+                    } else
                         onError();
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
                 });
     }
+
     public void onLoaded(ArrayList<OrganizationSubscription> subList) {
         mSubscriptions = subList;
         updateSubs();

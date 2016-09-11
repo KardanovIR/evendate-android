@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:padding="7dp"
             android:id="@+id/material_drawer_profileIcon"
-            tools:src="@drawable/evendate_logo"/>
+            tools:src="@mipmap/ic_launcher"/>
         </FrameLayout>
     </LinearLayout>
 

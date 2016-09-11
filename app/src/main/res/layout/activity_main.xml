@@ -20,18 +20,18 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:textColorSecondary="#FFFFFF"
                 app:layout_collapseMode="pin"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 >
 
                 <ImageView
                     android:id="@+id/main_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/logo_outlines"
+                    app:srcCompat="@drawable/logo_outlines"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:adjustViewBounds="true"/>

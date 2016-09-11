@@ -103,7 +103,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (holder.mOrganizationLogo != null)
             Picasso.with(mContext)
                     .load(eventEntry.getOrganizationLogoSmallUrl())
-                    .error(R.drawable.evendate_logo)
+                    .error(R.mipmap.ic_launcher)
                     .into(holder.mOrganizationLogo);
         if(holder.mPriceTextView != null)
             holder.mPriceTextView.setText(eventEntry.isFree() ?

@@ -98,7 +98,7 @@ public class UserProfileActivity extends AppCompatActivity {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -128,6 +128,9 @@ public class UserProfileActivity extends AppCompatActivity {
         setupStat();
         initTransitions();
         mUserImageContainer.setVisibility(View.INVISIBLE);
+
+        loadUser();
+        mDrawer.start();
     }
 
     private void initTransitions(){
@@ -137,13 +140,6 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadUser();
-        mDrawer.start();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -257,7 +253,7 @@ public class UserProfileActivity extends AppCompatActivity {
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
                     .load(mUserDetail.getAvatarUrl())
-                    .error(R.drawable.default_background)
+                    .error(R.mipmap.ic_launcher)
                     .into(target);
         }
     }

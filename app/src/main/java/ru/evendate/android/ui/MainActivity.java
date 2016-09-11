@@ -2,9 +2,7 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -60,20 +57,20 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     }
 
-    private void initToolbar(){
+    private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
-    private void initTransitions(){
+    private void initTransitions() {
         if(Build.VERSION.SDK_INT >= 21){
             getWindow().setEnterTransition(new Fade());
             getWindow().setReenterTransition(new Fade());
             getWindow().setExitTransition(new Fade());
         }
     }
-    private void initDrawer(){
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
@@ -82,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     @Override
     protected void onStart() {
         super.onStart();
+        //TODO cause auth flow
         mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
     }

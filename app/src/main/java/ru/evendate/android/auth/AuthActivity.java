@@ -62,9 +62,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
 
-    public final String APP_PREF = "evendate_pref";
-    public final String FIRST_RUN = "first_run";
     private boolean introViewed = false;
+    private boolean isGoogleServicesAvailable = false;
 
     GoogleApiClient apiClient;
     private ProgressDialog mProgressDialog;
@@ -85,6 +84,25 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         initTransitions();
         apiClient = initGoogleApiClient();
         deletedOldAccount();
+
+        if(checkPlayServicesExists()) {
+            isGoogleServicesAvailable = true;
+            apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
+                            (@NonNull Status status) -> hideProgressDialog()
+                    );
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+                    hideProgressDialog();
+                }
+            });
+            showProgressDialog();
+            apiClient.connect();
+        }
     }
 
     private void initLinks(){
@@ -125,23 +143,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onStart() {
         super.onStart();
 
-        if(checkPlayServicesExists()) {
-            apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                @Override
-                public void onConnected(@Nullable Bundle bundle) {
-                    Auth.GoogleSignInApi.signOut(apiClient).setResultCallback(
-                            (@NonNull Status status) -> hideProgressDialog()
-                    );
-                }
-
-                @Override
-                public void onConnectionSuspended(int i) {
-                    hideProgressDialog();
-                }
-            });
-            showProgressDialog();
-            apiClient.connect();
-        }
         if(!introViewed)
             startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
@@ -189,8 +190,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 startWebAuth(FB_URL);
                 break;
             case R.id.sing_in_google_button:
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
-                startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                if (isGoogleServicesAvailable) {
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+                    startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                } else {
+                    startWebAuth(GOOGLE_URL);
+                }
         }
     }
 

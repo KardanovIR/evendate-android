@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add_notification"
-        android:icon="@drawable/ic_add_alert_white_24dp"
+        android:icon="@drawable/ic_add_alert_white"
+        android:tint="@color/accent"
         android:title="@string/action_add_notification"
         app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/action_share"
-        android:icon="@drawable/ic_share_black"
+        android:icon="@drawable/ic_share_white"
         android:title="@string/action_share"
         app:showAsAction="ifRoom|withText"/>
 </menu>

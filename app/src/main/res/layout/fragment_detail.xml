@@ -27,7 +27,7 @@
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
-                    tools:src="@drawable/butterfly"/>
+                    tools:src="@drawable/default_background"/>
                 <ImageView
                     android:id="@+id/event_image_foreground"
                     android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                     android:textColor="#fff"
                     android:layout_marginLeft="16dp"
                     tools:text="Drake Moscow 2016"
-                    android:textSize="22sp"
+                    android:textSize="24sp"
                     android:textIsSelectable="false"
                     android:layout_marginRight="64dp"
                     android:fontFamily="sans-serif"

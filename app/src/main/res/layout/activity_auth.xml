@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:background="?attr/colorPrimary"
              android:gravity="center_vertical|center_horizontal">
 
@@ -93,10 +94,10 @@
                     android:paddingBottom="16dp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp">
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/vk_icon"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_vk"/>
                 </FrameLayout>
 
                 <TextView
@@ -126,10 +127,10 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:padding="14dp">
-                    <View
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/fb_icon"/>
+                        app:srcCompat="@drawable/ic_fb"/>
                 </FrameLayout>
 
                 <TextView
@@ -161,10 +162,10 @@
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
                     android:paddingRight="10dp">
-                    <View
+                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/g_plus_icon"/>
+                        app:srcCompat="@drawable/ic_g_plus"/>
                 </FrameLayout>
 
                 <TextView

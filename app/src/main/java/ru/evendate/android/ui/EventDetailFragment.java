@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -209,6 +210,7 @@ public class EventDetailFragment extends Fragment {
         mToolbar.setTitle("");
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
     private void initTransitions(){
         if(Build.VERSION.SDK_INT >= 21){
@@ -320,8 +322,8 @@ public class EventDetailFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         loadEvent();
         mDrawer.start();
     }
@@ -413,7 +415,7 @@ public class EventDetailFragment extends Fragment {
                 return;
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
-            mTitleTextView.setText(mEvent.getTitle());
+            setAdaptiveTitle();
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
             final Target target = new Target() {
@@ -471,7 +473,14 @@ public class EventDetailFragment extends Fragment {
             mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
                     eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
         }
-
+        private void setAdaptiveTitle(){
+            String title = mEvent.getTitle();
+            if(title.length() > 24)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            if(title.length() > 64)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            mTitleTextView.setText(mEvent.getTitle());
+        }
         private void setDates(){
             if (mEvent.isSameTime()) {
                 mDatesLightView.setVisibility(View.VISIBLE);
@@ -490,10 +499,10 @@ public class EventDetailFragment extends Fragment {
             mFAB.show();
         if (mAdapter.getEvent().isFavorite()) {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.accent)));
-            mFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_grade_white_48dp));
+            mFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_star));
         } else {
             mFAB.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_star_contur);
+            Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_star_border);
             mFAB.setImageDrawable(drawable);
         }
     }

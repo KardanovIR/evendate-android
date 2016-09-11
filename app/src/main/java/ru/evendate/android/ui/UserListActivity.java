@@ -53,7 +53,7 @@ public class UserListActivity extends AppCompatActivity {
         }
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         fragmentManager.beginTransaction().replace(R.id.main_content, mUserListFragment).commit();
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(

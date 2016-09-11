@@ -86,13 +86,18 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         initReel();
         initDrawer();
         mAdapter = new DateAdapter();
+
+        setToolbarDate(mCalendarView.getCurrentDate());
+        loadDates();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
+        mDrawer.start();
     }
 
     private void initToolbar() {
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
 
@@ -165,20 +170,10 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        setToolbarDate(mCalendarView.getCurrentDate());
-        loadDates();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
-        mDrawer.start();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         if(errorDialog != null)
             errorDialog.dismiss();
-        mDrawer.cancel();
     }
 
     private void setToolbarDate(CalendarDay date){

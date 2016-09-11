@@ -33,7 +33,7 @@
                 android:padding="8dp"
                 android:contentDescription="@string/organization_background_description"
                 android:id="@+id/organization_icon"
-                tools:src="@drawable/evendate_logo" />
+                tools:src="@mipmap/ic_launcher" />
         </FrameLayout>
         <TextView
             android:id="@+id/organization_name"
@@ -200,7 +200,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/organization_link_icon"/>
+                    app:srcCompat="@drawable/ic_open_in_new_black"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

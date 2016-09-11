@@ -3,6 +3,7 @@ package ru.evendate.android.ui;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
@@ -33,6 +34,7 @@ public class OrganizationFilterDialog extends DialogFragment {
         mCategorySelectListener = listener;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.DialogCustom);
@@ -40,26 +42,16 @@ public class OrganizationFilterDialog extends DialogFragment {
                 .setMultiChoiceItems(
                         typeToStrings(),
                         mSelectedItems,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which,
-                                                boolean isChecked) {
-                                mSelectedItems[which] = isChecked;
-                            }
+                        (DialogInterface dialog, int which, boolean isChecked) -> {
+                            mSelectedItems[which] = isChecked;
                         }
                 )
-                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (mCategorySelectListener != null) {
-                            mCategorySelectListener.onCategorySelected(mSelectedItems);
-                        }
+                .setPositiveButton(R.string.dialog_ok, (DialogInterface dialog, int id) -> {
+                    if (mCategorySelectListener != null) {
+                        mCategorySelectListener.onCategorySelected(mSelectedItems);
                     }
                 })
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
+                .setNegativeButton(R.string.dialog_cancel, (DialogInterface dialog, int id) -> {
                 });
 
         return builder.create();
