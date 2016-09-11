@@ -101,6 +101,8 @@ public class OrganizationDetailFragment extends Fragment implements
     private OrganizationEventsAdapter mAdapter;
     private AdapterController mAdapterController;
 
+    AlertDialog alertDialog;
+
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -191,13 +193,10 @@ public class OrganizationDetailFragment extends Fragment implements
                 if (colorAnimation != null)
                     colorAnimation.cancel();
                 colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), toolbarColor, targetColor);
-                colorAnimation.setDuration(200); // milliseconds
-                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animator) {
-                        toolbarColor = (int)animator.getAnimatedValue();
-                        mToolbar.setBackgroundColor(toolbarColor);
-                    }
+                colorAnimation.setDuration(200);
+                colorAnimation.addUpdateListener((ValueAnimator animator) -> {
+                    toolbarColor = (int)animator.getAnimatedValue();
+                    mToolbar.setBackgroundColor(toolbarColor);
                 });
                 colorAnimation.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -230,13 +229,6 @@ public class OrganizationDetailFragment extends Fragment implements
                 colorAnimation.start();
             }
         });
-        //mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-        //    @Override
-        //    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        //        appBarOffset = Math.abs(verticalOffset);
-        //        setImageViewY();
-        //    }
-        //});
     }
     private boolean checkOrgCardScrolling(RecyclerView recyclerView) {
         float imageHeight = getResources().getDimension(R.dimen.organization_background_height);
@@ -324,7 +316,7 @@ public class OrganizationDetailFragment extends Fragment implements
                     onLoadedEvents(new ArrayList<>(result.getData()));
                 }, error -> {
                     Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "Complete!"));
+                });
     }
 
     /**
@@ -456,8 +448,7 @@ public class OrganizationDetailFragment extends Fragment implements
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        //todo on destroy can leak
-        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
+        alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
                 (DialogInterface dialog, int which) -> {
                         loadOrg();
                         dialog.dismiss();
@@ -471,7 +462,8 @@ public class OrganizationDetailFragment extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mDrawer.cancel();
+        if (alertDialog != null)
+            alertDialog.dismiss();
     }
 
     public void requestNext() {

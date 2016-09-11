@@ -65,6 +65,10 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         initDrawer();
         displayProgress();
         mFAB.setVisibility(View.INVISIBLE);
+
+        loadCatalog();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
+        mDrawer.start();
     }
 
     private void initToolbar() {
@@ -95,19 +99,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadCatalog();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
-        mDrawer.start();
-    }
-
     @Override
     public void onStop() {
         super.onStop();
-        mDrawer.cancel();
         if (errorDialog != null)
             errorDialog.dismiss();
     }
