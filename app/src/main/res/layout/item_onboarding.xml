@@ -1,47 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="56dp">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:id="@+id/frameLayout">
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@mipmap/ic_launcher"/>
-    </FrameLayout>
+    <ru.evendate.android.views.IconView
+        android:id="@+id/icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp" />
+
     <TextView
         android:id="@+id/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Институт"
-        android:textSize="15sp"
-        android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/frameLayout"
-        android:layout_toRightOf="@+id/frameLayout"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp">
-    </TextView>
+        android:layout_marginRight="8dp"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_toLeftOf="@+id/checkbox"
+        android:layout_toRightOf="@+id/icon"
+        android:layout_toStartOf="@+id/checkbox"
+        android:textSize="15sp"
+        tools:text="Институт" />
 
-    <FrameLayout
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true">
-        <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/checkbox"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:button="@drawable/onboarding_checkbox_selector" />
-    </FrameLayout>
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:button="@drawable/onboarding_checkbox_selector" />
 </RelativeLayout>

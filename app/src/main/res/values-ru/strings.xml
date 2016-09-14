@@ -139,4 +139,6 @@
     <string name="search_empty_event_header">События не найдены</string>
     <string name="search_empty_org_header">Организации не найдены</string>
     <string name="search_hint">Поиск</string>
+    <string name="dialog_skip">Пропустить</string>
+    <string name="action_search">Поиск</string>
 </resources>

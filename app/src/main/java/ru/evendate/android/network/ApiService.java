@@ -154,6 +154,16 @@ public interface ApiService {
     );
 
     /**
+     * Get recommended orgs
+     */
+    @GET(API_PATH + "/organizations/recommendations")
+    Observable<ResponseArray<OrganizationFull>> getOrgRecommendations(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+    /**
      * Get subscriptions
      */
     @GET(API_PATH + "/organizations/subscriptions")

@@ -6,11 +6,11 @@
         android:height="32dp">
         <shape
             android:shape="oval">
-            <solid android:color="#3DFF5F9E"/>
+            <solid android:color="@color/accent_light"/>
         </shape>
     </item>
     <item android:drawable="@drawable/ic_add"
         android:width="24dp"
         android:height="24dp"
-        android:gravity="center"/>
+        android:gravity="center" />
 </layer-list>

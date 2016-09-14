@@ -31,4 +31,15 @@
         android:layout_marginLeft="36dp"
         android:layout_marginRight="36dp"
         android:singleLine="false" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="48dp" />
 </LinearLayout>
