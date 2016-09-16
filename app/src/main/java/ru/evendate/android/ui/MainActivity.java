@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         switch (item.getItemId()) {
             case R.id.action_search:
                 Intent searchIntent = new Intent(this, SearchResultsActivity.class);
-                searchIntent.putExtra(SearchResultsActivity.SEARCH_TYPE, SearchResultsActivity.SearchType.EVENT.type());
                 startActivity(searchIntent);
                 return true;
             default:

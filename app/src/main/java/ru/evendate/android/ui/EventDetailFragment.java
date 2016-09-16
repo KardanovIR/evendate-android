@@ -7,6 +7,7 @@ import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +15,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -105,7 +105,7 @@ import rx.schedulers.Schedulers;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment {
+public class EventDetailFragment extends Fragment implements TagsView.OnTagClickListener {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -219,14 +219,13 @@ public class EventDetailFragment extends Fragment {
         mUri = mEventDetailActivity.mUri;
         eventId = Integer.parseInt(mUri.getLastPathSegment());
 
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
         initToolbar();
         initTransitions();
         initFabY();
         initToolbarAndFabAnimation();
         initUserFavoriteCard();
         initDrawer();
+        mTagsView.setOnTagClickListener(this);
         mAdapter = new EventAdapter();
 
         mColor = ContextCompat.getColor(getActivity(), R.color.primary);
@@ -234,9 +233,9 @@ public class EventDetailFragment extends Fragment {
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconContainer.setVisibility(View.INVISIBLE);
-        mTitleTextView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
-        mScrollView.setVisibility(View.INVISIBLE);
+        mEventContentContainer.setVisibility(View.GONE);
+        mTitleContainer.setBackgroundColor(Color.TRANSPARENT);
         return rootView;
     }
 
@@ -360,20 +359,6 @@ public class EventDetailFragment extends Fragment {
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadEvent();
-        mDrawer.start();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (alertDialog != null)
-            alertDialog.dismiss();
-    }
-
     private void initUserFavoriteCard() {
         mUserFavoritedCard.setOnAllButtonListener((View v) -> {
             if (mAdapter.getEvent() == null)
@@ -388,6 +373,50 @@ public class EventDetailFragment extends Fragment {
             } else
                 getActivity().startActivity(intent);
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.event_detail_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, mAdapter.getEvent().getTitle() + "\n\n" +
+                        mAdapter.getEvent().getDescription() + "\n" +
+                        mAdapter.getEvent().getLink());
+                shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
+                shareIntent.setType("image/*");
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
+                return true;
+            case android.R.id.home:
+                onUpPressed();
+                return true;
+            case R.id.action_add_notification:
+                loadNotifications();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadEvent();
+        mDrawer.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (alertDialog != null)
+            alertDialog.dismiss();
     }
 
     public void loadEvent() {
@@ -419,8 +448,10 @@ public class EventDetailFragment extends Fragment {
         mProgressBar.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT > 19)
             TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-        mScrollView.setVisibility(View.VISIBLE);
+        mEventContentContainer.setVisibility(View.VISIBLE);
+        mTitleContainer.setVisibility(View.VISIBLE);
         mTitleTextView.setVisibility(View.VISIBLE);
+        mTitleContainer.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primary));
     }
 
     public void onError() {
@@ -572,6 +603,15 @@ public class EventDetailFragment extends Fragment {
         startActivity(openLink);
     }
 
+    @Override
+    public void onTagClicked(String tag) {
+        Intent searchIntent = new Intent(getActivity(), SearchResultsActivity.class);
+        searchIntent.putExtra(SearchResultsActivity.SEARCH_BY_TAG, true);
+        searchIntent.setAction(Intent.ACTION_SEARCH);
+        searchIntent.putExtra(SearchManager.QUERY, tag);
+        startActivity(searchIntent);
+    }
+
     @SuppressWarnings("unused")
     @OnClick(R.id.fab)
     public void onFabClick() {
@@ -616,36 +656,6 @@ public class EventDetailFragment extends Fragment {
         }
         tracker.send(statEvent.build());
         mAdapter.setEventInfo();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.event_detail_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_share:
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, mAdapter.getEvent().getTitle() + "\n\n" +
-                        mAdapter.getEvent().getDescription() + "\n" +
-                        mAdapter.getEvent().getLink());
-                shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
-                shareIntent.setType("image/*");
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, getActivity().getString(R.string.action_share)));
-                return true;
-            case android.R.id.home:
-                onUpPressed();
-                return true;
-            case R.id.action_add_notification:
-                loadNotifications();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     //TODO DRY

@@ -18,18 +18,13 @@
     <string name="drawer_subscriptions">Subscriptions</string>
     <string name="drawer_log_out">Log out</string>
 
-
     <!-- tabs strings in main activity -->
     <string name="feed_tab">Feed</string>
     <string name="favorite_tab">Favorite</string>
     <string name="recommendation_tab">For you</string>
 
-
-    <string name="accounts">Accounts</string>
-
-    <string name="progress_dialog_title">First synchronization</string>
-    <string name="progress_dialog_message">Please, wait</string>
-
+    <!-- todo -->
+    <string name="download_error">Error occurred</string>
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
@@ -52,15 +47,15 @@
     <string name="event_tags">Tags</string>
     <string name="event_link">More</string>
 
-    <string name="action_share">Share</string>
-    <string name="action_add_notification">Notify about event</string>
-
     <string name="event_word_users_and">users and</string>
     <string name="event_word_friends_add">friends added to favorite</string>
     <string name="event_users_all">ALL</string>
 
+    <string name="event_all_day">All day</string>
+    <string name="event_price">Price</string>
     <string name="event_free">Free</string>
     <string name="event_price_rub">rub</string>
+    <string name="event_registration">Registration</string>
     <string name="event_price_from">From</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
@@ -68,11 +63,18 @@
     <string name="event_show_on_map">SHOW ON MAP</string>
     <string name="event_go_to_page">GO TO EVENT PAGE</string>
 
+    <string name="action_share">Share</string>
+    <string name="action_add_notification">Notify about event</string>
+
+    <string name="favorite_confirm">Event added to favorite</string>
+    <string name="remove_favorite_confirm">Event removed from favorite</string>
+
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>
     <string name="dates_view_time_label">Time</string>
     <string name="dates_view_more">MORE</string>
     <string name="dates_view_less">LESS</string>
+
     <!-- user favorite card -->
     <string name="user_card_all">ALL</string>
 
@@ -80,9 +82,6 @@
     <string name="organization_card_subscribers">subscribers</string>
 
     <!-- detail organization -->
-    <string name="organization_event_number">events</string>
-    <string name="organization_friends">friends</string>
-
     <string name="organization_word_users">subscribers</string>
     <string name="organization_word_friends">friends</string>
     <string name="organization_subscribe">SUBSCRIBE</string>
@@ -95,29 +94,13 @@
     <string name="organization_address">Organization address</string>
     <string name="organization_background_description">Organization background image</string>
 
-
-    <string name="subscription_fail_cause_network">No internet connection</string>
-    <string name="no_internet_connection">No internet connection</string>
-    <string name="download_error">Error occurred</string>
-
     <string name="subscription_confirm">Subscription confirmed</string>
     <string name="removing_subscription_confirm">Subscription removed</string>
-    <string name="favorite_confirm">Event added to favorite</string>
-    <string name="remove_favorite_confirm">Event removed from favorite</string>
-    <string name="subscription_fail_cause_error">Error occurred</string>
-
-    <string name="nav_add_account">Change Account</string>
-    <string name="nav_account_management">Account Management</string>
-
-    <string name="event_all_day">All day</string>
-
-    <string name="calendar_events">events</string>
 
     <!-- auth strings -->
     <string name="auth_sign_in">Sing in via social network:</string>
     <string name="auth_loading">Loading…</string>
     <string name="account_already_exists">Evendate account already exist</string>
-
 
     <!-- intro strings -->
     <string name="intro_miss">Don\'t miss important event</string>
@@ -162,18 +145,19 @@
     <string name="stat_page_actions" translatable="false">Actions</string>
     <string name="stat_page_subscriptions" translatable="false">Subscriptions</string>
 
+    <string name="stat_page_search_events" translatable="false">Events</string>
+    <string name="stat_page_search_orgs" translatable="false">Organizations</string>
+    <string name="stat_page_search_users" translatable="false">Users</string>
+
     <!-- user profile strings -->
     <string name="tab_subscriptions">Subscriptions</string>
     <string name="tab_actions">Activity</string>
     <string name="action_user_link">Profile in social net</string>
 
-
     <string name="action_subscribe">Subscribe to organizations</string>
     <string name="action_unsubscribe">Unsubscribe from organizations</string>
     <string name="action_like">Added events to favorites</string>
     <string name="action_dislike">Remove events from favorites</string>
-    <string name="event_price">Price</string>
-    <string name="event_registration">Registration</string>
 
     <!-- auth strings -->
     <string name="auth_welcome">Welcome to Evendate!</string>
@@ -213,7 +197,21 @@
     <!-- search strings -->
     <string name="search_hint">Search</string>
     <string name="search_cap_hint">Begin your search by typing a query into the search box</string>
-    <string name="search_empty_org_header">Organizators not found</string>
-    <string name="search_empty_event_header">Events not found</string>
+    <string name="search_tags_hint">Popular tags</string>
 
+    <string name="search_hint_tag">Find by tags</string>
+
+    <!-- tabs strings in search activity -->
+
+    <string name="search_tab_events">Events</string>
+    <string name="search_tab_orgs">Organizators</string>
+    <string name="search_tab_users">Users</string>
+
+    <!-- load state view strings -->
+    <string name="state_no_connection">No internet connection</string>
+    <string name="state_no_connection_description">Сheck internet connection</string>
+    <string name="state_error">Problem with loading data</string>
+    <string name="state_error_description">Сheck internet connection</string>
+    <string name="search_empty_description">Try searching for something else</string>
+    <string name="search_empty_header">Nothing found</string>
 </resources>
