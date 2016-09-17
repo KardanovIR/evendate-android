@@ -133,6 +133,8 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_skip">Skip</string>
     <string name="dialog_check_organizations">Choose organization</string>
+    <string name="dialog_onboadring_title">You\'ll like it</string>
+    <string name="dialog_onboarding_subtitle">We picked a places that suits you</string>
 
 
     <string name="dialog_event_hide">Hide event</string>

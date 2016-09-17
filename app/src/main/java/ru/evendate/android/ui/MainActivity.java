@@ -52,12 +52,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         initDrawer();
 
         mFragment = new MainPagerFragment();
-        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
+        ((MainPagerFragment) mFragment).setOnRefreshListener(this);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
         checkAccount();
-
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -68,12 +67,13 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
     private void initTransitions() {
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setEnterTransition(new Fade());
             getWindow().setReenterTransition(new Fade());
             getWindow().setExitTransition(new Fade());
         }
     }
+
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     @Override
     protected void onStop() {
         super.onStop();
-        if(serviceDialog != null)
+        if (serviceDialog != null)
             serviceDialog.dismiss();
         mDrawer.cancel();
     }
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_AUTH) {
-            if(resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_CANCELED) {
                 finish();
             }
         }
@@ -193,8 +193,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public void onBackPressed() {
         if (mDrawer.getDrawer().isDrawerOpen()) {
             mDrawer.getDrawer().closeDrawer();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }

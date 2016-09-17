@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Вам понравится"
+        android:text="@string/dialog_onboadring_title"
         android:id="@+id/textView"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Мы подобрали места, которые подходят Вам"
+        android:text="@string/dialog_onboarding_subtitle"
         android:id="@+id/textView2"
         android:layout_gravity="center_horizontal"
         android:gravity="center"

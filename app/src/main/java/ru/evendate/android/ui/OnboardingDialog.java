@@ -44,7 +44,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-//todo loading orgs
 public class OnboardingDialog extends DialogFragment {
     private static final String LOG_TAG = OnboardingDialog.class.getSimpleName();
 
@@ -75,14 +74,9 @@ public class OnboardingDialog extends DialogFragment {
             Button NeutralButton = ((AlertDialog) d).getButton(DialogInterface.BUTTON_NEUTRAL);
             NeutralButton.setTextColor(Color.parseColor("#FFB1B1B1"));
         });
-        return dialog;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         loadOrgs();
         displayProgress();
+        return dialog;
     }
 
     @Override
