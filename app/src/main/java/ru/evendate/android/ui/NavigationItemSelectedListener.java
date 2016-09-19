@@ -62,16 +62,19 @@ public class NavigationItemSelectedListener
 
     private void openReelActivity() {
         Intent reelIntent = new Intent(mContext, MainActivity.class);
+        reelIntent = addFlags(reelIntent);
         openActivity(reelIntent);
     }
 
     private void openCalendarActivity() {
         Intent calendarIntent = new Intent(mContext, CalendarActivity.class);
+        calendarIntent = addFlags(calendarIntent);
         openActivity(calendarIntent);
     }
 
     private void openCatalogActivity() {
         Intent orgIntent = new Intent(mContext, OrganizationCatalogActivity.class);
+        orgIntent = addFlags(orgIntent);
         openActivity(orgIntent);
     }
 
@@ -83,6 +86,7 @@ public class NavigationItemSelectedListener
 
     private void openSettingsActivity() {
         Intent settingsIntent = new Intent(mContext, SettingsActivity.class);
+        settingsIntent = addFlags(settingsIntent);
         openActivity(settingsIntent);
     }
 
@@ -96,6 +100,12 @@ public class NavigationItemSelectedListener
 
     private int getOrgIdFromDrawerItem(IDrawerItem drawerItem) {
         return ((Organization)drawerItem.getTag()).getEntryId();
+    }
+
+    private Intent addFlags(Intent intent){
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
     }
 
     private void openActivity(Intent intent) {
