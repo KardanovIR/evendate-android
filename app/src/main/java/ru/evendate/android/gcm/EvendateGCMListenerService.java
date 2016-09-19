@@ -24,6 +24,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.Statistics;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.MainActivity;
 import ru.evendate.android.ui.OrganizationDetailActivity;
 import ru.evendate.android.ui.SettingsActivity;
 import ru.evendate.android.ui.UserProfileActivity;
@@ -54,6 +55,7 @@ public class EvendateGCMListenerService extends GcmListenerService {
         final String EVENT_TYPE = "events";
         final String ORGANIZATION_TYPE = "organizations";
         final String USER_TYPE = "users";
+        final String RECOMMENDATION_TYPE = "recommendations_organizations";
         final String DEBUG_TYPE = "debug";
 
         String message = data.getString(MESSAGE);
@@ -86,6 +88,14 @@ public class EvendateGCMListenerService extends GcmListenerService {
                     int userId = Integer.valueOf(data.getString(USER_ID));
                     intent.setData(EvendateContract.UserEntry.getContentUri(userId));
                     break;
+                case RECOMMENDATION_TYPE:
+                    intent = new Intent(this, MainActivity.class);
+                    intent.putExtra(MainActivity.SHOW_ONBOARDING, true);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    sendNotification(message, intent, imageUrl);
+                    return;
                 case DEBUG_TYPE:
                     //if (!BuildConfig.DEBUG)
                     return;

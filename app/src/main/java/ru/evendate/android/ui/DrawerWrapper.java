@@ -48,6 +48,7 @@ public class DrawerWrapper {
     final static int FRIENDS_IDENTIFIER = 4;
     final static int SETTINGS_IDENTIFIER = 5;
     Context mContext;
+    OnSubLoadListener listener;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -63,6 +64,10 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
+
+    interface OnSubLoadListener {
+        void onSubLoaded();
+    }
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -122,6 +127,14 @@ public class DrawerWrapper {
 
     protected Drawer getDrawer() {
         return mDrawer;
+    }
+
+    public ArrayList<OrganizationSubscription> getSubs(){
+        return mSubscriptions;
+    }
+
+    public void setListener(OnSubLoadListener listener) {
+        this.listener = listener;
     }
 
     public void loadSubs() {
@@ -184,6 +197,8 @@ public class DrawerWrapper {
     public void onLoaded(ArrayList<OrganizationSubscription> subList) {
         mSubscriptions = subList;
         updateSubs();
+        if(listener != null)
+            listener.onSubLoaded();
     }
 
     public void update() {

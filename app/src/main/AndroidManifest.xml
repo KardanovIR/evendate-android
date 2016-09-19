@@ -46,21 +46,17 @@
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.OrganizationCatalogActivity"
             android:label="@string/title_activity_organization"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.CalendarActivity"
             android:label="@string/drawer_calendar"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.EventDetailActivity"
@@ -80,7 +76,6 @@
         </activity>
         <activity
             android:name=".ui.OrganizationDetailActivity"
-            android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -107,13 +102,11 @@
             android:name=".ui.SettingsActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_settings"
-            android:launchMode="singleTop"
             />
 
         <activity
             android:name=".auth.AuthActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".auth.IntroActivity"
             android:screenOrientation="portrait"/>

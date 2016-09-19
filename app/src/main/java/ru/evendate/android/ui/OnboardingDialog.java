@@ -139,7 +139,7 @@ public class OnboardingDialog extends DialogFragment {
     public class OnboardingAdapter extends ArrayAdapter<OrganizationFull> {
         private final Activity context;
         private boolean[] checked;
-        private List<OrganizationFull> mList;
+        private List<OrganizationFull> mList = new ArrayList<>();
 
         public OnboardingAdapter(Activity context) {
             super(context, R.layout.item_onboarding);
