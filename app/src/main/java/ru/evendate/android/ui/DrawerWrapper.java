@@ -85,14 +85,16 @@ public class DrawerWrapper {
                 .build();
         result.withActivity(context)
                 .withAccountHeader(headerResult);
-        DrawerWrapper drawer = new DrawerWrapper(result.build(), headerResult, context);
-        drawer.setupMenu();
+        Drawer drawer = result.build();
+        drawer.keyboardSupportEnabled(context, true);
+        DrawerWrapper drawerWrapper = new DrawerWrapper(drawer, headerResult, context);
+        drawerWrapper.setupMenu();
 
         if (Build.VERSION.SDK_INT >= 19) {
-            drawer.getDrawer().getDrawerLayout().setFitsSystemWindows(false);
+            drawer.getDrawerLayout().setFitsSystemWindows(false);
         }
 
-        return drawer;
+        return drawerWrapper;
     }
 
     public void setupMenu() {

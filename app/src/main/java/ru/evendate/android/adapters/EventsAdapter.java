@@ -37,10 +37,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by Dmitry on 01.12.2015.
- */
-
 public class EventsAdapter extends AppendableAdapter<EventFeed> {
     private String LOG_TAG = EventsAdapter.class.getSimpleName();
 
@@ -177,8 +173,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             final int INVITE_ID = 2;
             final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle(mTitleTextView.getText())
-                    .setItems(getDialogTextItems(), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setItems(getDialogTextItems(), (DialogInterface dialog, int which) -> {
                             String toastText = mContext.getString(R.string.toast_event) +
                                     " «" + mTitleTextView.getText() + "» ";
                             switch (which) {
@@ -198,7 +193,6 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                                     break;
                             }
                             Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
-                        }
                     });
             builder.create().show();
             return true;
@@ -207,12 +201,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         private CharSequence[] getDialogTextItems() {
             String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
                     mContext.getString(R.string.dialog_event_fave);
-            CharSequence[] items = {
-                    mContext.getString(R.string.dialog_event_hide),
-                    fave,
-                    //mContext.getString(R.string.dialog_event_invite_friend)
+            return new CharSequence[] {
+                mContext.getString(R.string.dialog_event_hide),
+                        fave,
+                //mContext.getString(R.string.dialog_event_invite_friend)
             };
-            return items;
         }
     }
 

@@ -1,6 +1,8 @@
 package ru.evendate.android.views;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import ru.evendate.android.models.Tag;
 @SuppressWarnings("unused")
 public class TagsView extends ViewGroup {
     private ArrayList<Tag> mTags;
+    private OnTagClickListener listener;
 
     public TagsView(Context context) {
         super(context);
@@ -35,6 +38,10 @@ public class TagsView extends ViewGroup {
         invalidate();
     }
 
+    public void setOnTagClickListener(OnTagClickListener onTagClickListener){
+        listener = onTagClickListener;
+    }
+
     public ArrayList<Tag> getTags() {
         return mTags;
     }
@@ -47,6 +54,7 @@ public class TagsView extends ViewGroup {
         for (Tag tag : mTags) {
             TagView tagView = new TagView(getContext());
             tagView.setText(tag.getName());
+            tagView.setOnClickListener((View v) -> listener.onTagClicked(tag.getName()));
             addView(tagView);
         }
     }
@@ -156,7 +164,12 @@ public class TagsView extends ViewGroup {
 
             LayoutInflater inflater = (LayoutInflater)context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            inflater.inflate(R.layout.view_tag, this, true);
+            View view = inflater.inflate(R.layout.view_tag, this, true);
+            if(Build.VERSION.SDK_INT >= 21){
+                view.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.ripple_tag));
+            } else {
+                view.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tag_oval));
+            }
             if (attrs == null) {
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -183,5 +196,9 @@ public class TagsView extends ViewGroup {
         protected void onLayout(boolean changed, int l, int t, int r, int b) {
             super.onLayout(changed, l, t, r, b);
         }
+    }
+
+    public interface OnTagClickListener{
+        void onTagClicked(String tag);
     }
 }

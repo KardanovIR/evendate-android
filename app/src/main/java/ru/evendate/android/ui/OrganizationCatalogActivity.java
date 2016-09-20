@@ -116,7 +116,6 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.action_search:
                 Intent searchIntent = new Intent(this, SearchResultsActivity.class);
-                searchIntent.putExtra(SearchResultsActivity.SEARCH_TYPE, SearchResultsActivity.SearchType.ORGANIZATION.type());
                 startActivity(searchIntent);
                 return true;
             default:

@@ -273,10 +273,28 @@ public interface ApiService {
             @Query("fields") String fields
     );
 
+    @GET(API_PATH + "/users")
+    Observable<ResponseArray<UserDetail>> findUsers(
+            @Header("Authorization") String authorization,
+            @Query("q") String query,
+            @Query("fields") String fields
+    );
+
     @GET(API_PATH + "/events")
     Observable<ResponseArray<EventDetail>> findEvents(
             @Header("Authorization") String authorization,
             @Query("q") String query,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<EventDetail>> findEventsByTags(
+            @Header("Authorization") String authorization,
+            @Query("tags") String queryTags,
             @Query("future") boolean future,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
