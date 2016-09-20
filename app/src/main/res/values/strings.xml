@@ -114,7 +114,10 @@
     <!-- dialogs strings -->
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_skip">Skip</string>
     <string name="dialog_check_organizations">Choose organization</string>
+    <string name="dialog_onboadring_title">You\'ll like it</string>
+    <string name="dialog_onboarding_subtitle">We picked a places that suits you</string>
 
 
     <string name="dialog_event_hide">Hide event</string>
@@ -197,7 +200,9 @@
     <!-- search strings -->
     <string name="search_hint">Search</string>
     <string name="search_cap_hint">Begin your search by typing a query into the search box</string>
-    <string name="search_tags_hint">Popular tags</string>
+    <string name="search_empty_org_header">Organizators not found</string>
+    <string name="search_empty_event_header">Events not found</string>
+    <string name="action_search">Search</string>
 
     <string name="search_hint_tag">Find by tags</string>
 

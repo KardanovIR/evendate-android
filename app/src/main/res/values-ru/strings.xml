@@ -136,5 +136,8 @@
     <string name="search_tab_events">События</string>
     <string name="search_tab_users">Пользователи</string>
     <string name="search_tab_orgs">Организаторы</string>
-    <string name="search_tags_hint">Популярные теги</string>
+    <string name="dialog_skip">Пропустить</string>
+    <string name="action_search">Поиск</string>
+    <string name="dialog_onboarding_subtitle">Мы подобрали места, которые подходят Вам</string>
+    <string name="dialog_onboadring_title">Вам понравится</string>
 </resources>

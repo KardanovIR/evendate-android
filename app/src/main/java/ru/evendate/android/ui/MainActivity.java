@@ -2,23 +2,20 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
@@ -35,11 +32,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private Fragment mFragment;
     @Bind(R.id.toolbar) Toolbar mToolbar;
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
     private DrawerWrapper mDrawer;
     public static final int REQUEST_AUTH = 1;
-    private Dialog serviceDialog;
+    public static final String SHOW_ONBOARDING = "onboarding";
+    private static boolean requestOnboarding = false;
+    DialogFragment onboarding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +49,13 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         initDrawer();
 
         mFragment = new MainPagerFragment();
-        ((MainPagerFragment)mFragment).setOnRefreshListener(this);
+        ((MainPagerFragment) mFragment).setOnRefreshListener(this);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
         checkAccount();
-
+        if(getIntent() != null)
+            handleIntent(getIntent());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -68,16 +66,21 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
     private void initTransitions() {
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setEnterTransition(new Fade());
             getWindow().setReenterTransition(new Fade());
             getWindow().setExitTransition(new Fade());
         }
     }
+
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
+        mDrawer.setListener(() -> {
+            if(mDrawer.getSubs().size() == 0)
+                showOndoarding();
+        });
     }
 
     @Override
@@ -100,40 +103,24 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+        requestOnboarding = intent.getBooleanExtra(SHOW_ONBOARDING, false);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         //TODO cause auth flow
         mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(serviceDialog != null)
-            serviceDialog.dismiss();
-        mDrawer.cancel();
-    }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    public boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                serviceDialog = apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
-                serviceDialog.show();
-            } else {
-                Log.i(LOG_TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
+        if(requestOnboarding){
+            forceShowOndoarding();
+            requestOnboarding = false;
         }
-        return true;
     }
 
     /**
@@ -155,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_AUTH) {
-            if(resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_CANCELED) {
                 finish();
             }
         }
@@ -164,6 +151,27 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     @Override
     public void onRefresh() {
         mDrawer.update();
+    }
+
+    private void showOndoarding() {
+        if (onboarding != null)
+            return;
+        onboarding = new OnboardingDialog();
+        onboarding.show(getSupportFragmentManager(), "onboarding");
+    }
+
+    private void forceShowOndoarding() {
+        if(getSupportFragmentManager().findFragmentByTag("onboarding") != null)
+            return;
+        onboarding = new OnboardingDialog();
+        onboarding.show(getSupportFragmentManager(), "onboarding");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (onboarding != null)
+            onboarding.dismissAllowingStateLoss();
     }
 
     /**
@@ -192,8 +200,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public void onBackPressed() {
         if (mDrawer.getDrawer().isDrawerOpen()) {
             mDrawer.getDrawer().closeDrawer();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
