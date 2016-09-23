@@ -203,7 +203,7 @@
     <string name="search_empty_org_header">Organizators not found</string>
     <string name="search_empty_event_header">Events not found</string>
     <string name="action_search">Search</string>
-
+    <string name="search_tags_hint">Popular tags</string>
     <string name="search_hint_tag">Find by tags</string>
 
     <!-- tabs strings in search activity -->

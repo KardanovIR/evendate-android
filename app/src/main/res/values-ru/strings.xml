@@ -140,4 +140,5 @@
     <string name="action_search">Поиск</string>
     <string name="dialog_onboarding_subtitle">Мы подобрали места, которые подходят Вам</string>
     <string name="dialog_onboadring_title">Вам понравится</string>
+    <string name="search_tags_hint">Популярные теги</string>
 </resources>
