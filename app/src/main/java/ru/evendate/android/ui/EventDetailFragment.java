@@ -53,7 +53,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -233,9 +232,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconContainer.setVisibility(View.INVISIBLE);
+        mTitleContainer.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mEventContentContainer.setVisibility(View.GONE);
-        mTitleContainer.setBackgroundColor(Color.TRANSPARENT);
         return rootView;
     }
 
@@ -450,8 +449,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
-        mTitleTextView.setVisibility(View.VISIBLE);
-        mTitleContainer.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primary));
     }
 
     public void onError() {
@@ -754,14 +751,12 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         NotificationListAdapter adapter;
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.dialog_multichoice, null);
-        alertDialog.setView(convertView);
+        View convertView = inflater.inflate(R.layout.dialog_add_notifiaction_button, null);
         alertDialog.setTitle(getString(R.string.action_add_notification));
-
-        ListView lv = (ListView)convertView.findViewById(R.id.listView);
         adapter = new NotificationListAdapter(getActivity(),
                 NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
-        lv.setAdapter(adapter);
+        alertDialog.setAdapter(adapter, null);
+        alertDialog.setView(convertView);
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> {
             adapter.update();
         });
