@@ -6,17 +6,31 @@
         <item name="colorAccent">@color/accent</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogCustom</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
-    <style name="ThemeToolbar" parent="Theme.AppCompat.Light">
-        <!-- navigation icon color -->
-        <item name="colorControlNormal">@color/md_white_1000</item>
-        <!-- color of the menu overflow icon -->
-        <item name="android:textColorSecondary">@color/md_white_1000</item>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.SearchViewOverlay">
+        <item name="searchViewStyle">@style/SearchViewNoIcon</item>
+    </style>
+
+    <style name="AppTheme.Fullscreen" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="SearchViewNoIcon" parent="Widget.AppCompat.Light.SearchView">
+        <item name="searchHintIcon">@null</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
+    <style name="PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/Preference.Category</item>
     </style>
 
     <style name="DialogCustom" parent="Theme.AppCompat.Light.Dialog">
@@ -31,15 +45,17 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
-
     <style name="NotificationDialog" parent="DialogCustom">
         <item name="android:minWidth">280dp</item>
     </style>
 
-    <style name="TextAppearance.CollapsingToolbar" parent="TextAppearance.AppCompat.Large">
-        <item name="android:textSize">10pt</item>
-        <item name="android:textStyle">bold</item>
+    <style name="TabStyle" parent="Widget.Design.TabLayout">
+        <item name="tabTextColor">#AAFFFFFF</item>
+        <item name="tabSelectedTextColor">#FFF</item>
+        <item name="tabIndicatorColor">?attr/colorAccent</item>
+        <item name="tabIndicatorHeight">2dp</item>
     </style>
+
 
     <!-- cards -->
     <style name="FeedCard" parent="CardView">
@@ -100,6 +116,11 @@
     </style>
 
     <!-- text styles -->
+    <style name="TextAppearance.CollapsingToolbar" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textSize">10pt</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Headline" parent="TextAppearance.AppCompat.Headline">
         <item name="android:textSize">24sp</item>
     </style>

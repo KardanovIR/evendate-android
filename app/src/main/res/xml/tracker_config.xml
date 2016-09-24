@@ -9,6 +9,7 @@
 
     <screenName name="ru.evendate.android.ui.MainActivity">Main Screen</screenName>
     <screenName name="ru.evendate.android.auth.AuthActivity">Auth Screen</screenName>
+    <screenName name="ru.evendate.android.auth.WebAuthActivity">Web Auth Screen</screenName>
     <screenName name="ru.evendate.android.ui.EventDetailActivity">Event Screen</screenName>
     <screenName name="ru.evendate.android.ui.OrganizationDetailActivity">Organization Screen</screenName>
     <screenName name="ru.evendate.android.ui.UserListActivity">User List Screen</screenName>
@@ -16,4 +17,6 @@
     <screenName name="ru.evendate.android.ui.UserProfileActivity">User Profile Screen</screenName>
     <screenName name="ru.evendate.android.ui.OrganizationCatalogActivity">Catalog Screen</screenName>
     <screenName name="ru.evendate.android.ui.CalendarActivity">Calendar Screen</screenName>
+    <screenName name="ru.evendate.android.ui.SettingsActivity">Settings Screen</screenName>
+    <screenName name="ru.evendate.android.ui.SearchResultsActivity">Search Screen</screenName>
 </resources>

@@ -80,7 +80,7 @@ public class OrganizationCatalogAdapter extends AbstractAdapter<OrganizationSubs
             if (v.equals(mItem)) {
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(Build.VERSION.SDK_INT > 21)
+                if (Build.VERSION.SDK_INT > 21)
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
                 else

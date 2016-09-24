@@ -32,8 +32,9 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
             app:layout_collapseMode="pin"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             />
     </android.support.design.widget.AppBarLayout>
 
@@ -61,11 +62,11 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 tools:text="ПТ, 11 декабря"
-                android:textColor="@color/text_primary"
+                android:textColor="#FFF"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
             <TextView
                 android:id="@+id/calendar_event_count"
                 android:layout_width="150dp"
@@ -74,7 +75,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentBottom="true"
                 tools:text="4 события"
-                android:textColor="@color/text_primary"
+                android:textColor="#FFF"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"

@@ -2,11 +2,8 @@ package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.transition.Slide;
-import android.view.Gravity;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -36,15 +33,22 @@ public class NavigationItemSelectedListener
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case DrawerWrapper.REEL_IDENTIFIER:
-                openReelActivity(); break;
+                openReelActivity();
+                break;
             case R.id.settings:
                 break;
             case DrawerWrapper.CALENDAR_IDENTIFIER:
-                openCalendarActivity(); break;
+                openCalendarActivity();
+                break;
             case DrawerWrapper.CATALOG_IDENTIFIER:
-                openCatalogActivity(); break;
+                openCatalogActivity();
+                break;
             case DrawerWrapper.FRIENDS_IDENTIFIER:
-                openFriendsActivity(); break;
+                openFriendsActivity();
+                break;
+            case DrawerWrapper.SETTINGS_IDENTIFIER:
+                openSettingsActivity();
+                break;
             //case R.id.nav_add_account:
             //    Intent authIntent = new Intent(mContext, AuthActivity.class);
             //    mContext.startActivity(authIntent);
@@ -56,38 +60,58 @@ public class NavigationItemSelectedListener
         return true;
     }
 
-    private void openReelActivity(){
+    private void openReelActivity() {
         Intent reelIntent = new Intent(mContext, MainActivity.class);
+        reelIntent = addFlags(reelIntent);
         openActivity(reelIntent);
     }
-    private void openCalendarActivity(){
+
+    private void openCalendarActivity() {
         Intent calendarIntent = new Intent(mContext, CalendarActivity.class);
+        calendarIntent = addFlags(calendarIntent);
         openActivity(calendarIntent);
     }
-    private void openCatalogActivity(){
+
+    private void openCatalogActivity() {
         Intent orgIntent = new Intent(mContext, OrganizationCatalogActivity.class);
+        orgIntent = addFlags(orgIntent);
         openActivity(orgIntent);
     }
-    private void openFriendsActivity(){
+
+    private void openFriendsActivity() {
         Intent friendsIntent = new Intent(mContext, UserListActivity.class);
         friendsIntent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.FRIENDS.type());
         openActivity(friendsIntent);
     }
-    private void openOrganizationFromSub(IDrawerItem drawerItem){
+
+    private void openSettingsActivity() {
+        Intent settingsIntent = new Intent(mContext, SettingsActivity.class);
+        settingsIntent = addFlags(settingsIntent);
+        openActivity(settingsIntent);
+    }
+
+    private void openOrganizationFromSub(IDrawerItem drawerItem) {
         int id = getOrgIdFromDrawerItem(drawerItem);
         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
         detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
                 .buildUpon().appendPath(Long.toString(id)).build());
         openActivity(detailIntent);
     }
-    private int getOrgIdFromDrawerItem(IDrawerItem drawerItem){
+
+    private int getOrgIdFromDrawerItem(IDrawerItem drawerItem) {
         return ((Organization)drawerItem.getTag()).getEntryId();
     }
-    private void openActivity(Intent intent){
-        if(Build.VERSION.SDK_INT >= 21){
+
+    private Intent addFlags(Intent intent){
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
+
+    private void openActivity(Intent intent) {
+        if (Build.VERSION.SDK_INT >= 21) {
             mContext.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(mContext).toBundle());
-        }
-        else
+        } else
             mContext.startActivity(intent);
     }
 }

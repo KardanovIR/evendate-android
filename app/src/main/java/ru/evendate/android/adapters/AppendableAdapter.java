@@ -9,9 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import ru.evendate.android.R;
 import ru.evendate.android.ui.AdapterController;
 
@@ -33,11 +30,11 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
         initLastItemsListener(recyclerView);
     }
 
-    public void initLastItemsListener(RecyclerView recyclerView){
+    public void initLastItemsListener(RecyclerView recyclerView) {
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager))
             return;
 
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -48,8 +45,8 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
                 if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                     // End has been reached
                     // Do something
-                    if(mController != null) {
-                        if(mController.isDisable())
+                    if (mController != null) {
+                        if (mController.isDisable())
                             return;
                         loading = true;
                         Log.d(LOG_TAG, "requesting next");
@@ -68,14 +65,14 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
     @Override
     public int getItemCount() {
         final int PROGRESS_VIEW = 1;
-        if(loading)
+        if (loading)
             return super.getItemCount() + PROGRESS_VIEW;
         return super.getItemCount();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(loading)
+        if (loading)
             return PROGRESS_VIEW_TYPE;
         return super.getItemViewType(position);
     }
@@ -91,7 +88,7 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ProgressViewHolder) {
-            ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
+            ((ProgressViewHolder)holder).progressBar.setIndeterminate(true);
         }
     }
 
@@ -109,7 +106,7 @@ public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerVi
 
         public ProgressViewHolder(View v) {
             super(v);
-            progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+            progressBar = (ProgressBar)v.findViewById(R.id.progress_bar);
         }
     }
 }

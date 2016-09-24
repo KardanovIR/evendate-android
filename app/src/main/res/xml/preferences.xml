@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/settings_category_notification">
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="key_notification"
+            android:title="@string/settings_alert"
+            android:defaultValue="true"/>
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="key_indicator"
+            android:title="@string/settings_led"
+            android:defaultValue="true" />
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="key_vibration"
+            android:title="@string/settings_vibration"
+            android:defaultValue="true" />
+        <android.support.v7.preference.Preference
+            android:key="key_indicator_color"
+            android:title="@string/settings_led_color" />
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory
+        android:title="@string/settings_category_main">
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="key_https"
+            android:title="@string/settings_https"
+            android:defaultValue="false"
+            android:summary="@string/settings_https_description" />
+        <android.support.v7.preference.CheckBoxPreference
+            android:key="key_feed_privacy"
+            android:title="@string/settings_feed_privacy"
+            android:defaultValue="true"
+            android:summary="@string/settings_feed_privacy_description"/>
+        <android.support.v7.preference.Preference
+            android:key="key_info"
+            android:title="@string/settings_about" />
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

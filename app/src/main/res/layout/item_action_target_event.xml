@@ -11,7 +11,7 @@
         android:id="@+id/action_target_image"
         android:layout_width="120dp"
         android:layout_height="80dp"
-        tools:src="@drawable/butterfly"
+        tools:src="@drawable/default_background"
         android:scaleType="centerCrop" />
     <TextView
         android:id="@+id/action_target_text_view"

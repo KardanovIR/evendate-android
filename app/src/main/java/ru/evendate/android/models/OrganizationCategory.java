@@ -32,6 +32,6 @@ public class OrganizationCategory extends DataModel {
     }
 
     public ArrayList<OrganizationSubscription> getOrganizations() {
-        return new ArrayList<OrganizationSubscription>(organizations);
+        return new ArrayList<>(organizations);
     }
 }

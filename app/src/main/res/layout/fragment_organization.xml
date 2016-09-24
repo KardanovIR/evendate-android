@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            tools:src="@drawable/butterfly"/>
+            tools:src="@drawable/default_background"/>
 
         <View
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:background="@drawable/toolbar_gradient"/>
     </FrameLayout>
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"
@@ -34,13 +34,13 @@
         tools:listitem="@layout/card_event"/>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:progressDrawable="@drawable/circular_progress_bar"
         android:visibility="gone"
-        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="center"
         tools:visibility="visible"/>
 
@@ -56,8 +56,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="#fff">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
 
             <TextView
                 android:id="@+id/organization_toolbar_title"
