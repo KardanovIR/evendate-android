@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,17 +24,16 @@ import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
 
 
-public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener {
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener, OnboardingDialog.OnOrgSelectedListener {
 
-    private Fragment mFragment;
     @Bind(R.id.toolbar) Toolbar mToolbar;
-
+    private MainPagerFragment mFragment;
     private DrawerWrapper mDrawer;
+
     public static final int REQUEST_AUTH = 1;
     public static final String SHOW_ONBOARDING = "onboarding";
     private static boolean requestOnboarding = false;
-    DialogFragment onboarding;
+    OnboardingDialog onboarding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         initDrawer();
 
         mFragment = new MainPagerFragment();
-        ((MainPagerFragment) mFragment).setOnRefreshListener(this);
+        mFragment.setOnRefreshListener(this);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
         mDrawer.setListener(() -> {
             if(mDrawer.getSubs().size() == 0)
-                showOndoarding();
+                showOnboarding();
         });
     }
 
@@ -118,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
         if(requestOnboarding){
-            forceShowOndoarding();
+            forceShowOnboarding();
             requestOnboarding = false;
         }
     }
@@ -153,18 +150,26 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer.update();
     }
 
-    private void showOndoarding() {
+    private void showOnboarding() {
         if (onboarding != null)
             return;
         onboarding = new OnboardingDialog();
+        onboarding.setOnOrgSelectedListener(this);
         onboarding.show(getSupportFragmentManager(), "onboarding");
     }
 
-    private void forceShowOndoarding() {
+    private void forceShowOnboarding() {
         if(getSupportFragmentManager().findFragmentByTag("onboarding") != null)
             return;
         onboarding = new OnboardingDialog();
+        onboarding.setOnOrgSelectedListener(this);
         onboarding.show(getSupportFragmentManager(), "onboarding");
+    }
+
+    @Override
+    public void onOrgSelected() {
+        mFragment.refresh();
+        mDrawer.update();
     }
 
     @Override
@@ -179,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
      */
     private class MainNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public MainNavigationItemClickListener(Activity context, Drawer drawer) {
+        MainNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
         }
 

@@ -50,6 +50,11 @@ public class OnboardingDialog extends DialogFragment {
     private OnboardingAdapter mAdapter;
     private ProgressBar mProgressBar;
     AlertDialog errorDialog;
+    OnOrgSelectedListener listener;
+
+    interface OnOrgSelectedListener {
+        void onOrgSelected();
+    }
 
     @NonNull
     @Override
@@ -77,6 +82,10 @@ public class OnboardingDialog extends DialogFragment {
         loadOrgs();
         displayProgress();
         return dialog;
+    }
+
+    public void setOnOrgSelectedListener(OnOrgSelectedListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -185,8 +194,9 @@ public class OnboardingDialog extends DialogFragment {
             };
         }
 
+        @NonNull
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
             ViewHolder holder;
             View rowView = convertView;
             if (rowView == null) {
@@ -223,6 +233,7 @@ public class OnboardingDialog extends DialogFragment {
             if (selectedItems[i])
                 subscribe(list.get(i));
         }
+        listener.onOrgSelected();
     }
 
     /**

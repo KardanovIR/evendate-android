@@ -23,6 +23,11 @@ public class LoadStateView extends FrameLayout {
     private ProgressBar progressBar;
     OnReloadListener listener;
 
+    String header;
+    String description;
+    String emptyHeader;
+    String emptyDescription;
+
     public LoadStateView(Context context) {
         super(context, null);
     }
@@ -40,7 +45,7 @@ public class LoadStateView extends FrameLayout {
         progressBar = (ProgressBar)viewGroup.getChildAt(3);
         reloadButton.setOnClickListener((View v) -> {
             showProgress();
-            hideHint();
+            hideText();
             hideReloadButton();
             if (listener != null)
                 listener.onReload();
@@ -55,35 +60,48 @@ public class LoadStateView extends FrameLayout {
         this.listener = listener;
     }
 
-    public void setHeader(String header) {
-        headerView.setText(header);
+    public void setHintHeader(String header) {
+        this.header = header;
     }
 
-    public void setDescription(String description) {
-        descriptionView.setText(description);
+    public void setHintDescription(String description) {
+        this.description = description;
     }
 
+    public void setEmptyHeader(String header) {
+        emptyHeader = header;
+    }
+
+    public void setEmptyDescription(String description) {
+        emptyDescription = description;
+    }
+
+    @Deprecated
     public void setText(String header, String description) {
-        headerView.setText(header);
-        descriptionView.setText(description);
+        this.header = header;
+        this.description = description;
     }
 
-    public void setErrorHint() {
+    private void setErrorHint() {
         headerView.setText(getContext().getString(R.string.state_error));
         descriptionView.setText(getContext().getString(R.string.state_error_description));
     }
 
-    public void setNoInternethint() {
+    private void setHint() {
+        headerView.setText(header);
+        descriptionView.setText(description);
+    }
+
+    private void setEmptyHint(){
+        headerView.setText(emptyHeader);
+        descriptionView.setText(emptyDescription);
+    }
+
+    private void setNoInternethint() {
         headerView.setText(getContext().getString(R.string.state_no_connection));
         descriptionView.setText(getContext().getString(R.string.state_no_connection_description));
     }
 
-    public void hide(){
-        progressBar.setVisibility(GONE);
-        reloadButton.setVisibility(GONE);
-        headerView.setVisibility(GONE);
-        descriptionView.setVisibility(GONE);
-    }
 
     private void showReloadButton() {
         reloadButton.setVisibility(VISIBLE);
@@ -93,7 +111,14 @@ public class LoadStateView extends FrameLayout {
         reloadButton.setVisibility(GONE);
     }
 
-    private void hideHint() {
+    private void hideText() {
+        headerView.setVisibility(GONE);
+        descriptionView.setVisibility(GONE);
+    }
+
+    public void hide(){
+        progressBar.setVisibility(GONE);
+        reloadButton.setVisibility(GONE);
         headerView.setVisibility(GONE);
         descriptionView.setVisibility(GONE);
     }
@@ -104,11 +129,12 @@ public class LoadStateView extends FrameLayout {
 
     public void showProgress() {
         progressBar.setVisibility(VISIBLE);
-        hideHint();
+        hideText();
         hideReloadButton();
     }
 
     public void showHint() {
+        setHint();
         hideProgress();
         hideReloadButton();
         headerView.setVisibility(VISIBLE);
@@ -116,8 +142,16 @@ public class LoadStateView extends FrameLayout {
     }
 
     public void showErrorHint() {
+        setErrorHint();
         hideProgress();
         showReloadButton();
+        headerView.setVisibility(VISIBLE);
+        descriptionView.setVisibility(VISIBLE);
+    }
+
+    public void showEmptryHint() {
+        setEmptyHint();
+        hideProgress();
         headerView.setVisibility(VISIBLE);
         descriptionView.setVisibility(VISIBLE);
     }

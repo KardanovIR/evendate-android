@@ -9,38 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="276dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/ll_feed_empty">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/tv_feed_header"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textColor="@color/feed_empty_text_color"
-                android:layout_marginBottom="40dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/tv_feed_emptyText"
-                android:fontFamily="sans-serif"
-                android:textSize="14sp"
-                android:textColor="@color/feed_empty_text_color"
-                android:gravity="center_horizontal"/>
-        </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -49,13 +17,11 @@
             android:scrollbars="vertical"
             tools:listitem="@layout/card_event"
             android:background="@color/window_reel_background"/>
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleLarge"
+
+        <ru.evendate.android.views.LoadStateView
+            android:id="@+id/load_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center_horizontal|top"
-            android:progressDrawable="@drawable/circular_progress_bar"/>
+            android:layout_gravity="center"/>
     </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

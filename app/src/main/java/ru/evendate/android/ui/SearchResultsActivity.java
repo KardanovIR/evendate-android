@@ -216,7 +216,6 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     public void onError(Throwable error) {
         Log.e(LOG_TAG, error.getMessage());
-        mLoadStateView.setErrorHint();
         mLoadStateView.showErrorHint();
     }
 
@@ -357,8 +356,14 @@ public class SearchResultsActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_search, container, false);
             ButterKnife.bind(this, rootView);
             initRecyclerView();
-            mLoadStateView.setOnReloadListener(this);
+            initLoadStateView();
             return rootView;
+        }
+
+        private void initLoadStateView(){
+            mLoadStateView.setOnReloadListener(this);
+            mLoadStateView.setEmptyHeader(getContext().getString(R.string.search_empty_header));
+            mLoadStateView.setEmptyDescription(getContext().getString(R.string.search_empty_description));
         }
 
         protected void initRecyclerView() {
@@ -375,7 +380,6 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         public void onError(Throwable error) {
             Log.e(LOG_TAG, error.getMessage());
-            mLoadStateView.setErrorHint();
             mLoadStateView.showErrorHint();
         }
 
@@ -385,10 +389,8 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
 
         protected void checkListAndShowHint() {
-            mLoadStateView.setHeader(getContext().getString(R.string.search_empty_header));
-            mLoadStateView.setDescription(getContext().getString(R.string.search_empty_description));
             if (mAdapter.isEmpty())
-                mLoadStateView.showHint();
+                mLoadStateView.showEmptryHint();
         }
 
         @Override

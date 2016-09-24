@@ -4,20 +4,15 @@ package ru.evendate.android.ui;
  * Created by Dmitry on 23.09.2015.
  */
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +32,7 @@ import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.views.LoadStateView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -46,19 +42,15 @@ import rx.schedulers.Schedulers;
  * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment implements AdapterController.AdapterContext {
+public class ReelFragment extends Fragment implements AdapterController.AdapterContext, LoadStateView.OnReloadListener  {
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
     boolean refreshTurnOn = false;
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
-
-    @Bind(R.id.tv_feed_header) TextView mFeedEmptyHeader;
-    @Bind(R.id.tv_feed_emptyText) TextView mFeedEmptyTextView;
-    @Bind(R.id.ll_feed_empty) LinearLayout mFeedEmptyLayout;
 
     static final String TYPE = "type";
     private int type = 0;
@@ -149,16 +141,13 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         View rootView = inflater.inflate(R.layout.fragment_reel, container, false);
         ButterKnife.bind(this, rootView);
 
-        mProgressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent),
-                PorterDuff.Mode.SRC_IN);
-
         initRefresh();
         initRecyclerView();
         mAdapter = new EventsAdapter(getActivity(), mRecyclerView, type);
         mAdapterController = new AdapterController(this, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
-        setCap();
-        mProgressBar.setVisibility(View.VISIBLE);
+        setEmptuCap();
+        mLoadStateView.setOnReloadListener(this);
         return rootView;
     }
 
@@ -166,8 +155,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         if (!refreshTurnOn)
             mSwipeRefreshLayout.setEnabled(false);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            mAdapterController.reset();
-            loadEvents();
+            reloadEvents();
             if (mRefreshListenerList != null) {
                 for (OnRefreshListener listener : mRefreshListenerList) {
                     listener.onRefresh();
@@ -197,16 +185,16 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mRecyclerView.setItemAnimator(new LandingAnimator());
     }
 
-    private void setCap() {
+    private void setEmptuCap() {
         ReelType reelType = ReelType.getType(type);
         if (reelType == ReelType.FEED) {
-            mFeedEmptyHeader.setText(getResources().getString(R.string.feed_empty_header));
-            mFeedEmptyTextView.setText(getResources().getString(R.string.feed_empty_text));
+            mLoadStateView.setEmptyHeader(getResources().getString(R.string.feed_empty_header));
+            mLoadStateView.setEmptyDescription(getResources().getString(R.string.feed_empty_text));
         } else if (reelType == ReelType.FAVORITES) {
-            mFeedEmptyHeader.setText(getResources().getString(R.string.favourites_empty_header));
-            mFeedEmptyTextView.setText(getResources().getString(R.string.favourites_empty_text));
+            mLoadStateView.setEmptyHeader(getResources().getString(R.string.favourites_empty_header));
+            mLoadStateView.setEmptyDescription(getResources().getString(R.string.favourites_empty_text));
         } else if (reelType == ReelType.RECOMMENDATION) {
-            mFeedEmptyHeader.setText(getResources().getString(R.string.recommendation_empty_header));
+            mLoadStateView.setEmptyHeader(getResources().getString(R.string.recommendation_empty_header));
         }
     }
 
@@ -220,6 +208,11 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadEvents();
+    }
+
+    @Override
+    public void onReload() {
+        reloadEvents();
     }
 
     public EventsAdapter getAdapter() {
@@ -246,14 +239,32 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         if (type != ReelType.CALENDAR.type())
             return;
         this.mDate = mDate;
-        mAdapterController.reset();
         mAdapter.reset();
-        loadEvents();
-        mProgressBar.setVisibility(View.VISIBLE);
+        reloadEvents();
     }
 
     private void loadEvents() {
-        hideCap();
+        mLoadStateView.showProgress();
+        getDataObservable().subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> onLoaded(new ArrayList<>(result.getData())),
+                        this::onError,
+                        mLoadStateView::hideProgress
+                );
+    }
+
+    public void reloadEvents() {
+        mLoadStateView.hide();
+        mAdapterController.reset();
+        getDataObservable().subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> onReloaded(new ArrayList<>(result.getData())),
+                        this::onError,
+                        mLoadStateView::hideProgress
+                );
+    }
+
+    private Observable<ResponseArray<EventDetail>> getDataObservable() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<EventDetail>> observable;
 
@@ -279,17 +290,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
             default:
                 throw new RuntimeException("unknown type");
         }
-
-        observable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    onLoaded(new ArrayList<>(result.getData()));
-                }, error -> {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mProgressBar.setVisibility(View.GONE);
-                    Log.e(LOG_TAG, "" + error.getMessage());
-                }, () -> Log.i(LOG_TAG, "Complete!"));
+        return observable;
     }
 
     private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
@@ -323,32 +324,33 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
-    public void onLoaded(ArrayList<EventFeed> events) {
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mAdapterController.reloaded(events);
-        } else
-            mAdapterController.loaded(events);
+    public void onError(Throwable error) {
+        Log.e(LOG_TAG, error.getMessage());
         mSwipeRefreshLayout.setRefreshing(false);
-        mProgressBar.setVisibility(View.GONE);
+        mLoadStateView.showErrorHint();
+    }
+
+    public void onLoaded(ArrayList<EventFeed> events) {
+        mAdapterController.loaded(events);
+        mSwipeRefreshLayout.setRefreshing(false);
         if (mDataListener != null)
             mDataListener.onEventsDataLoaded();
-        if (mAdapter.isEmpty()) {
-            displayCap();
-        }
+        checkListAndShowHint();
+    }
+
+    public void onReloaded(ArrayList<EventFeed> events){
+        mAdapterController.reloaded(events);
+        mSwipeRefreshLayout.setRefreshing(false);
+        checkListAndShowHint();
+    }
+
+    protected void checkListAndShowHint() {
+        if (mAdapter.isEmpty())
+            mLoadStateView.showEmptryHint();
     }
 
     @Override
     public void requestNext() {
         loadEvents();
-    }
-
-    private void displayCap() {
-        mFeedEmptyLayout.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
-    }
-
-    private void hideCap() {
-        mFeedEmptyLayout.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }
