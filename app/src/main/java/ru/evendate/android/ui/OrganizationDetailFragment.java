@@ -107,13 +107,13 @@ public class OrganizationDetailFragment extends Fragment implements
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             mBackgroundView.setImageBitmap(bitmap);
-            revealView(mBackgroundView);
+            revealView(mOrganizationImageContainer);
         }
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
             mBackgroundView.setImageDrawable(errorDrawable);
-            revealView(mBackgroundView);
+            revealView(mOrganizationImageContainer);
         }
 
         @Override
@@ -147,7 +147,6 @@ public class OrganizationDetailFragment extends Fragment implements
                 .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
 
         mOrganizationImageContainer.setVisibility(View.INVISIBLE);
-        mBackgroundView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
@@ -442,7 +441,6 @@ public class OrganizationDetailFragment extends Fragment implements
                 .noFade()
                 .into(backgroundTarget);
         mToolbarTitle.setText(organization.getShortName());
-        mOrganizationImageContainer.setVisibility(View.VISIBLE);
     }
 
     public void onLoadedEvents(ArrayList<EventFeed> events) {

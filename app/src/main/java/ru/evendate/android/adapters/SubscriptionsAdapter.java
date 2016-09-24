@@ -50,7 +50,7 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
     public void onBindViewHolder(SubscriptionHolder holder, int position) {
         OrganizationSubscription subEntry = getItem(position);
         holder.id = subEntry.getEntryId();
-        holder.mOrganizationNameTextView.setText(subEntry.getName());
+        holder.mOrganizationNameTextView.setText(subEntry.getShortName());
         Picasso.with(mContext)
                 .load(subEntry.getLogoSmallUrl())
                 .error(R.mipmap.ic_launcher)

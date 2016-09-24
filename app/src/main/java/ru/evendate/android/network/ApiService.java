@@ -18,6 +18,7 @@ import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
+import ru.evendate.android.models.Tag;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -286,7 +287,7 @@ public interface ApiService {
     @GET(API_PATH + "/users")
     Observable<ResponseArray<UserDetail>> findUsers(
             @Header("Authorization") String authorization,
-            @Query("q") String query,
+            @Query("name") String name,
             @Query("fields") String fields
     );
 
@@ -310,5 +311,12 @@ public interface ApiService {
             @Query("order_by") String orderBy,
             @Query("length") int length,
             @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/tags")
+    Observable<ResponseArray<Tag>> getTopTags(
+            @Header("Authorization") String authorization,
+            @Query("used_since") String usedSince,
+            @Query("length") int length
     );
 }

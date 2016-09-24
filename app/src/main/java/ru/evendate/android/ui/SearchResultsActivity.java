@@ -28,7 +28,11 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,6 +50,7 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
+import ru.evendate.android.models.Tag;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
@@ -189,19 +194,21 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     }
 
-    //todo
     private void loadTags() {
         mLoadStateView.showProgress();
         ApiService apiService = ApiFactory.getService(this);
 
-        Observable<ResponseArray<EventDetail>> observable =
-                apiService.getEvent(EvendateAccountManager.peekToken(this), 4413,
-                        EventDetail.FIELDS_LIST);
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, -10);
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Observable<ResponseArray<Tag>> observable =
+                apiService.getTopTags(EvendateAccountManager.peekToken(this), dateFormat.format(c.getTime()), 10);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> tagsView.setTags(result.getData().get(0).getTagList()),
+                        result -> tagsView.setTags(result.getData()),
                         this::onError,
                         mLoadStateView::hideProgress
                 );
@@ -491,7 +498,6 @@ public class SearchResultsActivity extends AppCompatActivity {
             mRecyclerView.setAdapter(mAdapter);
         }
 
-        //todo
         @Override
         protected void loadData() {
             onStartLoad();

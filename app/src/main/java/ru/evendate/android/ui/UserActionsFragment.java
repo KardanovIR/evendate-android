@@ -99,7 +99,7 @@ public class UserActionsFragment extends Fragment {
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                });
     }
 
     public void onLoaded(ArrayList<Action> list) {

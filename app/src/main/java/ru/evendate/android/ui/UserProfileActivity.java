@@ -300,10 +300,4 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {}
         });
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mDrawer.cancel();
-    }
 }
