@@ -60,6 +60,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         BEFORE_WEEK("notification-before-week"),
         BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
         EVENT_CHANGED_PRICE("notification-event-changed-price"),
+        EVENT_ONE_DAY_REGISTRATION_CLOSE("notification-one-day-registration-close"),
 
         NOTIFICATION_UNDEFINED("undefined");
 

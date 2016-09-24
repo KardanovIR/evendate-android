@@ -28,8 +28,7 @@ public class NotificationConverter {
             set.remove(eventNotification);
         }
         for (EventNotification eventNotification : set) {
-            if (eventNotification.getNotificationType().equals("notification-now")
-                    || eventNotification.getNotificationType().equals("notification-event-changed-dates"))
+            if (!checkType(eventNotification.getNotificationType()))
                 continue;
             Notification notification = new Notification(eventNotification.getNotificationType());
             notification.checked = true;
@@ -37,6 +36,14 @@ public class NotificationConverter {
             list.add(notification);
         }
         return list;
+    }
+
+    private static boolean checkType(String type) {
+        for (String defType : getDefaultTypes()) {
+            if(type.equals(defType))
+                return true;
+        }
+        return false;
     }
 
     static String[] getDefaultTypes() {

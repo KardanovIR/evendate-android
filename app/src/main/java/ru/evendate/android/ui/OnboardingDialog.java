@@ -233,6 +233,7 @@ public class OnboardingDialog extends DialogFragment {
             if (selectedItems[i])
                 subscribe(list.get(i));
         }
+        //todo fix, cause refresh take place before subscribing done
         listener.onOrgSelected();
     }
 
