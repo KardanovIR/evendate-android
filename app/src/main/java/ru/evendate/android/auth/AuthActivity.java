@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -218,12 +217,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 serviceDialog = apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
-                serviceDialog.setOnCancelListener(
-                        (DialogInterface dialogInterface) -> setGoogleInactive()
-                );
-                serviceDialog.setOnDismissListener(
-                        (DialogInterface dialogInterface) -> setGoogleInactive()
-                );
                 serviceDialog.show();
             } else {
                 Log.i(LOG_TAG, "This device is not supported.");
@@ -231,12 +224,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             return false;
         }
         return true;
-    }
-
-    private void setGoogleInactive() {
-        googleButton.setClickable(false);
-        googleButton.setEnabled(false);
-        googleButton.setBackground(getResources().getDrawable(R.drawable.auth_google_inactive));
     }
 
     @Override
@@ -322,7 +309,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             EvendateAccountManager.setActiveAccountName(this, account.name);
         } else {
             Log.i(LOG_TAG, "cannot add account");
-            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
             return;
