@@ -19,7 +19,7 @@
             android:fontFamily="sans-serif-light"
             android:textSize="24sp"
             android:textColor="@color/feed_empty_text_color"
-            android:text="@string/users_empty_text"
+            android:text="@string/list_users_empty_text"
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_marginLeft="40dp"

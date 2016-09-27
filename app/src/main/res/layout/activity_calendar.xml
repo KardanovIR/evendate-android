@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
         app:mcv_showOtherDates="false"
-        app:mcv_arrowColor="@color/arrow_color"
         app:mcv_selectionColor="@color/primary"
         app:mcv_firstDayOfWeek="monday"
         app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Medium"

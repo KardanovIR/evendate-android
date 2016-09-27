@@ -2,16 +2,12 @@ package ru.evendate.android.models;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.ui.AdapterController;
-
 /**
  * Created by ds_gordeev on 11.03.2016.
  */
 public interface OrganizationDetail {
     String FIELDS_LIST = "description,site_url,img_medium_url,subscribed_count,is_subscribed,default_address," +
-            "background_medium_img_url," +
-            "subscribed,events{filters:'future=true',fields:'" + EventFeed.FIELDS_LIST + "',length:" +
-            AdapterController.EVENTS_LENGTH + ",order_by:'" + EventFeed.ORDER_BY_TIME + "'}";
+            "background_medium_img_url,subscribed";
 
 
     int getEntryId();
@@ -39,6 +35,4 @@ public interface OrganizationDetail {
     void subscribe();
 
     String getDefaultAddress();
-
-    ArrayList<EventFeed> getEventsList();
 }

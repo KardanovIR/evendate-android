@@ -15,6 +15,11 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="AppTheme.FullScreenDialogOverlay">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">false</item>
+    </style>
+
     <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/accent</item> <!-- colorAccent here seems to work just fine? -->
         <item name="android:timePickerStyle">@style/TimePickerDialogStyle</item>

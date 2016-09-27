@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -31,6 +32,7 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.NetworkRequests;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.LoadStateView;
 import rx.Observable;
@@ -42,7 +44,7 @@ import rx.schedulers.Schedulers;
  * used in calendar, main pager activities
  * contain recycle view with cards for event list
  */
-public class ReelFragment extends Fragment implements AdapterController.AdapterContext, LoadStateView.OnReloadListener  {
+public class ReelFragment extends Fragment implements AdapterController.AdapterContext, LoadStateView.OnReloadListener {
     private String LOG_TAG = ReelFragment.class.getSimpleName();
 
     @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
@@ -67,6 +69,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         FEED(0),
         FAVORITES(1),
         ORGANIZATION(2),
+        ORGANIZATION_PAST(5),
         CALENDAR(3),
         RECOMMENDATION(4);
 
@@ -94,9 +97,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private ArrayList<OnRefreshListener> mRefreshListenerList;
 
 
-    public static ReelFragment newInstance(int type, int organizationId, boolean enableRefreshing) {
+    public static ReelFragment newInstance(ReelType type, int organizationId, boolean enableRefreshing) {
         ReelFragment reel = new ReelFragment();
-        reel.type = type;
+        reel.type = type.type();
         reel.organizationId = organizationId;
         reel.refreshTurnOn = enableRefreshing;
         return reel;
@@ -146,7 +149,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mAdapter = new EventsAdapter(getActivity(), mRecyclerView, type);
         mAdapterController = new AdapterController(this, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
-        setEmptuCap();
+        setEmptyCap();
         mLoadStateView.setOnReloadListener(this);
         return rootView;
     }
@@ -185,16 +188,24 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         mRecyclerView.setItemAnimator(new LandingAnimator());
     }
 
-    private void setEmptuCap() {
-        ReelType reelType = ReelType.getType(type);
-        if (reelType == ReelType.FEED) {
-            mLoadStateView.setEmptyHeader(getResources().getString(R.string.feed_empty_header));
-            mLoadStateView.setEmptyDescription(getResources().getString(R.string.feed_empty_text));
-        } else if (reelType == ReelType.FAVORITES) {
-            mLoadStateView.setEmptyHeader(getResources().getString(R.string.favourites_empty_header));
-            mLoadStateView.setEmptyDescription(getResources().getString(R.string.favourites_empty_text));
-        } else if (reelType == ReelType.RECOMMENDATION) {
-            mLoadStateView.setEmptyHeader(getResources().getString(R.string.recommendation_empty_header));
+    private void setEmptyCap() {
+        switch (ReelType.getType(type)) {
+            case FEED:
+                mLoadStateView.setEmptyHeader(getString(R.string.list_feed_empty_header));
+                mLoadStateView.setEmptyDescription(getString(R.string.list_feed_empty_text));
+                break;
+            case FAVORITES:
+                mLoadStateView.setEmptyHeader(getString(R.string.list_favourites_empty_header));
+                mLoadStateView.setEmptyDescription(getString(R.string.list_favourites_empty_text));
+                break;
+            case RECOMMENDATION:
+                mLoadStateView.setEmptyHeader(getResources().getString(R.string.list_recommendation_empty_header));
+                break;
+            case ORGANIZATION:
+            case ORGANIZATION_PAST:
+                mLoadStateView.setEmptyHeader(getString(R.string.list_organization_empty_header));
+                mLoadStateView.setEmptyDescription(getString(R.string.list_organization_empty_text));
+                break;
         }
     }
 
@@ -281,6 +292,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
             case ORGANIZATION:
                 observable = getOrgEvent(apiService, length, offset, organizationId);
                 break;
+            case ORGANIZATION_PAST:
+                observable = getOrgPastEvent(apiService, length, offset, organizationId);
+                break;
             case CALENDAR:
                 observable = getCalendarEvent(apiService, length, offset, mDate);
                 break;
@@ -311,6 +325,13 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
     }
 
+    private Observable<ResponseArray<EventDetail>> getOrgPastEvent(
+            ApiService apiService, int length, int offset, int organizationId) {
+        String date = NetworkRequests.formatDateForServer(Calendar.getInstance().getTime());
+        return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
+                organizationId, date, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_LAST_DATE, length, offset);
+    }
+
     private Observable<ResponseArray<EventDetail>> getCalendarEvent(ApiService apiService,
                                                                     int length, int offset, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -338,7 +359,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         checkListAndShowHint();
     }
 
-    public void onReloaded(ArrayList<EventFeed> events){
+    public void onReloaded(ArrayList<EventFeed> events) {
         mAdapterController.reloaded(events);
         mSwipeRefreshLayout.setRefreshing(false);
         checkListAndShowHint();
@@ -352,5 +373,6 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Override
     public void requestNext() {
         loadEvents();
+        mLoadStateView.hide();
     }
 }

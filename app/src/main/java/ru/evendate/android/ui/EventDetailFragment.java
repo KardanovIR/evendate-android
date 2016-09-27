@@ -646,10 +646,10 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
                 .setLabel((Long.toString(event.getEntryId())));
         if (event.isFavorite()) {
             statEvent.setAction(getActivity().getString(R.string.stat_action_like));
-            Toast.makeText(getActivity(), R.string.favorite_confirm, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.event_favorite_confirm, Toast.LENGTH_SHORT).show();
         } else {
             statEvent.setAction(getActivity().getString(R.string.stat_action_dislike));
-            Toast.makeText(getActivity(), R.string.remove_favorite_confirm, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.event_favorite_remove_confirm, Toast.LENGTH_SHORT).show();
         }
         tracker.send(statEvent.build());
         mAdapter.setEventInfo();
