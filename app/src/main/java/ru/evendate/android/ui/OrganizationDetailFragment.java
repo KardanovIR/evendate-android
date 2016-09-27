@@ -38,7 +38,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -399,11 +398,9 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
             Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_FullScreenDialogOverlay);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(root);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
             return dialog;
         }
 

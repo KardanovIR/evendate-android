@@ -18,6 +18,12 @@
     <style name="AppTheme.FullScreenDialogOverlay">
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowAnimationStyle">@style/FullScreenDialog.Window</item>
+    </style>
+
+    <style name="FullScreenDialog.Window" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
     <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
