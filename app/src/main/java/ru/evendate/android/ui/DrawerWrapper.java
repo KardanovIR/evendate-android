@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
+import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.models.UserDetail;
@@ -41,28 +43,29 @@ public class DrawerWrapper {
     private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
-    ArrayList<OrganizationSubscription> mSubscriptions;
+    private ArrayList<OrganizationSubscription> mSubscriptions;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
     final static int FRIENDS_IDENTIFIER = 4;
     final static int SETTINGS_IDENTIFIER = 5;
-    Context mContext;
-    OnSubLoadListener listener;
+    private Context mContext;
+    private OnSubLoadListener listener;
+    private static UserDetail mUser;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
+    private PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
+    private PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
             .withIcon(R.drawable.ic_insert_invitation_black).withIdentifier(CALENDAR_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.drawer_organizations)
+    private PrimaryDrawerItem organizationsItem = new PrimaryDrawerItem().withName(R.string.drawer_organizations)
             .withIcon(R.drawable.ic_account_balance_black).withIdentifier(CATALOG_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.drawer_friends)
+    private PrimaryDrawerItem friendsItem = new PrimaryDrawerItem().withName(R.string.drawer_friends)
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
-    PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
+    private PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
 
     interface OnSubLoadListener {
@@ -82,10 +85,21 @@ public class DrawerWrapper {
                 .withActivity(context)
                 .withCompactStyle(false)
                 .withHeaderBackground(R.drawable.gradient_profile)
-                .withOnAccountHeaderListener((View view, IProfile profile, boolean currentProfile) -> false)
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+                        openAccount(context);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        return false;
+                    }
+                })
                 .withAlternativeProfileHeaderSwitching(false)
                 .withOnlySmallProfileImagesVisible(false)
-                .withProfileImagesClickable(false)
+                .withProfileImagesClickable(true)
                 .withOnlyMainProfileImageVisible(true)
                 .build();
         result.withActivity(context)
@@ -102,7 +116,7 @@ public class DrawerWrapper {
         return drawerWrapper;
     }
 
-    public void setupMenu() {
+    private void setupMenu() {
         mDrawer.removeAllItems();
         mDrawer.addItems(
                 reelItem,
@@ -131,15 +145,15 @@ public class DrawerWrapper {
         return mDrawer;
     }
 
-    public ArrayList<OrganizationSubscription> getSubs(){
+    public ArrayList<OrganizationSubscription> getSubs() {
         return mSubscriptions;
     }
 
-    public void setListener(OnSubLoadListener listener) {
+    void setListener(OnSubLoadListener listener) {
         this.listener = listener;
     }
 
-    public void loadSubs() {
+    private void loadSubs() {
         ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<OrganizationFull>> subsObservable =
                 service.getSubscriptions(EvendateAccountManager.peekToken(mContext), OrganizationSubscription.FIELDS_LIST);
@@ -158,7 +172,7 @@ public class DrawerWrapper {
                 });
     }
 
-    public void loadMe() {
+    private void loadMe() {
         ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<UserDetail>> subsObservable =
                 service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
@@ -168,17 +182,17 @@ public class DrawerWrapper {
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
-                        UserDetail user = result.getData().get(0);
+                        mUser = result.getData().get(0);
                         Account account = EvendateAccountManager.getSyncAccount(mContext);
                         if (account == null)
                             return;
 
                         getAccountHeader().clear();
                         getAccountHeader().addProfiles(
-                                new ProfileDrawerItem().withName(user.getFirstName() + " " + user.getLastName())
+                                new ProfileDrawerItem().withName(mUser.getFirstName() + " " + mUser.getLastName())
                                         .withEmail(account.name)
                                         .withIcon(R.drawable.ic_avatar_cap)
-                                        .withIcon(user.getAvatarUrl()),
+                                        .withIcon(mUser.getAvatarUrl()),
                                 new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
                                         .withIcon(R.drawable.ic_exit_to_app_black)
                                         .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
@@ -196,10 +210,10 @@ public class DrawerWrapper {
                 });
     }
 
-    public void onLoaded(ArrayList<OrganizationSubscription> subList) {
+    private void onLoaded(ArrayList<OrganizationSubscription> subList) {
         mSubscriptions = subList;
         updateSubs();
-        if(listener != null)
+        if (listener != null)
             listener.onSubLoaded();
     }
 
@@ -207,7 +221,7 @@ public class DrawerWrapper {
         loadSubs();
     }
 
-    public void onError() {
+    private void onError() {
         //if(isDestroyed())
         //    return;
         //mAlertDialog = ErrorAlertDialogBuilder.newInstance(this, new DialogInterface.OnClickListener() {
@@ -220,11 +234,20 @@ public class DrawerWrapper {
         //mAlertDialog.show();
     }
 
-    public void cancel() {
-    }
-
     public void start() {
         loadSubs();
         loadMe();
+    }
+
+    private static void openAccount(Context context) {
+        if (mUser == null)
+            return;
+        Intent intent = new Intent(context, UserProfileActivity.class);
+        intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(mUser.getEntryId())).build());
+        if (Build.VERSION.SDK_INT >= 21) {
+            context.startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
+        } else
+            context.startActivity(intent);
     }
 }

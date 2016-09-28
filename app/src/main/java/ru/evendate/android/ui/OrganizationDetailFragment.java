@@ -181,6 +181,7 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         mTabs.setupWithViewPager(mViewPager);
         setupPagerStat();
         mLoadStateView.setOnReloadListener(this);
+        mLoadStateView.showProgress();
 
         mAppBarLayout.setVisibility(View.INVISIBLE);
         mViewPager.setVisibility(View.INVISIBLE);
