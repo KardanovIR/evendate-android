@@ -21,6 +21,7 @@ import ru.evendate.android.models.ActionType;
  */
 public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
     RecyclerView.RecycledViewPool actionItemsPool;
+
     public ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
         super(context);
         this.actionItemsPool = actionItemsPool;
@@ -55,7 +56,7 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
 
         public ActionHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             holderView = itemView;
             holderView.setOnClickListener(this);
 

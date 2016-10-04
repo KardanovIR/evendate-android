@@ -70,7 +70,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Bind(R.id.user_avatar) ImageView mUserImageView;
     @Bind(R.id.avatar_container) View mUserImageContainer;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     DrawerWrapper mDrawer;
 
     public static final String INTENT_TYPE = "type";
@@ -94,11 +94,10 @@ public class UserProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white);
+        initToolbar();
+        initProgressBar();
+        initDrawer();
+        initTransitions();
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -119,30 +118,39 @@ public class UserProfileActivity extends AppCompatActivity {
         }
 
         mUserAdapter = new UserAdapter();
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-        mDrawer = DrawerWrapper.newInstance(this);
-        mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         setupStat();
-        initTransitions();
         mUserImageContainer.setVisibility(View.INVISIBLE);
+
+        loadUser();
+        mDrawer.start();
     }
 
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT >= 21){
+    @SuppressWarnings("ConstantConditions")
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+    }
+
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setEnterTransition(new Slide(Gravity.BOTTOM));
             getWindow().setExitTransition(new Slide(Gravity.TOP));
         }
     }
 
+    private void initProgressBar() {
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadUser();
-        mDrawer.start();
+    private void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this);
+        mDrawer.getDrawer().setOnDrawerItemClickListener(
+                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     @Override
@@ -159,7 +167,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 onUpPressed();
                 return true;
             case R.id.action_user_link:
-                if(mUserAdapter.getUser() != null) {
+                if (mUserAdapter.getUser() != null) {
                     String url = mUserAdapter.getUser().getLink();
                     Intent linkIntent = new Intent(Intent.ACTION_VIEW);
                     linkIntent.setData(Uri.parse(url));
@@ -172,22 +180,21 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     //TODO DRY
-    private void onUpPressed(){
-        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+    private void onUpPressed() {
+        ActivityManager activityManager = (ActivityManager)getSystemService(Activity.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
 
-        if(taskList.get(0).numActivities == 1 &&
+        if (taskList.get(0).numActivities == 1 &&
                 taskList.get(0).topActivity.getClassName().equals(getClass().getName())) {
             Log.i(LOG_TAG, "This is last activity in the stack");
             startActivity(NavUtils.getParentActivityIntent(this));
-        }
-        else{
+        } else {
             onBackPressed();
         }
     }
 
-    public void loadUser(){
-        ApiService apiService = ApiFactory.getEvendateService();
+    public void loadUser() {
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<UserDetail>> organizationObservable =
                 apiService.getUser(EvendateAccountManager.peekToken(this),
                         userId, UserDetail.FIELDS_LIST);
@@ -195,7 +202,7 @@ public class UserProfileActivity extends AppCompatActivity {
         organizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(result.getData());
                     else
                         Log.e(LOG_TAG, "Error with response with user");
@@ -216,9 +223,9 @@ public class UserProfileActivity extends AppCompatActivity {
     public void onError() {
         mProgressBar.setVisibility(View.GONE);
         AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(this, (DialogInterface dialog, int which) -> {
-                loadUser();
-                mProgressBar.setVisibility(View.VISIBLE);
-                dialog.dismiss();
+            loadUser();
+            mProgressBar.setVisibility(View.VISIBLE);
+            dialog.dismiss();
         });
         alertDialog.show();
     }
@@ -257,16 +264,16 @@ public class UserProfileActivity extends AppCompatActivity {
             mCollapsingToolbar.setTitle(userName);
             Picasso.with(getBaseContext())
                     .load(mUserDetail.getAvatarUrl())
-                    .error(R.drawable.default_background)
+                    .error(R.mipmap.ic_launcher)
                     .into(target);
         }
     }
 
-    private void revealView(View view){
-        if(view.getVisibility() == View.VISIBLE)
+    private void revealView(View view) {
+        if (view.getVisibility() == View.VISIBLE)
             return;
         view.setVisibility(View.VISIBLE);
-        if(Build.VERSION.SDK_INT < 21)
+        if (Build.VERSION.SDK_INT < 21)
             return;
         int cx = (view.getLeft() + view.getRight()) / 2;
         int cy = (view.getTop() + view.getBottom()) / 2;
@@ -292,11 +299,5 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mDrawer.cancel();
     }
 }

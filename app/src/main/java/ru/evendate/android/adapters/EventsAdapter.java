@@ -10,15 +10,10 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,10 +37,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by Dmitry on 01.12.2015.
- */
-
 public class EventsAdapter extends AppendableAdapter<EventFeed> {
     private String LOG_TAG = EventsAdapter.class.getSimpleName();
 
@@ -61,24 +52,31 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     @Override
     public int getItemViewType(int position) {
         int layoutItemId;
-        if (type == ReelFragment.ReelType.ORGANIZATION.type()) {
-            layoutItemId = R.layout.card_event_organization;
-        } else if (type == ReelFragment.ReelType.FAVORITES.type()) {
-            layoutItemId = R.layout.card_event_feed;
-        } else if (type == ReelFragment.ReelType.CALENDAR.type()) {
-            layoutItemId = R.layout.card_event;
-        } else {
-            layoutItemId = R.layout.card_event_feed;
+        switch (ReelFragment.ReelType.getType(type)) {
+            case ORGANIZATION:
+                layoutItemId = R.layout.card_event_organization;
+                break;
+            case FAVORITES:
+                layoutItemId = R.layout.card_event_feed;
+                break;
+            case CALENDAR:
+                layoutItemId = R.layout.card_event;
+                break;
+            case RECOMMENDATION:
+                layoutItemId = R.layout.card_event_feed;
+                break;
+            default:
+                layoutItemId = R.layout.card_event_feed;
         }
-        if(isLoading() && position == super.getItemCount() - 1)
+        if (isLoading() && position == super.getItemCount() - 1)
             layoutItemId = AppendableAdapter.PROGRESS_VIEW_TYPE;
         return layoutItemId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == AppendableAdapter.PROGRESS_VIEW_TYPE)
-            return super.onCreateViewHolder(parent,viewType);
+        if (viewType == AppendableAdapter.PROGRESS_VIEW_TYPE)
+            return super.onCreateViewHolder(parent, viewType);
         return new EventHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
     }
 
@@ -108,9 +106,9 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (holder.mOrganizationLogo != null)
             Picasso.with(mContext)
                     .load(eventEntry.getOrganizationLogoSmallUrl())
-                    .error(R.drawable.evendate_logo)
+                    .error(R.mipmap.ic_launcher)
                     .into(holder.mOrganizationLogo);
-        if(holder.mPriceTextView != null)
+        if (holder.mPriceTextView != null)
             holder.mPriceTextView.setText(eventEntry.isFree() ?
                     holder.eventFreeLabel : EventFormatter.formatPrice(mContext, eventEntry.getMinPrice()));
     }
@@ -160,11 +158,10 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(event.getEntryId())).build());
-                if(Build.VERSION.SDK_INT >= 21){
+                if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
-                }
-                else
+                } else
                     mContext.startActivity(intent);
             }
         }
@@ -176,18 +173,17 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             final int INVITE_ID = 2;
             final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle(mTitleTextView.getText())
-                    .setItems(getDialogTextItems(), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setItems(getDialogTextItems(), (DialogInterface dialog, int which) -> {
                             String toastText = mContext.getString(R.string.toast_event) +
                                     " «" + mTitleTextView.getText() + "» ";
-                            switch (which){
+                            switch (which) {
                                 case HIDE_ID:
                                     hideEvent(event);
                                     toastText += mContext.getString(R.string.toast_event_hide);
                                     break;
                                 case FAVE_ID:
                                     likeEvent(event);
-                                    if(isFavorited) {
+                                    if (isFavorited) {
                                         toastText += mContext.getString(R.string.toast_event_unfave);
                                     } else {
                                         toastText += mContext.getString(R.string.toast_event_fave);
@@ -197,27 +193,25 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                                     break;
                             }
                             Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
-                        }
                     });
             builder.create().show();
             return true;
         }
 
-        private CharSequence[] getDialogTextItems(){
+        private CharSequence[] getDialogTextItems() {
             String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
                     mContext.getString(R.string.dialog_event_fave);
-            CharSequence[] items = {
-                    mContext.getString(R.string.dialog_event_hide),
-                    fave,
-                    //mContext.getString(R.string.dialog_event_invite_friend)
+            return new CharSequence[] {
+                mContext.getString(R.string.dialog_event_hide),
+                        fave,
+                //mContext.getString(R.string.dialog_event_invite_friend)
             };
-            return items;
         }
     }
 
 
-    private void hideEvent(EventFeed event){
-        ApiService apiService = ApiFactory.getEvendateService();
+    private void hideEvent(EventFeed event) {
+        ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> hideObservable =
                 apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
                         event.getEntryId(), true);
@@ -231,11 +225,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         remove(event);
     }
 
-    private void likeEvent(EventFeed event){
-        ApiService apiService = ApiFactory.getEvendateService();
+    private void likeEvent(EventFeed event) {
+        ApiService apiService = ApiFactory.getService(mContext);
         Observable<Response> likeObservable;
         int id = event.getEntryId();
-        if(event.isFavorite()) {
+        if (event.isFavorite()) {
             likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
             Log.i(LOG_TAG, "disliking event " + id);
         } else {

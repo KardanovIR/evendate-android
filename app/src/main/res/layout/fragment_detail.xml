@@ -5,25 +5,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@color/window_reel_background">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:clickable="true"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        />
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        android:layout_gravity="center_horizontal" />
     <com.nirhart.parallaxscroll.views.ParallaxScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -41,9 +24,8 @@
                     android:id="@+id/event_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
-                    tools:src="@drawable/butterfly"/>
+                    tools:src="@drawable/default_background"/>
                 <ImageView
                     android:id="@+id/event_image_foreground"
                     android:layout_width="match_parent"
@@ -66,10 +48,12 @@
                     android:layout_height="wrap_content"
                     android:textColor="#fff"
                     android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
                     tools:text="Drake Moscow 2016"
-                    android:textSize="22sp"
+                    android:textSize="24sp"
                     android:textIsSelectable="false"
                     android:layout_marginRight="64dp"
+                    android:layout_marginEnd="64dp"
                     android:fontFamily="sans-serif"
                     android:layout_gravity="center_vertical" />
             <View
@@ -80,6 +64,22 @@
             <include layout="@layout/fragment_detail_content"/>
         </LinearLayout>
     </com.nirhart.parallaxscroll.views.ParallaxScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:clickable="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:layout_gravity="center_horizontal" />
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -90,10 +90,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:textColorSecondary="#FFFFFF"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="#fff"
-            app:theme="@style/ThemeToolbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
             >
             <TextView
                 android:id="@+id/event_toolbar_title"

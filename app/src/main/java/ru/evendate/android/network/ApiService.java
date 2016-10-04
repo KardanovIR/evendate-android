@@ -2,7 +2,6 @@ package ru.evendate.android.network;
 
 import java.util.List;
 
-import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -17,8 +16,9 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
-import ru.evendate.android.models.User;
+import ru.evendate.android.models.Tag;
 import ru.evendate.android.models.UserDetail;
 import rx.Observable;
 
@@ -86,6 +86,7 @@ public interface ApiService {
             @Query("length") int length,
             @Query("offset") int offset
     );
+
     /**
      * Get recommended events
      */
@@ -108,6 +109,7 @@ public interface ApiService {
     Observable<Response> eventDeleteFavorite(
             @Path("id") int eventId, @Header("Authorization") String authorization
     );
+
     @POST(API_PATH + "/events/{id}/favorites")
     Observable<Response> likeEvent(
             @Path("id") int eventId, @Header("Authorization") String authorization
@@ -152,6 +154,16 @@ public interface ApiService {
             @Query("fields") String fields
     );
 
+    /**
+     * Get recommended orgs
+     */
+    @GET(API_PATH + "/organizations/recommendations")
+    Observable<ResponseArray<OrganizationFull>> getOrgRecommendations(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
     /**
      * Get subscriptions
      */
@@ -243,7 +255,6 @@ public interface ApiService {
             @Path("uuid") String uuid
     );
 
-
     /**
      * Get friends
      */
@@ -251,5 +262,61 @@ public interface ApiService {
     Observable<ResponseArray<UserDetail>> getFriends(
             @Header("Authorization") String authorization,
             @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/users/settings")
+    Observable<ResponseArray<Settings>> getSettings(
+            @Header("Authorization") String authorization,
+            @Query("as_array") boolean asArray
+    );
+
+    @PUT(API_PATH + "/users/settings")
+    Observable<Response> setSettings(
+            @Header("Authorization") String authorization,
+            @Query("show_to_friends") boolean feedPrivacy
+    );
+
+
+    @GET(API_PATH + "/organizations")
+    Observable<ResponseArray<OrganizationFull>> findOrganizations(
+            @Header("Authorization") String authorization,
+            @Query("q") String query,
+            @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/users")
+    Observable<ResponseArray<UserDetail>> findUsers(
+            @Header("Authorization") String authorization,
+            @Query("name") String name,
+            @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<EventDetail>> findEvents(
+            @Header("Authorization") String authorization,
+            @Query("q") String query,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<EventDetail>> findEventsByTags(
+            @Header("Authorization") String authorization,
+            @Query("tags") String queryTags,
+            @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/tags")
+    Observable<ResponseArray<Tag>> getTopTags(
+            @Header("Authorization") String authorization,
+            @Query("used_since") String usedSince,
+            @Query("length") int length
     );
 }

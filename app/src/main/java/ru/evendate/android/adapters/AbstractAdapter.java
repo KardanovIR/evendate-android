@@ -2,14 +2,9 @@ package ru.evendate.android.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-
-import ru.evendate.android.models.EventFeed;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
@@ -30,18 +25,17 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
 
     public void replace(final List<T> list) {
         int size = mList.size();
-        for(int index = 0; index < list.size(); index++){
-            if(index < size) {
+        for (int index = 0; index < list.size(); index++) {
+            if (index < size) {
                 mList.remove(index);
                 mList.add(index, list.get(index));
                 update(list.get(index));
-            }
-            else{
+            } else {
                 append(list.get(index));
             }
         }
-        if(list.size() < size){
-            List<T> removing =  new ArrayList<>(mList.subList(list.size(), size));
+        if (list.size() < size) {
+            List<T> removing = new ArrayList<>(mList.subList(list.size(), size));
             for (T item : removing) {
                 remove(item);
             }
@@ -53,11 +47,12 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         mList.clear();
         notifyItemRangeRemoved(0, size);
     }
-    public boolean isEmpty(){
+
+    public boolean isEmpty() {
         return mList.size() == 0;
     }
 
-    protected T getItem(int position){
+    protected T getItem(int position) {
         return mList.get(position);
     }
 

@@ -20,6 +20,10 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragme
     private final int FAVE_TAB = 1;
     private final int RECOMMEND_TAB = 2;
 
+    ReelFragment reelFragment;
+    ReelFragment faveFragment;
+    ReelFragment recommendFragment;
+
 
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         listener = refreshListener;
@@ -34,19 +38,19 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragme
     public Fragment getItem(int position) {
         switch (position) {
             case REEL_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.FEED.type(), true);
-                fragment.setOnRefreshListener(this);
-                return fragment;
+                reelFragment = ReelFragment.newInstance(ReelFragment.ReelType.FEED.type(), true);
+                reelFragment.setOnRefreshListener(this);
+                return reelFragment;
             }
             case FAVE_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.FAVORITES.type(), true);
-                fragment.setOnRefreshListener(this);
-                return fragment;
+                faveFragment = ReelFragment.newInstance(ReelFragment.ReelType.FAVORITES.type(), true);
+                faveFragment.setOnRefreshListener(this);
+                return faveFragment;
             }
             case RECOMMEND_TAB: {
-                ReelFragment fragment = ReelFragment.newInstance(ReelFragment.ReelType.RECOMMENDATION.type(), true);
-                fragment.setOnRefreshListener(this);
-                return fragment;
+                recommendFragment = ReelFragment.newInstance(ReelFragment.ReelType.RECOMMENDATION.type(), true);
+                recommendFragment.setOnRefreshListener(this);
+                return recommendFragment;
             }
             default:
                 throw new IllegalArgumentException("invalid page number");
@@ -92,5 +96,10 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragme
     public void onRefresh() {
         if (listener != null)
             listener.onRefresh();
+    }
+    public void refresh(){
+        reelFragment.reloadEvents();
+        faveFragment.reloadEvents();
+        recommendFragment.reloadEvents();
     }
 }

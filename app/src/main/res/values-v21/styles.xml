@@ -9,6 +9,10 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerDialogTheme</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerDialogTheme</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogCustom</item>
+        <item name="android:actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">

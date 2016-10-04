@@ -41,8 +41,8 @@ public class IntroActivity extends AppIntro {
         initTransitions();
     }
 
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT > 21){
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT > 21) {
             getWindow().setExitTransition(new Slide(Gravity.START));
             getWindow().setEnterTransition(new Slide(Gravity.END));
         }

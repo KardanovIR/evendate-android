@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -42,12 +46,12 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         implements OrganizationFilterDialog.OnCategorySelectListener {
     private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     private DrawerWrapper mDrawer;
     AlertDialog errorDialog;
@@ -65,50 +69,69 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         initDrawer();
         displayProgress();
         mFAB.setVisibility(View.INVISIBLE);
+
+        loadCatalog();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
+        mDrawer.start();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationIcon(R.mipmap.ic_menu_white);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
-    private void initRecyclerView(){
+
+    private void initRecyclerView() {
         mAdapter = new OrganizationCategoryAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-    private void initFAB(){
-        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white_48dp));
+
+    private void initFAB() {
+        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white));
     }
-    private void initProgressBar(){
+
+    private void initProgressBar() {
         mProgressBar.getProgressDrawable()
                 .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
     }
-    private void initDrawer(){
+
+    private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        loadCatalog();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
-        mDrawer.start();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.org_catalog_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Intent searchIntent = new Intent(this, SearchResultsActivity.class);
+                startActivity(searchIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mDrawer.cancel();
-        if(errorDialog != null)
+        if (errorDialog != null)
             errorDialog.dismiss();
     }
 
-    private void loadCatalog(){
-        ApiService apiService = ApiFactory.getEvendateService();
+    private void loadCatalog() {
+        ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<OrganizationCategory>> observable =
                 apiService.getCatalog(EvendateAccountManager.peekToken(this), OrganizationCategory.FIELDS_LIST);
 
@@ -138,12 +161,14 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         errorDialog.show();
     }
 
-    private void displayProgress(){
+    private void displayProgress() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
-    private void hideProgress(){
+
+    private void hideProgress() {
         mProgressBar.setVisibility(View.GONE);
     }
+
 
     @SuppressWarnings("unused")
     @OnClick(R.id.fab)

@@ -1,6 +1,8 @@
 package ru.evendate.android.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +10,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.ui.ReelFragment;
+import ru.evendate.android.views.IconView;
 import ru.evendate.android.views.UsersView;
 
 /**
@@ -47,11 +50,10 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     }
 
     public void setOrganization(OrganizationDetail organization) {
-        if(mOrganization == null){
+        if (mOrganization == null) {
             mOrganization = organization;
             notifyItemRangeInserted(0, 1);
-        }
-        else{
+        } else {
             mOrganization = organization;
             notifyItemRangeChanged(0, 1);
         }
@@ -98,9 +100,9 @@ public class OrganizationEventsAdapter extends EventsAdapter {
             Picasso.with(mContext)
                     .load(mOrganization.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
-                    .into(holder.mLogoView);
+                    .into(holder.iconTarget);
             holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
-            if(mOrganization.getSubscribedUsersList().size() == 0)
+            if (mOrganization.getSubscribedUsersList().size() == 0)
                 holder.mUserContainer.setVisibility(View.GONE);
 
         } else {
@@ -113,7 +115,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
         public View holderView;
         public int id;
 
-        @Bind(R.id.organization_icon) ImageView mLogoView;
+        @Bind(R.id.organization_icon) IconView mLogoView;
         @Bind(R.id.organization_name) TextView mNameView;
         @Bind(R.id.organization_users) UsersView mUsersView;
         @Bind(R.id.organization_toggle_more) ToggleButton mMoreToggle;
@@ -129,20 +131,31 @@ public class OrganizationEventsAdapter extends EventsAdapter {
                 R.id.organization_place, R.id.organization_link_label, R.id.organization_link_container})
         List<View> mDescriptionViews;
 
+        final Target iconTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                mLogoView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                mLogoView.setImageDrawable(errorDrawable);
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {}
+        };
 
         public OrganizationHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             ButterKnife.bind(this, itemView);
             mOrganizationMoreContainer.setVisibility(View.GONE);
-            mMoreToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        expand(mOrganizationMoreContainer);
-                    } else {
-                        collapse(mOrganizationMoreContainer);
-                    }
+            mMoreToggle.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
+                if (isChecked) {
+                    expand(mOrganizationMoreContainer);
+                } else {
+                    collapse(mOrganizationMoreContainer);
                 }
             });
         }

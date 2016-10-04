@@ -11,7 +11,6 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         tools:text="LOLOLOLOL"
-        android:background="@drawable/tag_oval"
         android:textColor="#5379b8"
         />
 </merge>

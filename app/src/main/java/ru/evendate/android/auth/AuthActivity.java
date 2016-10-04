@@ -4,15 +4,14 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
@@ -50,11 +49,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
-    private final String VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.HOST_NAME + "/vkOauthDone.php?mobile=true&response_type=token";
-    private final String FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.HOST_NAME + "/fbOauthDone.php?mobile=true";
-    private final String GOOGLE_URL = "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.HOST_NAME + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    private String VK_URL;
+    private String FB_URL;
 
-    private final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
+    private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
 
     static public String URL_KEY = "url";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
@@ -62,9 +60,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
 
-    public final String APP_PREF = "evendate_pref";
-    public final String FIRST_RUN = "first_run";
     private boolean introViewed = false;
+    private boolean isGoogleServicesAvailable = false;
 
     GoogleApiClient apiClient;
     private ProgressDialog mProgressDialog;
@@ -76,6 +73,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initLinks();
         EvendateAccountManager.setAuthRunning(this);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
@@ -83,39 +82,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         initTransitions();
         apiClient = initGoogleApiClient();
         deletedOldAccount();
-    }
 
-    private void initTransitions(){
-        if(Build.VERSION.SDK_INT > 21){
-            getWindow().setExitTransition(new Slide(Gravity.START));
-            getWindow().setEnterTransition(new Slide(Gravity.END));
-        }
-    }
-    private GoogleApiClient initGoogleApiClient() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
-                .build();
-        return new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-    }
-
-    private void deletedOldAccount(){
-        final AccountManager am = AccountManager.get(this);
-        // TODO change account
-        // temporary we remove function to change accounts
-        // delete old account
-        Account oldAccount = EvendateAccountManager.getSyncAccount(this);
-        if (oldAccount != null)
-            am.removeAccount(oldAccount, null, null);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if(checkPlayServicesExists()) {
+        if (checkPlayServicesExists()) {
+            isGoogleServicesAvailable = true;
             apiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
@@ -132,7 +101,51 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             showProgressDialog();
             apiClient.connect();
         }
-        if(!introViewed)
+    }
+
+    private void initLinks() {
+        //todo change to https (when move testing to prod server?)
+        VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.getHostName(this) + "/vkOauthDone.php?mobile=true&response_type=token";
+        FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
+
+    }
+
+    public static String getGoogleUrl(Context context) {
+        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    }
+
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT > 21) {
+            getWindow().setExitTransition(new Slide(Gravity.START));
+            getWindow().setEnterTransition(new Slide(Gravity.END));
+        }
+    }
+
+    private GoogleApiClient initGoogleApiClient() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
+                .build();
+        return new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
+
+    private void deletedOldAccount() {
+        final AccountManager am = AccountManager.get(this);
+        // TODO change account
+        // temporary we remove function to change accounts
+        // delete old account
+        Account oldAccount = EvendateAccountManager.getSyncAccount(this);
+        if (oldAccount != null)
+            am.removeAccount(oldAccount, null, null);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!introViewed)
             startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
 
@@ -155,9 +168,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onStop() {
         super.onStop();
         apiClient.disconnect();
-        if(mProgressDialog != null)
+        if (mProgressDialog != null)
             mProgressDialog.dismiss();
-        if(serviceDialog != null)
+        if (serviceDialog != null)
             serviceDialog.dismiss();
     }
 
@@ -179,8 +192,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 startWebAuth(FB_URL);
                 break;
             case R.id.sing_in_google_button:
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
-                startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                if (isGoogleServicesAvailable) {
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+                    startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                } else {
+                    startWebAuth(getGoogleUrl(this));
+                }
         }
     }
 
@@ -215,7 +232,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         }
         return true;
     }
-    private void setGoogleInactive(){
+
+    private void setGoogleInactive() {
         googleButton.setClickable(false);
         googleButton.setEnabled(false);
         googleButton.setBackground(getResources().getDrawable(R.drawable.auth_google_inactive));
@@ -230,7 +248,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             handleGoogleSignInResult(result);
         }
         if (requestCode == REQUEST_INTRO) {
-            if(resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_CANCELED) {
                 finish();
             }
             introViewed = true;
@@ -240,8 +258,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 String email = data.getStringExtra(WebAuthActivity.EMAIL);
                 String token = data.getStringExtra(WebAuthActivity.TOKEN);
                 onTokenReceived(email, token);
-            }
-            else{
+            } else {
                 //TODO
             }
         }
@@ -253,8 +270,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         if (result.isSuccess() && acct != null) {
             new RetrieveGoogleTokenTask().execute(acct.getEmail());
         } else {
-            if(result.getStatus().isCanceled())
-            Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
+            if (result.getStatus().isCanceled())
+                Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -284,7 +301,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     }
 
     private void onGoogleTokenReceived(String token) {
-        String url = ApiFactory.HOST_NAME + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
+        String url = ApiFactory.getHostName(this) + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
         url += token;
         startWebAuth(url);

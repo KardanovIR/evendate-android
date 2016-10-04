@@ -77,6 +77,9 @@ public class MainPagerFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+    }
 
+    public void refresh(){
+        mMainPagerAdapter.refresh();
     }
 }

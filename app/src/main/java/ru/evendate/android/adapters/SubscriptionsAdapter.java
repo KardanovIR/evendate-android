@@ -50,7 +50,7 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
     public void onBindViewHolder(SubscriptionHolder holder, int position) {
         OrganizationSubscription subEntry = getItem(position);
         holder.id = subEntry.getEntryId();
-        holder.mOrganizationNameTextView.setText(subEntry.getName());
+        holder.mOrganizationNameTextView.setText(subEntry.getShortName());
         Picasso.with(mContext)
                 .load(subEntry.getLogoSmallUrl())
                 .error(R.mipmap.ic_launcher)
@@ -75,7 +75,7 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
             if (v == holderView) {
                 Intent intent = new Intent(mContext, OrganizationDetailActivity.class);
                 intent.setData(mUri.buildUpon().appendPath(Long.toString(id)).build());
-                if(Build.VERSION.SDK_INT > 21)
+                if (Build.VERSION.SDK_INT > 21)
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
                 else

@@ -3,10 +3,10 @@ package ru.evendate.android.ui;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,10 +40,11 @@ import rx.schedulers.Schedulers;
 public class UserActionsFragment extends Fragment {
     private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private int userId;
-    @Bind(R.id.progressBarAction) ProgressBar mProgressBar;
+    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
+    AlertDialog dialog;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment fragment = new UserActionsFragment();
@@ -58,27 +59,31 @@ public class UserActionsFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         initRecyclerView();
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
+        initProgressBar();
         return rootView;
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         mAdapter = new DatesAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new LandingAnimator());
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
     }
 
+    private void initProgressBar() {
+        mProgressBar.getProgressDrawable()
+                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         loadActions();
     }
 
-    public void loadActions(){
-        ApiService evendateService = ApiFactory.getEvendateService();
+    public void loadActions() {
+        ApiService evendateService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<Action>> actionObservable =
                 evendateService.getActions(EvendateAccountManager.peekToken(getActivity()),
                         userId, Action.FIELDS_LIST, Action.ORDER_BY);
@@ -87,14 +92,14 @@ public class UserActionsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
-                    if(result.isOk())
+                    if (result.isOk())
                         onLoaded(result.getData());
                     else
                         onError();
                 }, error -> {
                     onError();
                     Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                });
     }
 
     public void onLoaded(ArrayList<Action> list) {
@@ -107,14 +112,17 @@ public class UserActionsFragment extends Fragment {
         if (!isAdded())
             return;
         mProgressBar.setVisibility(View.GONE);
-        AlertDialog dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                loadActions();
-                dialog.dismiss();
-            }
+        dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), (DialogInterface dialog, int which) -> {
+            loadActions();
+            dialog.dismiss();
         });
         dialog.show();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (dialog != null)
+            dialog.dismiss();
+    }
 }
