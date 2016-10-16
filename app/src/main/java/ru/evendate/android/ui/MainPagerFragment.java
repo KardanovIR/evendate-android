@@ -65,7 +65,7 @@ public class MainPagerFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                Statistics.sendCurrentScreenName("Main Screen ~" +
+                new Statistics(getContext()).sendCurrentScreenName("Main Screen ~" +
                         mMainPagerAdapter.getPageLabel(position));
             }
 

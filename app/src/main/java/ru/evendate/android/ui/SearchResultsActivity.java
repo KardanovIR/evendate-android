@@ -132,7 +132,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Statistics.sendCurrentScreenName("Search Screen ~" +
+                new Statistics(getApplicationContext()).sendCurrentScreenName("Search Screen ~" +
                         mSearchPagerAdapter.getPageLabel(position));
             }
 

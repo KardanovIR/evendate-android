@@ -6,7 +6,7 @@ import android.content.Context;
  * Created by Aedirn on 15.10.16.
  */
 
-public class Statistics implements GoogleStatistics, EvendateStatistics{
+public class Statistics implements GoogleStatistics, EvendateStatistics {
 
     private GoogleStatistics googleStatistics;
     private EvendateStatistics evendateStatistics;
@@ -69,10 +69,12 @@ public class Statistics implements GoogleStatistics, EvendateStatistics{
         googleStatistics.sendEventHideNotification(eventId);
         evendateStatistics.sendEventHideNotification(eventId);
     }
+
     @Override
     public void sendOrgHideNotification(int orgId) {
         googleStatistics.sendOrgHideNotification(orgId);
     }
+
     @Override
     public void sendUserHideNotification(int userId) {
         googleStatistics.sendUserHideNotification(userId);
@@ -137,7 +139,8 @@ public class Statistics implements GoogleStatistics, EvendateStatistics{
         googleStatistics.sendUserClickLinkAction(userId);
     }
 
-    public static void sendCurrentScreenName(String screenName){
-        GoogleStatistics.sendCurrentScreenName(screenName);
+    @Override
+    public void sendCurrentScreenName(String screenName) {
+        googleStatistics.sendCurrentScreenName(screenName);
     }
 }

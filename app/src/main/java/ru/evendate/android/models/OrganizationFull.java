@@ -77,7 +77,7 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
     }
 
     @Override
-    public void setSubscriptionState() {
+    public void changeSubscriptionState() {
         isSubscribed = !isSubscribed;
         subscribedCount += isSubscribed ? 1 : -1;
     }

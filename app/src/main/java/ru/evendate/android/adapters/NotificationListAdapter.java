@@ -1,6 +1,7 @@
 package ru.evendate.android.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,12 +46,12 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     }
 
     static class ViewHolder {
-        public View holderView;
+        View holderView;
         CheckBox checkBox;
         TextView textView;
     }
 
-    public enum NotificationType {
+    enum NotificationType {
         ON_CREATION("notification-now"),
         CUSTOM("notification-custom"),
         ON_DATE_CHANGED("notification-event-changed-dates"),
@@ -96,7 +97,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             type = notificationType;
         }
 
-        public boolean checkNotificationAble(EventDetail event) {
+        boolean checkNotificationAble(EventDetail event) {
             Date date = new Date(event.getFirstDate() * 1000);
             Calendar notificationTime = Calendar.getInstance();
             notificationTime.setTime(date);
@@ -125,7 +126,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    @NonNull
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
         View rowView = convertView;
         if (rowView == null) {
@@ -157,7 +159,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         return rowView;
     }
 
-    String getTypeString(Notification notification) {
+    private String getTypeString(Notification notification) {
         switch (NotificationType.getType(notification.type)) {
             case BEFORE_THREE_HOURS:
                 return context.getString(R.string.notification_before_three_hours);
@@ -175,7 +177,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         return null;
     }
 
-    String formatNotificationTime(long timeInMillis) {
+    private String formatNotificationTime(long timeInMillis) {
         DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date(timeInMillis));
@@ -185,6 +187,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         Toast.makeText(context, context.getString(R.string.toast_notification_event_started), Toast.LENGTH_SHORT).show();
     }
 
+    //todo SOLID
     public void update() {
         for (Notification notification : notifications) {
             if (!notification.changed && notification.newChecked == null)

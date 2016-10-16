@@ -9,13 +9,10 @@ import android.util.Log;
 
 import com.onesignal.NotificationExtenderService;
 import com.onesignal.OSNotificationDisplayedResult;
-import com.onesignal.OSNotificationPayload;
 import com.onesignal.OSNotificationReceivedResult;
 
 import ru.evendate.android.R;
 import ru.evendate.android.Settings;
-
-import static ru.evendate.android.gcm.EvendateNotificationOpenedHandler.FAVE_EVENT_ACTION_ID;
 
 
 /**
@@ -26,7 +23,7 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
 
         NotificationAdditionalData addData = NotificationAdditionalData.obtainFromPayload(receivedResult.payload);
-        if(!Settings.isNotificationOn(getBaseContext()))
+        if (!Settings.isNotificationOn(getBaseContext()))
             //todo handle stat?
             return true;
         if (addData == null)
@@ -34,7 +31,9 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
         OverrideSettings overrideSettings = new OverrideSettings();
 
         overrideSettings.extender = (NotificationCompat.Builder builder) -> {
-            builder.setDeleteIntent(getHideIntent(addData));
+            builder.setDeleteIntent(getHideIntent(addData))
+                    .setSmallIcon(R.drawable.ic_stat_ic_notification);
+
             int accentColor = ContextCompat.getColor(getBaseContext(), R.color.accent);
 
             builder.setColor(accentColor);
@@ -43,9 +42,6 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
             }
             if (Settings.isLedOn(getBaseContext())) {
                 builder.setLights(Settings.getLedColor(getBaseContext()), 1000, 200);
-            }
-            if (addData.type.equals(NotificationAdditionalData.EVENT_TYPE)) {
-                addFaveButton(receivedResult.payload);
             }
             return builder;
         };
@@ -64,14 +60,4 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
         intent.putExtra(HideNotificationBroadcastReceiver.USER_ID, addData.userId);
         return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
     }
-
-    private void addFaveButton(OSNotificationPayload payload) {
-        OSNotificationPayload.ActionButton action = new OSNotificationPayload.ActionButton();
-        action.id = FAVE_EVENT_ACTION_ID;
-        //todo
-        action.icon = "ic_star";
-        action.text = "fave";
-        payload.actionButtons.add(action);
-    }
-
 }

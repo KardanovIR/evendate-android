@@ -1,10 +1,5 @@
 package ru.evendate.android.statistics;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import ru.evendate.android.EvendateApplication;
-
 /**
  * Created by Aedirn on 15.10.16.
  */
@@ -60,9 +55,5 @@ interface GoogleStatistics {
 
 
     // Google screen page tracking
-    static void sendCurrentScreenName(String screenName) {
-        Tracker tracker = EvendateApplication.getTracker();
-        tracker.setScreenName(screenName);
-        tracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
+    void sendCurrentScreenName(String screenName);
 }

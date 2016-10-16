@@ -2,6 +2,7 @@ package ru.evendate.android.gcm;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.onesignal.OSNotificationPayload;
 
 import org.json.JSONObject;
@@ -9,14 +10,6 @@ import org.json.JSONObject;
 /**
  * Created by Aedirn on 15.10.16.
  */
-//{"data":{
-//  "message":"Testing long text:\nСияла призрачно луна,\nМерцаньем звёзд окружена.\nОставив крепость ту, Аврора\nСкорее поспешила к морю.",
-//  "event_id":1211,
-//  "image_url":"http://evendate.ru/organizations_images/logos/small/1.png",
-//  "organization_id":null,
-//  "type":"events"
-// },
-// "to":"/topics/global"}
 class NotificationAdditionalData {
 
     static final String EVENT_TYPE = "events";
@@ -24,8 +17,11 @@ class NotificationAdditionalData {
     static final String USER_TYPE = "users";
     static final String RECOMMENDATION_TYPE = "recommendations_organizations";
 
+    @SerializedName("event_id")
     int eventId;
+    @SerializedName("organization_id")
     int orgId;
+    @SerializedName("user_id")
     int userId;
     String type;
 

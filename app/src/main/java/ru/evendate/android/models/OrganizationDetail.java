@@ -26,7 +26,7 @@ public interface OrganizationDetail extends OrganizationSubscription {
 
     boolean isSubscribed();
 
-    void setSubscriptionState();
+    void changeSubscriptionState();
 
     String getDefaultAddress();
 

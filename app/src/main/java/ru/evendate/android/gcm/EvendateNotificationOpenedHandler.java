@@ -2,11 +2,9 @@ package ru.evendate.android.gcm;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
 
@@ -39,7 +37,6 @@ public class EvendateNotificationOpenedHandler implements OneSignal.Notification
 
     @Override
     public void notificationOpened(OSNotificationOpenResult result) {
-        OSNotificationAction.ActionType actionType = result.action.type;
         JSONObject data = result.notification.payload.additionalData;
 
         if (data == null)
@@ -48,10 +45,6 @@ public class EvendateNotificationOpenedHandler implements OneSignal.Notification
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         NotificationAdditionalData addData = gson.fromJson(data.toString(), NotificationAdditionalData.class);
-
-        //todo clicks
-        if (actionType == OSNotificationAction.ActionType.ActionTaken)
-            Log.i(LOG_TAG, "Button pressed with id: " + result.action.actionID);
 
         Intent intent;
         Statistics statistics = new Statistics(mContext);

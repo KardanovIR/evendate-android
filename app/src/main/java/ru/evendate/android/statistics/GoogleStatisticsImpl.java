@@ -3,6 +3,7 @@ package ru.evendate.android.statistics;
 import android.content.Context;
 
 import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
@@ -161,5 +162,12 @@ class GoogleStatisticsImpl implements GoogleStatistics {
                 .setAction(action)
                 .setLabel(Integer.toString(id));
         EvendateApplication.getTracker().send(event.build());
+    }
+
+    @Override
+    public void sendCurrentScreenName(String screenName) {
+        Tracker tracker = EvendateApplication.getTracker();
+        tracker.setScreenName(screenName);
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 }

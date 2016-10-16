@@ -55,7 +55,7 @@ public class ServiceImpl {
                     Log.e(LOG_TAG, error.getMessage());
                 });
 
-        organization.setSubscriptionState();
+        organization.changeSubscriptionState();
     }
 
     /**
@@ -90,9 +90,9 @@ public class ServiceImpl {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     if (result.isOk())
-                        Log.d(LOG_TAG, "posted");
+                        Log.i(LOG_TAG, "posted stat events");
                     else
-                        Log.e(LOG_TAG, "error");
+                        Log.e(LOG_TAG, "error posting stat events");
                 }, error -> Log.e(LOG_TAG, error.getMessage()));
     }
 }
