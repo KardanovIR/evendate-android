@@ -38,7 +38,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.gcm.RegistrationGCMIntentService;
 import ru.evendate.android.network.ApiFactory;
 
 /**
@@ -309,14 +308,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             EvendateAccountManager.setActiveAccountName(this, account.name);
         } else {
             Log.i(LOG_TAG, "cannot add account");
-            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
             return;
         }
 
-        Intent intent = new Intent(this, RegistrationGCMIntentService.class);
-        startService(intent);
         setAccountAuthenticatorResult(result);
         setResult(RESULT_OK);
         finish();

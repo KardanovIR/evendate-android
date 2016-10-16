@@ -7,10 +7,8 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class OrganizationFull extends Organization implements OrganizationDetail, OrganizationSubscription {
-    public static final String FIELDS_LIST = "description,background_medium_img_url,background_small_img_url," +
-            "img_medium_url,img_small_url,site_url,subscribed_count,is_subscribed,subscription_id,default_address," +
-            "subscribed,events{fields:'" + EventFeed.FIELDS_LIST + "'}";
+public class OrganizationFull extends OrganizationModel implements OrganizationDetail {
+    private String FIELDS_LIST = "";
 
     String description;
     @SerializedName("background_medium_img_url")
@@ -37,60 +35,60 @@ public class OrganizationFull extends Organization implements OrganizationDetail
     @SerializedName("events")
     ArrayList<EventDetail> mEventsList;
 
+    @Override
     public ArrayList<UserDetail> getSubscribedUsersList() {
         return mSubscribedUsersList;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public String getLogoMediumUrl() {
         return logoMediumUrl;
     }
 
+    @Override
     public String getLogoSmallUrl() {
         return logoSmallUrl;
     }
 
+    @Override
     public String getBackgroundMediumUrl() {
         return backgroundMediumUrl;
     }
 
-    public String getBackgroundSmallUrl() {
-        return backgroundSmallUrl;
-    }
-
+    @Override
     public String getSiteUrl() {
         return siteUrl;
     }
 
+    @Override
     public int getSubscribedCount() {
         return subscribedCount;
     }
 
-    public Integer getSubscriptionId() {
-        return subscriptionId;
-    }
 
+    @Override
     public boolean isSubscribed() {
         return isSubscribed;
     }
 
-    public void setSubscriptionId(Integer subscriptionId) {
-        this.subscriptionId = subscriptionId;
-    }
-
-    public void subscribe() {
+    @Override
+    public void setSubscriptionState() {
         isSubscribed = !isSubscribed;
         subscribedCount += isSubscribed ? 1 : -1;
     }
 
+    @Override
     public String getDefaultAddress() {
         return defaultAddress;
     }
 
+    @Override
     public ArrayList<EventFeed> getEventsList() {
-        return new ArrayList<EventFeed>(mEventsList);
+        return new ArrayList<>(mEventsList);
     }
 }

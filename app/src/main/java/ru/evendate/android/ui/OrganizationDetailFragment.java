@@ -39,10 +39,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -53,9 +50,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
-import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
@@ -65,8 +60,9 @@ import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.network.ServiceImpl;
+import ru.evendate.android.statistics.Statistics;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -127,8 +123,8 @@ public class OrganizationDetailFragment extends Fragment implements
         if (args != null) {
             mUri = Uri.parse(args.getString(URI));
             organizationId = Integer.parseInt(mUri.getLastPathSegment());
+            new Statistics(getActivity()).sendOrganizationView(organizationId);
         }
-
     }
 
     @Override
@@ -192,7 +188,7 @@ public class OrganizationDetailFragment extends Fragment implements
                 if (checkOrgCardScrolling(recyclerView) == isToolbarTransparent)
                     return;
                 if (isToolbarTransparent) {
-                    targetColor = getResources().getColor(R.color.primary);
+                    targetColor = ContextCompat.getColor(getActivity(), R.color.primary);
                 } else
                     targetColor = Color.TRANSPARENT;
                 if (colorAnimation != null)
@@ -328,48 +324,15 @@ public class OrganizationDetailFragment extends Fragment implements
 
     /**
      * handle subscription button
-     * start subscribe/unsubscribe loader to carry it to server
-     * push subscribe/unsubscribe stat to analytics
      */
     public void onSubscribed() {
-        OrganizationDetail organization = mAdapter.getOrganization();
+        ServiceImpl.subscribeOrgAndChangeState(getActivity(), mAdapter.getOrganization());
 
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<Response> subOrganizationObservable;
-
-        if (organization.isSubscribed()) {
-            subOrganizationObservable = apiService.orgDeleteSubscription(organization.getEntryId(),
-                    EvendateAccountManager.peekToken(getActivity()));
-        } else {
-            subOrganizationObservable = apiService.orgPostSubscription(organization.getEntryId(),
-                    EvendateAccountManager.peekToken(getActivity()));
-        }
-        subOrganizationObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    if (result.isOk())
-                        Log.i(LOG_TAG, "subscription applied");
-                    else
-                        Log.e(LOG_TAG, "Error with response with organization sub");
-                }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
-                    Toast.makeText(getActivity(), R.string.download_error, Toast.LENGTH_SHORT).show();
-                });
-
-        organization.subscribe();
-
-        Tracker tracker = EvendateApplication.getTracker();
-        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                .setCategory(getActivity().getString(R.string.stat_category_organization))
-                .setLabel((Long.toString(organization.getEntryId())));
-        if (organization.isSubscribed()) {
-            event.setAction(getActivity().getString(R.string.stat_action_subscribe));
+        if (mAdapter.getOrganization().isSubscribed()) {
             Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
         } else {
-            event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
             Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
         }
-        tracker.send(event.build());
     }
 
     private void revealView(View view) {
@@ -392,8 +355,7 @@ public class OrganizationDetailFragment extends Fragment implements
      * handle place button click and open google map
      */
     public void onPlaceClicked() {
-        Statistics.init(getActivity());
-        Statistics.sendOrgOpenMap(organizationId);
+        new Statistics(getActivity()).sendOrgOpenMap(organizationId);
         Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mAdapter.getOrganization().getDefaultAddress());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -421,8 +383,7 @@ public class OrganizationDetailFragment extends Fragment implements
      */
     @Override
     public void onLinkClicked() {
-        Statistics.init(getActivity());
-        Statistics.sendOrgOpenSite(organizationId);
+        new Statistics(getActivity()).sendOrganizationClickLinkAction(organizationId);
         Intent openLink = new Intent(Intent.ACTION_VIEW);
         openLink.setData(Uri.parse(mAdapter.getOrganization().getSiteUrl()));
         startActivity(openLink);

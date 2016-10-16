@@ -22,8 +22,6 @@ import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -32,13 +30,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.evendate.android.EvendateAccountManager;
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.views.IconView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -105,22 +103,22 @@ public class OnboardingDialog extends DialogFragment {
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseArray<OrganizationFull>> observable =
                 apiService.getOrgRecommendations(EvendateAccountManager.peekToken(getContext()),
-                        OrganizationFull.FIELDS_LIST, 10, 0);
+                        OrganizationDetail.FIELDS_LIST, 10, 0);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> onLoaded(result.getData()),
+                        result -> onLoaded(new ArrayList<>(result.getData())),
                         this::onError,
                         this::hideProgress
                 );
     }
 
-    public void onLoaded(ArrayList<OrganizationFull> subList) {
+    public void onLoaded(ArrayList<OrganizationDetail> subList) {
         if(!isAdded())
             return;
         Log.i(LOG_TAG, "loaded");
-        mAdapter.setList(subList);
+        mAdapter.setList(new ArrayList<>(subList));
     }
 
     public void onError(Throwable error) {
@@ -145,24 +143,24 @@ public class OnboardingDialog extends DialogFragment {
     }
 
 
-    public class OnboardingAdapter extends ArrayAdapter<OrganizationFull> {
+    class OnboardingAdapter extends ArrayAdapter<OrganizationDetail> {
         private final Activity context;
         private boolean[] checked;
-        private List<OrganizationFull> mList = new ArrayList<>();
+        private List<OrganizationDetail> mList = new ArrayList<>();
 
-        public OnboardingAdapter(Activity context) {
+        OnboardingAdapter(Activity context) {
             super(context, R.layout.item_onboarding);
             this.context = context;
         }
 
-        public void setList(List<OrganizationFull> list) {
+        public void setList(List<OrganizationDetail> list) {
             checked = new boolean[list.size()];
             Arrays.fill(checked, false);
             mList = list;
             super.addAll(list);
         }
 
-        public List<OrganizationFull> getList() {
+        public List<OrganizationDetail> getList() {
             return mList;
         }
 
@@ -171,9 +169,9 @@ public class OnboardingDialog extends DialogFragment {
         }
 
         class ViewHolder {
-            public IconView iconView;
-            public TextView textView;
-            public CheckBox checkBox;
+            IconView iconView;
+            TextView textView;
+            CheckBox checkBox;
             final public Target target = new Target() {
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
@@ -215,7 +213,7 @@ public class OnboardingDialog extends DialogFragment {
                 holder = (ViewHolder) rowView.getTag();
             }
 
-            OrganizationFull organization = mList.get(position);
+            OrganizationDetail organization = mList.get(position);
             holder.textView.setText(organization.getShortName());
             Picasso.with(getContext())
                     .load(organization.getLogoSmallUrl())
@@ -228,54 +226,13 @@ public class OnboardingDialog extends DialogFragment {
     }
 
     public void onOrgsSelected(boolean[] selectedItems) {
-        List<OrganizationFull> list = mAdapter.getList();
+        List<OrganizationDetail> list = mAdapter.getList();
         for (int i = 0; i < list.size(); i++) {
             if (selectedItems[i])
-                subscribe(list.get(i));
+                ServiceImpl.subscribeOrgAndChangeState(getActivity(), list.get(i));
         }
         //todo fix, cause refresh take place before subscribing done
         listener.onOrgSelected();
     }
 
-    /**
-     * handle subscription button
-     * start subscribe/unsubscribe loader to carry it to server
-     * push subscribe/unsubscribe stat to analytics
-     */
-    //todo DRY
-    public void subscribe(OrganizationFull organization) {
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<Response> subOrganizationObservable;
-
-        if (organization.isSubscribed()) {
-            subOrganizationObservable = apiService.orgDeleteSubscription(organization.getEntryId(),
-                    EvendateAccountManager.peekToken(getActivity()));
-        } else {
-            subOrganizationObservable = apiService.orgPostSubscription(organization.getEntryId(),
-                    EvendateAccountManager.peekToken(getActivity()));
-        }
-        subOrganizationObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    if (result.isOk())
-                        Log.i(LOG_TAG, "subscription applied");
-                    else
-                        Log.e(LOG_TAG, "Error with response with organization sub");
-                }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
-                });
-
-        organization.subscribe();
-
-        Tracker tracker = EvendateApplication.getTracker();
-        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                .setCategory(getActivity().getString(R.string.stat_category_organization))
-                .setLabel((Long.toString(organization.getEntryId())));
-        if (organization.isSubscribed()) {
-            event.setAction(getActivity().getString(R.string.stat_action_subscribe));
-        } else {
-            event.setAction(getActivity().getString(R.string.stat_action_unsubscribe));
-        }
-        tracker.send(event.build());
-    }
 }

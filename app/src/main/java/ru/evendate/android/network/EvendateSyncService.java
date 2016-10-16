@@ -11,6 +11,7 @@ import android.os.IBinder;
  * sync adapter class, allowing the sync adapter framework to call
  * onPerformSync().
  */
+@Deprecated
 public class EvendateSyncService extends Service {
     // Storage for an instance of the sync adapter
     private static EvendateSyncAdapter sSyncAdapter = null;

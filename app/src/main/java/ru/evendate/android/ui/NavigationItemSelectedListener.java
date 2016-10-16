@@ -9,9 +9,8 @@ import android.view.View;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.Organization;
+import ru.evendate.android.models.OrganizationModel;
 
 /**
  * Created by ds_gordeev on 14.03.2016.
@@ -34,8 +33,6 @@ public class NavigationItemSelectedListener
         switch (drawerItem.getIdentifier()) {
             case DrawerWrapper.REEL_IDENTIFIER:
                 openReelActivity();
-                break;
-            case R.id.settings:
                 break;
             case DrawerWrapper.CALENDAR_IDENTIFIER:
                 openCalendarActivity();
@@ -99,7 +96,7 @@ public class NavigationItemSelectedListener
     }
 
     private int getOrgIdFromDrawerItem(IDrawerItem drawerItem) {
-        return ((Organization)drawerItem.getTag()).getEntryId();
+        return ((OrganizationModel)drawerItem.getTag()).getEntryId();
     }
 
     private Intent addFlags(Intent intent){

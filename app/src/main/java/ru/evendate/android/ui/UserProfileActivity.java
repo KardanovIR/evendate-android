@@ -48,6 +48,7 @@ import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.statistics.Statistics;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,9 +73,6 @@ public class UserProfileActivity extends AppCompatActivity {
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     DrawerWrapper mDrawer;
-
-    public static final String INTENT_TYPE = "type";
-    public static final String NOTIFICATION = "notification";
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -102,19 +100,7 @@ public class UserProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
-            Bundle intent_extras = getIntent().getExtras();
-            Tracker tracker = EvendateApplication.getTracker();
-
-            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder()
-                    .setCategory(getString(R.string.stat_category_user))
-                    .setLabel(String.valueOf(userId));
-            if (intent_extras != null && intent_extras.containsKey(INTENT_TYPE) &&
-                    intent.getStringExtra(INTENT_TYPE).equals(NOTIFICATION)) {
-                event.setAction(getString(R.string.stat_action_notification));
-            } else {
-                event.setAction(getString(R.string.stat_action_view));
-            }
-            tracker.send(event.build());
+            new Statistics(this).sendUserView(userId);
         }
 
         mUserAdapter = new UserAdapter();
@@ -172,6 +158,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     Intent linkIntent = new Intent(Intent.ACTION_VIEW);
                     linkIntent.setData(Uri.parse(url));
                     startActivity(linkIntent);
+                    new Statistics(this).sendUserClickLinkAction(userId);
                 }
                 return true;
             default:

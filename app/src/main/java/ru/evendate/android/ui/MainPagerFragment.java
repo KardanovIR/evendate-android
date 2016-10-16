@@ -10,14 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.MainPagerAdapter;
+import ru.evendate.android.statistics.Statistics;
 
 /**
  * Created by Dmitry on 23.01.2016.
@@ -68,10 +65,8 @@ public class MainPagerFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                Tracker tracker = EvendateApplication.getTracker();
-                tracker.setScreenName("Main Screen ~" +
+                Statistics.sendCurrentScreenName("Main Screen ~" +
                         mMainPagerAdapter.getPageLabel(position));
-                tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
 
             @Override

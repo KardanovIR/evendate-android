@@ -12,6 +12,10 @@ android {
         versionName "0.4.1"
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
+
+        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
+                                onesignal_app_id: "7471a586-01f3-4eef-b989-c809700a8658",
+                                onesignal_google_project_number: 403640417782]
     }
     buildTypes {
         release {
@@ -53,6 +57,7 @@ dependencies {
     compile 'com.android.support:palette-v7:24.2.1'
     compile 'com.android.support:preference-v14:24.2.1'
     compile 'com.google.android.gms:play-services:9.6.1'
+    compile 'com.onesignal:OneSignal:3.+@aar'
     compile 'com.prolificinteractive:material-calendarview:0.7.0'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'

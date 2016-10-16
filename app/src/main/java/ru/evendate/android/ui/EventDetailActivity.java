@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.evendate.android.R;
-import ru.evendate.android.Statistics;
 
 public class EventDetailActivity extends AppCompatActivity {
     public Uri mUri;
@@ -21,8 +20,6 @@ public class EventDetailActivity extends AppCompatActivity {
         if (intent == null)
             throw new RuntimeException("no intent with uri");
         mUri = intent.getData();
-        Statistics.init(this);
-        Statistics.sendEventAction(intent, mUri.getLastPathSegment());
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment, new EventDetailFragment());
