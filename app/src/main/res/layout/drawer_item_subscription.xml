@@ -41,7 +41,8 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:gravity="center_vertical|start"
         android:orientation="vertical"
@@ -58,7 +59,7 @@
             android:gravity="center_vertical|start"
             android:lines="1"
             android:paddingRight="@dimen/material_drawer_item_primary_icon_padding_right"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textDirection="anyRtl"
             android:textSize="@dimen/material_drawer_item_profile_text"
             tools:text="Some drawer text" />
@@ -70,9 +71,34 @@
             android:fontFamily="sans-serif"
             android:gravity="center_vertical|start"
             android:lines="1"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textDirection="anyRtl"
             android:textSize="@dimen/material_drawer_item_profile_description"
             tools:text="Some drawer text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/material_drawer_badge_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingEnd="0dp"
+        android:paddingLeft="@dimen/material_drawer_padding"
+        android:paddingRight="0dp"
+        android:paddingStart="@dimen/material_drawer_padding">
+
+        <TextView
+            android:id="@+id/material_drawer_badge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:lines="1"
+            android:minWidth="20dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
+            android:singleLine="true"
+            android:textSize="@dimen/material_drawer_item_primary_text"
+            tools:text="99"/>
     </LinearLayout>
 </LinearLayout>

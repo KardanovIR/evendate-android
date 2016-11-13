@@ -11,6 +11,7 @@ import ru.evendate.android.models.EventNotification;
 
 /**
  * Created by Dmitry on 10.08.2016.
+ * create list of defaults notification, set their state and add other user notifications
  */
 public class NotificationConverter {
 
@@ -28,8 +29,7 @@ public class NotificationConverter {
             set.remove(eventNotification);
         }
         for (EventNotification eventNotification : set) {
-            if (eventNotification.getNotificationType().equals("notification-now")
-                    || eventNotification.getNotificationType().equals("notification-event-changed-dates"))
+            if (!checkType(eventNotification.getNotificationType()))
                 continue;
             Notification notification = new Notification(eventNotification.getNotificationType());
             notification.checked = true;
@@ -39,7 +39,18 @@ public class NotificationConverter {
         return list;
     }
 
-    static String[] getDefaultTypes() {
+    private static boolean checkType(String type) {
+        for (String defType : getDefaultTypes()) {
+            if (type.equals(defType))
+                return true;
+            else if (type.equals(NotificationType.CUSTOM.type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String[] getDefaultTypes() {
         return new String[]{
                 NotificationType.BEFORE_QUARTER_OF_HOUR.type,
                 NotificationType.BEFORE_THREE_HOURS.type,
@@ -49,7 +60,7 @@ public class NotificationConverter {
         };
     }
 
-    static EventNotification getNotificationWithType(Set<EventNotification> set, String type) {
+    private static EventNotification getNotificationWithType(Set<EventNotification> set, String type) {
         for (EventNotification notification : set) {
             if (notification.getNotificationType().equals(type))
                 return notification;

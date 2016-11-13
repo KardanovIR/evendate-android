@@ -1,58 +1,24 @@
 package ru.evendate.android.models;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Created by Dmitry on 11.09.2015.
+ * Created by Aedirn on 16.10.16.
  */
-public class Organization extends DataModel {
 
-    @SerializedName("id")
-    int organizationId;
-    String name;
-    @SerializedName("short_name")
-    String shortName;
-    @SerializedName("img_url")
-    String logoLargeUrl;
-    @SerializedName("background_img_url")
-    String backgroundLargeUrl;
-    @SerializedName("type_id")
-    int typeId;
-    @SerializedName("type_name")
-    String typeName;
-    @SerializedName("organization_type_order")
-    String typeOrder;
+public interface Organization {
 
-    @Override
-    public int getEntryId() {
-        return this.organizationId;
-    }
+    int getEntryId();
 
-    public String getName() {
-        return name;
-    }
+    String getName();
 
-    public String getShortName() {
-        return shortName;
-    }
+    int getTypeId();
 
-    public String getLogoLargeUrl() {
-        return logoLargeUrl;
-    }
+    String getShortName();
 
-    public String getBackgroundLargeUrl() {
-        return backgroundLargeUrl;
-    }
+    String getLogoLargeUrl();
 
-    public int getTypeId() {
-        return typeId;
-    }
+    String getBackgroundLargeUrl();
 
-    public String getTypeName() {
-        return typeName;
-    }
+    String getTypeName();
 
-    public String getTypeOrder() {
-        return typeOrder;
-    }
+    String getTypeOrder();
 }

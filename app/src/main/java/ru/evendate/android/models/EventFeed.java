@@ -12,6 +12,7 @@ public interface EventFeed {
             ",created_at";
     String ORDER_BY_TIME = "created_at";
     String ORDER_BY_FAVORITE_AND_FIRST_TIME = "-is_favorite,first_event_date";
+    String ORDER_BY_LAST_DATE = "-last_event_date";
 
     int getEntryId();
 

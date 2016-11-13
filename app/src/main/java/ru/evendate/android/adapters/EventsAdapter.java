@@ -54,7 +54,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         int layoutItemId;
         switch (ReelFragment.ReelType.getType(type)) {
             case ORGANIZATION:
-                layoutItemId = R.layout.card_event_organization;
+                layoutItemId = R.layout.card_event_feed;
                 break;
             case FAVORITES:
                 layoutItemId = R.layout.card_event_feed;
@@ -94,7 +94,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         holder.isFavorited = eventEntry.isFavorite();
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
-        String date = EventFormatter.formatDate(eventEntry.getNearestDate());
+        String date;
+        if (eventEntry.getNearestDate() != 0)
+            date = EventFormatter.formatDate(eventEntry.getNearestDate());
+        else
+            date = EventFormatter.formatDate(eventEntry.getLastDate());
         holder.mDateTextView.setText(date);
         Picasso.with(mContext)
                 .load(eventEntry.getImageHorizontalUrl())
@@ -124,28 +128,21 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
 
-    public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        public View holderView;
-        public EventFeed event;
-        @Bind(R.id.event_item_image)
-        public ImageView mEventImageView;
-        @Bind(R.id.event_item_title)
-        public TextView mTitleTextView;
-        @Bind(R.id.event_item_date)
-        public TextView mDateTextView;
-        @Nullable @Bind(R.id.event_item_price)
-        public TextView mPriceTextView;
-        @Nullable @Bind(R.id.event_item_organization)
-        public TextView mOrganizationTextView;
-        @Nullable @Bind(R.id.event_item_organization_icon)
-        public ImageView mOrganizationLogo;
-        private boolean isFavorited;
-        @Bind(R.id.event_item_favorite_indicator)
-        public View mFavoriteIndicator;
-        @BindString(R.string.event_free)
-        public String eventFreeLabel;
+    class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        View holderView;
+        EventFeed event;
+        @Bind(R.id.event_item_image) ImageView mEventImageView;
+        @Bind(R.id.event_item_title) TextView mTitleTextView;
+        @Bind(R.id.event_item_date) TextView mDateTextView;
+        @Nullable @Bind(R.id.event_item_price) TextView mPriceTextView;
+        @Nullable @Bind(R.id.event_item_organization) TextView mOrganizationTextView;
+        @Nullable @Bind(R.id.event_item_organization_icon) ImageView mOrganizationLogo;
+        @Bind(R.id.event_item_favorite_indicator) View mFavoriteIndicator;
 
-        public EventHolder(View itemView) {
+        private boolean isFavorited;
+        @BindString(R.string.event_free) String eventFreeLabel;
+
+        EventHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             holderView = itemView;

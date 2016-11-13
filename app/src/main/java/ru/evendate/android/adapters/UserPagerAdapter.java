@@ -46,9 +46,9 @@ public class UserPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return mContext.getString(R.string.tab_subscriptions);
+                return mContext.getString(R.string.tab_user_subscriptions);
             case 1:
-                return mContext.getString(R.string.tab_actions);
+                return mContext.getString(R.string.tab_user_actions);
             default:
                 return null;
         }

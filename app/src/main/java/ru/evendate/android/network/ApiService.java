@@ -134,6 +134,20 @@ public interface ApiService {
             @Query("offset") int offset
     );
 
+    /**
+     * Get past events in organization
+     */
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<EventDetail>> getEvents(
+            @Header("Authorization") String authorization,
+            @Query("organization_id") int organizationId,
+            @Query("till") String till,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
     @GET(API_PATH + "/users/{id}")
     Observable<ResponseArray<UserDetail>> getUser(
             @Header("Authorization") String authorization,

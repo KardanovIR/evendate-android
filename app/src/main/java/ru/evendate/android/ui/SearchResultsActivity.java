@@ -25,9 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +35,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AbstractAdapter;
 import ru.evendate.android.adapters.AppendableAdapter;
@@ -55,6 +51,7 @@ import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsView;
 import rx.Observable;
@@ -135,10 +132,8 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Tracker tracker = EvendateApplication.getTracker();
-                tracker.setScreenName("Search Screen ~" +
+                new Statistics(getApplicationContext()).sendCurrentScreenName("Search Screen ~" +
                         mSearchPagerAdapter.getPageLabel(position));
-                tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
 
             @Override
@@ -315,11 +310,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case EVENT_TAB:
-                    return mContext.getString(R.string.search_tab_events);
+                    return mContext.getString(R.string.tab_search_events);
                 case ORG_TAB:
-                    return mContext.getString(R.string.search_tab_orgs);
+                    return mContext.getString(R.string.tab_search_organizations);
                 case USER_TAB:
-                    return mContext.getString(R.string.search_tab_users);
+                    return mContext.getString(R.string.tab_search_users);
                 default:
                     return null;
             }
@@ -471,7 +466,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            result -> onLoadedOrgs(result.getData()),
+                            result -> onLoadedOrgs(new ArrayList<>(result.getData())),
                             this::onError,
                             mLoadStateView::hideProgress
                     );
@@ -483,7 +478,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
 
 
-        public void onLoadedOrgs(ArrayList<OrganizationFull> subList) {
+        public void onLoadedOrgs(ArrayList<OrganizationSubscription> subList) {
             Log.i(LOG_TAG, "loaded " + subList.size() + " orgs");
             mAdapter.replace(new ArrayList<>(subList));
             checkListAndShowHint();

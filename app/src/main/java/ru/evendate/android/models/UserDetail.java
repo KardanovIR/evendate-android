@@ -11,6 +11,6 @@ public class UserDetail extends User {
     ArrayList<OrganizationFull> subscriptions;
 
     public ArrayList<OrganizationSubscription> getSubscriptions() {
-        return new ArrayList<OrganizationSubscription>(subscriptions);
+        return new ArrayList<>(subscriptions);
     }
 }

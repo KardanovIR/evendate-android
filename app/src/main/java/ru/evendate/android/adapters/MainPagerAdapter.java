@@ -66,11 +66,11 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragme
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case REEL_TAB:
-                return mContext.getString(R.string.feed_tab);
+                return mContext.getString(R.string.tab_main_feed);
             case FAVE_TAB:
-                return mContext.getString(R.string.favorite_tab);
+                return mContext.getString(R.string.tab_main_favorite);
             case RECOMMEND_TAB:
-                return mContext.getString(R.string.recommendation_tab);
+                return mContext.getString(R.string.tab_main_recommendation);
             default:
                 return null;
         }

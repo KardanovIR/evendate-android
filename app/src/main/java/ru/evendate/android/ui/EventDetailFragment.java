@@ -59,8 +59,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -80,9 +78,7 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
-import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
-import ru.evendate.android.Statistics;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
@@ -94,6 +90,7 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.TagsView;
 import ru.evendate.android.views.UserFavoritedCard;
@@ -206,6 +203,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
+        mUri = mEventDetailActivity.mUri;
+        eventId = Integer.parseInt(mUri.getLastPathSegment());
+        new Statistics(getActivity()).sendEventView(eventId);
     }
 
     @Override
@@ -214,9 +214,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
-
-        mUri = mEventDetailActivity.mUri;
-        eventId = Integer.parseInt(mUri.getLastPathSegment());
 
         initToolbar();
         initTransitions();
@@ -579,8 +576,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @SuppressWarnings("unused")
     @OnClick(R.id.event_place_button)
     public void onPlaceClick() {
-        Statistics.init(getActivity());
-        Statistics.sendEventOpenMap(eventId);
+        new Statistics(getActivity()).sendEventOpenMap(eventId);
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
                 "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -591,8 +587,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @SuppressWarnings("unused")
     @OnClick(R.id.event_link_card)
     public void onLinkClick() {
-        Statistics.init(getActivity());
-        Statistics.sendEventOpenSite(eventId);
+        new Statistics(getActivity()).sendEventClickLinkAction(eventId);
         if (mAdapter.getEvent() == null)
             return;
         Intent openLink = new Intent(Intent.ACTION_VIEW);
@@ -640,18 +635,14 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
         event.favore();
 
-        Tracker tracker = EvendateApplication.getTracker();
-        HitBuilders.EventBuilder statEvent = new HitBuilders.EventBuilder()
-                .setCategory(getActivity().getString(R.string.stat_category_event))
-                .setLabel((Long.toString(event.getEntryId())));
+        Statistics statistics = new Statistics(getActivity());
         if (event.isFavorite()) {
-            statEvent.setAction(getActivity().getString(R.string.stat_action_like));
-            Toast.makeText(getActivity(), R.string.favorite_confirm, Toast.LENGTH_SHORT).show();
+            statistics.sendEventFavoreAction(eventId);
+            Toast.makeText(getActivity(), R.string.event_favorite_confirm, Toast.LENGTH_SHORT).show();
         } else {
-            statEvent.setAction(getActivity().getString(R.string.stat_action_dislike));
-            Toast.makeText(getActivity(), R.string.remove_favorite_confirm, Toast.LENGTH_SHORT).show();
+            statistics.sendEventUnfavoreAction(eventId);
+            Toast.makeText(getActivity(), R.string.event_favorite_remove_confirm, Toast.LENGTH_SHORT).show();
         }
-        tracker.send(statEvent.build());
         mAdapter.setEventInfo();
     }
 
@@ -757,12 +748,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
                 NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
         alertDialog.setAdapter(adapter, null);
         alertDialog.setView(convertView);
-        alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> {
-            adapter.update();
-        });
-        alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> {
-            notificationDialog.dismiss();
-        });
+        alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> adapter.update());
+        alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> notificationDialog.dismiss());
 
         Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
         addNotificationButton.setOnClickListener((View view) -> {

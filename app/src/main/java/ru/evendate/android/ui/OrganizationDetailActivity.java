@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.evendate.android.R;
-import ru.evendate.android.Statistics;
 
 public class OrganizationDetailActivity extends AppCompatActivity {
 
@@ -22,8 +21,6 @@ public class OrganizationDetailActivity extends AppCompatActivity {
             throw new RuntimeException("no intent with uri");
         Uri organizationUri = intent.getData();
         args.putString(OrganizationDetailFragment.URI, organizationUri.toString());
-        Statistics.init(this);
-        Statistics.sendOrganizationAction(intent, organizationUri.getLastPathSegment());
 
         Fragment fragment = new OrganizationDetailFragment();
         fragment.setArguments(args);
