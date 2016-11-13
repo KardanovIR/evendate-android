@@ -1,0 +1,193 @@
+<!-- todo dry with fragment detail content -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/window_reel_background"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp"
+            android:paddingTop="8dp">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/org_card"
+                style="@style/EventDescriptionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/organization_name_label"
+                        style="@style/Body2.Light"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/organization_name_label"
+                        android:textIsSelectable="false"
+                        android:textSize="15sp"/>
+
+                    <TextView
+                        android:id="@+id/organization_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/organization_name_label"
+                        android:layout_alignStart="@+id/organization_name_label"
+                        android:layout_below="@+id/organization_name_label"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="sans-serif"
+                        android:textColor="#000"
+                        android:textIsSelectable="false"
+                        android:textSize="15sp"
+                        tools:text="Digital October"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/org_description_card"
+                style="@style/EventDescriptionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/description_label"
+                        style="@style/Body2.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/event_description"/>
+
+                    <TextView
+                        android:id="@+id/organization_description"
+                        style="@style/Body1.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/description_label"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        tools:text="ГЭС-2 — мёртвый участок между Болотной площадью и «Красным Октябрём»"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <ru.evendate.android.views.UserFavoritedCard
+                android:id="@+id/user_card"
+                style="@style/EventDescriptionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/org_place_card"
+                style="@style/EventDescriptionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/organization_place_text"
+                        style="@style/Body1.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/place_label"
+                        android:layout_alignStart="@+id/place_label"
+                        android:layout_below="@+id/place_label"
+                        tools:text="Г. Москва, Берсеневская набережная 5, ст1"/>
+
+                    <TextView
+                        android:id="@+id/place_label"
+                        style="@style/Body2.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/event_place"/>
+
+                    <TextView
+                        android:id="@+id/org_place_button"
+                        style="@style/Caption.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/organization_place_text"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="4dp"
+                        android:includeFontPadding="false"
+                        android:paddingBottom="12dp"
+                        android:paddingLeft="24dp"
+                        android:paddingRight="24dp"
+                        android:paddingTop="12dp"
+                        android:text="@string/event_show_on_map"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/org_link_card"
+                style="@style/EventDescriptionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/Caption.Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:includeFontPadding="false"
+                        android:paddingBottom="24dp"
+                        android:paddingTop="24dp"
+                        android:text="@string/organization_go_to_page"/>
+                </FrameLayout>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

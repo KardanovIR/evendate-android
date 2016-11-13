@@ -11,12 +11,17 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.onesignal.OneSignal;
 import com.squareup.picasso.Picasso;
+
+import ru.evendate.android.gcm.EvendateNotificationOpenedHandler;
+import ru.evendate.android.network.ServiceImpl;
 
 /**
  * Created by Dmitry on 23.11.2015.
  */
 public class EvendateApplication extends MultiDexApplication {
+
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
 
@@ -27,9 +32,26 @@ public class EvendateApplication extends MultiDexApplication {
         tracker = analytics.newTracker(R.xml.tracker_config);
         tracker.enableAdvertisingIdCollection(true);
         tracker.setAppVersion(BuildConfig.VERSION_NAME);
+
+        initImageLoader();
+        initOneSignal();
+
         if (BuildConfig.DEBUG)
             analytics.setDryRun(true);
-        //initialize and create the image loader logic
+    }
+
+    public static Tracker getTracker() {
+        return tracker;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
+    //initialize and create the image loader logic
+    private void initImageLoader() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder) {
@@ -43,14 +65,16 @@ public class EvendateApplication extends MultiDexApplication {
         });
     }
 
-    public static Tracker getTracker() {
-        return tracker;
-    }
+    private void initOneSignal() {
+        OneSignal.startInit(this)
+                .setNotificationOpenedHandler(new EvendateNotificationOpenedHandler(getApplicationContext()))
+                .init();
+        OneSignal.enableVibrate(true);
+        OneSignal.enableSound(true);
+        OneSignal.idsAvailable((String userId, String registrationId) -> {
+            if (registrationId != null)
+                ServiceImpl.sendRegistrationToServer(getApplicationContext(), userId);
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
+        });
     }
-
 }

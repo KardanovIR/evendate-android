@@ -21,14 +21,7 @@ public class UsersFormatter {
     }
 
     public static String formatUsers(Context c, OrganizationDetail organization) {
-        int friend_count = 0;
-        for (User user : organization.getSubscribedUsersList()) {
-            if (user.is_friend())
-                friend_count++;
-        }
-        String users;
-        users = organization.getSubscribedCount() != 0 ? organization.getSubscribedCount() + " " + c.getString(R.string.organization_word_users) : "";
-        users += friend_count != 0 ?  (users.equals("") ? "" : "\n") + friend_count + " " + c.getString(R.string.organization_word_friends) : "";
-        return users;
+        return c.getString(R.string.organization_word_subscribers) + " - " +
+                organization.getSubscribedCount() + " " + c.getString(R.string.organization_word_users);
     }
 }
