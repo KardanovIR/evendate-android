@@ -1,82 +1,89 @@
 package ru.evendate.android.ui;
 
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
-import android.content.DialogInterface;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import jp.wasabeef.recyclerview.animators.LandingAnimator;
+import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.NpaLinearLayoutManager;
-import ru.evendate.android.adapters.OrganizationEventsAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.EventDetail;
-import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
+import ru.evendate.android.network.NetworkRequests;
 import ru.evendate.android.network.ResponseArray;
-import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.statistics.Statistics;
+import ru.evendate.android.views.LoadStateView;
+import ru.evendate.android.views.UserFavoritedCard;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION;
+import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION_PAST;
+import static ru.evendate.android.ui.UiUtils.revealView;
+
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements
-        OrganizationEventsAdapter.OrganizationCardController, AdapterController.AdapterContext {
+public class OrganizationDetailFragment extends Fragment implements LoadStateView.OnReloadListener {
     private final String LOG_TAG = "OrganizationFragment";
-
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
-    @Bind(R.id.organization_image_container) View mOrganizationImageContainer;
 
     private int organizationId = -1;
     public static final String URI = "uri";
@@ -84,32 +91,51 @@ public class OrganizationDetailFragment extends Fragment implements
 
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
+    @Bind(R.id.organization_image_container) View mImageContainer;
     @Bind(R.id.organization_image) ImageView mBackgroundView;
+    @Bind(R.id.organization_image_foreground) ImageView mForegroundView;
+    @Bind(R.id.organization_icon) CircleImageView mIconView;
+
     @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.organization_toolbar_title) TextView mToolbarTitle;
-    LinearLayoutManager mLayoutManager;
-    int scrollOffset = 0;
-    int toolbarColor = Color.TRANSPARENT;
-    boolean isToolbarTransparent = true;
-    ValueAnimator colorAnimation;
-    DrawerWrapper mDrawer;
-
-    private OrganizationEventsAdapter mAdapter;
-    private AdapterController mAdapterController;
-
-    AlertDialog alertDialog;
+    @Bind(R.id.tabs) TabLayout mTabs;
+    @Bind(R.id.pager) ViewPager mViewPager;
+    private OrganizationPagerAdapter mPagerAdapter;
+    private DrawerWrapper mDrawer;
+    private OrganizationDetail mOrganization;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            mLoadStateView.hideProgress();
             mBackgroundView.setImageBitmap(bitmap);
-            revealView(mOrganizationImageContainer);
+
+            int color = ContextCompat.getColor(getActivity(), R.color.primary);
+
+            int red = Color.red(color);
+            int blue = Color.blue(color);
+            int green = Color.green(color);
+
+            int colorShadow = Color.argb(255, red, green, blue);
+            int colorShadow2 = Color.argb(150, red, green, blue);
+            int colorShadowEnd = Color.argb(0, red, green, blue);
+            GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    new int[]{colorShadow, colorShadow2, colorShadowEnd});
+            mForegroundView.setImageDrawable(shadow);
+            if (isAdded())
+                revealView(mAppBarLayout);
+            if (Build.VERSION.SDK_INT > 19)
+                TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+            mViewPager.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
             mBackgroundView.setImageDrawable(errorDrawable);
-            revealView(mOrganizationImageContainer);
+            if (isAdded())
+                revealView(mAppBarLayout);
         }
 
         @Override
@@ -137,13 +163,28 @@ public class OrganizationDetailFragment extends Fragment implements
         initToolbar();
         initTransitions();
         initDrawer();
-        initRecyclerView();
 
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
+        mAppBarLayout.addOnOffsetChangedListener((AppBarLayout appBarLayout, int verticalOffset) -> {
+            if (mOrganization == null)
+                return;
+            if (mAppBarLayout.getTotalScrollRange() - Math.abs(verticalOffset) <= 4 &&
+                    !mToolbar.getTitle().equals(mOrganization.getShortName())) {
+                mCollapsingToolbar.setTitle(mOrganization.getShortName());
+            } else if (!mToolbar.getTitle().equals(mOrganization.getName())) {
+                mCollapsingToolbar.setTitle(mOrganization.getName());
+            }
+        });
 
-        mOrganizationImageContainer.setVisibility(View.INVISIBLE);
-        mProgressBar.setVisibility(View.VISIBLE);
+        mPagerAdapter = new OrganizationPagerAdapter(getChildFragmentManager(), getActivity());
+        mViewPager.setAdapter(mPagerAdapter);
+
+        mTabs.setupWithViewPager(mViewPager);
+        setupPagerStat();
+        mLoadStateView.setOnReloadListener(this);
+        mLoadStateView.showProgress();
+
+        mAppBarLayout.setVisibility(View.INVISIBLE);
+        mViewPager.setVisibility(View.INVISIBLE);
         return rootView;
     }
 
@@ -168,94 +209,31 @@ public class OrganizationDetailFragment extends Fragment implements
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
 
-    private void initRecyclerView() {
-        mLayoutManager = new NpaLinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new LandingAnimator());
-        mAdapter = new OrganizationEventsAdapter(getContext(), mRecyclerView, this);
-        mAdapterController = new AdapterController(this, mAdapter);
-        mRecyclerView.setAdapter(mAdapter);
-        initParallax();
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.org_detail_menu, menu);
     }
 
-    private void initParallax() {
-        mToolbar.setBackgroundColor(toolbarColor);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+    /**
+     * setup screen names of fragments for statistic screen tracking
+     */
+    private void setupPagerStat() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                setImageViewY(recyclerView);
-                int targetColor;
-                if (checkOrgCardScrolling(recyclerView) == isToolbarTransparent)
-                    return;
-                if (isToolbarTransparent) {
-                    targetColor = ContextCompat.getColor(getActivity(), R.color.primary);
-                } else
-                    targetColor = Color.TRANSPARENT;
-                if (colorAnimation != null)
-                    colorAnimation.cancel();
-                colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), toolbarColor, targetColor);
-                colorAnimation.setDuration(200);
-                colorAnimation.addUpdateListener((ValueAnimator animator) -> {
-                    toolbarColor = (int)animator.getAnimatedValue();
-                    mToolbar.setBackgroundColor(toolbarColor);
-                });
-                colorAnimation.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        if (Build.VERSION.SDK_INT < 21)
-                            return;
-                        if (isToolbarTransparent) {
-                            mAppBarLayout.setElevation(0);
-                        }
-                    }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (Build.VERSION.SDK_INT < 21)
-                            return;
-                        if (!isToolbarTransparent) {
-                            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
-                                    getResources().getDisplayMetrics());
-                            mAppBarLayout.setElevation(px);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {}
-                });
-                isToolbarTransparent = !isToolbarTransparent;
-                colorAnimation.start();
+            @Override
+            public void onPageSelected(int position) {
+                Tracker tracker = EvendateApplication.getTracker();
+                tracker.setScreenName("Organization Screen ~" +
+                        mPagerAdapter.getPageLabel(position));
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
         });
-    }
-
-    private boolean checkOrgCardScrolling(RecyclerView recyclerView) {
-        float imageHeight = getResources().getDimension(R.dimen.organization_background_height);
-        float actionBarHeight = 0;
-        TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
-        int index = mLayoutManager.findFirstVisibleItemPosition();
-        return mAdapter.getItemViewType(index) == R.layout.card_organization_detail
-                && (Math.abs(recyclerView.computeVerticalScrollOffset()) + actionBarHeight) < imageHeight;
-    }
-
-    private boolean checkOrgCardVisible() {
-        int index = mLayoutManager.findFirstVisibleItemPosition();
-        return mAdapter.getItemViewType(index) == R.layout.card_organization_detail;
-    }
-
-    private void setImageViewY(RecyclerView recyclerView) {
-        scrollOffset = Math.abs(recyclerView.computeVerticalScrollOffset());
-        if (checkOrgCardVisible()) {
-            mBackgroundView.setVisibility(View.VISIBLE);
-            mBackgroundView.setY(-scrollOffset * 0.5f);
-        } else
-            mBackgroundView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -263,6 +241,11 @@ public class OrganizationDetailFragment extends Fragment implements
         switch (item.getItemId()) {
             case android.R.id.home:
                 onUpPressed();
+                return true;
+            case R.id.action_info:
+                OrganizationInfo dialog = new OrganizationInfo();
+                dialog.setOrganization(mOrganization);
+                dialog.show(getChildFragmentManager(), "dialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -297,142 +280,198 @@ public class OrganizationDetailFragment extends Fragment implements
                         organizationId, OrganizationDetail.FIELDS_LIST);
         organizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    onLoaded(new ArrayList<>(result.getData()));
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                });
+                .subscribe(result -> onLoaded(new ArrayList<>(result.getData())),
+                        this::onError);
     }
 
-    private void loadEvents() {
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventDetail>> observable =
-                apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
-                        organizationId, true, EventDetail.FIELDS_LIST, "created_at",
-                        mAdapterController.getLength(), mAdapterController.getOffset());
 
-        observable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    onLoadedEvents(new ArrayList<>(result.getData()));
-                }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
-                });
-    }
-
-    /**
-     * handle subscription button
-     */
-    public void onSubscribed() {
-        ServiceImpl.subscribeOrgAndChangeState(getActivity(), mAdapter.getOrganization());
-
-        if (mAdapter.getOrganization().isSubscribed()) {
-            Snackbar.make(mCoordinatorLayout, R.string.subscription_confirm, Snackbar.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(mCoordinatorLayout, R.string.removing_subscription_confirm, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void revealView(View view) {
+    public void onLoaded(ArrayList<OrganizationFull> organizations) {
         if (!isAdded())
             return;
-        if (view.getVisibility() == View.VISIBLE)
-            return;
-        view.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT < 21)
-            return;
-        int cx = (view.getLeft() + view.getRight()) / 2;
-        int cy = (view.getTop() + view.getBottom()) / 2;
-
-        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-        animation.start();
-    }
-
-    /**
-     * handle place button click and open google map
-     */
-    public void onPlaceClicked() {
-        new Statistics(getActivity()).sendOrgOpenMap(organizationId);
-        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mAdapter.getOrganization().getDefaultAddress());
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
-    }
-
-    /**
-     * handle all user click and open user list for organization
-     */
-    @Override
-    public void onUsersClicked() {
-        Intent intent = new Intent(getContext(), UserListActivity.class);
-        intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                .appendPath(String.valueOf(mAdapter.getOrganization().getEntryId())).build());
-        intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
-        if (Build.VERSION.SDK_INT >= 21) {
-            getActivity().startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-        } else
-            getActivity().startActivity(intent);
-    }
-
-    /**
-     * handle link button click and open organization page in browser
-     */
-    @Override
-    public void onLinkClicked() {
-        new Statistics(getActivity()).sendOrganizationClickLinkAction(organizationId);
-        Intent openLink = new Intent(Intent.ACTION_VIEW);
-        openLink.setData(Uri.parse(mAdapter.getOrganization().getSiteUrl()));
-        startActivity(openLink);
-    }
-
-    public void onLoaded(ArrayList<OrganizationDetail> organizations) {
-        if (!isAdded())
-            return;
-        mProgressBar.setVisibility(View.GONE);
-        OrganizationDetail organization = organizations.get(0);
-        mAdapter.setOrganization(organization);
-        mAdapterController.reloaded(organization.getEventsList());
+        mOrganization = organizations.get(0);
         Picasso.with(getActivity())
-                .load(organization.getBackgroundMediumUrl())
+                .load(mOrganization.getBackgroundMediumUrl())
                 .error(R.drawable.default_background)
                 .noFade()
                 .into(backgroundTarget);
-        mToolbarTitle.setText(organization.getShortName());
+        Picasso.with(getActivity())
+                .load(mOrganization.getLogoMediumUrl())
+                .error(R.mipmap.ic_launcher)
+                .into(mIconView);
+        mSubscribeButton.setChecked(mOrganization.isSubscribed());
+
     }
 
-    public void onLoadedEvents(ArrayList<EventFeed> events) {
-        if (!isAdded())
-            return;
-        mAdapterController.loaded(events);
-    }
-
-    public void onError() {
-        if (!isAdded())
-            return;
-        mProgressBar.setVisibility(View.GONE);
-        alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                (DialogInterface dialog, int which) -> {
-                    loadOrg();
-                    dialog.dismiss();
-                }
-        );
-        mAdapterController.notLoadedCauseError();
-        mAdapterController.disableNext();
-        alertDialog.show();
+    public void onError(Throwable error) {
+        Log.e(LOG_TAG, error.getMessage());
+        mLoadStateView.showErrorHint();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (alertDialog != null)
-            alertDialog.dismiss();
+    public void onReload() {
+        loadOrg();
     }
 
-    public void requestNext() {
-        loadEvents();
+    @SuppressWarnings("unused")
+    @OnClick(R.id.organization_subscribe_button)
+    public void onSubscribeClick(View v) {
+        NetworkRequests networkRequests = new NetworkRequests(getActivity());
+        networkRequests.subscribeOrg(mOrganization, mCoordinatorLayout);
+    }
+
+    class OrganizationPagerAdapter extends FragmentPagerAdapter {
+        private final int TAB_COUNT = 2;
+        private final int FUTURE_TAB = 0;
+        private final int PAST_TAB = 1;
+        private Context mContext;
+        ReelFragment mFutureReelFragment;
+        ReelFragment mPastReelFragment;
+
+        OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
+            super(fragmentManager);
+            mContext = context;
+            mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
+            mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case FUTURE_TAB: {
+                    return mFutureReelFragment;
+                }
+                case PAST_TAB: {
+                    return mPastReelFragment;
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.tab_organization_future_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.tab_organization_past_events);
+                default:
+                    return null;
+            }
+        }
+
+        /**
+         * return strings for statistics
+         */
+        String getPageLabel(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.stat_page_organization_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.stat_page_organization_past_events);
+                default:
+                    return null;
+            }
+        }
+    }
+
+    public static class OrganizationInfo extends DialogFragment {
+        OrganizationDetail mOrganization;
+        @Bind(R.id.toolbar) Toolbar mToolbar;
+        @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+        @Bind(R.id.organization_name) TextView mOrganizationTextView;
+        @Bind(R.id.organization_description) TextView mDescriptionTextView;
+        @Bind(R.id.organization_place_text) TextView mPlacePlaceTextView;
+
+        public void setOrganization(OrganizationDetail organization) {
+            mOrganization = organization;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final FrameLayout root = new FrameLayout(getActivity());
+            root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_FullScreenDialogOverlay);
+            dialog.setContentView(root);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            return dialog;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_organization_info, container, false);
+            ButterKnife.bind(this, rootView);
+
+            mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
+            mToolbar.setNavigationOnClickListener((View v) -> dismiss());
+            initUserFavoriteCard();
+            setOrg();
+            return rootView;
+        }
+
+        private void initUserFavoriteCard() {
+            mUserFavoritedCard.setOnAllButtonListener((View v) -> onUsersClicked());
+        }
+
+        private void setOrg() {
+            mOrganizationTextView.setText(mOrganization.getName());
+            mDescriptionTextView.setText(mOrganization.getDescription());
+            mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(getContext(), mOrganization));
+            if (mOrganization.getSubscribedUsersList().size() == 0) {
+                mUserFavoritedCard.setVisibility(View.GONE);
+            }
+            mUserFavoritedCard.setUsers(mOrganization.getSubscribedUsersList());
+            mPlacePlaceTextView.setText(mOrganization.getDefaultAddress());
+            mToolbar.setTitle(getString(R.string.organization_dialog_info_title));
+        }
+
+        /**
+         * handle link button click and open organization page in browser
+         */
+        @SuppressWarnings("unused")
+        @OnClick(R.id.org_link_card)
+        public void onLinkClick() {
+            new Statistics(getActivity()).sendOrganizationClickLinkAction(mOrganization.getEntryId());
+            Intent openLink = new Intent(Intent.ACTION_VIEW);
+            openLink.setData(Uri.parse(mOrganization.getSiteUrl()));
+            startActivity(openLink);
+        }
+
+        /**
+         * handle place button click and open google map
+         */
+        @SuppressWarnings("unused")
+        @OnClick(R.id.org_place_card)
+        public void onPlaceClicked() {
+            new Statistics(getActivity()).sendOrgOpenMap(mOrganization.getEntryId());
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mOrganization.getDefaultAddress());
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+
+        /**
+         * handle all user click and open user list for organization
+         */
+        public void onUsersClicked() {
+            Intent intent = new Intent(getContext(), UserListActivity.class);
+            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(mOrganization.getEntryId())).build());
+            intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
+            if (Build.VERSION.SDK_INT >= 21) {
+                getActivity().startActivity(intent,
+                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+            } else
+                getActivity().startActivity(intent);
+        }
+
     }
 }

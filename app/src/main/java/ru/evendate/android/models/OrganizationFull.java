@@ -29,6 +29,8 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
     Integer subscriptionId;
     @SerializedName("default_address")
     String defaultAddress;
+    @SerializedName("new_events_count")
+    int newEventsCount;
 
     @SerializedName("subscribed")
     ArrayList<UserDetail> mSubscribedUsersList;
@@ -90,5 +92,9 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
     @Override
     public ArrayList<EventFeed> getEventsList() {
         return new ArrayList<>(mEventsList);
+    }
+
+    public int getNewEventsCount() {
+        return newEventsCount;
     }
 }

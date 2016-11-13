@@ -310,11 +310,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case EVENT_TAB:
-                    return mContext.getString(R.string.search_tab_events);
+                    return mContext.getString(R.string.tab_search_events);
                 case ORG_TAB:
-                    return mContext.getString(R.string.search_tab_orgs);
+                    return mContext.getString(R.string.tab_search_organizations);
                 case USER_TAB:
-                    return mContext.getString(R.string.search_tab_users);
+                    return mContext.getString(R.string.tab_search_users);
                 default:
                     return null;
             }
