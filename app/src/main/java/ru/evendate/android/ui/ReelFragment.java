@@ -218,6 +218,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mLoadStateView.showProgress();
         loadEvents();
     }
 
@@ -255,7 +256,6 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     }
 
     private void loadEvents() {
-        mLoadStateView.showProgress();
         getDataObservable().subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> onLoaded(new ArrayList<>(result.getData())),

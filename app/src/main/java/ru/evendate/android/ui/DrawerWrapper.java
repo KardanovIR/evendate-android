@@ -14,6 +14,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
@@ -135,8 +136,12 @@ public class DrawerWrapper {
     private void updateSubs() {
         setupMenu();
         for (OrganizationSubscription org : mSubscriptions) {
-            mDrawer.addItem(new SubscriptionDrawerItem().withName(org.getShortName())
-                    .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false));
+            SubscriptionDrawerItem item = (SubscriptionDrawerItem)new SubscriptionDrawerItem().withName(org.getShortName())
+                    .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false);
+            if (org.getNewEventsCount() != 0) {
+                item.withBadge(String.valueOf(org.getNewEventsCount())).withBadgeStyle(new BadgeStyle().withTextColorRes(R.color.accent));
+            }
+            mDrawer.addItem(item);
         }
         getDrawer().getRecyclerView().smoothScrollToPosition(0);
     }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class OrganizationFull extends Organization implements OrganizationDetail, OrganizationSubscription {
     public static final String FIELDS_LIST = "description,background_medium_img_url,background_small_img_url," +
             "img_medium_url,img_small_url,site_url,subscribed_count,is_subscribed,subscription_id,default_address," +
-            "subscribed,events{fields:'" + EventFeed.FIELDS_LIST + "'}";
+            "subscribed,new_events_count,events{fields:'" + EventFeed.FIELDS_LIST + "'}";
 
     String description;
     @SerializedName("background_medium_img_url")
@@ -31,6 +31,8 @@ public class OrganizationFull extends Organization implements OrganizationDetail
     Integer subscriptionId;
     @SerializedName("default_address")
     String defaultAddress;
+    @SerializedName("new_events_count")
+    int newEventsCount;
 
     @SerializedName("subscribed")
     ArrayList<UserDetail> mSubscribedUsersList;
@@ -92,5 +94,9 @@ public class OrganizationFull extends Organization implements OrganizationDetail
 
     public ArrayList<EventFeed> getEventsList() {
         return new ArrayList<EventFeed>(mEventsList);
+    }
+
+    public int getNewEventsCount() {
+        return newEventsCount;
     }
 }
