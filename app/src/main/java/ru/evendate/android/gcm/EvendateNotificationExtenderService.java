@@ -19,9 +19,12 @@ import ru.evendate.android.Settings;
  * Created by Aedirn on 15.10.16.
  */
 public class EvendateNotificationExtenderService extends NotificationExtenderService {
+    private final String LOG_TAG = EvendateNotificationOpenedHandler.class.getSimpleName();
+
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
 
+        Log.d(LOG_TAG, "received notification " + receivedResult.payload.additionalData.toString());
         NotificationAdditionalData addData = NotificationAdditionalData.obtainFromPayload(receivedResult.payload);
         if (!Settings.isNotificationOn(getBaseContext()))
             //todo handle stat?
