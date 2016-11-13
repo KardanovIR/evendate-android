@@ -40,9 +40,6 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.network.ApiFactory;
 
-/**
- * Created by fj on 14.09.2015.
- */
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
@@ -54,11 +51,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     static public String URL_KEY = "url";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
-    private final int REQUEST_INTRO = 1;
     private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
 
-    private boolean introViewed = false;
     private boolean isGoogleServicesAvailable = false;
 
     GoogleApiClient apiClient;
@@ -137,14 +132,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         Account oldAccount = EvendateAccountManager.getSyncAccount(this);
         if (oldAccount != null)
             am.removeAccount(oldAccount, null, null);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (!introViewed)
-            startActivityForResult(new Intent(this, IntroActivity.class), REQUEST_INTRO);
     }
 
     private void showProgressDialog() {
@@ -232,12 +219,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         if (requestCode == REQUEST_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleGoogleSignInResult(result);
-        }
-        if (requestCode == REQUEST_INTRO) {
-            if (resultCode == RESULT_CANCELED) {
-                finish();
-            }
-            introViewed = true;
         }
         if (requestCode == REQUEST_WEB_AUTH) {
             if (resultCode == RESULT_OK) {

@@ -108,9 +108,6 @@
             android:name=".auth.AuthActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".auth.IntroActivity"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".auth.WebAuthActivity"
             android:screenOrientation="portrait"/>
 
