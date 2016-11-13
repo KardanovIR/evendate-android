@@ -99,6 +99,6 @@
             android:paddingRight="1dp"
             android:singleLine="true"
             android:textSize="@dimen/material_drawer_item_primary_text"
-            tools:text="99" />
+            tools:text="99"/>
     </LinearLayout>
 </LinearLayout>

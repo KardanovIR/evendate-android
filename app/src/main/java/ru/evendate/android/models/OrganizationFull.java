@@ -89,7 +89,6 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
         return defaultAddress;
     }
 
-    @Override
     public ArrayList<EventFeed> getEventsList() {
         return new ArrayList<>(mEventsList);
     }

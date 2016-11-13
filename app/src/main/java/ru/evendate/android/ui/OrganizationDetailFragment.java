@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -66,8 +67,8 @@ import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.NetworkRequests;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.UserFavoritedCard;
@@ -315,8 +316,13 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     @SuppressWarnings("unused")
     @OnClick(R.id.organization_subscribe_button)
     public void onSubscribeClick(View v) {
-        NetworkRequests networkRequests = new NetworkRequests(getActivity());
-        networkRequests.subscribeOrg(mOrganization, mCoordinatorLayout);
+        ServiceImpl.subscribeOrgAndChangeState(getActivity(), mOrganization);
+
+        if (mOrganization.isSubscribed()) {
+            Snackbar.make(mCoordinatorLayout, R.string.organization_subscription_confirm, Snackbar.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(mCoordinatorLayout, R.string.organization_subscription_remove_confirm, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     class OrganizationPagerAdapter extends FragmentPagerAdapter {

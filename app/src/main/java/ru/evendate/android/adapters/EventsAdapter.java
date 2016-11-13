@@ -95,8 +95,8 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         String date;
-        if(eventEntry.getNearestDate() != 0)
-             date = EventFormatter.formatDate(eventEntry.getNearestDate());
+        if (eventEntry.getNearestDate() != 0)
+            date = EventFormatter.formatDate(eventEntry.getNearestDate());
         else
             date = EventFormatter.formatDate(eventEntry.getLastDate());
         holder.mDateTextView.setText(date);

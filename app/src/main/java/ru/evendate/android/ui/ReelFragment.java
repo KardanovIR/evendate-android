@@ -32,8 +32,8 @@ import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.NetworkRequests;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.views.LoadStateView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -327,7 +327,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private Observable<ResponseArray<EventDetail>> getOrgPastEvent(
             ApiService apiService, int length, int offset, int organizationId) {
-        String date = NetworkRequests.formatDateForServer(Calendar.getInstance().getTime());
+        String date = ServiceUtils.formatDateForServer(Calendar.getInstance().getTime());
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                 organizationId, date, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_LAST_DATE, length, offset);
     }
