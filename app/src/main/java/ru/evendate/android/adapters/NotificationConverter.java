@@ -43,6 +43,9 @@ public class NotificationConverter {
         for (String defType : getDefaultTypes()) {
             if (type.equals(defType))
                 return true;
+            else if (type.equals(NotificationType.CUSTOM.type)) {
+                return true;
+            }
         }
         return false;
     }
