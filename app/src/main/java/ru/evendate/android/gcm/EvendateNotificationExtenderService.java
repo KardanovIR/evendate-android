@@ -37,7 +37,7 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
             builder.setDeleteIntent(getHideIntent(addData))
                     .setSmallIcon(R.drawable.ic_stat_ic_notification);
 
-            int accentColor = ContextCompat.getColor(getBaseContext(), R.color.accent);
+            int accentColor = ContextCompat.getColor(getBaseContext(), R.color.primary);
 
             builder.setColor(accentColor);
             if (Settings.isVibrateOn(getBaseContext())) {

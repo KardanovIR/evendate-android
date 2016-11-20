@@ -14,7 +14,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
 
-        <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
+        <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,13 +25,19 @@
             app:expandedTitleMarginStart="8dp"
             app:expandedTitleTextAppearance="@style/TextAppearance.CollapsingToolbar"
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
-            app:maxLines="3"
+            app:titleEnabled="false"
             app:toolbarId="@id/toolbar">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/toolbar_gradient"
+                />
 
             <FrameLayout
                 android:id="@+id/organization_image_container"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="84dp"
                 app:layout_collapseMode="parallax">
 
@@ -48,40 +54,58 @@
                     android:layout_height="match_parent"
                     />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:background="@drawable/shadow_org_icon"/>
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:layout_gravity="center"
-                    android:src="@color/white"/>
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/organization_icon"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:layout_gravity="center"
-                    app:civ_border_color="#66000000"
-                    app:civ_border_width="1dp"/>
-
             </FrameLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/toolbar_gradient"
-                />
 
-            <FrameLayout
-                android:id="@+id/button_container"
+            <LinearLayout
+                android:id="@+id/toolbar_bottom_container"
                 android:layout_width="match_parent"
-                android:layout_height="84dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="?attr/colorPrimary">
+                android:layout_marginTop="80dp"
+                android:minHeight="84dp"
+                android:orientation="vertical"
+                android:paddingBottom="28dp">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_gravity="center_horizontal">
+                    <!--
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/shadow_org_icon"/>-->
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_gravity="center"
+                        android:src="@color/white"/>
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/organization_icon"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_gravity="center"
+                        app:civ_border_color="#66000000"
+                        app:civ_border_width="1dp"/>
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/org_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:gravity="center"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="24sp"
+                    tools:text="Org Title"/>
 
                 <ToggleButton
                     android:id="@+id/organization_subscribe_button"
@@ -100,14 +124,28 @@
                     android:textOn="@string/organization_unsubscribe"
                     android:textSize="14sp"
                     />
-            </FrameLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"/>
-        </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
+                app:layout_collapseMode="pin">
+
+                <TextView
+                    android:id="@+id/org_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="#FFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Event"/>
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
