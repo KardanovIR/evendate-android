@@ -18,12 +18,18 @@
     <style name="AppTheme.FullScreenDialogOverlay">
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentTransitions">false</item>
-        <item name="android:windowAnimationStyle">@style/FullScreenDialog.Window</item>
+        <!-- cause autistic estetic view -->
+        <item name="android:windowAnimationStyle">@style/FullScreenDialog.Window.DisabledAnim</item>
     </style>
 
     <style name="FullScreenDialog.Window" parent="@android:style/Animation.Activity">
         <item name="android:windowEnterAnimation">@anim/scale_up</item>
         <item name="android:windowExitAnimation">@anim/scale_down</item>
+    </style>
+
+    <style name="FullScreenDialog.Window.DisabledAnim" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
     </style>
 
     <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">

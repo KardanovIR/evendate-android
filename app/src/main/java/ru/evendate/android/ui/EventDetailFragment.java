@@ -170,6 +170,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (!isAdded())
+                return;
             if (bitmap == null)
                 return;
             mEventImageView.setImageBitmap(bitmap);
@@ -442,8 +444,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         mProgressBar.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT > 19)
-            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
+        //if (Build.VERSION.SDK_INT > 19)
+        //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
     }
