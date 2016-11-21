@@ -148,4 +148,5 @@
     <string name="action_info">Об организаторе</string>
     <string name="organization_name_label">Организатор</string>
     <string name="organization_dialog_info_title">Об организаторе</string>
+    <string name="auth_error">Произошла ошибка. Пожалуйста, повторите</string>
 </resources>

@@ -9,6 +9,9 @@
     <string name="content_authority" translatable="false">ru.evendate.android</string>
     <string name="account_type" translatable="false">ru.evendate.android.accounts</string>
 
+    <!-- vk strings -->
+    <integer name="com_vk_sdk_AppId">5739514</integer>
+
     <!-- navigation drawer and main activity strings-->
     <string name="drawer_calendar">Calendar</string>
     <string name="drawer_reel">My events</string>
@@ -189,6 +192,7 @@
     <string name="auth_google">Sign in via G+</string>
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
+    <string name="auth_error">Error occurred. Please retry</string>
 
     <!-- notification strings -->
     <string name="notification_before_three_hours">Before 3 hours</string>
