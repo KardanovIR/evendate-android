@@ -384,8 +384,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, mAdapter.getEvent().getTitle() + "\n\n" +
-                        mAdapter.getEvent().getDescription() + "\n" +
+                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) +
+                        mAdapter.getEvent().getTitle() + getString(R.string.event_share_text_in_org) +
+                        mAdapter.getEvent().getOrganizationName() + "\n" +
                         mAdapter.getEvent().getLink());
                 shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
                 shareIntent.setType("image/*");

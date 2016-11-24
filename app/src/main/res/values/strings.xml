@@ -83,6 +83,9 @@
     <string name="event_favorite_confirm">Event added to favorite</string>
     <string name="event_favorite_remove_confirm">Event removed from favorite</string>
 
+    <string name="event_share_text_i_like">I like event ‘</string>
+    <string name="event_share_text_in_org">’ by organizator </string>
+
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>
     <string name="dates_view_time_label">Time</string>

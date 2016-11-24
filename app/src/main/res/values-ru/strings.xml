@@ -141,11 +141,15 @@
     <string name="search_tags_hint">Популярные теги</string>
     <string name="tab_organization_future_events">События</string>
     <string name="tab_organization_past_events">Прошедшие</string>
-    <string name="search_empty_org_header">Ничего не найдено</string>
-    <string name="search_empty_event_header">Попробуйте поискать что-нибудь другое</string>
+    <string name="search_empty_org_header">Организаторы не найдены</string>
+    <string name="search_empty_event_header">События не найдены</string>
     <string name="list_organization_empty_header">Нет событий</string>
     <string name="list_organization_empty_text">Попробуйте посмотреть другие организации</string>
     <string name="action_info">Об организаторе</string>
     <string name="organization_name_label">Организатор</string>
     <string name="organization_dialog_info_title">Об организаторе</string>
+    <string name="event_share_text_i_like">Мне понравилось событие «</string>
+    <string name="event_share_text_in_org">» у организоватора </string>
+    <string name="search_empty_description">Попробуйте поискать что-нибудь другое</string>
+    <string name="search_empty_header">Ничего не найдено</string>
 </resources>
