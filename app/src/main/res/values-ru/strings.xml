@@ -152,4 +152,5 @@
     <string name="event_share_text_in_org">» у организоватора </string>
     <string name="search_empty_description">Попробуйте поискать что-нибудь другое</string>
     <string name="search_empty_header">Ничего не найдено</string>
+    <string name="auth_error">Произошла ошибка. Пожалуйста, повторите</string>
 </resources>

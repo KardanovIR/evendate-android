@@ -30,6 +30,11 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
 
 import java.io.IOException;
 
@@ -44,7 +49,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         View.OnClickListener {
     private final String LOG_TAG = AuthActivity.class.getSimpleName();
 
-    private String VK_URL;
     private String FB_URL;
 
     private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
@@ -98,7 +102,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     private void initLinks() {
         //todo change to https (when move testing to prod server?)
-        VK_URL = "https://oauth.vk.com/authorize?client_id=5029623&scope=friends,email,wall,offline,pages,photos,groups&redirect_uri=" + ApiFactory.getHostName(this) + "/vkOauthDone.php?mobile=true&response_type=token";
         FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
 
     }
@@ -171,7 +174,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sing_in_vk_button:
-                startWebAuth(VK_URL);
+                VKSdk.login(this, VKScope.FRIENDS, VKScope.EMAIL, VKScope.WALL, VKScope.OFFLINE, VKScope.PAGES, VKScope.PHOTOS, VKScope.GROUPS);
                 break;
             case R.id.sing_in_fb_button:
                 startWebAuth(FB_URL);
@@ -215,6 +218,16 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                onVkTokenReceived(res);
+            }
+            @Override
+            public void onError(VKError error) {
+                onErrorOccurred();
+            }
+        }))
 
         if (requestCode == REQUEST_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -226,7 +239,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 String token = data.getStringExtra(WebAuthActivity.TOKEN);
                 onTokenReceived(email, token);
             } else {
-                //TODO
+                onErrorOccurred();
             }
         }
     }
@@ -238,7 +251,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             new RetrieveGoogleTokenTask().execute(acct.getEmail());
         } else {
             if (result.getStatus().isCanceled())
-                Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
+                onErrorOccurred();
         }
     }
 
@@ -274,6 +287,16 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         startWebAuth(url);
     }
 
+    private void onVkTokenReceived(VKAccessToken res) {
+        String url = ApiFactory.getHostName(this) + "/oAuthDone.php?mobile=true&type=vk&expires_in=" + res.expiresIn + "&user_id=" + res.userId +
+                "&access_token=" + res.accessToken + "&email=" + res.email + "&secret=" + res.secret;
+        startWebAuth(url);
+    }
+
+    private void onErrorOccurred() {
+        Toast.makeText(this, R.string.auth_error, Toast.LENGTH_SHORT).show();
+    }
+
     public void onTokenReceived(String email, String token) {
 
         final AccountManager manager = AccountManager.get(this);
@@ -305,7 +328,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
-        //TODO
+        onErrorOccurred();
     }
 
     @Override
