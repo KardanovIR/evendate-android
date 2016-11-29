@@ -4,7 +4,7 @@ package ru.evendate.android.models;
  * Created by Aedirn on 16.10.16.
  */
 
-public interface Organization {
+interface Organization {
 
     int getEntryId();
 

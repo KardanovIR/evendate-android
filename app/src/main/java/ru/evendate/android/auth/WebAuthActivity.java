@@ -78,6 +78,7 @@ public class WebAuthActivity extends AppCompatActivity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             Log.i(LOG_TAG, url);
+            mProgressBar.setVisibility(View.INVISIBLE);
             final String AUTH_PATH = "/mobileAuthDone.php";
 
             try {
@@ -110,7 +111,6 @@ public class WebAuthActivity extends AppCompatActivity {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            mProgressBar.setVisibility(View.INVISIBLE);
         }
 
         private String retrieveToken(String query) {

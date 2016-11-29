@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import ru.evendate.android.R;
 
 public class OrganizationDetailActivity extends AppCompatActivity {
+    Fragment fragment = new OrganizationDetailFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +23,6 @@ public class OrganizationDetailActivity extends AppCompatActivity {
         Uri organizationUri = intent.getData();
         args.putString(OrganizationDetailFragment.URI, organizationUri.toString());
 
-        Fragment fragment = new OrganizationDetailFragment();
         fragment.setArguments(args);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -30,5 +30,15 @@ public class OrganizationDetailActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_organization);
+    }
+
+    //http://stackoverflow.com/questions/13418436/android-4-2-back-stack-behaviour-with-nested-fragments/14030872#14030872
+    @Override
+    public void onBackPressed() {
+        if (fragment != null && fragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
+            fragment.getChildFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

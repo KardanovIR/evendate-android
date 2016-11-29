@@ -19,10 +19,10 @@ import ru.evendate.android.models.ActionType;
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
-public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
-    RecyclerView.RecycledViewPool actionItemsPool;
+class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
+    private RecyclerView.RecycledViewPool actionItemsPool;
 
-    public ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
+    ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
         super(context);
         this.actionItemsPool = actionItemsPool;
     }
@@ -46,15 +46,15 @@ public class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesA
         holder.mActionTargetsAdapter.replace(type.getTargetList());
     }
 
-    public class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public View holderView;
+    class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        View holderView;
         @Bind(R.id.action_description) TextView mActionTextView;
         @Bind(R.id.user_name) TextView mUserNameTextView;
         @Bind(R.id.user_avatar) CircleImageView mAvatarView;
         @Bind(R.id.recycler_view) RecyclerView recyclerView;
-        public ActionTargetsAdapter mActionTargetsAdapter;
+        ActionTargetsAdapter mActionTargetsAdapter;
 
-        public ActionHolder(View itemView) {
+        ActionHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             holderView = itemView;

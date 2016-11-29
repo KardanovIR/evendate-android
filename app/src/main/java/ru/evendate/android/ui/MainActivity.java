@@ -20,8 +20,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
+import ru.evendate.android.network.ServiceImpl;
 
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener, OnboardingDialog.OnOrgSelectedListener {
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
         checkAccount();
+        checkDeviceTokenSynced();
+
         if(getIntent() != null)
             handleIntent(getIntent());
     }
@@ -132,6 +136,13 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                 //startActivityForResult(authIntent, REQUEST_AUTH, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
             //}else
                 startActivityForResult(authIntent, REQUEST_AUTH);
+        }
+    }
+
+    private void checkDeviceTokenSynced() {
+        if (!EvendatePreferences.getDeviceTokenSynced(this)) {
+            String token = EvendatePreferences.getDeviceToken(this);
+            ServiceImpl.sendRegistrationToServer(this, token);
         }
     }
 

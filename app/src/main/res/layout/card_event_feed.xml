@@ -29,12 +29,11 @@
                 android:src="#FFFFFF"
                 android:visibility="visible"/>
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/event_item_organization_icon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/organization_background_description"
-                android:padding="8dp"
+                android:layout_margin="4dp"
                 android:visibility="visible"
                 tools:src="@mipmap/ic_launcher"
                 />

@@ -310,19 +310,19 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
                                                            int length, int offset) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getFavorite(ApiService apiService,
                                                                int length, int offset) {
         return apiService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getOrgEvent(
             ApiService apiService, int length, int offset, int organizationId) {
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
-                organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getOrgPastEvent(
@@ -336,17 +336,17 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                                                                     int length, int offset, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getRecommendation(ApiService apiService,
                                                                      int length, int offset) {
         return apiService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mSwipeRefreshLayout.setRefreshing(false);
         mLoadStateView.showErrorHint();
     }

@@ -11,8 +11,8 @@ import com.onesignal.NotificationExtenderService;
 import com.onesignal.OSNotificationDisplayedResult;
 import com.onesignal.OSNotificationReceivedResult;
 
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
-import ru.evendate.android.Settings;
 
 
 /**
@@ -26,7 +26,7 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
 
         Log.d(LOG_TAG, "received notification " + receivedResult.payload.additionalData.toString());
         NotificationAdditionalData addData = NotificationAdditionalData.obtainFromPayload(receivedResult.payload);
-        if (!Settings.isNotificationOn(getBaseContext()))
+        if (!EvendatePreferences.isNotificationOn(getBaseContext()))
             //todo handle stat?
             return true;
         if (addData == null)
@@ -40,11 +40,11 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
             int accentColor = ContextCompat.getColor(getBaseContext(), R.color.primary);
 
             builder.setColor(accentColor);
-            if (Settings.isVibrateOn(getBaseContext())) {
+            if (EvendatePreferences.isVibrateOn(getBaseContext())) {
                 builder.setVibrate(new long[]{200, 500, 200, 500});
             }
-            if (Settings.isLedOn(getBaseContext())) {
-                builder.setLights(Settings.getLedColor(getBaseContext()), 1000, 200);
+            if (EvendatePreferences.isLedOn(getBaseContext())) {
+                builder.setLights(EvendatePreferences.getLedColor(getBaseContext()), 1000, 200);
             }
             return builder;
         };

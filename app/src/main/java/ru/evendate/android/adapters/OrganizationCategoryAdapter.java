@@ -18,7 +18,7 @@ import ru.evendate.android.models.OrganizationCategory;
  */
 public class OrganizationCategoryAdapter extends AbstractAdapter<OrganizationCategory, OrganizationCategoryAdapter.CategoryHolder> {
 
-    RecyclerView.RecycledViewPool mRecycledViewPool;
+    private RecyclerView.RecycledViewPool mRecycledViewPool;
 
     public OrganizationCategoryAdapter(Context context) {
         super(context);
@@ -53,12 +53,12 @@ public class OrganizationCategoryAdapter extends AbstractAdapter<OrganizationCat
         super.onViewRecycled(holder);
     }
 
-    public class CategoryHolder extends RecyclerView.ViewHolder {
-        public TextView mCategoryTextView;
-        public RecyclerView mContainer;
-        public OrganizationCatalogAdapter mAdapter;
+    class CategoryHolder extends RecyclerView.ViewHolder {
+        TextView mCategoryTextView;
+        RecyclerView mContainer;
+        OrganizationCatalogAdapter mAdapter;
 
-        public CategoryHolder(View itemView) {
+        CategoryHolder(View itemView) {
             super(itemView);
             mCategoryTextView = (TextView)itemView.findViewById(R.id.organization_category);
             mContainer = (RecyclerView)itemView.findViewById(R.id.container);

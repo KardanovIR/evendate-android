@@ -88,10 +88,10 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
 
     public static class Notification {
         public String type;
-        public boolean checked = false;
-        public Boolean newChecked = null;
+        boolean checked = false;
+        Boolean newChecked = null;
         public EventNotification notification;
-        public boolean changed = false;
+        boolean changed = false;
 
         public Notification(String notificationType) {
             type = notificationType;

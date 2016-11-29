@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,7 +38,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceImpl;
-import ru.evendate.android.views.IconView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -169,7 +169,7 @@ public class OnboardingDialog extends DialogFragment {
         }
 
         class ViewHolder {
-            IconView iconView;
+            ImageView iconView;
             TextView textView;
             CheckBox checkBox;
             final public Target target = new Target() {
@@ -202,7 +202,7 @@ public class OnboardingDialog extends DialogFragment {
                 rowView = inflater.inflate(R.layout.item_onboarding, parent, false);
                 holder = new ViewHolder();
                 holder.textView = (TextView) rowView.findViewById(R.id.label);
-                holder.iconView = (IconView) rowView.findViewById(R.id.icon);
+                holder.iconView = (ImageView)rowView.findViewById(R.id.icon);
                 holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkbox);
                 holder.checkBox.setOnCheckedChangeListener(
                         (CompoundButton buttonView, boolean isChecked) ->

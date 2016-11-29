@@ -5,7 +5,6 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -41,8 +40,6 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     private String LOG_TAG = EventsAdapter.class.getSimpleName();
 
     private int type;
-    public static Uri mUri = EvendateContract.EventEntry.CONTENT_URI;
-
 
     public EventsAdapter(Context context, RecyclerView recyclerView, int type) {
         super(context, recyclerView);
@@ -154,7 +151,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         public void onClick(View v) {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, EventDetailActivity.class);
-                intent.setData(mUri.buildUpon().appendPath(Long.toString(event.getEntryId())).build());
+                intent.setData(EvendateContract.EventEntry.getContentUri(event.getEntryId()));
                 if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());

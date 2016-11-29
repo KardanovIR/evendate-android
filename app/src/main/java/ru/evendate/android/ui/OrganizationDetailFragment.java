@@ -4,29 +4,26 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -43,7 +40,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -292,9 +288,13 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
                 onUpPressed();
                 return true;
             case R.id.action_info:
-                OrganizationInfo dialog = new OrganizationInfo();
-                dialog.setOrganization(mOrganization);
-                dialog.show(getChildFragmentManager(), "dialog");
+                OrganizationInfo fragment = new OrganizationInfo();
+                fragment.setOrganization(mOrganization);
+                fragment.setParentFragment(this);
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null).commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -435,7 +435,8 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         }
     }
 
-    public static class OrganizationInfo extends DialogFragment {
+    public static class OrganizationInfo extends Fragment {
+        Fragment parentFragment;
         OrganizationDetail mOrganization;
         @Bind(R.id.toolbar) Toolbar mToolbar;
         @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
@@ -447,17 +448,13 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             mOrganization = organization;
         }
 
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final FrameLayout root = new FrameLayout(getActivity());
-            root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        public void setParentFragment(Fragment parentFragment) {
+            this.parentFragment = parentFragment;
+        }
 
-            Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_FullScreenDialogOverlay);
-            dialog.setContentView(root);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            return dialog;
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
         }
 
         @Override
@@ -466,7 +463,8 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             ButterKnife.bind(this, rootView);
 
             mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
-            mToolbar.setNavigationOnClickListener((View v) -> dismiss());
+            mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
+            mToolbar.setTitle(mOrganization.getShortName());
             initUserFavoriteCard();
             setOrg();
             return rootView;
@@ -517,8 +515,7 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
          */
         public void onUsersClicked() {
             Intent intent = new Intent(getContext(), UserListActivity.class);
-            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mOrganization.getEntryId())).build());
+            intent.setData(EvendateContract.EventEntry.getContentUri(mOrganization.getEntryId()));
             intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
             if (Build.VERSION.SDK_INT >= 21) {
                 getActivity().startActivity(intent,

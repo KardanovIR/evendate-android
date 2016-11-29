@@ -83,10 +83,12 @@ public class EvendateApplication extends MultiDexApplication {
     private void initOneSignal() {
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(new EvendateNotificationOpenedHandler(getApplicationContext()))
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .init();
         OneSignal.enableVibrate(true);
         OneSignal.enableSound(true);
         OneSignal.idsAvailable((String userId, String registrationId) -> {
+            EvendatePreferences.setDeviceToken(this, userId);
             if (registrationId != null)
                 ServiceImpl.sendRegistrationToServer(getApplicationContext(), userId);
 
