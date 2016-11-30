@@ -58,12 +58,13 @@ import rx.schedulers.Schedulers;
  */
 public class UserProfileActivity extends AppCompatActivity {
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
+
     private Uri mUri;
     private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    private UserAdapter mUserAdapter;
 
+    private UserAdapter mUserAdapter;
     @Bind(R.id.pager) ViewPager mViewPager;
     private UserPagerAdapter mUserPagerAdapter;
     @Bind(R.id.tabs) TabLayout mTabLayout;

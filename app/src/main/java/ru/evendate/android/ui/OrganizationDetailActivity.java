@@ -21,7 +21,7 @@ public class OrganizationDetailActivity extends AppCompatActivity {
         if (intent == null)
             throw new RuntimeException("no intent with uri");
         Uri organizationUri = intent.getData();
-        args.putString(OrganizationDetailFragment.URI, organizationUri.toString());
+        args.putString(OrganizationDetailFragment.URI_KEY, organizationUri.toString());
 
         fragment.setArguments(args);
 

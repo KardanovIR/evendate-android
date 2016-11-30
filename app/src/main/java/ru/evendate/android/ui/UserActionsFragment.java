@@ -42,6 +42,7 @@ public class UserActionsFragment extends Fragment {
 
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
+    private static final String USER_ID_KEY = "user_id";
     private int userId;
     @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     AlertDialog dialog;
@@ -58,9 +59,18 @@ public class UserActionsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_user_actions, container, false);
         ButterKnife.bind(this, rootView);
 
+        if (savedInstanceState != null)
+            userId = savedInstanceState.getInt(USER_ID_KEY);
+
         initRecyclerView();
         initProgressBar();
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(USER_ID_KEY, userId);
     }
 
     private void initRecyclerView() {

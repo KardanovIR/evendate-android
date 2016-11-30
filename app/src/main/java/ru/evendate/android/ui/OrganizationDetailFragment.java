@@ -46,6 +46,7 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -85,7 +86,7 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     private final String LOG_TAG = "OrganizationFragment";
 
     private int organizationId = -1;
-    public static final String URI = "uri";
+    public static final String URI_KEY = "uri";
     private Uri mUri;
 
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
@@ -155,10 +156,19 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            mUri = Uri.parse(args.getString(URI));
-            organizationId = Integer.parseInt(mUri.getLastPathSegment());
-            new Statistics(getActivity()).sendOrganizationView(organizationId);
+            mUri = Uri.parse(args.getString(URI_KEY));
         }
+        if (savedInstanceState != null) {
+            mUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+        }
+        organizationId = Integer.parseInt(mUri.getLastPathSegment());
+        new Statistics(getActivity()).sendOrganizationView(organizationId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(URI_KEY, mUri.toString());
     }
 
     @Override
@@ -437,7 +447,9 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
 
     public static class OrganizationInfo extends Fragment {
         Fragment parentFragment;
+        private static final String ORG_OBJ_KEY = "organization";
         OrganizationDetail mOrganization;
+
         @Bind(R.id.toolbar) Toolbar mToolbar;
         @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
         @Bind(R.id.organization_name) TextView mOrganizationTextView;
@@ -455,6 +467,9 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            if (savedInstanceState != null)
+                mOrganization = new Gson().fromJson(savedInstanceState.getString(ORG_OBJ_KEY),
+                        OrganizationFull.class);
         }
 
         @Override
@@ -468,6 +483,12 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             initUserFavoriteCard();
             setOrg();
             return rootView;
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putString(ORG_OBJ_KEY, new Gson().toJson(mOrganization));
         }
 
         private void initUserFavoriteCard() {

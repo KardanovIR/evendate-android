@@ -105,9 +105,10 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
-
+    public static final String URI_KEY = "uri";
     private Uri mUri;
     private int eventId;
+
     @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     private EventAdapter mAdapter;
 
@@ -204,9 +205,21 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
-        mUri = mEventDetailActivity.mUri;
+        Bundle args = getArguments();
+        if (args != null) {
+            mUri = Uri.parse(args.getString(URI_KEY));
+        }
+        if (savedInstanceState != null) {
+            mUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+        }
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        new Statistics(getActivity()).sendEventView(eventId);
+        new Statistics(getActivity()).sendOrganizationView(eventId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(URI_KEY, mUri.toString());
     }
 
     @Override
@@ -239,6 +252,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         mToolbar.setTitle("");
+        //todo выпилить зависимость
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
@@ -382,8 +396,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) +
-                        mAdapter.getEvent().getTitle() + getString(R.string.event_share_text_in_org) +
+                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) + " " +
+                        mAdapter.getEvent().getTitle() + getString(R.string.event_share_text_in_org) + " " +
                         mAdapter.getEvent().getOrganizationName() + "\n" +
                         mAdapter.getEvent().getLink());
                 shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
@@ -663,7 +677,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
 
     /**
-     * Returns the URI path to the Bitmap displayed in specified ImageView
+     * Returns the URI_KEY path to the Bitmap displayed in specified ImageView
      */
     public Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable
