@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="32dp">
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:minHeight="0dp"

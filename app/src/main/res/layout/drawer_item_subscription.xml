@@ -20,23 +20,15 @@
         android:paddingStart="0dp"
         android:paddingTop="8dp">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:clickable="false">
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/material_drawer_profileIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:civ_border_width="0dp"
-            android:src="#FFFFFF"/>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:padding="7dp"
-            android:id="@+id/material_drawer_profileIcon"
+            android:layout_gravity="center_vertical"
+            android:src="#FFFFFF"
             tools:src="@mipmap/ic_launcher"/>
-        </FrameLayout>
     </LinearLayout>
 
 

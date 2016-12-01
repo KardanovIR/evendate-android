@@ -50,19 +50,23 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
+
     boolean refreshTurnOn = false;
     private EventsAdapter mAdapter;
     private AdapterController mAdapterController;
 
-    static final String TYPE = "type";
+    static final String TYPE_KEY = "type";
     private int type = 0;
     /**
      * organization id from detail organization
      */
+    static final String ORG_KEY = "organization_id";
     private int organizationId;
+
     /**
      * selected date in calendar
      */
+    static final String DATE_KEY = "date";
     private Date mDate;
 
     public enum ReelType {
@@ -134,7 +138,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            type = savedInstanceState.getInt(TYPE);
+            type = savedInstanceState.getInt(TYPE_KEY);
+            organizationId = savedInstanceState.getInt(ORG_KEY);
+            mDate = new Date(savedInstanceState.getLong(DATE_KEY));
         }
     }
 
@@ -212,7 +218,10 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(TYPE, type);
+        outState.putInt(TYPE_KEY, type);
+        outState.putInt(ORG_KEY, organizationId);
+        if (mDate != null)
+            outState.putLong(DATE_KEY, mDate.getTime());
     }
 
     @Override
@@ -310,19 +319,19 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
                                                            int length, int offset) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getFavorite(ApiService apiService,
                                                                int length, int offset) {
         return apiService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getOrgEvent(
             ApiService apiService, int length, int offset, int organizationId) {
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
-                organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getOrgPastEvent(
@@ -336,17 +345,17 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                                                                     int length, int offset, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventDetail>> getRecommendation(ApiService apiService,
                                                                      int length, int offset) {
         return apiService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
-                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_TIME, length, offset);
+                true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mSwipeRefreshLayout.setRefreshing(false);
         mLoadStateView.showErrorHint();
     }

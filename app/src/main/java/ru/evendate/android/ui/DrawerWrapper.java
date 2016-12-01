@@ -129,7 +129,7 @@ public class DrawerWrapper {
         );
     }
 
-    public AccountHeader getAccountHeader() {
+    private AccountHeader getAccountHeader() {
         return mAccountHeader;
     }
 
@@ -150,7 +150,7 @@ public class DrawerWrapper {
         return mDrawer;
     }
 
-    public ArrayList<OrganizationSubscription> getSubs() {
+    ArrayList<OrganizationSubscription> getSubs() {
         return mSubscriptions;
     }
 
@@ -211,7 +211,7 @@ public class DrawerWrapper {
                         onError();
                 }, error -> {
                     onError();
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                 });
     }
 
@@ -222,7 +222,7 @@ public class DrawerWrapper {
             listener.onSubLoaded();
     }
 
-    public void update() {
+    void update() {
         loadSubs();
     }
 
@@ -248,7 +248,7 @@ public class DrawerWrapper {
         if (mUser == null)
             return;
         Intent intent = new Intent(context, UserProfileActivity.class);
-        intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(mUser.getEntryId())).build());
+        intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
         if (Build.VERSION.SDK_INT >= 21) {
             context.startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());

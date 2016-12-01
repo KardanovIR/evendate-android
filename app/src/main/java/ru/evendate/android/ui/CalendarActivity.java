@@ -10,6 +10,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -203,6 +204,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         Log.i(LOG_TAG, "loaded");
         mAdapter.setDateList(dateList);
         mAdapter.setDates();
+        mReelFragment.setDateAndReload(mCalendarView.getSelectedDate().getDate());
+        setSelectedDate();
     }
 
     public void onError(Throwable error) {
@@ -216,7 +219,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     @Override
-    public void onDateChanged(MaterialCalendarView widget, CalendarDay date) {
+    public void onDateChanged(@NonNull MaterialCalendarView widget, CalendarDay date) {
         Log.i(LOG_TAG, date.toString());
         mCalendarView.removeDecorator(mOneDayDecorator);
         mOneDayDecorator.setDate(date);
@@ -246,11 +249,11 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             return mDateList;
         }
 
-        public void setDateList(ArrayList<DateCalendar> dateList) {
+        void setDateList(ArrayList<DateCalendar> dateList) {
             this.mDateList = dateList;
         }
 
-        public void setDates() {
+        void setDates() {
             ArrayList<CalendarDay> activeDates = new ArrayList<>();
             ArrayList<CalendarDay> favoritesDates = new ArrayList<>();
             for (DateCalendar date : mDateList) {
@@ -275,8 +278,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         private final int color;
         private final ArrayList<CalendarDay> dates;
 
-        public EventFavoriteDecorator(ArrayList<CalendarDay> dates) {
-            this.color = getResources().getColor(R.color.accent);
+        EventFavoriteDecorator(ArrayList<CalendarDay> dates) {
+            this.color = ContextCompat.getColor(getBaseContext(), R.color.accent);
             this.dates = dates;
         }
 
@@ -299,7 +302,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
 
         private final ArrayList<CalendarDay> dates;
 
-        public EventActiveDecorator(ArrayList<CalendarDay> dates) {
+        EventActiveDecorator(ArrayList<CalendarDay> dates) {
             this.dates = dates;
         }
 
@@ -321,7 +324,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
 
         private CalendarDay date;
 
-        public OneDayDecorator() {
+        OneDayDecorator() {
             date = CalendarDay.today();
         }
 
@@ -372,7 +375,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
      */
     private class CalendarNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CalendarNavigationItemClickListener(Activity context, Drawer drawer) {
+        CalendarNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }

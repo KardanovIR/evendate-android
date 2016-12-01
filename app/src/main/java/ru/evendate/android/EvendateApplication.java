@@ -13,6 +13,9 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.onesignal.OneSignal;
 import com.squareup.picasso.Picasso;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKAccessTokenTracker;
+import com.vk.sdk.VKSdk;
 
 import ru.evendate.android.gcm.EvendateNotificationOpenedHandler;
 import ru.evendate.android.network.ServiceImpl;
@@ -25,6 +28,15 @@ public class EvendateApplication extends MultiDexApplication {
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
 
+    VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+        @Override
+        public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
+            if (newToken == null) {
+                EvendateAccountManager.invalidateToken(getApplicationContext());
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -32,6 +44,9 @@ public class EvendateApplication extends MultiDexApplication {
         tracker = analytics.newTracker(R.xml.tracker_config);
         tracker.enableAdvertisingIdCollection(true);
         tracker.setAppVersion(BuildConfig.VERSION_NAME);
+
+        vkAccessTokenTracker.startTracking();
+        VKSdk.initialize(this);
 
         initImageLoader();
         initOneSignal();
@@ -68,10 +83,12 @@ public class EvendateApplication extends MultiDexApplication {
     private void initOneSignal() {
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(new EvendateNotificationOpenedHandler(getApplicationContext()))
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .init();
         OneSignal.enableVibrate(true);
         OneSignal.enableSound(true);
         OneSignal.idsAvailable((String userId, String registrationId) -> {
+            EvendatePreferences.setDeviceToken(this, userId);
             if (registrationId != null)
                 ServiceImpl.sendRegistrationToServer(getApplicationContext(), userId);
 

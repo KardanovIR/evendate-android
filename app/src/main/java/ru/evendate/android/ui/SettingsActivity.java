@@ -2,14 +2,12 @@ package ru.evendate.android.ui;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +19,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import ru.evendate.android.BuildConfig;
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Settings;
 import ru.evendate.android.network.ApiFactory;
@@ -31,19 +30,14 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static ru.evendate.android.EvendatePreferences.KEY_INDICATOR_COLOR;
+
 public class SettingsActivity extends AppCompatActivity {
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
     private DrawerWrapper mDrawer;
 
-    public static final String KEY_NOTIFICATION = "key_notification";
-    public static final boolean KEY_NOTIFICATION_DEFAULT = true;
-    public static final String KEY_INDICATOR = "key_indicator";
-    public static final boolean KEY_INDICATOR_DEFAULT = true;
-    public static final String KEY_VIBRATION = "key_vibration";
-    public static final boolean KEY_VIBRATION_DEFAULT = true;
-    public static final String KEY_INDICATOR_COLOR = "key_indicator_color";
-    public static final int KEY_INDICATOR_COLOR_DEFAULT = 0xffff17a8;
+    //todo
     public static final String KEY_HTTPS = "key_https";
     public static final boolean KEY_HTTPS_DEFAULT = false;
 
@@ -78,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private class SettingsNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public SettingsNavigationItemClickListener(Activity context, Drawer drawer) {
+        SettingsNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }
@@ -130,9 +124,7 @@ public class SettingsActivity extends AppCompatActivity {
                 builder.setTitle(R.string.settings_dialog_about)
                         .setMessage(getString(R.string.settings_dialog_about_version) + " " + BuildConfig.VERSION_NAME)
                         .setPositiveButton(getString(R.string.dialog_ok),
-                                (DialogInterface dialog, int which) -> {
-                                    dialog.dismiss();
-                                });
+                                (DialogInterface dialog, int which) -> dialog.dismiss());
                 //LayoutInflater factory = LayoutInflater.from(context);
                 //final View view = factory.inflate(R.layout.dialog_version, null);
                 //builder.setView(view);
@@ -142,9 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
 
-
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            indicatorColor = sp.getInt(SettingsActivity.KEY_INDICATOR_COLOR, KEY_INDICATOR_COLOR_DEFAULT);
+            indicatorColor = EvendatePreferences.getLedColor(getActivity());
 
             Preference colorPreference = getPreferenceScreen().findPreference(KEY_INDICATOR_COLOR);
             colorPreference.setOnPreferenceClickListener((Preference preference) -> {
@@ -157,15 +147,11 @@ public class SettingsActivity extends AppCompatActivity {
                         .density(10)
                         .setPositiveButton(getString(R.string.dialog_ok),
                                 (DialogInterface dialog, int selectedColor, Integer[] allColors) -> {
-                                    SharedPreferences.Editor editor = sp.edit();
-                                    editor.putInt(KEY_INDICATOR_COLOR, selectedColor);
-                                    editor.commit();
+                                    EvendatePreferences.setLedColor(getActivity(), selectedColor);
                                     indicatorColor = selectedColor;
                                 })
                         .setNegativeButton(getString(R.string.dialog_cancel),
-                                (DialogInterface dialog, int which) -> {
-                                    dialog.cancel();
-                                })
+                                (DialogInterface dialog, int which) -> dialog.cancel())
                         .build()
                         .show();
                 return true;

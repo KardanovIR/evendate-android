@@ -1,8 +1,6 @@
 package ru.evendate.android.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +8,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -26,13 +24,12 @@ import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.ui.ReelFragment;
-import ru.evendate.android.views.IconView;
 import ru.evendate.android.views.UsersView;
 
 /**
  * Created by ds_gordeev on 22.03.2016.
  */
-public class OrganizationEventsAdapter extends EventsAdapter {
+class OrganizationEventsAdapter extends EventsAdapter {
     private OrganizationDetail mOrganization;
     private OrganizationCardController mOrganizationCardController;
     //base adapter know nothing about organization card
@@ -100,7 +97,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
             Picasso.with(mContext)
                     .load(mOrganization.getLogoMediumUrl())
                     .error(R.mipmap.ic_launcher)
-                    .into(holder.iconTarget);
+                    .into(holder.mLogoView);
             holder.mSubscribeButton.setChecked(mOrganization.isSubscribed());
             if (mOrganization.getSubscribedUsersList().size() == 0)
                 holder.mUserContainer.setVisibility(View.GONE);
@@ -111,11 +108,11 @@ public class OrganizationEventsAdapter extends EventsAdapter {
     }
 
     @SuppressWarnings("unused")
-    public class OrganizationHolder extends RecyclerView.ViewHolder {
-        public View holderView;
-        public int id;
+    class OrganizationHolder extends RecyclerView.ViewHolder {
+        View holderView;
+        int id;
 
-        @Bind(R.id.organization_icon) IconView mLogoView;
+        @Bind(R.id.organization_icon) ImageView mLogoView;
         @Bind(R.id.organization_name) TextView mNameView;
         @Bind(R.id.organization_users) UsersView mUsersView;
         @Bind(R.id.organization_toggle_more) ToggleButton mMoreToggle;
@@ -131,22 +128,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
                 R.id.organization_place, R.id.organization_link_label, R.id.organization_link_container})
         List<View> mDescriptionViews;
 
-        final Target iconTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mLogoView.setImageBitmap(bitmap);
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                mLogoView.setImageDrawable(errorDrawable);
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {}
-        };
-
-        public OrganizationHolder(View itemView) {
+        OrganizationHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             ButterKnife.bind(this, itemView);
@@ -161,41 +143,41 @@ public class OrganizationEventsAdapter extends EventsAdapter {
         }
 
         @OnClick(R.id.organization_place)
-        public void onPlaceClick(View v) {
+        void onPlaceClick(View v) {
             if (mOrganization == null)
                 return;
             mOrganizationCardController.onPlaceClicked();
         }
 
         @OnClick(R.id.organization_link_container)
-        public void onLinkClick(View v) {
+        void onLinkClick(View v) {
             if (mOrganization == null)
                 return;
             mOrganizationCardController.onLinkClicked();
         }
 
         @OnClick(R.id.organization_subscribe_button)
-        public void onSubscribeClick(View v) {
+        void onSubscribeClick(View v) {
             if (mOrganization == null)
                 return;
             mOrganizationCardController.onSubscribed();
         }
 
         @OnClick(R.id.organization_more_button)
-        public void onMoreClick(View v) {
+        void onMoreClick(View v) {
             if (mOrganization == null)
                 return;
             mMoreToggle.setChecked(!mMoreToggle.isChecked());
         }
 
         @OnClick(R.id.organization_users_description)
-        public void onUsersClick(View v) {
+        void onUsersClick(View v) {
             if (mOrganization == null)
                 return;
             mOrganizationCardController.onUsersClicked();
         }
 
-        public void expand(final View v) {
+        void expand(final View v) {
             v.measure(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             final int targetHeight = v.getMeasuredHeight();
 
@@ -222,7 +204,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
             v.startAnimation(a);
         }
 
-        public void collapse(final View v) {
+        void collapse(final View v) {
             final int initialHeight = v.getMeasuredHeight();
 
             Animation a = new Animation() {
@@ -249,7 +231,7 @@ public class OrganizationEventsAdapter extends EventsAdapter {
 
     }
 
-    public interface OrganizationCardController {
+    interface OrganizationCardController {
         void onSubscribed();
 
         void onUsersClicked();

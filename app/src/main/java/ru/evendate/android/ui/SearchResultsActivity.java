@@ -374,7 +374,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
 
         public void onError(Throwable error) {
-            Log.e(LOG_TAG, error.getMessage());
+            Log.e(LOG_TAG, "" + error.getMessage());
             mLoadStateView.showErrorHint();
         }
 

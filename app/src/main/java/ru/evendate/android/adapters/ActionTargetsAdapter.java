@@ -23,9 +23,9 @@ import ru.evendate.android.ui.OrganizationDetailActivity;
 /**
  * Created by Dmitry on 20.02.2016.
  */
-public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTargetsAdapter.ActionTargetHolder> {
+class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTargetsAdapter.ActionTargetHolder> {
 
-    public ActionTargetsAdapter(Context context) {
+    ActionTargetsAdapter(Context context) {
         super(context);
     }
 
@@ -56,14 +56,14 @@ public class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTa
                 .into(holder.mImageView);
     }
 
-    public class ActionTargetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public View holderView;
-        public TextView mNameTextView;
-        public ImageView mImageView;
-        public Uri mUri;
+    class ActionTargetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        View holderView;
+        TextView mNameTextView;
+        ImageView mImageView;
+        Uri mUri;
         public int type;
 
-        public ActionTargetHolder(View itemView) {
+        ActionTargetHolder(View itemView) {
             super(itemView);
             holderView = itemView;
             mNameTextView = (TextView)itemView.findViewById(R.id.action_target_text_view);

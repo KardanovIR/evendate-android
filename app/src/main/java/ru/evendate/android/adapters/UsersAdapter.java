@@ -49,13 +49,13 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
                 .into(holder.mUserImageView);
     }
 
-    public class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public View holderView;
+    class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        View holderView;
         @Bind(R.id.user_item_image) ImageView mUserImageView;
         @Bind(R.id.user_item_name) TextView mNameTextView;
         public int id;
 
-        public UserHolder(View itemView) {
+        UserHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             holderView = itemView;
@@ -66,7 +66,7 @@ public class UsersAdapter extends AbstractAdapter<UserDetail, UsersAdapter.UserH
         public void onClick(View v) {
             if (v == holderView) {
                 Intent intent = new Intent(mContext, UserProfileActivity.class);
-                intent.setData(EvendateContract.UserEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build());
+                intent.setData(EvendateContract.UserEntry.getContentUri(id));
                 if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
                             ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());

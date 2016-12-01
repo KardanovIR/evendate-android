@@ -15,14 +15,15 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
         android:paddingTop="8dp" >
-        <ru.evendate.android.views.IconView
+
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/organization_icon"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            app:border_width="1dp"
-            app:border_color="#66000000"
+            app:civ_border_width="1dp"
+            app:civ_border_color="#66000000"
             />
         <TextView
             android:id="@+id/organization_name"
