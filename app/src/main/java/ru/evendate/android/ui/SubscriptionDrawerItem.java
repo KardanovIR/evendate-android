@@ -79,6 +79,11 @@ public class SubscriptionDrawerItem extends ProfileDrawerItem {
     }
 
     @Override
+    public String getType() {
+        return "SUB_ITEM";
+    }
+
+    @Override
     public void bindView(RecyclerView.ViewHolder holder) {
         Context ctx = holder.itemView.getContext();
         //get our viewHolder

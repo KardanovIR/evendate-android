@@ -106,7 +106,7 @@ public class EvendateAccountManager {
         return token;
     }
 
-    protected void invalidateToken(Context context) {
+    protected static void invalidateToken(Context context) {
         AccountManager accountManager = AccountManager.get(context);
         accountManager.invalidateAuthToken(context.getString(R.string.account_type), peekToken(context));
     }

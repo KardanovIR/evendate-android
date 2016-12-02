@@ -1,29 +1,29 @@
 package ru.evendate.android.ui;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,17 +40,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,12 +86,14 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     private final String LOG_TAG = "OrganizationFragment";
 
     private int organizationId = -1;
-    public static final String URI = "uri";
+    public static final String URI_KEY = "uri";
     private Uri mUri;
 
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.org_toolbar_title) TextView mToolbarTitle;
+    @Bind(R.id.org_title) TextView mOrgTitle;
     @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
     @Bind(R.id.organization_image_container) View mImageContainer;
     @Bind(R.id.organization_image) ImageView mBackgroundView;
@@ -107,9 +108,16 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     private OrganizationDetail mOrganization;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
+
+    final int TITLE_SHIFTED_BY_BUTTON = 2;
+
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (!isAdded())
+                return;
             mLoadStateView.hideProgress();
             mBackgroundView.setImageBitmap(bitmap);
 
@@ -148,10 +156,19 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            mUri = Uri.parse(args.getString(URI));
-            organizationId = Integer.parseInt(mUri.getLastPathSegment());
-            new Statistics(getActivity()).sendOrganizationView(organizationId);
+            mUri = Uri.parse(args.getString(URI_KEY));
         }
+        if (savedInstanceState != null) {
+            mUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+        }
+        organizationId = Integer.parseInt(mUri.getLastPathSegment());
+        new Statistics(getActivity()).sendOrganizationView(organizationId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(URI_KEY, mUri.toString());
     }
 
     @Override
@@ -164,17 +181,6 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         initToolbar();
         initTransitions();
         initDrawer();
-
-        mAppBarLayout.addOnOffsetChangedListener((AppBarLayout appBarLayout, int verticalOffset) -> {
-            if (mOrganization == null)
-                return;
-            if (mAppBarLayout.getTotalScrollRange() - Math.abs(verticalOffset) <= 4 &&
-                    !mToolbar.getTitle().equals(mOrganization.getShortName())) {
-                mCollapsingToolbar.setTitle(mOrganization.getShortName());
-            } else if (!mToolbar.getTitle().equals(mOrganization.getName())) {
-                mCollapsingToolbar.setTitle(mOrganization.getName());
-            }
-        });
 
         mPagerAdapter = new OrganizationPagerAdapter(getChildFragmentManager(), getActivity());
         mViewPager.setAdapter(mPagerAdapter);
@@ -195,6 +201,24 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        mToolbarTitle.setAlpha(0f);
+
+        final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+                new int[]{android.R.attr.actionBarSize});
+        int actionBarHeight = (int)styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+        mCollapsingToolbar.setScrimVisibleHeightTrigger(actionBarHeight * TITLE_SHIFTED_BY_BUTTON);
+        mCollapsingToolbar.setScrimAnimationDuration(200);
+
+        mAppBarLayout.addOnOffsetChangedListener((AppBarLayout appBarLayout, int verticalOffset) -> {
+            if (mOrganization == null)
+                return;
+            if (mAppBarLayout.getTotalScrollRange() - Math.abs(verticalOffset) <= mToolbar.getHeight() * TITLE_SHIFTED_BY_BUTTON) {
+                animateAppearToolbar();
+            } else {
+                animateDisappearToolbar();
+            }
+        });
     }
 
     private void initTransitions() {
@@ -210,6 +234,36 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
                 new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
 
+    private void animateAppearToolbar() {
+        //mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primary));
+        if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
+            mTitleDisappearAnimation.cancel();
+        if (mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()) {
+            mTitleAppearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                    mToolbarTitle.getAlpha(), 1f);
+            mTitleAppearAnimation.setDuration(200);
+            mTitleAppearAnimation.start();
+            if (Build.VERSION.SDK_INT >= 21) {
+                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                        getResources().getDisplayMetrics());
+                mAppBarLayout.setElevation(px);
+            }
+        }
+    }
+
+    private void animateDisappearToolbar() {
+        //mToolbar.setBackgroundColor(Color.TRANSPARENT);
+        if (mTitleAppearAnimation != null && mTitleAppearAnimation.isRunning())
+            mTitleAppearAnimation.cancel();
+        if (mTitleDisappearAnimation == null || !mTitleDisappearAnimation.isRunning()) {
+            mTitleDisappearAnimation = ObjectAnimator.ofFloat(mToolbarTitle, "alpha",
+                    mToolbarTitle.getAlpha(), 0f);
+            mTitleDisappearAnimation.setDuration(200);
+            mTitleDisappearAnimation.start();
+            if (Build.VERSION.SDK_INT >= 21)
+                mAppBarLayout.setElevation(0);
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -244,9 +298,13 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
                 onUpPressed();
                 return true;
             case R.id.action_info:
-                OrganizationInfo dialog = new OrganizationInfo();
-                dialog.setOrganization(mOrganization);
-                dialog.show(getChildFragmentManager(), "dialog");
+                OrganizationInfo fragment = new OrganizationInfo();
+                fragment.setOrganization(mOrganization);
+                fragment.setParentFragment(this);
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null).commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -300,7 +358,8 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
                 .error(R.mipmap.ic_launcher)
                 .into(mIconView);
         mSubscribeButton.setChecked(mOrganization.isSubscribed());
-
+        mOrgTitle.setText(mOrganization.getName());
+        mToolbarTitle.setText(mOrganization.getShortName());
     }
 
     public void onError(Throwable error) {
@@ -386,8 +445,11 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         }
     }
 
-    public static class OrganizationInfo extends DialogFragment {
+    public static class OrganizationInfo extends Fragment {
+        Fragment parentFragment;
+        private static final String ORG_OBJ_KEY = "organization";
         OrganizationDetail mOrganization;
+
         @Bind(R.id.toolbar) Toolbar mToolbar;
         @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
         @Bind(R.id.organization_name) TextView mOrganizationTextView;
@@ -398,17 +460,16 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             mOrganization = organization;
         }
 
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final FrameLayout root = new FrameLayout(getActivity());
-            root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        public void setParentFragment(Fragment parentFragment) {
+            this.parentFragment = parentFragment;
+        }
 
-            Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_FullScreenDialogOverlay);
-            dialog.setContentView(root);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            return dialog;
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (savedInstanceState != null)
+                mOrganization = new Gson().fromJson(savedInstanceState.getString(ORG_OBJ_KEY),
+                        OrganizationFull.class);
         }
 
         @Override
@@ -417,10 +478,17 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             ButterKnife.bind(this, rootView);
 
             mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
-            mToolbar.setNavigationOnClickListener((View v) -> dismiss());
+            mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
+            mToolbar.setTitle(mOrganization.getShortName());
             initUserFavoriteCard();
             setOrg();
             return rootView;
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putString(ORG_OBJ_KEY, new Gson().toJson(mOrganization));
         }
 
         private void initUserFavoriteCard() {
@@ -436,7 +504,6 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
             }
             mUserFavoritedCard.setUsers(mOrganization.getSubscribedUsersList());
             mPlacePlaceTextView.setText(mOrganization.getDefaultAddress());
-            mToolbar.setTitle(getString(R.string.organization_dialog_info_title));
         }
 
         /**
@@ -469,8 +536,7 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
          */
         public void onUsersClicked() {
             Intent intent = new Intent(getContext(), UserListActivity.class);
-            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mOrganization.getEntryId())).build());
+            intent.setData(EvendateContract.EventEntry.getContentUri(mOrganization.getEntryId()));
             intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.ORGANIZATION.type());
             if (Build.VERSION.SDK_INT >= 21) {
                 getActivity().startActivity(intent,

@@ -124,6 +124,8 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <activity android:name="com.vk.sdk.VKServiceActivity" android:label="ServiceActivity" android:theme="@style/VK.Transparent" />
+
         <!--
         <provider
             android:name=".data.EvendateProvider"

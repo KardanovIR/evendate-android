@@ -4,12 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="56dp">
 
-    <ru.evendate.android.views.IconView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/icon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        tools:src="@mipmap/ic_launcher"
+        android:layout_centerVertical="true"
         />
 
     <TextView

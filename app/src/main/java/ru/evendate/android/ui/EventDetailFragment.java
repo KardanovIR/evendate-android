@@ -105,9 +105,10 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
-
+    public static final String URI_KEY = "uri";
     private Uri mUri;
     private int eventId;
+
     @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     private EventAdapter mAdapter;
 
@@ -124,7 +125,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
     @Bind(R.id.event_image) ImageView mEventImageView;
     @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
-    @Bind(R.id.event_organization_icon_container) View mOrganizationIconContainer;
     @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
     @Bind(R.id.event_description) TextView mDescriptionTextView;
     @Bind(R.id.event_title) TextView mTitleTextView;
@@ -170,6 +170,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (!isAdded())
+                return;
             if (bitmap == null)
                 return;
             mEventImageView.setImageBitmap(bitmap);
@@ -185,7 +187,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             Log.d(LOG_TAG, "onBitmapLoaded");
             mOrganizationIconView.setImageBitmap(bitmap);
-            revealView(mOrganizationIconContainer);
+            revealView(mOrganizationIconView);
         }
 
         @Override
@@ -203,9 +205,21 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventDetailActivity = (EventDetailActivity)getActivity();
-        mUri = mEventDetailActivity.mUri;
+        Bundle args = getArguments();
+        if (args != null) {
+            mUri = Uri.parse(args.getString(URI_KEY));
+        }
+        if (savedInstanceState != null) {
+            mUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+        }
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        new Statistics(getActivity()).sendEventView(eventId);
+        new Statistics(getActivity()).sendOrganizationView(eventId);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(URI_KEY, mUri.toString());
     }
 
     @Override
@@ -228,7 +242,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
-        mOrganizationIconContainer.setVisibility(View.INVISIBLE);
+        mOrganizationIconView.setVisibility(View.INVISIBLE);
         mTitleContainer.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mEventContentContainer.setVisibility(View.GONE);
@@ -238,6 +252,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
         mToolbar.setTitle("");
+        //todo выпилить зависимость
         mEventDetailActivity.setSupportActionBar(mToolbar);
         mEventDetailActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
@@ -360,8 +375,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             if (mAdapter.getEvent() == null)
                 return;
             Intent intent = new Intent(getContext(), UserListActivity.class);
-            intent.setData(EvendateContract.EventEntry.CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mAdapter.getEvent().getEntryId())).build());
+            intent.setData(EvendateContract.EventEntry.getContentUri(mAdapter.getEvent().getEntryId()));
             intent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.EVENT.type());
             if (Build.VERSION.SDK_INT >= 21) {
                 getActivity().startActivity(intent,
@@ -382,8 +396,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, mAdapter.getEvent().getTitle() + "\n\n" +
-                        mAdapter.getEvent().getDescription() + "\n" +
+                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) + " " +
+                        mAdapter.getEvent().getTitle() + getString(R.string.event_share_text_in_org) + " " +
+                        mAdapter.getEvent().getOrganizationName() + "\n" +
                         mAdapter.getEvent().getLink());
                 shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(mEventImageView));
                 shareIntent.setType("image/*");
@@ -442,8 +457,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         mProgressBar.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT > 19)
-            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
+        //if (Build.VERSION.SDK_INT > 19)
+        //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
     }
@@ -564,8 +580,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         if (mAdapter.getEvent() == null)
             return;
         Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
-        intent.setData(EvendateContract.OrganizationEntry.CONTENT_URI.buildUpon()
-                .appendPath(String.valueOf(mAdapter.getEvent().getOrganizationId())).build());
+        intent.setData(EvendateContract.OrganizationEntry.getContentUri(mAdapter.getEvent().getOrganizationId()));
         if (Build.VERSION.SDK_INT >= 21) {
             getActivity().startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
@@ -580,7 +595,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
                 "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);
     }
 
@@ -663,7 +677,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
 
     /**
-     * Returns the URI path to the Bitmap displayed in specified ImageView
+     * Returns the URI_KEY path to the Bitmap displayed in specified ImageView
      */
     public Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable

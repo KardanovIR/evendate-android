@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.List;
 
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.statistics.Statistics;
@@ -52,7 +53,7 @@ public class ServiceImpl {
                     } else
                         Log.e(LOG_TAG, "Error with response with organization sub");
                 }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                 });
 
         organization.changeSubscriptionState();
@@ -73,12 +74,15 @@ public class ServiceImpl {
                 .subscribe(result -> {
                     if (result.isOk()) {
                         Log.i(LOG_TAG, "registered device userId");
+                        EvendatePreferences.setDeviceTokenSynced(context, true);
                     } else {
                         Log.e(LOG_TAG, "not registered device userId");
+                        EvendatePreferences.setDeviceTokenSynced(context, false);
                     }
                 }, error -> {
                     Log.e(LOG_TAG, "not registered device userId");
                     Log.e(LOG_TAG, error.getMessage());
+                    EvendatePreferences.setDeviceTokenSynced(context, false);
                 });
     }
 

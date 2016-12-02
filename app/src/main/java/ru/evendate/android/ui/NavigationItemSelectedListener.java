@@ -90,8 +90,7 @@ public class NavigationItemSelectedListener
     private void openOrganizationFromSub(IDrawerItem drawerItem) {
         int id = getOrgIdFromDrawerItem(drawerItem);
         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
-        detailIntent.setData(EvendateContract.OrganizationEntry.CONTENT_URI
-                .buildUpon().appendPath(Long.toString(id)).build());
+        detailIntent.setData(EvendateContract.OrganizationEntry.getContentUri(id));
         openActivity(detailIntent);
     }
 

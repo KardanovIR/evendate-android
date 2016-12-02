@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -90,7 +91,8 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void initFAB() {
-        mFAB.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_filter_list_white));
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        mFAB.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filter_list_white));
     }
 
     private void initProgressBar() {
@@ -203,7 +205,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
      */
     private class CatalogNavigationItemClickListener extends NavigationItemSelectedListener {
 
-        public CatalogNavigationItemClickListener(Activity context, Drawer drawer) {
+        CatalogNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
             mContext = context;
         }

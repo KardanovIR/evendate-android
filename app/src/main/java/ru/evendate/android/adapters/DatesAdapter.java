@@ -48,13 +48,13 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
         holder.actionsListView.setNestedScrollingEnabled(false);
     }
 
-    public class DateHolder extends RecyclerView.ViewHolder {
-        public View holderView;
+    class DateHolder extends RecyclerView.ViewHolder {
+        View holderView;
         @Bind(R.id.recycler_view) RecyclerView actionsListView;
         @Bind(R.id.date_text_view) TextView mDateTextView;
-        public ActionTypesAdapter mActionsAdapter;
+        ActionTypesAdapter mActionsAdapter;
 
-        public DateHolder(View itemView) {
+        DateHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             holderView = itemView;
