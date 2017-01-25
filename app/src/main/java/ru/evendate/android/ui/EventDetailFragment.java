@@ -72,6 +72,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -808,6 +809,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             TimePickerDialog newFragment2 = new TimePickerDialog(context, (TimePicker v, int hourOfDay, int minute) -> {
                 calendar.set(year, month, day, hourOfDay, minute, 0);
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                df.setTimeZone(TimeZone.getTimeZone("GMT"));
                 String date = df.format(new Date(calendar.getTimeInMillis()));
                 Log.d(LOG_TAG, "date: " + date);
 

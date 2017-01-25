@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -197,6 +198,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         c.add(Calendar.DAY_OF_MONTH, -10);
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         Observable<ResponseArray<Tag>> observable =
                 apiService.getTopTags(EvendateAccountManager.peekToken(this), dateFormat.format(c.getTime()), 10);
 
