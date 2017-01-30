@@ -76,14 +76,11 @@
             android:layout_height="5dp"
             android:background="@drawable/appbar_dropshadow"
             tools:targetApi="LOLLIPOP"/>
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleLarge"
+
+        <ru.evendate.android.views.LoadStateView
+            android:id="@+id/load_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:progressDrawable="@drawable/circular_progress_bar"
-            android:layout_gravity="center_horizontal"
-            android:indeterminate="false" />
+            android:layout_gravity="center"/>
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

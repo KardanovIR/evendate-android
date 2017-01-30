@@ -53,7 +53,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -93,6 +92,7 @@ import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.DatesView;
+import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsView;
 import ru.evendate.android.views.UserFavoritedCard;
 import rx.Observable;
@@ -102,7 +102,7 @@ import rx.schedulers.Schedulers;
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements TagsView.OnTagClickListener {
+public class EventDetailFragment extends Fragment implements TagsView.OnTagClickListener, LoadStateView.OnReloadListener {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -110,7 +110,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     private Uri mUri;
     private int eventId;
 
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     private EventAdapter mAdapter;
 
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
@@ -154,7 +153,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
 
     DrawerWrapper mDrawer;
-    Dialog alertDialog;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
     int mFabHeight;
     boolean isFabDown = false;
 
@@ -167,7 +166,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
     final Target eventTarget = new Target() {
         @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {}
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -181,7 +181,8 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         }
 
         @Override
-        public void onBitmapFailed(Drawable errorDrawable) {}
+        public void onBitmapFailed(Drawable errorDrawable) {
+        }
     };
     final Target orgTarget = new Target() {
         @Override
@@ -205,7 +206,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mEventDetailActivity = (EventDetailActivity)getActivity();
+        mEventDetailActivity = (EventDetailActivity) getActivity();
         Bundle args = getArguments();
         if (args != null) {
             mUri = Uri.parse(args.getString(URI_KEY));
@@ -245,7 +246,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mEventImageContainer.setVisibility(View.INVISIBLE);
         mOrganizationIconView.setVisibility(View.INVISIBLE);
         mTitleContainer.setVisibility(View.INVISIBLE);
-        mProgressBar.setVisibility(View.VISIBLE);
+        mLoadStateView.setOnReloadListener(this);
         mEventContentContainer.setVisibility(View.GONE);
         return rootView;
     }
@@ -359,7 +360,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     private void paintMask(float scrolled) {
         int height = mEventImageView.getHeight();
         int maskColor = Color.argb(
-                (int)((scrolled / height) * 255),
+                (int) ((scrolled / height) * 255),
                 Color.red(mColor), Color.green(mColor), Color.blue(mColor));
         mEventImageMask.setBackgroundColor(maskColor);
         mEventTitleMask.setBackgroundColor(maskColor);
@@ -422,13 +423,12 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         super.onActivityCreated(savedInstanceState);
         loadEvent();
         mDrawer.start();
+        mLoadStateView.showProgress();
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (alertDialog != null)
-            alertDialog.dismiss();
+    public void onReload() {
+        loadEvent();
     }
 
     public void loadEvent() {
@@ -440,15 +440,12 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (result.isOk())
-                        onLoaded(result.getData());
-                    else
-                        onError();
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                });
+                            if (result.isOk())
+                                onLoaded(result.getData());
+                            else
+                                mLoadStateView.showErrorHint();
+                        }, this::onError,
+                        mLoadStateView::hideProgress);
     }
 
     public void onLoaded(ArrayList<EventDetail> events) {
@@ -457,7 +454,6 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         EventDetail event = events.get(0);
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
-        mProgressBar.setVisibility(View.GONE);
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
         //if (Build.VERSION.SDK_INT > 19)
         //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
@@ -465,17 +461,11 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mTitleContainer.setVisibility(View.VISIBLE);
     }
 
-    public void onError() {
+    public void onError(Throwable error) {
         if (!isAdded())
             return;
-        mProgressBar.setVisibility(View.GONE);
-        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                (DialogInterface dialog, int which) -> {
-                    loadEvent();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    dialog.dismiss();
-                });
-        alertDialog.show();
+        Log.e(LOG_TAG, "" + error.getMessage());
+        mLoadStateView.showErrorHint();
     }
 
     private class EventAdapter {
@@ -663,7 +653,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
     //TODO DRY
     private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager)getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
+        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
 
         if (taskList.get(0).numActivities == 1 &&
@@ -685,7 +675,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp;
         if (drawable instanceof BitmapDrawable) {
-            bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         } else {
             return null;
         }
@@ -714,9 +704,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             return;
         Palette palette = Palette.from(bitmap).generate();
         mColor = palette.getDarkMutedColor(ContextCompat.getColor(getActivity(), R.color.primary));
-        int red = (int)(Color.red(mColor) * 0.8);
-        int blue = (int)(Color.blue(mColor) * 0.8);
-        int green = (int)(Color.green(mColor) * 0.8);
+        int red = (int) (Color.red(mColor) * 0.8);
+        int blue = (int) (Color.blue(mColor) * 0.8);
+        int green = (int) (Color.green(mColor) * 0.8);
 
         int vibrantDark = Color.argb(255, red, green, blue);
         int colorShadow = Color.argb(150, red, green, blue);
@@ -766,7 +756,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> adapter.update());
         alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> notificationDialog.dismiss());
 
-        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        Button addNotificationButton = (Button) convertView.findViewById(R.id.add_notification);
         addNotificationButton.setOnClickListener((View view) -> {
             DialogFragment newFragment = DatePickerFragment.getInstance(getActivity(), eventId);
             newFragment.show(getChildFragmentManager(), "datePicker");

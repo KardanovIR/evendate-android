@@ -1,18 +1,13 @@
 package ru.evendate.android.ui;
 
-import android.content.DialogInterface;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -30,6 +25,7 @@ import ru.evendate.android.models.ActionType;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.views.LoadStateView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -37,15 +33,14 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Dmitry on 21.02.2016.
  */
-public class UserActionsFragment extends Fragment {
+public class UserActionsFragment extends Fragment implements LoadStateView.OnReloadListener {
     private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private static final String USER_ID_KEY = "user_id";
     private int userId;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
-    AlertDialog dialog;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment fragment = new UserActionsFragment();
@@ -63,7 +58,7 @@ public class UserActionsFragment extends Fragment {
             userId = savedInstanceState.getInt(USER_ID_KEY);
 
         initRecyclerView();
-        initProgressBar();
+        mLoadStateView.setOnReloadListener(this);
         return rootView;
     }
 
@@ -80,15 +75,10 @@ public class UserActionsFragment extends Fragment {
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
     }
 
-    private void initProgressBar() {
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mLoadStateView.showProgress();
         loadActions();
     }
 
@@ -105,34 +95,25 @@ public class UserActionsFragment extends Fragment {
                     if (result.isOk())
                         onLoaded(result.getData());
                     else
-                        onError();
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                });
+                        mLoadStateView.showErrorHint();
+                },
+                        this::onError,
+                        mLoadStateView::hideProgress);
+    }
+
+    @Override
+    public void onReload() {
+        loadActions();
     }
 
     public void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
-        mProgressBar.setVisibility(View.GONE);
         mAdapter.replace(convertedList);
     }
 
-    public void onError() {
+    public void onError(Throwable error) {
+        Log.e(LOG_TAG, "" + error.getMessage());
         if (!isAdded())
-            return;
-        mProgressBar.setVisibility(View.GONE);
-        dialog = ErrorAlertDialogBuilder.newInstance(getActivity(), (DialogInterface dialog, int which) -> {
-            loadActions();
-            dialog.dismiss();
-        });
-        dialog.show();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (dialog != null)
-            dialog.dismiss();
+            mLoadStateView.showErrorHint();
     }
 }

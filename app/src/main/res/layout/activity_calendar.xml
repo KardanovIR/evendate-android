@@ -5,37 +5,44 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:background="@color/window_reel_background">
+    android:background="@color/window_reel_background"
+    android:fitsSystemWindows="false">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:paddingTop="16dp"
-        app:mcv_showOtherDates="false"
-        app:mcv_selectionColor="@color/primary"
+        app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:mcv_firstDayOfWeek="monday"
         app:mcv_headerTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:mcv_dateTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:layout_gravity="top"/>
+        app:mcv_selectionColor="@color/primary"
+        app:mcv_showOtherDates="false"
+        app:mcv_weekDayTextAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            app:layout_collapseMode="pin"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:layout_collapseMode="pin"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             />
     </android.support.design.widget.AppBarLayout>
+
+    <ru.evendate.android.views.LoadStateView
+        android:id="@+id/load_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
@@ -49,10 +56,11 @@
             android:id="@+id/dragToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
+            android:minHeight="?attr/actionBarSize"
             >
+
             <TextView
                 android:id="@+id/calendar_date"
                 android:layout_width="150dp"
@@ -60,39 +68,42 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                tools:text="ПТ, 11 декабря"
-                android:textColor="#FFF"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
-                android:textSize="16sp"/>
+                android:layout_marginTop="8dp"
+                android:textColor="#FFF"
+                android:textSize="16sp"
+                tools:text="ПТ, 11 декабря"/>
+
             <TextView
                 android:id="@+id/calendar_event_count"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentBottom="true"
-                tools:text="4 события"
-                android:textColor="#FFF"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:textSize="14sp" />
+                android:textColor="#FFF"
+                android:textSize="14sp"
+                tools:text="4 события"/>
+
             <ToggleButton
                 android:id="@+id/calendar_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:background="@drawable/toggle_calendar"
-                android:textOff="@null"
-                android:textOn="@null"
                 android:clickable="false"
-                android:layout_centerInParent="true" />
+                android:textOff="@null"
+                android:textOn="@null"/>
         </RelativeLayout>
+
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
