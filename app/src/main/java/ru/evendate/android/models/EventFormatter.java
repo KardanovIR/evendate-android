@@ -18,7 +18,7 @@ import ru.evendate.android.R;
  */
 
 public class EventFormatter {
-    public static String formatDate(EventDetail event) {
+    public static String formatDate(EventFull event) {
         //10-13, 15, 20-31 december; 23 january
         if (event.getDateList().size() == 0) {
             //no dates -> error at server
@@ -106,7 +106,7 @@ public class EventFormatter {
         return resStr;
     }
 
-    public static String formatTags(EventDetail event) {
+    public static String formatTags(EventFull event) {
         String tags = null;
         for (Tag tag : event.getTagList()) {
             if (tags == null)

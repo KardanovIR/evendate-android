@@ -3,60 +3,82 @@ package ru.evendate.android.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by Dmitry on 07.02.2016.
  */
-public class EventDetail extends Event implements EventFeed {
+@SuppressWarnings("unused")
+public class EventFull extends Event implements EventFeed {
     public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
             "organization_type_name,organization_short_name," +
             "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
-            "registration_required,registration_till,is_free,min_price,is_same_time,created_at," +
+
+            "registration_required,registration_approvement_required,registration_limit_count," +
+            "registration_locally,registration_till,registration_approved,registration_available," +
+            "registered_count,registered" +
+
+            "is_free,min_price,is_same_time,created_at," +
+
             "dates{fields:'" + DateFull.FIELDS_LIST + "'},tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
-    String location;
-    double latitude;
-    double longitude;
+    private String location;
+    private double latitude;
+    private double longitude;
     @SerializedName("organization_name")
-    String organizationName;
+    private String organizationName;
     @SerializedName("organization_type_name")
-    String organizationTypeName;
+    private String organizationTypeName;
     @SerializedName("organization_short_name")
-    String organizationShortName;
+    private String organizationShortName;
     @SerializedName("organization_logo_large_url")
-    String organizationLogoUrl;
+    private String organizationLogoUrl;
     @SerializedName("organization_logo_medium_url")
-    String organizationLogoMediumUrl;
+    private String organizationLogoMediumUrl;
     @SerializedName("organization_logo_small_url")
-    String organizationLogoSmallUrl;
+    private String organizationLogoSmallUrl;
     @SerializedName("favored_users_count")
-    int likedUsersCount;
-    String description;
+    private int likedUsersCount;
+    private String description;
     @SerializedName("detail_info_url")
-    String detailInfoUrl;
+    private String detailInfoUrl;
     @SerializedName("is_favorite")
-    boolean isFavorite;
+    private boolean isFavorite;
     @SerializedName("link")
-    String link;
+    private String link;
+
     @SerializedName("registration_required")
-    boolean registrationRequired;
+    private boolean registrationRequired;
+    @SerializedName("registration_approvement_required")
+    private boolean registrationApprovementRequired;
+    @SerializedName("registration_limit_count")
+    private int registrationLimitCount;
+    @SerializedName("registration_locally")
+    private boolean registrationLocally;
     @SerializedName("registration_till")
-    long registrationTill;
+    private long registrationTill;
+    @SerializedName("registration_approved")
+    private boolean registrationApproved;
+    @SerializedName("registration_available")
+    private boolean registrationAvailable;
+    @SerializedName("registered_count")
+    private int registeredCount;
+    @SerializedName("registered")
+    private boolean registered;
+
     @SerializedName("is_free")
-    boolean isFree;
+    private boolean isFree;
     @SerializedName("min_price")
-    int minPrice;
+    private int minPrice;
     @SerializedName("is_same_time")
-    boolean isSameTime;
+    private boolean isSameTime;
 
     @SerializedName("tags")
-    ArrayList<Tag> tagList;
+    private ArrayList<Tag> tagList;
     @SerializedName("dates")
-    ArrayList<DateFull> dateList;
+    private ArrayList<DateFull> dateList;
     @SerializedName("favored")
-    ArrayList<UserDetail> userList;
+    private ArrayList<UserDetail> userList;
 
 
     public ArrayList<Tag> getTagList() {
@@ -144,8 +166,36 @@ public class EventDetail extends Event implements EventFeed {
         return registrationRequired;
     }
 
+    public boolean isRegistrationApprovementRequired() {
+        return registrationApprovementRequired;
+    }
+
+    public int getRegistrationLimitCount() {
+        return registrationLimitCount;
+    }
+
+    public boolean isRegistrationLocally() {
+        return registrationLocally;
+    }
+
     public long getRegistrationTill() {
         return registrationTill;
+    }
+
+    public boolean isRegistrationApproved() {
+        return registrationApproved;
+    }
+
+    public boolean isRegistrationAvailable() {
+        return registrationAvailable;
+    }
+
+    public int getRegisteredCount() {
+        return registeredCount;
+    }
+
+    public boolean isRegistered() {
+        return registered;
     }
 
     public boolean isFree() {

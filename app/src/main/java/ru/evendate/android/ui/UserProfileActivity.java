@@ -1,8 +1,5 @@
 package ru.evendate.android.ui;
 
-import android.animation.Animator;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -12,9 +9,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
@@ -22,7 +17,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -31,7 +25,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -49,10 +42,12 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static ru.evendate.android.ui.UiUtils.revealView;
+
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity implements LoadStateView.OnReloadListener {
+public class UserProfileActivity extends BaseActivity implements LoadStateView.OnReloadListener {
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
 
     private Uri mUri;
@@ -159,20 +154,6 @@ public class UserProfileActivity extends AppCompatActivity implements LoadStateV
         }
     }
 
-    //TODO DRY
-    private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
-
-        if (taskList.get(0).numActivities == 1 &&
-                taskList.get(0).topActivity.getClassName().equals(getClass().getName())) {
-            Log.i(LOG_TAG, "This is last activity in the stack");
-            startActivity(NavUtils.getParentActivityIntent(this));
-        } else {
-            onBackPressed();
-        }
-    }
-
     public void loadUser() {
         ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<UserDetail>> organizationObservable =
@@ -244,20 +225,6 @@ public class UserProfileActivity extends AppCompatActivity implements LoadStateV
                     .error(R.mipmap.ic_launcher)
                     .into(target);
         }
-    }
-
-    private void revealView(View view) {
-        if (view.getVisibility() == View.VISIBLE)
-            return;
-        view.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT < 21)
-            return;
-        int cx = (view.getLeft() + view.getRight()) / 2;
-        int cy = (view.getTop() + view.getBottom()) / 2;
-
-        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-        animation.start();
     }
 
     private void setupStat() {

@@ -1,9 +1,6 @@
 package ru.evendate.android.ui;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -28,8 +25,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
@@ -45,7 +40,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -69,7 +63,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -82,8 +75,8 @@ import ru.evendate.android.R;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.EventDetail;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
@@ -99,10 +92,13 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static ru.evendate.android.ui.UiUtils.revealView;
+
 /**
  * contain details of events
  */
-public class EventDetailFragment extends Fragment implements TagsView.OnTagClickListener, LoadStateView.OnReloadListener {
+public class EventDetailFragment extends BaseFragment implements TagsView.OnTagClickListener,
+        LoadStateView.OnReloadListener {
     private static String LOG_TAG = EventDetailFragment.class.getSimpleName();
 
     private EventDetailActivity mEventDetailActivity;
@@ -137,7 +133,12 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @Bind(R.id.tag_layout) TagsView mTagsView;
     @Bind(R.id.event_price_card) android.support.v7.widget.CardView mPriceCard;
     @Bind(R.id.event_price) TextView mPriceTextView;
+
     @Bind(R.id.event_registration) TextView mRegistrationTextView;
+    @Bind(R.id.event_registration_button) Button mRegistrationButton;
+    @Bind(R.id.event_registration_cap) TextView mRegistrationCap;
+
+
     @Bind(R.id.event_dates) DatesView mDatesView;
     @Bind(R.id.event_dates_light) CardView mDatesLightView;
     @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
@@ -160,7 +161,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     ObjectAnimator mFabUpAnimation;
     ObjectAnimator mFabDownAnimation;
 
-    private int mColor;
+    private int mPalleteColor;
 
     private AlertDialog notificationDialog;
 
@@ -240,7 +241,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mTagsView.setOnTagClickListener(this);
         mAdapter = new EventAdapter();
 
-        mColor = ContextCompat.getColor(getActivity(), R.color.primary);
+        mPalleteColor = ContextCompat.getColor(getActivity(), R.color.primary);
 
         mFAB.hide();
         mEventImageContainer.setVisibility(View.INVISIBLE);
@@ -307,7 +308,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     }
 
     private void animateAppearToolbar() {
-        mToolbar.setBackgroundColor(mColor);
+        mToolbar.setBackgroundColor(mPalleteColor);
         if (mTitleDisappearAnimation != null && mTitleDisappearAnimation.isRunning())
             mTitleDisappearAnimation.cancel();
         if (mTitleAppearAnimation == null || !mTitleAppearAnimation.isRunning()) {
@@ -361,7 +362,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         int height = mEventImageView.getHeight();
         int maskColor = Color.argb(
                 (int) ((scrolled / height) * 255),
-                Color.red(mColor), Color.green(mColor), Color.blue(mColor));
+                Color.red(mPalleteColor), Color.green(mPalleteColor), Color.blue(mPalleteColor));
         mEventImageMask.setBackgroundColor(maskColor);
         mEventTitleMask.setBackgroundColor(maskColor);
     }
@@ -433,9 +434,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
     public void loadEvent() {
         ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventDetail>> eventObservable =
+        Observable<ResponseArray<EventFull>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
-                        eventId, EventDetail.FIELDS_LIST);
+                        eventId, EventFull.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -448,10 +449,10 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
                         mLoadStateView::hideProgress);
     }
 
-    public void onLoaded(ArrayList<EventDetail> events) {
+    public void onLoaded(ArrayList<EventFull> events) {
         if (!isAdded())
             return;
-        EventDetail event = events.get(0);
+        EventFull event = events.get(0);
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
@@ -469,13 +470,13 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     }
 
     private class EventAdapter {
-        private EventDetail mEvent;
+        private EventFull mEvent;
 
-        public void setEvent(EventDetail event) {
+        public void setEvent(EventFull event) {
             mEvent = event;
         }
 
-        public EventDetail getEvent() {
+        public EventFull getEvent() {
             return mEvent;
         }
 
@@ -509,8 +510,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
 
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     EventFormatter.formatPrice(getContext(), mEvent.getMinPrice()));
-            mRegistrationTextView.setText(!mEvent.isRegistrationRequired() ? eventRegistrationNotRequiredLabel :
-                    eventRegistrationTillLabel + " " + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
+            setRegistration();
         }
 
         private void setAdaptiveTitle() {
@@ -533,6 +533,23 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
             }
 
         }
+
+        private void setRegistration() {
+            if (!mEvent.isRegistrationRequired()) {
+                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
+            }else{
+                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
+                        + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
+            }
+            if (!mEvent.isRegistrationAvailable()) {
+                mRegistrationButton.setEnabled(false);
+                //todo cap
+            }
+            if (mEvent.isRegistered()) {
+                mRegistrationButton.setEnabled(false);
+                //todo cap
+            }
+        }
     }
 
     private void setFabIcon() {
@@ -548,28 +565,9 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         }
     }
 
-    private void revealView(View view) {
-        if (!isAdded())
-            return;
-        if (view.getVisibility() == View.VISIBLE)
-            return;
-        view.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT < 21)
-            return;
-        int cx = (view.getLeft() + view.getRight()) / 2;
-        int cy = (view.getTop() + view.getBottom()) / 2;
-
-        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-
-        animation.start();
-    }
-
     @SuppressWarnings("unused")
     @OnClick(R.id.event_org_card)
     public void onOrganizationClick(View v) {
-        if (mAdapter.getEvent() == null)
-            return;
         Intent intent = new Intent(getContext(), OrganizationDetailActivity.class);
         intent.setData(EvendateContract.OrganizationEntry.getContentUri(mAdapter.getEvent().getOrganizationId()));
         if (Build.VERSION.SDK_INT >= 21) {
@@ -593,11 +591,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     @OnClick(R.id.event_link_card)
     public void onLinkClick() {
         new Statistics(getActivity()).sendEventClickLinkAction(eventId);
-        if (mAdapter.getEvent() == null)
-            return;
-        Intent openLink = new Intent(Intent.ACTION_VIEW);
-        openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
-        startActivity(openLink);
+        openSite();
     }
 
     @Override
@@ -614,7 +608,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
     public void onFabClick() {
         if (mAdapter.getEvent() == null)
             return;
-        EventDetail event = mAdapter.getEvent();
+        EventFull event = mAdapter.getEvent();
 
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<Response> LikeEventObservable;
@@ -651,18 +645,20 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         mAdapter.setEventInfo();
     }
 
-    //TODO DRY
-    private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
-
-        if (taskList.get(0).numActivities == 1 &&
-                taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
-            Log.i(LOG_TAG, "This is last activity in the stack");
-            getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
-        } else {
-            getActivity().onBackPressed();
+    @SuppressWarnings("unused")
+    @OnClick(R.id.event_registration_button)
+    public void onRegistrationButtonClick() {
+        if (mAdapter.mEvent.isRegistrationLocally())
+            openSite();
+        else {
+            //todo registration
         }
+    }
+
+    void openSite() {
+        Intent openLink = new Intent(Intent.ACTION_VIEW);
+        openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
+        startActivity(openLink);
     }
 
     // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
@@ -703,16 +699,16 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         if (bitmap == null)
             return;
         Palette palette = Palette.from(bitmap).generate();
-        mColor = palette.getDarkMutedColor(ContextCompat.getColor(getActivity(), R.color.primary));
-        int red = (int) (Color.red(mColor) * 0.8);
-        int blue = (int) (Color.blue(mColor) * 0.8);
-        int green = (int) (Color.green(mColor) * 0.8);
+        mPalleteColor = palette.getDarkMutedColor(ContextCompat.getColor(getActivity(), R.color.primary));
+        int red = (int) (Color.red(mPalleteColor) * 0.8);
+        int blue = (int) (Color.blue(mPalleteColor) * 0.8);
+        int green = (int) (Color.green(mPalleteColor) * 0.8);
 
         int vibrantDark = Color.argb(255, red, green, blue);
         int colorShadow = Color.argb(150, red, green, blue);
         int colorShadowEnd = Color.argb(0, red, green, blue);
 
-        mTitleContainer.setBackgroundColor(mColor);
+        mTitleContainer.setBackgroundColor(mPalleteColor);
         GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{colorShadow, colorShadowEnd, colorShadowEnd, colorShadowEnd});
         mEventForegroundImage.setImageDrawable(shadow);
@@ -724,6 +720,7 @@ public class EventDetailFragment extends Fragment implements TagsView.OnTagClick
         }
     }
 
+    //todo SOLID
     public void loadNotifications() {
         ApiService apiService = ApiFactory.getService(getActivity());
 

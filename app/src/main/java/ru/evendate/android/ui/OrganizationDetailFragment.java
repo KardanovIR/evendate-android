@@ -1,8 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +48,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -82,7 +78,7 @@ import static ru.evendate.android.ui.UiUtils.revealView;
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements LoadStateView.OnReloadListener {
+public class OrganizationDetailFragment extends BaseFragment implements LoadStateView.OnReloadListener {
     private final String LOG_TAG = "OrganizationFragment";
 
     private int organizationId = -1;
@@ -316,20 +312,6 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         super.onActivityCreated(savedInstanceState);
         loadOrg();
         mDrawer.start();
-    }
-
-    //TODO DRY
-    private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager)getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
-
-        if (taskList.get(0).numActivities == 1 &&
-                taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
-            Log.i(LOG_TAG, "This is last activity in the stack");
-            getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
-        } else {
-            getActivity().onBackPressed();
-        }
     }
 
     private void loadOrg() {
