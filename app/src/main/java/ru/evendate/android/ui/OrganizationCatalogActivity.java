@@ -1,13 +1,10 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -36,6 +32,7 @@ import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.views.LoadStateView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -44,7 +41,7 @@ import rx.schedulers.Schedulers;
  * Created by Dmitry on 28.01.2016.
  */
 public class OrganizationCatalogActivity extends AppCompatActivity
-        implements OrganizationFilterDialog.OnCategorySelectListener {
+        implements OrganizationFilterDialog.OnCategorySelectListener, LoadStateView.OnReloadListener {
     private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
 
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
@@ -52,10 +49,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     private DrawerWrapper mDrawer;
-    AlertDialog errorDialog;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +61,15 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
         initToolbar();
         initRecyclerView();
-        initProgressBar();
         initFAB();
         initDrawer();
-        displayProgress();
         mFAB.setVisibility(View.INVISIBLE);
+        mLoadStateView.setOnReloadListener(this);
 
         loadCatalog();
         mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
         mDrawer.start();
+        mLoadStateView.showProgress();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -93,11 +89,6 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private void initFAB() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         mFAB.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filter_list_white));
-    }
-
-    private void initProgressBar() {
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
     }
 
     private void initDrawer() {
@@ -125,13 +116,6 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (errorDialog != null)
-            errorDialog.dismiss();
-    }
-
     private void loadCatalog() {
         ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<OrganizationCategory>> observable =
@@ -142,8 +126,13 @@ public class OrganizationCatalogActivity extends AppCompatActivity
                 .subscribe(
                         result -> onLoaded(result.getData()),
                         this::onError,
-                        this::hideProgress
+                        mLoadStateView::hideProgress
                 );
+    }
+
+    @Override
+    public void onReload() {
+        loadCatalog();
     }
 
     public void onLoaded(ArrayList<OrganizationCategory> subList) {
@@ -155,22 +144,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
     public void onError(Throwable error) {
         Log.e(LOG_TAG, error.getMessage());
-        errorDialog = ErrorAlertDialogBuilder.newInstance(this,
-                (DialogInterface dialog, int which) -> {
-                    loadCatalog();
-                    dialog.dismiss();
-                });
-        errorDialog.show();
+        Log.e(LOG_TAG, "" + error.getMessage());
+        mLoadStateView.showErrorHint();
     }
-
-    private void displayProgress() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgress() {
-        mProgressBar.setVisibility(View.GONE);
-    }
-
 
     @SuppressWarnings("unused")
     @OnClick(R.id.fab)

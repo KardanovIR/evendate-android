@@ -11,12 +11,10 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/card_action"/>
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleLarge"
+    <ru.evendate.android.views.LoadStateView
+        android:id="@+id/load_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center_horizontal|top"
-        android:progressDrawable="@drawable/circular_progress_bar"/>
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="12dp"/>
 </FrameLayout>

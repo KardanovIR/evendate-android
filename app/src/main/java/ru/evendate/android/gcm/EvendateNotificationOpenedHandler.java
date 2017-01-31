@@ -75,7 +75,7 @@ public class EvendateNotificationOpenedHandler implements OneSignal.Notification
                 //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             default:
-                intent = new Intent(mContext, MainActivity.class);
+                return;
         }
 
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

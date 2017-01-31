@@ -31,16 +31,12 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/item_organization_category"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleLarge"
+
+    <ru.evendate.android.views.LoadStateView
+        android:id="@+id/load_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        app:layout_anchor="@+id/recycler_view"
-        app:layout_anchorGravity="center"/>
+        android:layout_gravity="center"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         app:layout_anchor="@+id/recycler_view"
