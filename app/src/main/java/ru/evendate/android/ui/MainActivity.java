@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -140,8 +141,9 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     }
 
     private void checkDeviceTokenSynced() {
+        String token = EvendatePreferences.getDeviceToken(this);
+        Log.d(EvendatePreferences.class.getSimpleName(), "checking device token synced for: " + token);
         if (!EvendatePreferences.getDeviceTokenSynced(this)) {
-            String token = EvendatePreferences.getDeviceToken(this);
             ServiceImpl.sendRegistrationToServer(this, token);
         }
     }
