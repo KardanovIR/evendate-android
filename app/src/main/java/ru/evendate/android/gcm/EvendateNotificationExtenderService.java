@@ -24,18 +24,19 @@ public class EvendateNotificationExtenderService extends NotificationExtenderSer
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
 
-        Log.d(LOG_TAG, "received notification " + receivedResult.payload.additionalData.toString());
+        Log.d(LOG_TAG, "received notification");
         NotificationAdditionalData addData = NotificationAdditionalData.obtainFromPayload(receivedResult.payload);
         if (!EvendatePreferences.isNotificationOn(getBaseContext()))
             //todo handle stat?
             return true;
-        if (addData == null)
-            return false;
         OverrideSettings overrideSettings = new OverrideSettings();
 
         overrideSettings.extender = (NotificationCompat.Builder builder) -> {
-            builder.setDeleteIntent(getHideIntent(addData))
-                    .setSmallIcon(R.drawable.ic_stat_ic_notification);
+            if (addData != null) {
+                Log.d(LOG_TAG, receivedResult.payload.additionalData.toString());
+                builder.setDeleteIntent(getHideIntent(addData));
+            }
+            builder.setSmallIcon(R.drawable.ic_stat_ic_notification);
 
             int accentColor = ContextCompat.getColor(getBaseContext(), R.color.primary);
 
