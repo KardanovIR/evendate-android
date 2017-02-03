@@ -162,7 +162,7 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/event_price_card"
+        android:id="@+id/event_registration_card"
         style="@style/EventDescriptionCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -175,10 +175,12 @@
             <android.support.v7.widget.GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
                 app:columnCount="2"
                 app:orientation="horizontal"
-                app:rowCount="2">
+                app:rowCount="2"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
 
                 <TextView
                     android:id="@+id/event_price_label"
@@ -210,18 +212,18 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
                 android:minHeight="0dp"
-                android:paddingBottom="12dp"
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp"
-                android:paddingTop="12dp"
                 android:text="ЗАРЕГИСТРИРОВАТЬСЯ"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif"
                 android:textColor="@drawable/button_event_reg"
-                android:background="@null"/>
+                android:background="@null"
+                android:paddingTop="24dp"
+                android:paddingBottom="16dp"
+                android:clickable="false" />
 
             <TextView
                 android:id="@+id/event_registration_cap"
@@ -231,7 +233,7 @@
                 android:fontFamily="sans-serif"
                 android:gravity="center_horizontal"
                 android:text="Подсказка"
-                android:textColor="#36000000"
+                android:textColor="#8A000000"
                 android:textSize="14sp"
                 android:visibility="gone"/>
         </LinearLayout>

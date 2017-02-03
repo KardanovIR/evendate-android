@@ -16,6 +16,7 @@ import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.Tag;
@@ -178,6 +179,7 @@ public interface ApiService {
             @Query("length") int length,
             @Query("offset") int offset
     );
+
     /**
      * Get subscriptions
      */
@@ -229,6 +231,13 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int organizationId,
             @Query("hidden") boolean hidden
+    );
+
+    @POST(API_PATH + "/events/{id}/registrations")
+    Observable<ResponseArray<Registration>> postRegistration(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Body Registration payload
     );
 
     //statistics

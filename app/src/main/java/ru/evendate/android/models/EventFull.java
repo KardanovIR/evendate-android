@@ -16,7 +16,7 @@ public class EventFull extends Event implements EventFeed {
 
             "registration_required,registration_approvement_required,registration_limit_count," +
             "registration_locally,registration_till,registration_approved,registration_available," +
-            "registered_count,registered" +
+            "registered_count,registered,registration_fields," +
 
             "is_free,min_price,is_same_time,created_at," +
 
@@ -79,6 +79,8 @@ public class EventFull extends Event implements EventFeed {
     private ArrayList<DateFull> dateList;
     @SerializedName("favored")
     private ArrayList<UserDetail> userList;
+    @SerializedName("registration_fields")
+    private ArrayList<RegistrationField> registrationFieldsList;
 
 
     public ArrayList<Tag> getTagList() {
@@ -196,6 +198,10 @@ public class EventFull extends Event implements EventFeed {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    public ArrayList<RegistrationField> getRegistrationFieldsList() {
+        return registrationFieldsList;
     }
 
     public boolean isFree() {

@@ -97,6 +97,6 @@ public class ServiceImpl {
                         Log.i(LOG_TAG, "posted stat events");
                     else
                         Log.e(LOG_TAG, "error posting stat events");
-                }, error -> Log.e(LOG_TAG, error.getMessage()));
+                }, error -> Log.e(LOG_TAG, "" + error.getMessage()));
     }
 }
