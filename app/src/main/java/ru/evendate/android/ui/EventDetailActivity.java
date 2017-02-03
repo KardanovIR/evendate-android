@@ -648,8 +648,8 @@ public class EventDetailActivity extends BaseActivity implements TagsView.OnTagC
     @SuppressWarnings("unused")
     @OnClick(R.id.event_registration_card)
     public void onRegistrationButtonClick() {
-        if(!mRegistrationButton.isEnabled())
-            return;
+        //if(!mRegistrationButton.isEnabled())
+        //    return;
         //if (mAdapter.mEvent.isRegistrationLocally())
         //    openSite();
         //else {
