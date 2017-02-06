@@ -509,6 +509,8 @@ public class EventDetailActivity extends BaseActivity implements TagsView.OnTagC
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             if (title.length() > 64)
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            if (title.length() > 84)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             mTitleTextView.setText(mEvent.getTitle());
         }
 
