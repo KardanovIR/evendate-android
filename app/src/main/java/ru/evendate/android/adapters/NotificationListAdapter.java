@@ -12,21 +12,19 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
+import ru.evendate.android.ui.DateFormatter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -98,7 +96,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         }
 
         boolean checkNotificationAble(EventFull event) {
-            Date date = new Date(event.getFirstDate() * 1000);
+            Date date = DateUtils.date(event.getFirstDate());
             Calendar notificationTime = Calendar.getInstance();
             notificationTime.setTime(date);
             switch (NotificationType.getType(type)) {
@@ -172,15 +170,9 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             case BEFORE_QUARTER_OF_HOUR:
                 return context.getString(R.string.notification_before_quarter_of_hour);
             case CUSTOM:
-                return formatNotificationTime(notification.notification.getNotificationTimeInMillis());
+                return DateFormatter.formatNotification(new Date(notification.notification.getNotificationTimeInMillis()));
         }
         return null;
-    }
-
-    private String formatNotificationTime(long timeInMillis) {
-        DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(new Date(timeInMillis));
     }
 
     private void toastEventStarted() {

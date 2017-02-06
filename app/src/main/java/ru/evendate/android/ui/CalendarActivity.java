@@ -29,11 +29,9 @@ import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -190,6 +188,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         month = capitalize(month);
         mToolbar.setTitle(month);
     }
+
     private String capitalize(String str){
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
@@ -236,8 +235,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     private void setSelectedDate(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
-        mSelectedDateTextView.setText(dateFormat.format(mCalendarView.getSelectedDate().getDate()));
+        mSelectedDateTextView.setText(DateFormatter.formatCalendarLabel(mCalendarView.getSelectedDate().getDate()));
     }
 
     @Override

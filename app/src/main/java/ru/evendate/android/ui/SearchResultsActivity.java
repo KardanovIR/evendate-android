@@ -25,12 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -197,10 +193,8 @@ public class SearchResultsActivity extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -10);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         Observable<ResponseArray<Tag>> observable =
-                apiService.getTopTags(EvendateAccountManager.peekToken(this), dateFormat.format(c.getTime()), 10);
+                apiService.getTopTags(EvendateAccountManager.peekToken(this), DateFormatter.formatDateRequest(c.getTime()), 10);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
