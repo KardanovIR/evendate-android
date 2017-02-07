@@ -7,4 +7,5 @@
     <dimen name="calendar_slide_height">198dp</dimen>
     <dimen name="toolbarElevation">4dp</dimen>
     <dimen name="splash_logo_margin_bottom">64dp</dimen>
+    <dimen name="item_tag_space">4dp</dimen>
 </resources>

@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
-import ru.evendate.android.views.TagsView;
+import ru.evendate.android.views.TagsRecyclerView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -77,7 +79,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private boolean isSearchByTag;
 
     private SearchEventFragment searchEventByTagFragment;
-    @Bind(R.id.tags) TagsView tagsView;
+    @Bind(R.id.tags) TagsRecyclerView tagsView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             setSearchHint();
             setSearchQueryAndStart();
         });
-        mLoadStateView.setOnReloadListener(() -> loadTags());
+        mLoadStateView.setOnReloadListener(this::loadTags);
         loadTags();
         mDrawer.start();
     }
@@ -205,7 +207,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> tagsView.setTags(result.getData()),
+                        result -> tagsView.setTags(result.getData(), ChipsLayoutManager.STRATEGY_CENTER),
                         this::onError,
                         mLoadStateView::hideProgress
                 );
@@ -273,7 +275,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         private Context mContext;
         private ArrayList<SearchResultFragment> fragments = new ArrayList<>();
 
-        public SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
+        SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
             super(fragmentManager);
             mContext = context;
             fragments.add(EVENT_TAB, new SearchEventFragment());
@@ -304,7 +306,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             return TAB_COUNT;
         }
 
-        public ArrayList<SearchResultFragment> getFragments() {
+        ArrayList<SearchResultFragment> getFragments() {
             return fragments;
         }
 
@@ -325,7 +327,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         /**
          * return strings for statistics
          */
-        public String getPageLabel(int position) {
+        String getPageLabel(int position) {
             switch (position) {
                 case EVENT_TAB:
                     return mContext.getString(R.string.stat_page_search_events);

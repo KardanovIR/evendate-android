@@ -309,7 +309,7 @@
                 android:text="@string/event_tags"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-            <ru.evendate.android.views.TagsView
+            <ru.evendate.android.views.TagsRecyclerView
                 android:id="@+id/tag_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -86,7 +86,7 @@ import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.LoadStateView;
-import ru.evendate.android.views.TagsView;
+import ru.evendate.android.views.TagsRecyclerView;
 import ru.evendate.android.views.UserFavoritedCard;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -97,7 +97,7 @@ import static ru.evendate.android.ui.UiUtils.revealView;
 /**
  * contain details of events
  */
-public class EventDetailActivity extends BaseActivity implements TagsView.OnTagClickListener,
+public class EventDetailActivity extends BaseActivity implements TagsRecyclerView.OnTagClickListener,
         LoadStateView.OnReloadListener {
     private static String LOG_TAG = EventDetailActivity.class.getSimpleName();
 
@@ -129,7 +129,7 @@ public class EventDetailActivity extends BaseActivity implements TagsView.OnTagC
     @Bind(R.id.event_title_container) View mTitleContainer;
     @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
 
-    @Bind(R.id.tag_layout) TagsView mTagsView;
+    @Bind(R.id.tag_layout) TagsRecyclerView mTagsView;
     @Bind(R.id.event_registration_card) android.support.v7.widget.CardView mPriceCard;
     @Bind(R.id.event_price) TextView mPriceTextView;
 

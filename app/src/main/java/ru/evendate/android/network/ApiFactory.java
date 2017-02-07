@@ -5,13 +5,13 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceManager;
 
-import com.squareup.okhttp.OkHttpClient;
-
 import java.util.concurrent.TimeUnit;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import ru.evendate.android.ui.SettingsActivity;
 
 public class ApiFactory {
@@ -21,13 +21,21 @@ public class ApiFactory {
     private static final int TIMEOUT = 60;
     private static final String HOST_NAME = "evendate.ru";
 
-    private static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final OkHttpClient CLIENT;
 
 
     static {
-        CLIENT.setConnectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
-        CLIENT.setWriteTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
-        CLIENT.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        // add your other interceptors …
+        // add logging as last interceptor
+        httpClient.addInterceptor(logging);
+        httpClient.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+        httpClient.readTimeout(TIMEOUT, TimeUnit.SECONDS);
+        httpClient.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
+        CLIENT = httpClient.build();
     }
 
     @NonNull
