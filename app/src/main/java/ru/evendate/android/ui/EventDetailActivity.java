@@ -58,13 +58,9 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -75,6 +71,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.EventNotification;
@@ -512,6 +509,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             if (title.length() > 64)
                 mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            if (title.length() > 84)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             mTitleTextView.setText(mEvent.getTitle());
         }
 
@@ -519,7 +518,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             if (mEvent.isSameTime()) {
                 mDatesLightView.setVisibility(View.VISIBLE);
                 mEventTimeTextView.setText(EventFormatter.formatEventTime(mContext, mEvent.getDateList().get(0)));
-                mEventDateIntervalsTextView.setText(EventFormatter.formatDate(mEvent));
+                mEventDateIntervalsTextView.setText(EventFormatter.formatDateInterval(mEvent));
             } else {
                 mDatesView.setVisibility(View.VISIBLE);
                 mDatesView.setDates(mEvent.getDateList());
@@ -532,7 +531,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
             } else {
                 mRegistrationTextView.setText(eventRegistrationTillLabel + " "
-                        + EventFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
+                        + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));
             }
             if (!mEvent.isRegistrationAvailable()) {
                 mRegistrationButton.setEnabled(false);
@@ -800,10 +799,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             calendar.set(year, month, day);
             TimePickerDialog newFragment2 = new TimePickerDialog(context, (TimePicker v, int hourOfDay, int minute) -> {
                 calendar.set(year, month, day, hourOfDay, minute, 0);
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                df.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String date = df.format(new Date(calendar.getTimeInMillis()));
-                Log.d(LOG_TAG, "date: " + date);
+
+                String date = DateFormatter.formatDateTimeRequest(new Date(calendar.getTimeInMillis()));
 
                 ApiService apiService = ApiFactory.getService(context);
                 Observable<Response> notificationObservable =

@@ -18,14 +18,14 @@ import static org.mockito.Mockito.when;
 public class EventFormatterTest extends AndroidTestCase {
     //TODO Work only on ru device
     public void testFormatDate() {
-        //Log.d("EventFormatter", EventFormatter.formatDate(getEventDetail(0)));
-        assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDate(getEventDetail(0)));
-        assertEquals("1 декабря", EventFormatter.formatDate(getEventDetail(1)));
-        assertEquals("27 ноября; 1 декабря", EventFormatter.formatDate(getEventDetail(2)));
-        assertEquals("25-29 февраля; 1-10 марта", EventFormatter.formatDate(getEventDetail(3)));
-        assertEquals("1-10 марта", EventFormatter.formatDate(getEventDetail(4)));
-        assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDate(getEventDetail(5)));
-        assertEquals("13, 14 февраля", EventFormatter.formatDate(getEventDetail(6)));
+        //Log.d("EventFormatter", EventFormatter.formatDateInterval(getEventDetail(0)));
+        assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(0)));
+        assertEquals("1 декабря", EventFormatter.formatDateInterval(getEventDetail(1)));
+        assertEquals("27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(2)));
+        assertEquals("25-29 февраля; 1-10 марта", EventFormatter.formatDateInterval(getEventDetail(3)));
+        assertEquals("1-10 марта", EventFormatter.formatDateInterval(getEventDetail(4)));
+        assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDateInterval(getEventDetail(5)));
+        assertEquals("13, 14 февраля", EventFormatter.formatDateInterval(getEventDetail(6)));
     }
 
     public static EventFull getEventDetail(int num) {

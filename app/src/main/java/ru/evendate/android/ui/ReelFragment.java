@@ -14,13 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -344,10 +340,8 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private Observable<ResponseArray<EventFull>> getCalendarEvent(ApiService apiService,
                                                                   int length, int offset, Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
+                DateFormatter.formatDateRequest(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<EventFull>> getRecommendation(ApiService apiService,
