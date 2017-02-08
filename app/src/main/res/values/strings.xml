@@ -77,8 +77,8 @@
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
 
-    <string name="event_show_on_map">SHOW ON MAP</string>
-    <string name="event_go_to_page">GO TO EVENT PAGE</string>
+    <string name="event_show_on_map">Show on map</string>
+    <string name="event_go_to_page">Go to event page</string>
 
     <string name="action_share">Share</string>
     <string name="action_add_notification">Notify about event</string>
