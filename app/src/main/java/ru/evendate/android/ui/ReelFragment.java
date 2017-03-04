@@ -1,9 +1,5 @@
 package ru.evendate.android.ui;
 
-/**
- * Created by Dmitry on 23.09.2015.
- */
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -176,8 +172,8 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private void initRecyclerView() {
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
-        /**
-         * listener that let using refresh on top of the event list
+        /*
+          listener that let using refresh on top of the event list
          */
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

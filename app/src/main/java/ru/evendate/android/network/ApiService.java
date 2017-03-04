@@ -25,6 +25,7 @@ import rx.Observable;
 /**
  * Created by Dmitry on 18.10.2015.
  */
+@SuppressWarnings("SameParameterValue")
 public interface ApiService {
     String API_PATH = "/api/v1";
 

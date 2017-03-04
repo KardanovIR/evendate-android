@@ -93,11 +93,6 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
         this.listener = listener;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     private void loadOrgs() {
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseArray<OrganizationFull>> observable =

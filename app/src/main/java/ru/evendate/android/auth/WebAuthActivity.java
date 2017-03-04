@@ -108,11 +108,6 @@ public class WebAuthActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-        }
-
         private String retrieveToken(String query) {
             int start = query.indexOf("=");
             int end = query.indexOf("&");

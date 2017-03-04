@@ -3,7 +3,6 @@ package ru.evendate.android.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by Dmitry on 07.02.2016.

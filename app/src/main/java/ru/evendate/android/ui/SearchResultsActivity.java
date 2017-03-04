@@ -104,7 +104,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             setSearchHint();
             setSearchQueryAndStart();
         });
-        mLoadStateView.setOnReloadListener(() -> loadTags());
+        mLoadStateView.setOnReloadListener(this::loadTags);
         loadTags();
         mDrawer.start();
     }

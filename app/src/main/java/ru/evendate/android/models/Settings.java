@@ -12,7 +12,7 @@ public class Settings extends DataModel {
 
     public boolean isFeedShowedToFriend(){
         return showToFriend;
-    };
+    }
 
     @Override
     public int getEntryId() {
