@@ -113,9 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .subscribe(result -> {
                         if (result.isOk())
                             feedPrivacyPreference.setChecked(result.getData().get(0).isFeedShowedToFriend());
-                    }, error -> {
-                        Log.e(LOG_TAG, error.getMessage());
-                    });
+                    }, error -> Log.e(LOG_TAG, error.getMessage()));
 
             Preference dialogPreference = getPreferenceScreen().findPreference(KEY_INFO);
             dialogPreference.setOnPreferenceClickListener((Preference preference) -> {
@@ -166,9 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
             notificationObservable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> {
-                    }, error -> {
-                        Log.e(LOG_TAG, error.getMessage());
-                    });
+                    }, error -> Log.e(LOG_TAG, error.getMessage()));
         }
     }
 

@@ -1,1 +1,1 @@
-include ':app', ':vksdk_library', ':library', ':nexusdialog_library'
+include ':app', ':vksdk_library', ':nexusdialog_library'

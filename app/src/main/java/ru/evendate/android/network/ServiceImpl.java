@@ -52,9 +52,7 @@ public class ServiceImpl {
                         }
                     } else
                         Log.e(LOG_TAG, "Error with response with organization sub");
-                }, error -> {
-                    Log.e(LOG_TAG, "" + error.getMessage());
-                });
+                }, error -> Log.e(LOG_TAG, "" + error.getMessage()));
 
         organization.changeSubscriptionState();
     }

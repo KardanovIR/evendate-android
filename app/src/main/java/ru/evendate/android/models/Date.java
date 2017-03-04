@@ -1,5 +1,7 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,7 +21,7 @@ public class Date extends DataModel implements Comparable<Date> {
     }
 
     @Override
-    public int compareTo(Date another) {
+    public int compareTo(@NonNull Date another) {
         return eventDate > another.eventDate ? 1 : eventDate == another.eventDate ? 0 : -1;
     }
 }

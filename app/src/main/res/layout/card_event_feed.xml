@@ -141,6 +141,7 @@
             android:layout_alignEnd="@+id/event_item_image"
             android:layout_alignRight="@+id/event_item_image"
             android:layout_alignTop="@+id/organization_logo_frame"
+            android:layout_marginEnd="24dp"
             android:layout_marginRight="24dp"
             android:layout_toEndOf="@+id/organization_logo_frame"
             android:layout_toRightOf="@+id/organization_logo_frame"

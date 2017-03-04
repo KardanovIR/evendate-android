@@ -1,11 +1,11 @@
 package ru.evendate.android.models;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.ui.OrganizationFilterDialog;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
@@ -138,7 +138,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     }
 
     @Override
-    public int compareTo(Action another) {
+    public int compareTo(@NonNull Action another) {
         return createdAt > another.createdAt ? 1 : createdAt == another.createdAt ? 0 : -1;
     }
 }
