@@ -2,14 +2,17 @@ package ru.evendate.android.ui.tickets;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -22,8 +25,10 @@ import org.parceler.Parcels;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
+import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.ui.DrawerWrapper;
+import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.NavigationItemSelectedListener;
 import ru.evendate.android.ui.ticketsdetail.TicketListActivity;
 
@@ -77,6 +82,29 @@ public class EventRegisteredActivity extends AppCompatActivity
         bundle.putParcelable(TicketListActivity.EVENT_KEY, parcelEvent);
         ticketsIntent.putExtras(bundle);
         startActivity(ticketsIntent);
+    }
+
+    @Override
+    public void onEventLongClick(EventRegistered item) {
+        final int OPEN_EVENT_ID = 0;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(item.getTitle())
+                .setItems(getDialogTextItems(), (DialogInterface dialog, int which) -> {
+                    switch (which) {
+                        case OPEN_EVENT_ID:
+                            Intent intent = new Intent(this, EventDetailActivity.class);
+                            intent.setData(EvendateContract.EventEntry.getContentUri(item.getEntryId()));
+                            startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+                            break;
+                    }
+                });
+        builder.create().show();
+    }
+
+    private CharSequence[] getDialogTextItems() {
+        return new CharSequence[]{
+                getString(R.string.event_registered_open_detail)
+        };
     }
 
     private class EventRegisteredPagerAdapter extends FragmentStatePagerAdapter {

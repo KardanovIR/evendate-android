@@ -63,6 +63,12 @@ public class EventRegisteredRecyclerViewAdapter extends AbstractEndlessAdapter<E
                 mListener.onEventClick(holder.mEvent);
             }
         });
+        holder.holderView.setOnLongClickListener((View v) -> {
+            if (null != mListener) {
+                mListener.onEventLongClick(holder.mEvent);
+            }
+            return true;
+        });
     }
 
     class EventRegisteredViewHolder extends RecyclerView.ViewHolder {

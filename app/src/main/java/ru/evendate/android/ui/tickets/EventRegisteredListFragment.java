@@ -177,6 +177,8 @@ public class EventRegisteredListFragment extends Fragment implements LoadStateVi
 
     interface OnEventInteractionListener {
         void onEventClick(EventRegistered item);
+
+        void onEventLongClick(EventRegistered item);
     }
 
 }

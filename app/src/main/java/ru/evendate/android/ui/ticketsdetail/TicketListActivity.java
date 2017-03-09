@@ -33,7 +33,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     private String LOG_TAG = TicketListActivity.class.getSimpleName();
 
     public static final String EVENT_KEY = "event";
-    private static final String TICKETS_KEY = "event";
+    private static final String TICKETS_KEY = "tickets";
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.pager) ViewPager mViewPager;
@@ -93,7 +93,11 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
             return;
         }
         mEvent = Parcels.unwrap(intent.getParcelableExtra(EVENT_KEY));
-        mTickets = mEvent.getTickets();
+        mTickets = Parcels.unwrap(intent.getParcelableExtra(TICKETS_KEY));
+        if (mTickets == null)
+            mTickets = mEvent.getTickets();
+        if (mTickets == null)
+            mTickets = new ArrayList<>();
         mToolbar.setTitle(mEvent.getTitle());
         if (mTickets.size() < LENGTH)
             loadMoreAvailable = false;

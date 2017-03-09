@@ -254,6 +254,7 @@
     <string name="tab_event_registered_future">Future</string>
     <string name="tab_event_registered_past">Past</string>
     <string name="event_registered_empty_cap">No tickets</string>
+    <string name="event_registered_open_detail">Go to event</string>
 
     <!-- ticket detail -->
     <string name="ticket_date_label">Order date:</string>
