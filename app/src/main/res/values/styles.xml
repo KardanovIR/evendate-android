@@ -14,7 +14,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.SearchViewOverlay">
         <item name="searchViewStyle">@style/SearchViewNoIcon</item>
@@ -112,6 +112,7 @@
     </style>
 
     <style name="UserItem" parent="FlatItem"/>
+
     <style name="OrganizationItem" parent="FlatItem"/>
 
     <style name="EventCardWithGroupDate">
@@ -174,4 +175,6 @@
         <item name="android:textColor">#F82969</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 </resources>

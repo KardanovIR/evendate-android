@@ -20,6 +20,7 @@
     <string name="drawer_organizations">Organizator catalog</string>
     <string name="drawer_subscriptions">Subscriptions</string>
     <string name="drawer_log_out">Log out</string>
+    <string name="drawer_tickets">My tickets</string>
 
     <!-- tabs strings -->
     <string name="tab_main_feed">Feed</string>
@@ -36,6 +37,8 @@
     <string name="tab_organization_future_events">Events</string>
     <string name="tab_organization_past_events">Past</string>
 
+    <string name="tab_tickets_future_events">Events</string>
+    <string name="tab_tickets_past_events">Past</string>
 
     <!-- todo -->
     <string name="download_error">Error occurred</string>
@@ -72,10 +75,15 @@
     <string name="event_price">Price</string>
     <string name="event_free">Free</string>
     <string name="event_price_rub">rub</string>
-    <string name="event_registration">Registration</string>
     <string name="event_price_from">From</string>
+
+    <string name="event_registration">Registration</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
+    <string name="event_registration_button">Register</string>
+    <string name="event_registration_status_not_available">Registration no available</string>
+    <string name="event_registration_status_already_registered">You are already registered</string>
+    <string name="event_registration_status_registration_approved">Registration approved</string>
 
     <string name="event_show_on_map">Show on map</string>
     <string name="event_go_to_page">Go to event page</string>
@@ -88,6 +96,9 @@
 
     <string name="event_share_text_i_like">I like event ‘</string>
     <string name="event_share_text_in_org">’ by organizator </string>
+
+    <string name="event_registration_title">Event registration</string>
+    <string name="event_registration_done">You have successfully registered</string>
 
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>
@@ -237,6 +248,17 @@
     <string name="search_empty_header">Nothing found</string>
 
     <string name="action_search">Search</string>
+
+    <!-- event registered strings -->
+    <string name="title_activity_event_registered">My tickets</string>
+    <string name="tab_event_registered_future">Future</string>
+    <string name="tab_event_registered_past">Past</string>
+    <string name="event_registered_empty_cap">No tickets</string>
+
+    <!-- ticket detail -->
+    <string name="ticket_date_label">Order date:</string>
+    <string name="ticket_number_label">Ticket #</string>
+    <string name="ticket_count_label">tickets</string>
 
     <!-- load state view strings -->
     <string name="state_no_connection">No internet connection</string>

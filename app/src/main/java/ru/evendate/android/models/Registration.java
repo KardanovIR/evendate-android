@@ -10,7 +10,11 @@ import java.util.ArrayList;
 
 public class Registration extends DataModel {
     @SerializedName("registration_fields")
-    private ArrayList<RegistrationField> registrationFieldsList;
+    private ArrayList<RegistrationField> registrationFields;
+    @SerializedName("tickets")
+    private ArrayList<Ticket> tickets;
+    @SerializedName("orders")
+    private ArrayList<Order> orders;
 
 
     @Override
@@ -19,10 +23,10 @@ public class Registration extends DataModel {
     }
 
     public ArrayList<RegistrationField> getRegistrationFieldsList() {
-        return registrationFieldsList;
+        return registrationFields;
     }
 
     public void setRegistrationFieldsList(ArrayList<RegistrationField> registrationFieldsList) {
-        this.registrationFieldsList = registrationFieldsList;
+        this.registrationFields = registrationFieldsList;
     }
 }

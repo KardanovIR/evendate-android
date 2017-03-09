@@ -50,6 +50,7 @@ public class DrawerWrapper {
     final static int CATALOG_IDENTIFIER = 3;
     final static int FRIENDS_IDENTIFIER = 4;
     final static int SETTINGS_IDENTIFIER = 5;
+    public final static int TICKETS_IDENTIFIER = 6;
     private Context mContext;
     private OnSubLoadListener listener;
     private static UserDetail mUser;
@@ -68,6 +69,8 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
+    private PrimaryDrawerItem ticketsItem = new PrimaryDrawerItem().withName(R.string.drawer_tickets)
+            .withIcon(R.drawable.ic_receipt_black).withIdentifier(TICKETS_IDENTIFIER).withSelectable(true);
 
     interface OnSubLoadListener {
         void onSubLoaded();
@@ -122,6 +125,7 @@ public class DrawerWrapper {
         mDrawer.addItems(
                 reelItem,
                 calendarItem,
+                ticketsItem,
                 friendsItem,
                 settingsItem,
                 organizationsItem,
@@ -146,7 +150,7 @@ public class DrawerWrapper {
         getDrawer().getRecyclerView().smoothScrollToPosition(0);
     }
 
-    protected Drawer getDrawer() {
+    public Drawer getDrawer() {
         return mDrawer;
     }
 

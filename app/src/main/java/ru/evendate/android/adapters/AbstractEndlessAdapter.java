@@ -1,22 +1,16 @@
 package ru.evendate.android.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ds_gordeev on 17.02.2016.
+ * Created by Aedirn on 07.03.17.
  */
-@Deprecated
-public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
-    protected Context mContext;
-    private List<T> mList = new ArrayList<>();
 
-    public AbstractAdapter(Context context) {
-        this.mContext = context;
-    }
+public abstract class AbstractEndlessAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+    private List<T> mList = new ArrayList<>();
 
     public void add(List<T> list) {
         for (T item : list) {
@@ -24,7 +18,7 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         }
     }
 
-    public void replace(final List<T> list) {
+    public void set(final List<T> list) {
         int size = mList.size();
         for (int index = 0; index < list.size(); index++) {
             if (index < size) {
@@ -62,18 +56,18 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         return mList.size();
     }
 
-    protected void append(T item) {
+    private void append(T item) {
         mList.add(mList.size(), item);
         notifyItemInserted(getItemCount());
     }
 
-    protected void remove(T item) {
+    private void remove(T item) {
         int position = mList.indexOf(item);
         mList.remove(position);
         notifyItemRemoved(position);
     }
 
-    protected void update(T item) {
+    private void update(T item) {
         int position = mList.indexOf(item);
         notifyItemChanged(position);
     }

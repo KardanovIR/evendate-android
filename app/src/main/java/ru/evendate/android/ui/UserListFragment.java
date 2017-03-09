@@ -19,7 +19,7 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.UsersAdapter;
-import ru.evendate.android.models.EventFull;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.UserDetail;
@@ -174,9 +174,9 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
 
     private void loadEvent() {
         ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventFull>> eventObservable =
+        Observable<ResponseArray<Event>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
-                        eventId, EventFull.FIELDS_LIST);
+                        eventId, Event.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -206,10 +206,10 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
     }
 
 
-    public void onLoadedEvents(ArrayList<EventFull> events) {
+    public void onLoadedEvents(ArrayList<Event> events) {
         if (!isAdded())
             return;
-        EventFull event = events.get(0);
+        Event event = events.get(0);
         onLoaded(event.getUserList());
     }
 

@@ -2,9 +2,12 @@ package ru.evendate.android.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by Dmitry on 11.09.2015.
  */
+@Parcel
 public class User extends DataModel {
     public static final String FIELDS_LIST = "is_friend,name,link";
 

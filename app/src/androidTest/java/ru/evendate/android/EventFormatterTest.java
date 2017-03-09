@@ -7,8 +7,8 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 
 import ru.evendate.android.models.DateFull;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.EventFull;
 
 import static org.mockito.Mockito.when;
 
@@ -28,8 +28,8 @@ public class EventFormatterTest extends AndroidTestCase {
         assertEquals("13, 14 февраля", EventFormatter.formatDateInterval(getEventDetail(6)));
     }
 
-    public static EventFull getEventDetail(int num) {
-        EventFull event = Mockito.mock(EventFull.class);
+    public static Event getEventDetail(int num) {
+        Event event = Mockito.mock(Event.class);
         ArrayList<DateFull> dates = getDates(num);
         when(event.getDateList()).thenReturn(dates);
         return event;

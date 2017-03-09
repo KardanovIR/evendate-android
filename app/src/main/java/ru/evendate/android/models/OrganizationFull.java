@@ -35,7 +35,7 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
     @SerializedName("subscribed")
     ArrayList<UserDetail> mSubscribedUsersList;
     @SerializedName("events")
-    ArrayList<EventFull> mEventsList;
+    ArrayList<Event> mEventsList;
 
     @Override
     public ArrayList<UserDetail> getSubscribedUsersList() {

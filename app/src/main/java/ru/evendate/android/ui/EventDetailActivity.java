@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,7 +33,6 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -72,8 +72,8 @@ import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.DateUtils;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
 import ru.evendate.android.network.ApiFactory;
@@ -95,7 +95,7 @@ import static ru.evendate.android.ui.UiUtils.revealView;
  * contain details of events
  */
 public class EventDetailActivity extends BaseActivity implements TagsRecyclerView.OnTagClickListener,
-        LoadStateView.OnReloadListener {
+        LoadStateView.OnReloadListener, RegistrationFormFragment.OnRegistrationCallbackListener {
     private static String LOG_TAG = EventDetailActivity.class.getSimpleName();
 
     public static final String URI_KEY = "uri";
@@ -267,10 +267,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             public void onGlobalLayout() {
                 mCoordinatorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int bottom = mTitleContainer.getBottom();
-                int size = mFAB.getHeight();
+                //int size = mFAB.getHeight();
+                int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56,
+                        getResources().getDisplayMetrics());
                 mFabHeight = bottom - size / 2;
-                if (Build.VERSION.SDK_INT > 19)
-                    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+                TransitionManager.beginDelayedTransition(mCoordinatorLayout);
                 mFAB.setY(mFabHeight);
             }
         });
@@ -393,7 +394,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) + " " +
+                shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.event_share_text_i_like) +
                         mAdapter.getEvent().getTitle() + getString(R.string.event_share_text_in_org) + " " +
                         mAdapter.getEvent().getOrganizationName() + "\n" +
                         mAdapter.getEvent().getLink());
@@ -426,9 +427,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     public void loadEvent() {
         ApiService apiService = ApiFactory.getService(this);
-        Observable<ResponseArray<EventFull>> eventObservable =
+        Observable<ResponseArray<Event>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(this),
-                        eventId, EventFull.FIELDS_LIST);
+                        eventId, Event.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -441,8 +442,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                         mLoadStateView::hideProgress);
     }
 
-    public void onLoaded(ArrayList<EventFull> events) {
-        EventFull event = events.get(0);
+    public void onLoaded(ArrayList<Event> events) {
+        Event event = events.get(0);
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
@@ -457,19 +458,25 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mLoadStateView.showErrorHint();
     }
 
+    @Override
+    public void onRegistered() {
+        Toast.makeText(this, R.string.event_registration_done, Toast.LENGTH_LONG).show();
+        mRegistrationButton.setEnabled(false);
+    }
+
     private class EventAdapter {
         private Context mContext;
-        private EventFull mEvent;
+        private Event mEvent;
 
         EventAdapter(Context context) {
             this.mContext = context;
         }
 
-        public void setEvent(EventFull event) {
+        public void setEvent(Event event) {
             mEvent = event;
         }
 
-        public EventFull getEvent() {
+        public Event getEvent() {
             return mEvent;
         }
 
@@ -535,17 +542,17 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             }
             if (!mEvent.isRegistrationAvailable()) {
                 mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText("Регистрация недоступна");
+                mRegistrationCap.setText(R.string.event_registration_status_not_available);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
             if (mEvent.isRegistered()) {
                 mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText("Вы уже зарегистрированы");
+                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
             if (mEvent.isRegistrationApproved()) {
                 mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText("Регистрация подтверждена");
+                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
         }
@@ -607,7 +614,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     public void onFabClick() {
         if (mAdapter.getEvent() == null)
             return;
-        EventFull event = mAdapter.getEvent();
+        Event event = mAdapter.getEvent();
 
         ApiService apiService = ApiFactory.getService(this);
         Observable<Response> LikeEventObservable;
@@ -647,18 +654,18 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @SuppressWarnings("unused")
     @OnClick(R.id.event_registration_card)
     public void onRegistrationButtonClick() {
-        //if(!mRegistrationButton.isEnabled())
-        //    return;
-        //if (mAdapter.mEvent.isRegistrationLocally())
-        //    openSite();
-        //else {
+        if (!mRegistrationButton.isEnabled())
+            return;
+        if (!mAdapter.mEvent.isRegistrationLocally())
+            openSite();
+        else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             RegistrationFormFragment newFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.add(R.id.main_content, newFragment).addToBackStack(null).commit();
             mFAB.hide();
-        //}
+        }
     }
 
     void openSite() {

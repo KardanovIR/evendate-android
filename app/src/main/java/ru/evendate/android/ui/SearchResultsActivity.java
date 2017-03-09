@@ -41,8 +41,8 @@ import ru.evendate.android.adapters.EventsAdapter;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.OrganizationCatalogAdapter;
 import ru.evendate.android.adapters.UsersAdapter;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
-import ru.evendate.android.models.EventFull;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.models.Tag;
@@ -418,9 +418,9 @@ public class SearchResultsActivity extends AppCompatActivity {
             final int length = mAdapterController.getLength();
             final int offset = mAdapterController.getOffset();
 
-            Observable<ResponseArray<EventFull>> observable =
+            Observable<ResponseArray<Event>> observable =
                     apiService.findEvents(EvendateAccountManager.peekToken(getContext()), query, true,
-                            EventFull.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
+                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -436,7 +436,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             loadAdaptive();
         }
 
-        public void onLoadedEvents(ArrayList<EventFull> subList) {
+        public void onLoadedEvents(ArrayList<Event> subList) {
             Log.i(LOG_TAG, "loaded " + subList.size() + " events");
             mAdapterController.loaded(subList);
             checkListAndShowHint();
@@ -532,9 +532,9 @@ public class SearchResultsActivity extends AppCompatActivity {
             final int length = mAdapterController.getLength();
             final int offset = mAdapterController.getOffset();
 
-            Observable<ResponseArray<EventFull>> observable =
+            Observable<ResponseArray<Event>> observable =
                     apiService.findEventsByTags(EvendateAccountManager.peekToken(getContext()), query, true,
-                            EventFull.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
+                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())

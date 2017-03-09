@@ -69,7 +69,6 @@
     <string name="organization_address">Адрес организатора</string>
     <string name="dates_view_less">МЕНЬШЕ</string>
     <string name="event_price">Цена</string>
-    <string name="event_registration">Регистрация</string>
     <string name="drawer_log_out">Выйти из аккаунта</string>
     <string name="organization_word_subscribers">Подписчики</string>
     <string name="event_price_rub">руб</string>
@@ -153,4 +152,21 @@
     <string name="search_empty_description">Попробуйте поискать что-нибудь другое</string>
     <string name="search_empty_header">Ничего не найдено</string>
     <string name="auth_error">Произошла ошибка. Пожалуйста, повторите</string>
+    <string name="tab_tickets_future_events">Будущие</string>
+    <string name="tab_tickets_past_events">Прошедшие</string>
+    <string name="drawer_tickets">Мои билеты</string>
+    <string name="event_registration_button">Зарегистрироваться</string>
+    <string name="event_registration_title">Регистрация на событие</string>
+    <string name="tab_event_registered_future">Будущие</string>
+    <string name="tab_event_registered_past">Прошедшие</string>
+    <string name="title_activity_event_registered">Мои билеты</string>
+    <string name="event_registration_status_already_registered">Вы уже зарегистрированы</string>
+    <string name="event_registration_status_not_available">Регистрация недоступна</string>
+    <string name="event_registration_status_registration_approved">Регистрация подтверждена</string>
+    <string name="event_registered_empty_cap">Нет билетов</string>
+    <string name="event_registration_done">Вы успешно зарегистрировались</string>
+    <string name="event_registration">Регистрация</string>
+    <string name="ticket_count_label">билет</string>
+    <string name="ticket_date_label">Дата покупки билета:</string>
+    <string name="ticket_number_label">Билет №</string>
 </resources>

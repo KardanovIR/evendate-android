@@ -17,6 +17,7 @@ public class DateFormatter {
     private static DateFormat calendarBottomSheetFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
     private static DateFormat eventSingleDateFormat = new SimpleDateFormat("d MMMM", Locale.getDefault());
     private static DateFormat notificationDatetimeFormat = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
+    private static DateFormat orderDatetimeFormat = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
 
     public static String formatDateTimeRequest(Date date) {
         requestDateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -63,6 +64,12 @@ public class DateFormatter {
     public static String formatTime(Date date) {
         DateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return dayFormat.format(date);
+    }
+
+    public static String formatOrderDateTime(Date date) {
+        String formatted_date = orderDatetimeFormat.format(date);
+        logDate("formatOrderDateTime", formatted_date);
+        return formatted_date;
     }
 
     private static void logDate(String name, String date) {

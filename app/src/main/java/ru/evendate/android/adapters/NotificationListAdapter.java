@@ -19,7 +19,7 @@ import java.util.List;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateUtils;
-import ru.evendate.android.models.EventFull;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
@@ -33,10 +33,10 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     private static String LOG_TAG = NotificationListAdapter.class.getSimpleName();
 
     private final Context context;
-    private EventFull mEvent;
+    private Event mEvent;
     private List<Notification> notifications;
 
-    public NotificationListAdapter(Context context, List<Notification> eventNotifications, EventFull event) {
+    public NotificationListAdapter(Context context, List<Notification> eventNotifications, Event event) {
         super(context, R.layout.item_multichoice, eventNotifications);
         this.context = context;
         mEvent = event;
@@ -95,7 +95,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             type = notificationType;
         }
 
-        boolean checkNotificationAble(EventFull event) {
+        boolean checkNotificationAble(Event event) {
             Date date = DateUtils.date(event.getFirstDate());
             Calendar notificationTime = Calendar.getInstance();
             notificationTime.setTime(date);

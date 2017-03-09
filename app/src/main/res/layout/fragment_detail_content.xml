@@ -91,6 +91,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:linksClickable="true"
                 tools:text="ГЭС-2 — мёртвый участок между Болотной площадью и «Красным Октябрём»"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
@@ -216,15 +217,17 @@
                 android:minHeight="0dp"
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp"
-                android:text="ЗАРЕГИСТРИРОВАТЬСЯ"
+                android:text="@string/event_registration_button"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif"
                 android:textColor="@drawable/button_event_reg"
                 android:background="@null"
                 android:paddingTop="24dp"
                 android:paddingBottom="16dp"
-                android:clickable="false" />
+                android:clickable="false"
+                android:textAllCaps="true"/>
 
+            <!-- todo cap types?? -->
             <TextView
                 android:id="@+id/event_registration_cap"
                 android:layout_width="match_parent"
@@ -232,7 +235,7 @@
                 android:layout_marginBottom="16dp"
                 android:fontFamily="sans-serif"
                 android:gravity="center_horizontal"
-                android:text="Подсказка"
+                tools:text="Подсказка"
                 android:textColor="#8A000000"
                 android:textSize="14sp"
                 android:visibility="gone"/>

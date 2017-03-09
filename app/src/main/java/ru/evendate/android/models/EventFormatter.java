@@ -19,7 +19,7 @@ import ru.evendate.android.ui.DateFormatter;
  */
 
 public class EventFormatter {
-    public static String formatDateInterval(EventFull event) {
+    public static String formatDateInterval(Event event) {
         //10-13, 15, 20-31 december; 23 january
         if (event.getDateList().size() == 0) {
             //no dates -> error at server

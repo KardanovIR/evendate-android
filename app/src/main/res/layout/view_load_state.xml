@@ -24,18 +24,18 @@
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
+        android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000"
         android:textSize="18sp"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:gravity="center_horizontal"
         android:visibility="gone"
-        tools:visibility="visible"
-        tools:text="header"/>
+        tools:text="header"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/description"
