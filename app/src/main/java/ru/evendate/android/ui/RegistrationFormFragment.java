@@ -37,6 +37,8 @@ import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.RegistrationField;
+import ru.evendate.android.models.Ticket;
+import ru.evendate.android.models.TicketOrder;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
@@ -178,6 +180,9 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
                 input.add(new RegistrationField(field.getUuid(), (String) getModel().getValue(field.getUuid())));
             mRegistration = new Registration();
             mRegistration.setRegistrationFieldsList(new ArrayList<>(input));
+            ArrayList<Ticket> ticketOrderList = new ArrayList<>();
+            ticketOrderList.add(new TicketOrder("", 1));
+            mRegistration.setTickets(ticketOrderList);
             postRegistrationInput(mEvent.getEntryId(), mRegistration);
             mLoadStateView.showProgress();
         } else {

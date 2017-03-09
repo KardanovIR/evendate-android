@@ -29,4 +29,8 @@ public class Registration extends DataModel {
     public void setRegistrationFieldsList(ArrayList<RegistrationField> registrationFieldsList) {
         this.registrationFields = registrationFieldsList;
     }
+
+    public void setTickets(ArrayList<Ticket> tickets) {
+        this.tickets = tickets;
+    }
 }
