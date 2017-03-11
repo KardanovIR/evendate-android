@@ -8,7 +8,8 @@
     android:layout_height="match_parent"
     android:background="@color/window_reel_background"
     android:orientation="vertical"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:clickable="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

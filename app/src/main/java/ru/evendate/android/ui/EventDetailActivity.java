@@ -732,6 +732,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     }
 
     //todo SOLID
+    //todo user action not handle immediate on bad network condition
     public void loadNotifications() {
         ApiService apiService = ApiFactory.getService(this);
 
@@ -819,11 +820,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                             Log.i(LOG_TAG, "loaded");
                             if (result.isOk())
                                 //todo update notification list cause new list in return answer
-                                Toast.makeText(context, R.string.custom_notification_added, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, R.string.event_notification_added, Toast.LENGTH_SHORT).show();
                             else
-                                Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, R.string.event_notification_error, Toast.LENGTH_SHORT).show();
                         }, error -> {
-                            Toast.makeText(context, R.string.custom_notification_error, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.event_notification_error, Toast.LENGTH_SHORT).show();
                             Log.e(LOG_TAG, error.getMessage());
                         });
             }, 0, 0, true);

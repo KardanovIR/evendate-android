@@ -4,6 +4,7 @@
     <string name="title_activity_organization">Organizer catalog</string>
     <string name="title_activity_friends">Friends</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_city">Cities</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -45,8 +46,6 @@
     <string name="loading_error">Error</string>
     <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
     <string name="loading_retry">Retry</string>
-    <string name="custom_notification_added">Notification added</string>
-    <string name="custom_notification_error">Error. Notification didn\'t added</string>
 
     <!-- lists strings -->
     <string name="list_feed_empty_header">No nearest events</string>
@@ -99,6 +98,9 @@
 
     <string name="event_registration_title">Event registration</string>
     <string name="event_registration_done">You have successfully registered</string>
+
+    <string name="event_notification_added">Notification added</string>
+    <string name="event_notification_error">Error. Notification didn\'t added</string>
 
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>
@@ -260,6 +262,14 @@
     <string name="ticket_date_label">Order date:</string>
     <string name="ticket_number_label">Ticket #</string>
     <string name="ticket_count_label">tickets</string>
+
+    <!-- cities -->
+    <string name="city_prompt_where_user">Where are you?</string>
+    <string name="city_prompt_where_user_description">Let us know so we can recommend nearby event</string>
+    <string name="city_prompt_button">Enter your city</string>
+
+    <string name="city_location_button">Use my location</string>
+    <string name="city_available_list">Available cities</string>
 
     <!-- load state view strings -->
     <string name="state_no_connection">No internet connection</string>

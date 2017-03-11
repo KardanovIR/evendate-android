@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,7 +17,7 @@ import ru.evendate.android.R;
  */
 public class LoadStateView extends FrameLayout {
 
-    private Button reloadButton;
+    private ImageButton reloadButton;
     private TextView headerView;
     private TextView descriptionView;
     private ProgressBar progressBar;
@@ -39,7 +39,7 @@ public class LoadStateView extends FrameLayout {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_load_state, this, true);
         ViewGroup viewGroup = (ViewGroup)getChildAt(0);
-        reloadButton = (Button)viewGroup.getChildAt(0);
+        reloadButton = (ImageButton) viewGroup.getChildAt(0);
         headerView = (TextView)viewGroup.getChildAt(1);
         descriptionView = (TextView)viewGroup.getChildAt(2);
         progressBar = (ProgressBar)viewGroup.getChildAt(3);

@@ -223,16 +223,17 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             public void onResult(VKAccessToken res) {
                 onVkTokenReceived(res);
             }
+
             @Override
             public void onError(VKError error) {
                 onErrorOccurred();
             }
         }))
 
-        if (requestCode == REQUEST_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleGoogleSignInResult(result);
-        }
+            if (requestCode == REQUEST_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                handleGoogleSignInResult(result);
+            }
         if (requestCode == REQUEST_WEB_AUTH) {
             if (resultCode == RESULT_OK) {
                 String email = data.getStringExtra(WebAuthActivity.EMAIL);
@@ -245,6 +246,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     }
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
+        if (result == null) {
+            onErrorOccurred();
+            return;
+        }
         Log.d(LOG_TAG, "handleSignInResult:" + result.isSuccess());
         GoogleSignInAccount acct = result.getSignInAccount();
         if (result.isSuccess() && acct != null) {

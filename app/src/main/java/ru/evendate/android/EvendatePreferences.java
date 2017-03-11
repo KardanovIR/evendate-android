@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 
+import com.google.gson.Gson;
+
+import ru.evendate.android.models.City;
+
 /**
  * Created by Aedirn on 16.10.16.
  */
@@ -25,6 +29,21 @@ public class EvendatePreferences {
     public static final boolean KEY_DEVICE_TOKEN_SYNCED_DEFAULT = false;
 
     public static final String KEY_DEVICE_TOKEN = "key_device_token";
+
+    private static final String KEY_USER_CITY_SELECTED = "key_user_city_synced";
+    public static final boolean KEY_USER_CITY_SYNCED_DEFAULT = false;
+
+    private static final String KEY_USER_CITY = "key_user_city";
+    private static final String DEFAULT_USER_CITY_JSON =
+            "{'id':1,'en_name':'Moscow','country_id':1,'local_name':'Москва'}";
+
+    Context mContext;
+
+    public static EvendatePreferences newInstance(Context context) {
+        EvendatePreferences preferences = new EvendatePreferences();
+        preferences.mContext = context;
+        return preferences;
+    }
 
     public static boolean isVibrateOn(Context context) {
         return getPreferences(context).getBoolean(KEY_VIBRATION, KEY_VIBRATION_DEFAULT);
@@ -66,6 +85,25 @@ public class EvendatePreferences {
         SharedPreferences.Editor editor = getPreferences(context).edit();
         editor.putString(KEY_DEVICE_TOKEN, token);
         editor.apply();
+    }
+
+    public boolean getUserCitySelected() {
+        return getPreferences(mContext).getBoolean(KEY_USER_CITY_SELECTED, false);
+    }
+
+    public void putUserCity(City userCity) {
+        SharedPreferences.Editor editor = getPreferences(mContext).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(userCity);
+        editor.putString(KEY_USER_CITY, json);
+        editor.putBoolean(KEY_USER_CITY_SELECTED, true);
+        editor.apply();
+    }
+
+    public City getUserCity() {
+        Gson gson = new Gson();
+        String json = getPreferences(mContext).getString(KEY_USER_CITY, DEFAULT_USER_CITY_JSON);
+        return gson.fromJson(json, City.class);
     }
 
     private static SharedPreferences getPreferences(Context context) {

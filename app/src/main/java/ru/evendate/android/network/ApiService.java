@@ -11,6 +11,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.evendate.android.models.Action;
+import ru.evendate.android.models.City;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
@@ -225,13 +226,26 @@ public interface ApiService {
             @Path("id") int organizationId, @Header("Authorization") String authorization
     );
 
-    /**
-     * Get feed event list
-     */
     @GET(API_PATH + "/organizations/types")
     Observable<ResponseArray<OrganizationCategory>> getCatalog(
             @Header("Authorization") String authorization,
+            @Query("fields") String fields,
+            @Query("city_id") int cityId
+    );
+
+    @GET(API_PATH + "/organizations/cities")
+    Observable<ResponseArray<City>> getCities(
+            @Header("Authorization") String authorization,
             @Query("fields") String fields
+    );
+
+    @GET(API_PATH + "/organizations/cities")
+    Observable<ResponseArray<City>> getCities(
+            @Header("Authorization") String authorization,
+            @Query("fields") String fields,
+            @Query("latitude") double latitude,
+            @Query("longitude") double longitude,
+            @Query("order_by") String orderBy
     );
 
     @PUT(API_PATH + "/users/me/devices")

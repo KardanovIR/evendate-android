@@ -95,8 +95,8 @@
     <string name="list_favourites_empty_text">Добавьте событие в избранное, чтобы оно появилось здесь!</string>
     <string name="list_recommendation_empty_header">Рекомендаций для вас пока нет</string>
     <string name="action_add_notification">Напомнить о событии</string>
-    <string name="custom_notification_added">Напоминание добавлено</string>
-    <string name="custom_notification_error">Ошибка. Напоминание не было добавлено</string>
+    <string name="event_notification_added">Напоминание добавлено</string>
+    <string name="event_notification_error">Ошибка. Напоминание не было добавлено</string>
     <string name="notification_before_day">За день</string>
     <string name="notification_before_quarter_of_hour">За 15 минут</string>
     <string name="notification_before_three_days">За 3 дня</string>
@@ -170,4 +170,10 @@
     <string name="ticket_date_label">Дата покупки билета:</string>
     <string name="ticket_number_label">Билет №</string>
     <string name="event_registered_open_detail">Перейти к событию</string>
+    <string name="city_available_list">Доступные города</string>
+    <string name="city_location_button">Использовать моё местополоние</string>
+    <string name="city_prompt_button">Выбрать город</string>
+    <string name="city_prompt_where_user">Где вы?</string>
+    <string name="city_prompt_where_user_description">Дайте нам знать, что бы мы момгли рекомендовать события рядом</string>
+    <string name="title_activity_city">Города</string>
 </resources>

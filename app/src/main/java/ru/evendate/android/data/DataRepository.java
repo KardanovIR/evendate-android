@@ -4,8 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.models.City;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
+import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
@@ -45,6 +47,38 @@ public class DataRepository {
                         EventRegistered.FIELDS_LIST, "", pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<ResponseArray<OrganizationCategory>> getCatalog(int cityId) {
+
+        ApiService apiService = ApiFactory.getService(mContext);
+        Observable<ResponseArray<OrganizationCategory>> observable =
+                apiService.getCatalog(EvendateAccountManager.peekToken(mContext),
+                        OrganizationCategory.FIELDS_LIST, cityId);
+
+        return observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<ResponseArray<City>> getCities() {
+
+        ApiService apiService = ApiFactory.getService(mContext);
+        Observable<ResponseArray<City>> observable =
+                apiService.getCities(EvendateAccountManager.peekToken(mContext), "");
+
+        return observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<ResponseArray<City>> getNearestCities(double latitude, double longitude) {
+
+        ApiService apiService = ApiFactory.getService(mContext);
+        Observable<ResponseArray<City>> observable =
+                apiService.getCities(EvendateAccountManager.peekToken(mContext), City.FIELDS_LIST,
+                        latitude, longitude, City.ORDER_BY_DISTANCE);
+
+        return observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

@@ -79,7 +79,7 @@ public class ServiceImpl {
                     }
                 }, error -> {
                     Log.e(LOG_TAG, "not registered device userId");
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                     EvendatePreferences.setDeviceTokenSynced(context, false);
                 });
     }
