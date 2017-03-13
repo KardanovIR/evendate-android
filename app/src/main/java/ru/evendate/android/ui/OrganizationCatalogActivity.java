@@ -39,29 +39,27 @@ import ru.evendate.android.ui.cities.CityActivity;
 import ru.evendate.android.views.LoadStateView;
 import rx.Subscription;
 
-import static ru.evendate.android.ui.cities.CityActivity.KEY_CITY;
+import static ru.evendate.android.ui.cities.CityFragment.KEY_CITY;
 
 /**
  * Created by Dmitry on 28.01.2016.
  */
 public class OrganizationCatalogActivity extends AppCompatActivity
         implements OrganizationFilterDialog.OnCategorySelectListener, LoadStateView.OnReloadListener {
+    public final static int SELECT_CITY_REQUEST = 0;
     private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
-
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     @Bind(R.id.city_title) TextView mCityTitle;
     @Bind(R.id.popup_city_down) ImageButton mPopupCityDown;
-    private OrganizationCategoryAdapter mAdapter;
-    private boolean[] mSelectedItems;
-    private ArrayList<OrganizationCategory> mCategoryList;
     @Bind(R.id.fab) FloatingActionButton mFAB;
     @Bind(R.id.toolbar) Toolbar mToolbar;
-    private DrawerWrapper mDrawer;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
     City mSelectedCity;
     Subscription mSubscription;
-
-    public final static int SELECT_CITY_REQUEST = 0;
+    private OrganizationCategoryAdapter mAdapter;
+    private boolean[] mSelectedItems;
+    private ArrayList<OrganizationCategory> mCategoryList;
+    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
