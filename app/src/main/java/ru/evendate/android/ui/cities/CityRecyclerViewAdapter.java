@@ -15,13 +15,12 @@ import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.City;
 
-public class CityRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private final OnCityInteractionListener mListener;
-    private List<City> mCities = new ArrayList<>();
+class CityRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    private final OnCityInteractionListener mListener;
+    private List<City> mCities = new ArrayList<>();
 
     CityRecyclerViewAdapter(OnCityInteractionListener listener) {
         mListener = listener;

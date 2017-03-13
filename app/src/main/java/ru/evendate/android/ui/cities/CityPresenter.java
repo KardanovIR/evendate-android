@@ -25,9 +25,11 @@ import static ru.evendate.android.ui.cities.CityFragment.KEY_CITY;
  * Created by Aedirn on 13.03.17.
  */
 
-class CityPresenter implements CityContract.Presenter {
+class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocationListener {
     @NonNull
     private final CityContract.View mCityView;
+    @NonNull
+    private final LocationFragment mLocationFragment;
     private String LOG_TAG = CityPresenter.class.getSimpleName();
     @NonNull
     private DataRepository mDataRepository;
@@ -37,11 +39,14 @@ class CityPresenter implements CityContract.Presenter {
     private List<City> mCities;
     private Activity mContext;
 
-    CityPresenter(Activity context, @NonNull DataRepository dataRepository, @NonNull CityContract.View cityView) {
+    CityPresenter(Activity context, @NonNull DataRepository dataRepository,
+                  @NonNull CityContract.View cityView, @NonNull LocationFragment locationFragment) {
         mContext = context;
         mDataRepository = checkNotNull(dataRepository);
         mCityView = checkNotNull(cityView);
         mCityView.setPresenter(this);
+        mLocationFragment = locationFragment;
+        mLocationFragment.setListener(this);
     }
 
     @Override
@@ -81,7 +86,15 @@ class CityPresenter implements CityContract.Presenter {
     }
 
     @Override
-    public void checkCity(Location location, Address address) {
+    public void getCurrentLocation() {
+        mLocationFragment.getLocation();
+    }
+
+    /**
+     * check city in evendate list and select it
+     */
+    @Override
+    public void onRecognizeAddress(Location location, Address address)  {
         for (City city : mCities) {
             if (city.getNameLocally().equals(address.getLocality()) ||
                     city.getName().equals(address.getLocality())) {
@@ -91,6 +104,11 @@ class CityPresenter implements CityContract.Presenter {
                 return;
             }
         }
+        loadNearestCities(location);
+    }
+
+    @Override
+    public void onRecognizeAddressFail(Location location) {
         loadNearestCities(location);
     }
 

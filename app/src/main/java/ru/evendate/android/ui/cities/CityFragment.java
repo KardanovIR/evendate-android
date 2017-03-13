@@ -20,14 +20,12 @@ import ru.evendate.android.views.LoadStateView;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-//todo move business logic to presenter
 public class CityFragment extends Fragment implements CityContract.View,
         CityRecyclerViewAdapter.OnCityInteractionListener {
 
     public final static String KEY_CITY = "city";
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     @Bind(R.id.load_state) LoadStateView mLoadState;
-    OnLocationButtonListener mListener;
     CityRecyclerViewAdapter mAdapter;
     private CityContract.Presenter mPresenter;
 
@@ -36,13 +34,9 @@ public class CityFragment extends Fragment implements CityContract.View,
         mPresenter = checkNotNull(presenter);
     }
 
-    public void setLocationButtonListener(OnLocationButtonListener mListener) {
-        this.mListener = mListener;
-    }
-
     @Override
     public void onLocationClicked() {
-        mListener.onLocationClicked();
+        mPresenter.getCurrentLocation();
     }
 
     @Override
@@ -101,14 +95,9 @@ public class CityFragment extends Fragment implements CityContract.View,
         mAdapter.notifyDataSetChanged();
     }
 
-
     @Override
     public void onCityChanged(City item) {
         mPresenter.selectCity(item);
         mPresenter.updateSelectedCity();
-    }
-
-    interface OnLocationButtonListener {
-        void onLocationClicked();
     }
 }

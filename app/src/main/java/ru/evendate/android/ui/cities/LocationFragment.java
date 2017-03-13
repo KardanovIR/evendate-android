@@ -47,10 +47,8 @@ public class LocationFragment extends Fragment implements LocationListener {
     private String mBestProvider;
     private OnLocationListener mListener;
 
-    public static LocationFragment newInstance(OnLocationListener mListener) {
-        LocationFragment fragment = new LocationFragment();
-        fragment.mListener = mListener;
-        return fragment;
+    public void setListener(OnLocationListener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -164,8 +162,8 @@ public class LocationFragment extends Fragment implements LocationListener {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.

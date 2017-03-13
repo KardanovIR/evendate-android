@@ -1,7 +1,5 @@
 package ru.evendate.android.ui.cities;
 
-import android.location.Address;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,8 +19,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
     private final static String TAG_PROMPT = "tag_prompt";
     @Bind(R.id.toolbar) Toolbar mToolbar;
     boolean shouldShowPrompt = false;
-    LocationFragment mLocationFragment;
-    CityContract.Presenter mCityPresenter;
+    CityPresenter mCityPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,31 +32,24 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
 
         initToolbar();
 
-        mLocationFragment = (LocationFragment) getSupportFragmentManager().findFragmentByTag(TAG_LOCATION);
-        if (mLocationFragment == null) {
-            mLocationFragment = LocationFragment.newInstance(new LocationFragment.OnLocationListener() {
-                @Override
-                public void onRecognizeAddress(Location location, Address address) {
-                    mCityPresenter.checkCity(location, address);
-                }
-
-                @Override
-                public void onRecognizeAddressFail(Location location) {
-                    mCityPresenter.loadNearestCities(location);
-                }
-            });
-            getSupportFragmentManager().beginTransaction().add(mLocationFragment, TAG_LOCATION).commit();
+        LocationFragment locationFragment = (LocationFragment) getSupportFragmentManager()
+                .findFragmentByTag(TAG_LOCATION);
+        if (locationFragment == null) {
+            locationFragment = new LocationFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(locationFragment, TAG_LOCATION).commit();
         }
-        CityFragment cityFragment = (CityFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+
+        CityFragment cityFragment = (CityFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.container);
         if (cityFragment == null) {
             cityFragment = new CityFragment();
-
-            //todo not mvp?
-            cityFragment.setLocationButtonListener(() -> mLocationFragment.getLocation());
-            getSupportFragmentManager().beginTransaction().add(R.id.container, cityFragment).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, cityFragment).commit();
         }
-        mCityPresenter = new CityPresenter(this, new DataRepository(this), cityFragment);
 
+        mCityPresenter = new CityPresenter(this, new DataRepository(this),
+                cityFragment, locationFragment);
 
     }
 
@@ -88,12 +78,10 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
         setResult(RESULT_CANCELED);
     }
 
-
     @Override
     public void onPlaceButtonClick() {
         getSupportFragmentManager().beginTransaction().
                 remove(getSupportFragmentManager().findFragmentByTag(TAG_PROMPT)).commit();
     }
-
 
 }
