@@ -1,50 +1,54 @@
 package ru.evendate.android.ui.tickets;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.ybq.endless.Endless;
 
-import java.util.ArrayList;
+import org.parceler.Parcels;
+
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.adapters.AbstractEndlessAdapter;
+import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
+import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.FormatUtils;
+import ru.evendate.android.ui.ticketsdetail.TicketListActivity;
 import ru.evendate.android.views.LoadStateView;
-import rx.Subscription;
 
-public class EventRegisteredListFragment extends Fragment implements LoadStateView.OnReloadListener {
-    private static String LOG_TAG = EventRegisteredListFragment.class.getSimpleName();
+public class EventRegisteredListFragment extends Fragment implements EventRegisteredContract.View,
+        EventRegisteredContract.OnEventInteractionListener {
 
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
     @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
     EventRegisteredRecyclerViewAdapter mAdapter;
-    boolean isFuture = true;
-    int LENGTH = 10;
-    DataRepository mDataRepository;
-    Subscription mSubscription;
+    EventRegisteredContract.Presenter mPresenter;
     private Endless mEndless;
-    private OnEventInteractionListener mListener;
 
-    @SuppressWarnings("unused")
-    public static EventRegisteredListFragment newInstance(boolean future) {
-        EventRegisteredListFragment fragment = new EventRegisteredListFragment();
-        fragment.isFuture = future;
-        return fragment;
+    public void setPresenter(EventRegisteredContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     @Override
@@ -55,8 +59,7 @@ public class EventRegisteredListFragment extends Fragment implements LoadStateVi
         ButterKnife.bind(this, view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAdapter = new EventRegisteredRecyclerViewAdapter(getContext(), mListener);
-        mAdapter.set(new ArrayList<>());
+        mAdapter = new EventRegisteredRecyclerViewAdapter(getContext(), this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         //todo not work cause Endless notifyDataSetChanged
@@ -64,27 +67,17 @@ public class EventRegisteredListFragment extends Fragment implements LoadStateVi
 
         View loadingView = inflater.inflate(R.layout.item_progress, container, false);
         mEndless = Endless.applyTo(mRecyclerView, loadingView);
-        mEndless.setLoadMoreListener((int page) -> loadEvents(false, page));
+        mEndless.setLoadMoreListener((int page) -> mPresenter.loadEvents(false, page));
 
-        setEmptyCap();
-        mLoadStateView.setOnReloadListener(this);
-        mDataRepository = new DataRepository(getContext());
-
-        initRefresh();
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        loadEvents(false, 0);
-    }
-
-    private void initRefresh() {
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(false);
-            loadEvents(true, 0);
+            mPresenter.loadEvents(true, 0);
         });
+        mLoadStateView.setOnReloadListener(() -> mPresenter.loadEvents(true, 0));
+
+        setEmptyCap();
+
+        return view;
     }
 
     private void setEmptyCap() {
@@ -92,27 +85,15 @@ public class EventRegisteredListFragment extends Fragment implements LoadStateVi
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnEventInteractionListener) {
-            mListener = (OnEventInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnEventInteractionListener");
-        }
-    }
-
-    @Override
-    public void onReload() {
-        loadEvents(true, 0);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.start();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        mPresenter.stop();
     }
 
     @Override
@@ -121,64 +102,140 @@ public class EventRegisteredListFragment extends Fragment implements LoadStateVi
         ButterKnife.unbind(this);
     }
 
-    //todo solid
-    public void loadEvents(boolean forceLoad, int page) {
 
-        mSubscription = mDataRepository.getRegisteredEvents(isFuture, page, LENGTH).subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (result.isOk())
-                        if (forceLoad) {
-                            onReloaded(new ArrayList<>(result.getData()));
-                        } else {
-                            onLoaded(new ArrayList<>(result.getData()));
-                        }
-                    else {
-                        mEndless.loadMoreComplete();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        mLoadStateView.showErrorHint();
-                        mRecyclerView.setVisibility(View.INVISIBLE);
-                    }
-                },
-                this::onError,
-                mLoadStateView::hideProgress
-        );
-    }
-
-    public void onLoaded(List<EventRegistered> list) {
-        if (list.size() < LENGTH)
-            mEndless.setLoadMoreAvailable(false);
-        mAdapter.add(list);
+    @Override
+    public void showEvents(List<EventRegistered> list, boolean isLast) {
+        mRecyclerView.setVisibility(View.VISIBLE);
         mEndless.loadMoreComplete();
-        checkListAndShowHint();
+        mEndless.setLoadMoreAvailable(!isLast);
+        mAdapter.add(list);
     }
 
-    protected void checkListAndShowHint() {
-        if (mAdapter.isEmpty()) {
-            mLoadStateView.showEmptryHint();
+    @Override
+    public void reshowEvents(List<EventRegistered> list, boolean isLast) {
+        mSwipeRefreshLayout.setRefreshing(false);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mEndless.loadMoreComplete();
+        mEndless.setLoadMoreAvailable(!isLast);
+        mAdapter.set(list);
+    }
+
+    @Override
+    public void setLoadingIndicator(boolean active) {
+        if (active) {
+            mLoadStateView.showProgress();
+        } else {
+            mLoadStateView.hideProgress();
         }
     }
 
-    public void onReloaded(List<EventRegistered> list) {
+    @Override
+    public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
-        mEndless.setLoadMoreAvailable(true);
-        if (list.size() < LENGTH)
-            mEndless.setLoadMoreAvailable(false);
-        mAdapter.set(list);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        checkListAndShowHint();
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mLoadStateView.showEmptryHint();
     }
 
-    public void onError(Throwable error) {
-        Log.e(LOG_TAG, "" + error.getMessage());
+    @Override
+    public void showError() {
+        mEndless.loadMoreComplete();
+        mEndless.setLoadMoreAvailable(false);
         mSwipeRefreshLayout.setRefreshing(false);
         mLoadStateView.showErrorHint();
         mRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    interface OnEventInteractionListener {
-        void onEventClick(EventRegistered item);
-
-        void onEventLongClick(EventRegistered item);
+    @Override
+    public void onEventClick(EventRegistered item) {
+        Intent ticketsIntent = new Intent(getContext(), TicketListActivity.class);
+        Bundle bundle = new Bundle();
+        Parcelable parcelEvent = Parcels.wrap(item);
+        bundle.putParcelable(TicketListActivity.EVENT_KEY, parcelEvent);
+        ticketsIntent.putExtras(bundle);
+        startActivity(ticketsIntent);
     }
 
+    @Override
+    public void onEventLongClick(EventRegistered item) {
+        final int OPEN_EVENT_ID = 0;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(item.getTitle())
+                .setItems(new CharSequence[]{
+                                getString(R.string.event_registered_open_detail)
+                        },
+                        (DialogInterface dialog, int which) -> {
+                            switch (which) {
+                                case OPEN_EVENT_ID:
+                                    Intent intent = new Intent(getContext(), EventDetailActivity.class);
+                                    intent.setData(EvendateContract.EventEntry.getContentUri(item.getEntryId()));
+                                    startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle());
+                                    break;
+                            }
+                        });
+        builder.create().show();
+    }
+
+    class EventRegisteredRecyclerViewAdapter extends AbstractEndlessAdapter<EventRegistered,
+            EventRegisteredRecyclerViewAdapter.EventRegisteredViewHolder> {
+
+        private final EventRegisteredContract.OnEventInteractionListener mListener;
+        private Context mContext;
+
+        EventRegisteredRecyclerViewAdapter(@NonNull Context context,
+                                           @NonNull EventRegisteredContract.OnEventInteractionListener listener) {
+            mListener = listener;
+            mContext = context;
+        }
+
+        @Override
+        public EventRegisteredViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.card_ticket, parent, false);
+            return new EventRegisteredRecyclerViewAdapter.EventRegisteredViewHolder(view);
+        }
+
+        @Override
+        public void onViewRecycled(EventRegisteredViewHolder holder) {
+            super.onViewRecycled(holder);
+            holder.mTicketCount.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onBindViewHolder(final EventRegisteredViewHolder holder, int position) {
+            EventRegistered event = getItem(position);
+            holder.mTitle.setText(event.getTitle());
+            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDate()));
+            holder.mPlace.setText(event.getLocation());
+            holder.mEvent = event;
+            if (event.getTicketsCount() > 1) {
+                holder.mTicketCount.setText(
+                        TicketFormatter.formatTicketCount(FormatUtils.getCurrentLocale(mContext),
+                                event.getTicketsCount(), mContext.getString(R.string.ticket_count_label)));
+                holder.mTicketCount.setVisibility(View.VISIBLE);
+            }
+
+            holder.holderView.setOnClickListener((View v) -> mListener.onEventClick(holder.mEvent));
+            holder.holderView.setOnLongClickListener((View v) -> {
+                mListener.onEventLongClick(holder.mEvent);
+                return true;
+            });
+        }
+
+        class EventRegisteredViewHolder extends RecyclerView.ViewHolder {
+            View holderView;
+            @Bind(R.id.hint) TextView mHint;
+            @Bind(R.id.title) TextView mTitle;
+            @Bind(R.id.datetime) TextView mDatetime;
+            @Bind(R.id.place) TextView mPlace;
+            @Bind(R.id.ticket_count) TextView mTicketCount;
+
+            @Nullable EventRegistered mEvent;
+
+            EventRegisteredViewHolder(View view) {
+                super(view);
+                holderView = itemView;
+                ButterKnife.bind(this, view);
+            }
+        }
+    }
 }

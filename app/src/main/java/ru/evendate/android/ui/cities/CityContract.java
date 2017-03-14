@@ -33,4 +33,10 @@ interface CityContract {
 
         void getCurrentLocation();
     }
+
+    interface OnCityInteractionListener {
+        void onCityChanged(City item);
+
+        void onLocationClicked();
+    }
 }

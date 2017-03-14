@@ -1,5 +1,6 @@
 package ru.evendate.android.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -12,13 +13,13 @@ import java.util.List;
 public abstract class AbstractEndlessAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private List<T> mList = new ArrayList<>();
 
-    public void add(List<T> list) {
+    public void add(final @NonNull List<T> list) {
         for (T item : list) {
             append(item);
         }
     }
 
-    public void set(final List<T> list) {
+    public void set(final @NonNull List<T> list) {
         int size = mList.size();
         for (int index = 0; index < list.size(); index++) {
             if (index < size) {

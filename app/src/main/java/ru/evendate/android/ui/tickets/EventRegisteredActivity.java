@@ -2,17 +2,12 @@ package ru.evendate.android.ui.tickets;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -20,20 +15,14 @@ import android.view.View;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import org.parceler.Parcels;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.EventRegistered;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.NavigationItemSelectedListener;
-import ru.evendate.android.ui.ticketsdetail.TicketListActivity;
 
-public class EventRegisteredActivity extends AppCompatActivity
-        implements EventRegisteredListFragment.OnEventInteractionListener {
+public class EventRegisteredActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.pager) ViewPager mPager;
@@ -74,39 +63,6 @@ public class EventRegisteredActivity extends AppCompatActivity
         mDrawer.start();
     }
 
-    @Override
-    public void onEventClick(EventRegistered item) {
-        Intent ticketsIntent = new Intent(this, TicketListActivity.class);
-        Bundle bundle = new Bundle();
-        Parcelable parcelEvent = Parcels.wrap(item);
-        bundle.putParcelable(TicketListActivity.EVENT_KEY, parcelEvent);
-        ticketsIntent.putExtras(bundle);
-        startActivity(ticketsIntent);
-    }
-
-    @Override
-    public void onEventLongClick(EventRegistered item) {
-        final int OPEN_EVENT_ID = 0;
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(item.getTitle())
-                .setItems(getDialogTextItems(), (DialogInterface dialog, int which) -> {
-                    switch (which) {
-                        case OPEN_EVENT_ID:
-                            Intent intent = new Intent(this, EventDetailActivity.class);
-                            intent.setData(EvendateContract.EventEntry.getContentUri(item.getEntryId()));
-                            startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
-                            break;
-                    }
-                });
-        builder.create().show();
-    }
-
-    private CharSequence[] getDialogTextItems() {
-        return new CharSequence[]{
-                getString(R.string.event_registered_open_detail)
-        };
-    }
-
     private class EventRegisteredPagerAdapter extends FragmentStatePagerAdapter {
         private Context mContext;
 
@@ -119,10 +75,16 @@ public class EventRegisteredActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: {
-                    return EventRegisteredListFragment.newInstance(true);
+                    EventRegisteredListFragment fragment = new EventRegisteredListFragment();
+                    DataRepository dataRepository = new DataRepository(mContext);
+                    new EventRegisteredPresenter(dataRepository, fragment, true);
+                    return fragment;
                 }
                 case 1: {
-                    return EventRegisteredListFragment.newInstance(false);
+                    EventRegisteredListFragment fragment = new EventRegisteredListFragment();
+                    DataRepository dataRepository = new DataRepository(mContext);
+                    new EventRegisteredPresenter(dataRepository, fragment, false);
+                    return fragment;
                 }
                 default:
                     throw new IllegalArgumentException("invalid page number");

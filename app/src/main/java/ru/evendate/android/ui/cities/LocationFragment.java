@@ -39,6 +39,9 @@ import java.util.Locale;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * get current user location
+ */
 public class LocationFragment extends Fragment implements LocationListener {
     private final static int PERMISSIONS_REQUEST_LOCATION = 1;
     private final static int REQUEST_CHECK_SETTINGS = 2;
