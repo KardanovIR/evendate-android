@@ -7,7 +7,7 @@ import java.util.List;
  */
 
 public interface EventRegistered {
-    String FIELDS_LIST = "location,tickets_count,tickets" + DataUtil.encloseFields(Ticket.FIELDS_LIST, Ticket.ORDER_BY);
+    String FIELDS_LIST = "location,my_tickets_count,tickets" + DataUtil.encloseFields(Ticket.FIELDS_LIST, Ticket.ORDER_BY);
 
     int getEntryId();
 
@@ -19,5 +19,5 @@ public interface EventRegistered {
 
     List<Ticket> getTickets();
 
-    int getTicketsCount();
+    int getMyTicketsCount();
 }

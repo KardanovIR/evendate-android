@@ -47,25 +47,23 @@ import ru.evendate.android.network.ApiFactory;
 
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
-    private final String LOG_TAG = AuthActivity.class.getSimpleName();
-
-    private String FB_URL;
-
     private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
-
-    static public String URL_KEY = "url";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
-    private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
-
-    private boolean isGoogleServicesAvailable = false;
-
-    GoogleApiClient apiClient;
-    private ProgressDialog mProgressDialog;
-
-    @Bind(R.id.sing_in_google_button) View googleButton;
-    private Dialog serviceDialog;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    static public String URL_KEY = "url";
+    private final String LOG_TAG = AuthActivity.class.getSimpleName();
+    private final int REQUEST_WEB_AUTH = 2;
+    GoogleApiClient apiClient;
+    @Bind(R.id.sing_in_google_button) View googleButton;
+    private String FB_URL;
+    private boolean isGoogleServicesAvailable = false;
+    private ProgressDialog mProgressDialog;
+    private Dialog serviceDialog;
+
+    public static String getGoogleUrl(Context context) {
+        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +102,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         //todo change to https (when move testing to prod server?)
         FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
 
-    }
-
-    public static String getGoogleUrl(Context context) {
-        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
     }
 
     private void initTransitions() {
@@ -260,31 +254,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         }
     }
 
-    private class RetrieveGoogleTokenTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String email = params[0];
-            String token = null;
-            try {
-                token = GoogleAuthUtil.getToken(getApplicationContext(), email, GOOGLE_SCOPE);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            } catch (UserRecoverableAuthException e) {
-                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
-            } catch (GoogleAuthException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            }
-            return token;
-        }
-
-        @Override
-        protected void onPostExecute(String token) {
-            super.onPostExecute(token);
-            onGoogleTokenReceived(token);
-        }
-    }
-
     private void onGoogleTokenReceived(String token) {
         String url = ApiFactory.getHostName(this) + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
@@ -316,6 +285,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             manager.setAuthToken(account, account.type, token);
             EvendateAccountManager.setActiveAccountName(this, account.name);
         } else {
+            //todo update account
             Log.i(LOG_TAG, "cannot add account");
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
             setResult(RESULT_CANCELED);
@@ -340,5 +310,30 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onDestroy() {
         super.onDestroy();
         EvendateAccountManager.setAuthDone(this);
+    }
+
+    private class RetrieveGoogleTokenTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String email = params[0];
+            String token = null;
+            try {
+                token = GoogleAuthUtil.getToken(getApplicationContext(), email, GOOGLE_SCOPE);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            } catch (UserRecoverableAuthException e) {
+                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
+            } catch (GoogleAuthException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+            return token;
+        }
+
+        @Override
+        protected void onPostExecute(String token) {
+            super.onPostExecute(token);
+            onGoogleTokenReceived(token);
+        }
     }
 }

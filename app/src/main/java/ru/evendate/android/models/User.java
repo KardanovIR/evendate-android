@@ -22,8 +22,11 @@ public class User extends DataModel {
     String gender;
     @SerializedName("avatar_url")
     String avatarUrl;
+    @SerializedName("is_editor")
+    boolean isEditor;
 
-    boolean is_friend;
+    @SerializedName("is_friend")
+    boolean isFriend;
     String type;
     String link;
 
@@ -48,11 +51,15 @@ public class User extends DataModel {
         return avatarUrl;
     }
 
+    public boolean isEditor() {
+        return isEditor;
+    }
+
     public String getLink() {
         return link;
     }
 
-    public boolean is_friend() {
-        return is_friend;
+    public boolean isFriend() {
+        return isFriend;
     }
 }

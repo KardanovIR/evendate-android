@@ -51,28 +51,25 @@ import rx.schedulers.Schedulers;
  */
 public class CalendarActivity extends AppCompatActivity implements ReelFragment.OnEventsDataLoadedListener,
         OnDateChangedListener, LoadStateView.OnReloadListener {
+    /**
+     * change localize months in rus
+     */
+    private static DateFormatSymbols dateFormatMonths;
     private final String LOG_TAG = CalendarActivity.class.getSimpleName();
-
     @Bind(R.id.calendarView) MaterialCalendarView mCalendarView;
-    private ReelFragment mReelFragment;
-    private OneDayDecorator mOneDayDecorator;
-    private Date yesterdayDate;
     @Bind(R.id.calendar_button) ToggleButton mToggleButton;
     @Bind(R.id.calendar_date) TextView mSelectedDateTextView;
     @Bind(R.id.calendar_event_count) TextView mEventCountTextView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.coordinator_layout) CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    private ReelFragment mReelFragment;
+    private OneDayDecorator mOneDayDecorator;
+    private Date yesterdayDate;
     private BottomSheetBehavior<View> behavior;
-
     private DateAdapter mAdapter;
     private DrawerWrapper mDrawer;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    /**
-     * change localize months in rus
-     */
-    private static DateFormatSymbols dateFormatMonths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,7 +217,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
@@ -347,15 +344,15 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             view.addSpan(new ForegroundColorSpan(Color.WHITE));
         }
 
+        public CalendarDay getDate() {
+            return date;
+        }
+
         /**
          * We're changing the internals, so make sure to call {@linkplain MaterialCalendarView#invalidateDecorators()}
          */
         public void setDate(Date date) {
             this.date = CalendarDay.from(date);
-        }
-
-        public CalendarDay getDate() {
-            return date;
         }
     }
 

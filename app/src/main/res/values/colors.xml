@@ -11,11 +11,23 @@
   <color name="black_translucent">#50000000</color>
   <color name="feed_empty_text_color">#99ffffff</color>
   <color name="white">#ffffff</color>
-
   <!--Colors for icons -->
   <color name="vk_color">#567CA4</color>
   <color name="fb_color">#3B5998</color>
   <color name="google_plus_color">#DD4B39</color>
   <color name="google_plus_color_inactive">#BDBDBD</color>
 
+
+    <color name="black">#000000</color>
+    <color name="isabelline">#eeeeee</color>
+    <color name="caribbean_green">#00dc88</color>
+    <color name="medium_jungle_green">#323232</color>
+    <color name="lavender_gray">#c5c9d1</color>
+    <color name="snow">#fafafa</color>
+    <color name="radical_red">#f82969</color>
+    <color name="hot_pink">#ff76ac</color>
+    <color name="coral_red">#ff4646</color>
+    <color name="auro_metal_saurus">#657184</color>
+    <color name="bubble_gum_grad_start">#fd3573</color>
+    <color name="bubble_gum_grad_end">#fe65ac</color>
 </resources>

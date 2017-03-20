@@ -1,4 +1,4 @@
-package ru.evendate.android.ui.ticketsdetail;
+package ru.evendate.android.ui.tickets;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
+import ru.evendate.android.models.TicketFormatter;
 import ru.evendate.android.ui.DateFormatter;
 
 public class TicketDetailFragment extends Fragment {
@@ -87,9 +88,8 @@ public class TicketDetailFragment extends Fragment {
         mOrderDatetime.setText(getString(R.string.ticket_date_label) + " " +
                 DateFormatter.formatOrderDateTime(DateUtils.date(payedAt)));
 
-        //todo ticket number
-        mTicketNumber.setText(getString(R.string.ticket_number_label) + "0000");
-        if (mTicket.isCheckedOut()) {
+        mTicketNumber.setText(TicketFormatter.formatNumber(getContext(), mTicket.getNumber()));
+        if (mTicket.isCheckout()) {
             checkOutImage.setVisibility(View.VISIBLE);
             mQrCode.setAlpha(0.2f);
         }

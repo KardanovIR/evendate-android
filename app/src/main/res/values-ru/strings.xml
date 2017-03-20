@@ -176,4 +176,24 @@
     <string name="city_prompt_where_user">Где вы?</string>
     <string name="city_prompt_where_user_description">Дайте нам знать, что бы мы момгли рекомендовать события рядом</string>
     <string name="title_activity_city">Города</string>
+    <string name="title_activity_check_in">Контроль входа</string>
+    <string name="drawer_check_in">Контроль входа</string>
+    <string name="action_torch">Вспышка</string>
+    <string name="check_event_tickets">билет</string>
+    <string name="check_in_confirm">Подтверждено</string>
+    <string name="check_in_confirm_dialog_button_cancel">Отмена</string>
+    <string name="check_in_confirm_dialog_button_confirm">Подтвердить</string>
+    <string name="check_in_confirm_dialog_button_revert">Отменить подтвержение</string>
+    <string name="check_in_confirm_error">Нет соединения. Попробуйте ещё раз</string>
+    <string name="check_in_event_empty_description">У вас нет организованных событий</string>
+    <string name="check_in_qr_error">Неправильный QR-код</string>
+    <string name="check_in_qr_hint">Наведите камеру на QR-код</string>
+    <string name="check_in_search_tickets_empty_description">Такого билета нет</string>
+    <string name="check_in_search_tickets_hint_description">Введите поисковый запрос</string>
+    <string name="check_in_search_tickets_query_hint">Номер билета или ФИО</string>
+    <string name="check_in_tickets_confirmed">Подтверждены</string>
+    <string name="check_in_tickets_empty_description">Нет билетов</string>
+    <string name="check_in_tickets_waiting">Ожидают</string>
+    <string name="ticket_number_word">Билет</string>
+    <string name="check_in_confirm_revert">Подтверждение отменено</string>
 </resources>

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="32dp">
 
     <ImageButton
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        app:srcCompat="@drawable/reload_icon"
         android:id="@+id/button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
         android:visibility="gone"
+        app:srcCompat="@drawable/reload_icon"
         tools:visibility="visible"/>
 
     <TextView
@@ -42,19 +42,19 @@
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/header"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
-        tools:text="@string/search_cap_hint"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#99000000"
         android:textSize="14sp"
-        android:layout_below="@+id/header"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="false"
-        android:layout_marginTop="8dp"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
         android:visibility="gone"
+        tools:text="@string/search_cap_hint"
         tools:visibility="visible"/>
 
     <ProgressBar
@@ -62,9 +62,9 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:progressDrawable="@drawable/circular_progress_bar"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:visibility="gone"/>
 </RelativeLayout>

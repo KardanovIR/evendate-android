@@ -58,8 +58,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class SearchResultsActivity extends AppCompatActivity {
-    private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
-
+    public static final String SEARCH_BY_TAG = "search_by_tag";
     String query = "";
     SearchView mSearchView;
     @Bind(R.id.main_content) RelativeLayout mRelativeLayout;
@@ -67,15 +66,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     @Bind(R.id.tabs) TabLayout mTabs;
     @Bind(R.id.pager) ViewPager mViewPager;
     @Bind(R.id.hint) TextView mHintView;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @Bind(R.id.tags) TagsRecyclerView tagsView;
+    private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
     private SearchPagerAdapter mSearchPagerAdapter;
     private DrawerWrapper mDrawer;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    public static final String SEARCH_BY_TAG = "search_by_tag";
     private boolean isSearchByTag;
-
     private SearchEventFragment searchEventByTagFragment;
-    @Bind(R.id.tags) TagsRecyclerView tagsView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -208,7 +205,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
@@ -261,87 +258,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         mViewPager.setVisibility(View.GONE);
     }
 
-    class SearchPagerAdapter extends FragmentPagerAdapter {
-        private final int TAB_COUNT = 3;
-        private final int EVENT_TAB = 0;
-        private final int ORG_TAB = 1;
-        private final int USER_TAB = 2;
-        private Context mContext;
-        private ArrayList<SearchResultFragment> fragments = new ArrayList<>();
-
-        SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
-            super(fragmentManager);
-            mContext = context;
-            fragments.add(EVENT_TAB, new SearchEventFragment());
-            fragments.add(ORG_TAB, new SearchOrgFragment());
-            fragments.add(USER_TAB, new SearchUsersFragment());
-
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case EVENT_TAB: {
-                    return fragments.get(EVENT_TAB);
-                }
-                case ORG_TAB: {
-                    return fragments.get(ORG_TAB);
-                }
-                case USER_TAB: {
-                    return fragments.get(USER_TAB);
-                }
-                default:
-                    throw new IllegalArgumentException("invalid page number");
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return TAB_COUNT;
-        }
-
-        ArrayList<SearchResultFragment> getFragments() {
-            return fragments;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case EVENT_TAB:
-                    return mContext.getString(R.string.tab_search_events);
-                case ORG_TAB:
-                    return mContext.getString(R.string.tab_search_organizations);
-                case USER_TAB:
-                    return mContext.getString(R.string.tab_search_users);
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * return strings for statistics
-         */
-        String getPageLabel(int position) {
-            switch (position) {
-                case EVENT_TAB:
-                    return mContext.getString(R.string.stat_page_search_events);
-                case ORG_TAB:
-                    return mContext.getString(R.string.stat_page_search_orgs);
-                case USER_TAB:
-                    return mContext.getString(R.string.stat_page_search_users);
-                default:
-                    return null;
-            }
-        }
-    }
-
     public abstract static class SearchResultFragment extends Fragment implements LoadStateView.OnReloadListener {
         protected static final String LOG_TAG = SearchResultFragment.class.getSimpleName();
-
-        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-        @Bind(R.id.load_state) LoadStateView mLoadStateView;
         protected AbstractAdapter mAdapter;
         protected String query;
+        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+        @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
         @Nullable
         @Override
@@ -543,6 +465,80 @@ public class SearchResultsActivity extends AppCompatActivity {
                             this::onError,
                             mLoadStateView::hideProgress
                     );
+        }
+    }
+
+    class SearchPagerAdapter extends FragmentPagerAdapter {
+        private final int TAB_COUNT = 3;
+        private final int EVENT_TAB = 0;
+        private final int ORG_TAB = 1;
+        private final int USER_TAB = 2;
+        private Context mContext;
+        private ArrayList<SearchResultFragment> fragments = new ArrayList<>();
+
+        SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
+            super(fragmentManager);
+            mContext = context;
+            fragments.add(EVENT_TAB, new SearchEventFragment());
+            fragments.add(ORG_TAB, new SearchOrgFragment());
+            fragments.add(USER_TAB, new SearchUsersFragment());
+
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case EVENT_TAB: {
+                    return fragments.get(EVENT_TAB);
+                }
+                case ORG_TAB: {
+                    return fragments.get(ORG_TAB);
+                }
+                case USER_TAB: {
+                    return fragments.get(USER_TAB);
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        ArrayList<SearchResultFragment> getFragments() {
+            return fragments;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case EVENT_TAB:
+                    return mContext.getString(R.string.tab_search_events);
+                case ORG_TAB:
+                    return mContext.getString(R.string.tab_search_organizations);
+                case USER_TAB:
+                    return mContext.getString(R.string.tab_search_users);
+                default:
+                    return null;
+            }
+        }
+
+        /**
+         * return strings for statistics
+         */
+        String getPageLabel(int position) {
+            switch (position) {
+                case EVENT_TAB:
+                    return mContext.getString(R.string.stat_page_search_events);
+                case ORG_TAB:
+                    return mContext.getString(R.string.stat_page_search_orgs);
+                case USER_TAB:
+                    return mContext.getString(R.string.stat_page_search_users);
+                default:
+                    return null;
+            }
         }
     }
 }

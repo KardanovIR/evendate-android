@@ -16,6 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by Aedirn on 14.03.17.
  */
 
+//TODO DRY
 class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
     private static final int LENGTH = 10;
     private static String LOG_TAG = EventRegisteredPresenter.class.getSimpleName();

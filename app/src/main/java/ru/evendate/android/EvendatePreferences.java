@@ -14,25 +14,18 @@ import ru.evendate.android.models.City;
 
 public class EvendatePreferences {
     public static final String KEY_NOTIFICATION = "key_notification";
-    private static final boolean KEY_NOTIFICATION_DEFAULT = true;
-
     public static final String KEY_INDICATOR = "key_indicator";
-    private static final boolean KEY_INDICATOR_DEFAULT = true;
-
     public static final String KEY_VIBRATION = "key_vibration";
-    private static final boolean KEY_VIBRATION_DEFAULT = true;
-
     public static final String KEY_INDICATOR_COLOR = "key_indicator_color";
-    private static final int KEY_INDICATOR_COLOR_DEFAULT = 0xffff17a8;
-
     public static final String KEY_DEVICE_TOKEN_SYNCED = "key_device_token_synced";
     public static final boolean KEY_DEVICE_TOKEN_SYNCED_DEFAULT = false;
-
     public static final String KEY_DEVICE_TOKEN = "key_device_token";
-
+    public static final boolean KEY_USER_CITY_SELECTED_DEFAULT = false;
+    private static final boolean KEY_NOTIFICATION_DEFAULT = true;
+    private static final boolean KEY_INDICATOR_DEFAULT = true;
+    private static final boolean KEY_VIBRATION_DEFAULT = true;
+    private static final int KEY_INDICATOR_COLOR_DEFAULT = 0xffff17a8;
     private static final String KEY_USER_CITY_SELECTED = "key_user_city_synced";
-    public static final boolean KEY_USER_CITY_SYNCED_DEFAULT = false;
-
     private static final String KEY_USER_CITY = "key_user_city";
     private static final String DEFAULT_USER_CITY_JSON =
             "{'id':1,'en_name':'Moscow','country_id':1,'local_name':'Москва'}";
@@ -87,8 +80,12 @@ public class EvendatePreferences {
         editor.apply();
     }
 
+    private static SharedPreferences getPreferences(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
     public boolean getUserCitySelected() {
-        return getPreferences(mContext).getBoolean(KEY_USER_CITY_SELECTED, false);
+        return getPreferences(mContext).getBoolean(KEY_USER_CITY_SELECTED, KEY_USER_CITY_SELECTED_DEFAULT);
     }
 
     public void putUserCity(City userCity) {
@@ -104,9 +101,5 @@ public class EvendatePreferences {
         Gson gson = new Gson();
         String json = getPreferences(mContext).getString(KEY_USER_CITY, DEFAULT_USER_CITY_JSON);
         return gson.fromJson(json, City.class);
-    }
-
-    private static SharedPreferences getPreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }

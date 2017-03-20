@@ -19,7 +19,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
             "registration_required,registration_approvement_required,registration_limit_count," +
             "registration_locally,registration_till,registration_approved,registration_available," +
-            "registered_count,registration_fields,is_registered,orders,tickets,tickets_count" +
+            "registered_count,registration_fields,is_registered,orders,tickets,my_tickets_count" +
 
             "is_free,min_price,is_same_time,created_at," +
 
@@ -86,6 +86,8 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     boolean registered;
     @SerializedName("orders")
     ArrayList<Order> orders;
+    @SerializedName("my_tickets_count")
+    int myTicketsCount;
     @SerializedName("tickets_count")
     int ticketsCount;
     @SerializedName("tickets")
@@ -267,7 +269,10 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return orders;
     }
 
-    @Override
+    public int getMyTicketsCount() {
+        return myTicketsCount;
+    }
+
     public int getTicketsCount() {
         return ticketsCount;
     }

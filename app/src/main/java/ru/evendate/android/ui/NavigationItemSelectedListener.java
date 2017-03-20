@@ -11,6 +11,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.ui.checkin.CheckInActivity;
 import ru.evendate.android.ui.tickets.EventRegisteredActivity;
 
 /**
@@ -49,6 +50,9 @@ public class NavigationItemSelectedListener
                 break;
             case DrawerWrapper.TICKETS_IDENTIFIER:
                 openTicketsActivity();
+                break;
+            case DrawerWrapper.ADMINISTRATION_IDENTIFIER:
+                openAdminActivity();
                 break;
             //case R.id.nav_add_account:
             //    Intent authIntent = new Intent(mContext, AuthActivity.class);
@@ -95,6 +99,12 @@ public class NavigationItemSelectedListener
         Intent ticketsIntent = new Intent(mContext, EventRegisteredActivity.class);
         ticketsIntent = addFlags(ticketsIntent);
         openActivity(ticketsIntent);
+    }
+
+    private void openAdminActivity() {
+        Intent adminIntent = new Intent(mContext, CheckInActivity.class);
+        adminIntent = addFlags(adminIntent);
+        openActivity(adminIntent);
     }
 
     private void openOrganizationFromSub(IDrawerItem drawerItem) {

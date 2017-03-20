@@ -5,6 +5,7 @@
     <string name="title_activity_friends">Friends</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_city">Cities</string>
+    <string name="title_activity_check_in">Check in</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -22,6 +23,7 @@
     <string name="drawer_subscriptions">Subscriptions</string>
     <string name="drawer_log_out">Log out</string>
     <string name="drawer_tickets">My tickets</string>
+    <string name="drawer_check_in">Check in</string>
 
     <!-- tabs strings -->
     <string name="tab_main_feed">Feed</string>
@@ -276,4 +278,24 @@
     <string name="state_no_connection_description">Сheck internet connection</string>
     <string name="state_error">Problem with loading data</string>
     <string name="state_error_description">Сheck internet connection</string>
+
+    <!-- check in strings -->
+    <string name="action_torch">Flash on</string>
+    <string name="check_in_confirm">Confirmed</string>
+    <string name="check_in_confirm_error">No connection. Try again</string>
+    <string name="check_in_confirm_revert">Confirm canceled</string>
+    <string name="check_in_qr_error">Invalid QR code</string>
+    <string name="check_in_event_empty_description">You have no organized events</string>
+    <string name="check_in_tickets_waiting">Waiting</string>
+    <string name="check_in_tickets_confirmed">Confirmed</string>
+    <string name="check_in_search_tickets_hint_description">Enter search query</string>
+    <string name="check_in_search_tickets_empty_description">There is no such ticket</string>
+    <string name="check_in_search_tickets_query_hint">Ticket number or full name</string>
+    <string name="check_in_tickets_empty_description">No tickets</string>
+    <string name="check_in_qr_hint">Place QR in square</string>
+    <string name="check_in_confirm_dialog_button_cancel">Cancel</string>
+    <string name="check_in_confirm_dialog_button_confirm">Confirm</string>
+    <string name="check_in_confirm_dialog_button_revert">Revert confirm</string>
+    <string name="ticket_number_word">Ticket</string>
+    <string name="check_event_tickets">ticket</string>
 </resources>

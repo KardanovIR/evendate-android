@@ -32,11 +32,12 @@ import ru.evendate.android.adapters.AbstractEndlessAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
+import ru.evendate.android.models.TicketFormatter;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.FormatUtils;
-import ru.evendate.android.ui.ticketsdetail.TicketListActivity;
 import ru.evendate.android.views.LoadStateView;
 
+//TODO DRY
 public class EventRegisteredListFragment extends Fragment implements EventRegisteredContract.View,
         EventRegisteredContract.OnEventInteractionListener {
 
@@ -197,7 +198,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         @Override
         public void onViewRecycled(EventRegisteredViewHolder holder) {
             super.onViewRecycled(holder);
-            holder.mTicketCount.setVisibility(View.INVISIBLE);
+            holder.mTicketCount.setVisibility(View.GONE);
         }
 
         @Override
@@ -207,10 +208,10 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
             holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDate()));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
-            if (event.getTicketsCount() > 1) {
+            if (event.getMyTicketsCount() > 1) {
                 holder.mTicketCount.setText(
                         TicketFormatter.formatTicketCount(FormatUtils.getCurrentLocale(mContext),
-                                event.getTicketsCount(), mContext.getString(R.string.ticket_count_label)));
+                                event.getMyTicketsCount(), mContext.getString(R.string.ticket_count_label)));
                 holder.mTicketCount.setVisibility(View.VISIBLE);
             }
 

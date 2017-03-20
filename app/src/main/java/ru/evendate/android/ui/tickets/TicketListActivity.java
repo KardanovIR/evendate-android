@@ -1,4 +1,4 @@
-package ru.evendate.android.ui.ticketsdetail;
+package ru.evendate.android.ui.tickets;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,25 +30,21 @@ import ru.evendate.android.ui.NavigationItemSelectedListener;
 import rx.Subscription;
 
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
-    private String LOG_TAG = TicketListActivity.class.getSimpleName();
-
     public static final String EVENT_KEY = "event";
     private static final String TICKETS_KEY = "tickets";
-
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.pager) ViewPager mViewPager;
-
     PagerAdapter mAdapter;
     Subscription mSubscription;
     DataRepository mDataRepository;
     EventRegistered mEvent;
     List<Ticket> mTickets;
     DrawerWrapper mDrawer;
-
     boolean isLoading = false;
     boolean loadMoreAvailable = true;
     int PAGE_LOAD_OFFSET = 2;
     int LENGTH = 10;
+    private String LOG_TAG = TicketListActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

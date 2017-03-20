@@ -152,14 +152,24 @@ public interface ApiService {
             @Query("offset") int offset
     );
 
-    /**
-     * Get past events in organization
-     */
     @GET(API_PATH + "/events")
     Observable<ResponseArray<Event>> getEvents(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
             @Query("registered") boolean registered,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events")
+    Observable<ResponseArray<Event>> getEventsAdmin(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("can_edit") boolean canEdit,
+            @Query("registration_locally") boolean registrationLocally,
+            @Query("registration_required") boolean registrationRequired,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -173,6 +183,55 @@ public interface ApiService {
             @Query("order_by") String orderBy,
             @Query("length") int length,
             @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/statistics/events/{id}/tickets")
+    Observable<ResponseArray<Ticket>> getTickets(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("checkout") boolean checkout,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/statistics/events/{id}/tickets")
+    Observable<ResponseArray<Ticket>> getTicketsByNumber(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("number") String number,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/statistics/events/{id}/tickets")
+    Observable<ResponseArray<Ticket>> getTicketsByName(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("user_name") String userName,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/statistics/events/{id}/tickets/{uuid}")
+    Observable<ResponseArray<Ticket>> getTicket(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String ticketUuid,
+            @Query("fields") String fields
+    );
+
+    @PUT(API_PATH + "/statistics/events/{id}/tickets/{uuid}")
+    Observable<ResponseArray<Ticket>> checkoutTicket(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String ticketUuid,
+            @Query("checkout") boolean checkout
     );
 
     @GET(API_PATH + "/users/{id}")

@@ -141,7 +141,7 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mCityView.showError();
     }
 

@@ -53,7 +53,7 @@ public class DateFormatter {
 
     public static String formatEventSingleDate(Date date) {
         String formatted_date = eventSingleDateFormat.format(date);
-        logDate("formatDate", formatted_date);
+        logDate("formatEventSingleDate", formatted_date);
         return formatted_date;
     }
 

@@ -79,12 +79,9 @@ import static ru.evendate.android.ui.UiUtils.revealView;
  * Contain details of organization
  */
 public class OrganizationDetailFragment extends BaseFragment implements LoadStateView.OnReloadListener {
-    private final String LOG_TAG = "OrganizationFragment";
-
-    private int organizationId = -1;
     public static final String URI_KEY = "uri";
-    private Uri mUri;
-
+    final int TITLE_SHIFTED_BY_BUTTON = 2;
+    private final String LOG_TAG = "OrganizationFragment";
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
@@ -95,20 +92,10 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
     @Bind(R.id.organization_image) ImageView mBackgroundView;
     @Bind(R.id.organization_image_foreground) ImageView mForegroundView;
     @Bind(R.id.organization_icon) CircleImageView mIconView;
-
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.tabs) TabLayout mTabs;
     @Bind(R.id.pager) ViewPager mViewPager;
-    private OrganizationPagerAdapter mPagerAdapter;
-    private DrawerWrapper mDrawer;
-    private OrganizationDetail mOrganization;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    ObjectAnimator mTitleAppearAnimation;
-    ObjectAnimator mTitleDisappearAnimation;
-
-    final int TITLE_SHIFTED_BY_BUTTON = 2;
-
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -146,6 +133,13 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {}
     };
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
+    private int organizationId = -1;
+    private Uri mUri;
+    private OrganizationPagerAdapter mPagerAdapter;
+    private DrawerWrapper mDrawer;
+    private OrganizationDetail mOrganization;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -345,7 +339,7 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
@@ -366,70 +360,9 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
         }
     }
 
-    class OrganizationPagerAdapter extends FragmentPagerAdapter {
-        private final int TAB_COUNT = 2;
-        private final int FUTURE_TAB = 0;
-        private final int PAST_TAB = 1;
-        private Context mContext;
-        ReelFragment mFutureReelFragment;
-        ReelFragment mPastReelFragment;
-
-        OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
-            super(fragmentManager);
-            mContext = context;
-            mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
-            mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case FUTURE_TAB: {
-                    return mFutureReelFragment;
-                }
-                case PAST_TAB: {
-                    return mPastReelFragment;
-                }
-                default:
-                    throw new IllegalArgumentException("invalid page number");
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return TAB_COUNT;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case FUTURE_TAB:
-                    return mContext.getString(R.string.tab_organization_future_events);
-                case PAST_TAB:
-                    return mContext.getString(R.string.tab_organization_past_events);
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * return strings for statistics
-         */
-        String getPageLabel(int position) {
-            switch (position) {
-                case FUTURE_TAB:
-                    return mContext.getString(R.string.stat_page_organization_events);
-                case PAST_TAB:
-                    return mContext.getString(R.string.stat_page_organization_past_events);
-                default:
-                    return null;
-            }
-        }
-    }
-
     public static class OrganizationInfo extends Fragment {
-        Fragment parentFragment;
         private static final String ORG_OBJ_KEY = "organization";
+        Fragment parentFragment;
         OrganizationDetail mOrganization;
 
         @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -527,5 +460,66 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
                 getActivity().startActivity(intent);
         }
 
+    }
+
+    class OrganizationPagerAdapter extends FragmentPagerAdapter {
+        private final int TAB_COUNT = 2;
+        private final int FUTURE_TAB = 0;
+        private final int PAST_TAB = 1;
+        ReelFragment mFutureReelFragment;
+        ReelFragment mPastReelFragment;
+        private Context mContext;
+
+        OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
+            super(fragmentManager);
+            mContext = context;
+            mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
+            mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case FUTURE_TAB: {
+                    return mFutureReelFragment;
+                }
+                case PAST_TAB: {
+                    return mPastReelFragment;
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.tab_organization_future_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.tab_organization_past_events);
+                default:
+                    return null;
+            }
+        }
+
+        /**
+         * return strings for statistics
+         */
+        String getPageLabel(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.stat_page_organization_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.stat_page_organization_past_events);
+                default:
+                    return null;
+            }
+        }
     }
 }
