@@ -23,6 +23,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
@@ -33,31 +36,30 @@ import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 11.02.2016.
  */
 public class DrawerWrapper {
-    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
-    private Drawer mDrawer;
-    private AccountHeader mAccountHeader;
-    private ArrayList<OrganizationSubscription> mSubscriptions;
+    public final static int TICKETS_IDENTIFIER = 6;
+    public final static int ADMINISTRATION_IDENTIFIER = 7;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
     final static int FRIENDS_IDENTIFIER = 4;
     final static int SETTINGS_IDENTIFIER = 5;
-    private Context mContext;
-    private OnSubLoadListener listener;
     private static UserDetail mUser;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
+    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
+    private Drawer mDrawer;
+    private AccountHeader mAccountHeader;
+    private ArrayList<OrganizationSubscription> mSubscriptions;
+    private Context mContext;
+    private OnSubLoadListener listener;
     private PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
@@ -68,10 +70,10 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_people_black).withIdentifier(FRIENDS_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.drawer_settings)
             .withIcon(R.drawable.ic_settings_black).withIdentifier(SETTINGS_IDENTIFIER).withSelectable(true);
-
-    interface OnSubLoadListener {
-        void onSubLoaded();
-    }
+    private PrimaryDrawerItem ticketsItem = new PrimaryDrawerItem().withName(R.string.drawer_tickets)
+            .withIcon(R.drawable.ic_receipt_black).withIdentifier(TICKETS_IDENTIFIER).withSelectable(true);
+    private PrimaryDrawerItem administrationItem = new PrimaryDrawerItem().withName(R.string.drawer_check_in)
+            .withIcon(R.drawable.ic_event_note_black).withIdentifier(ADMINISTRATION_IDENTIFIER).withSelectable(true);
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -117,11 +119,28 @@ public class DrawerWrapper {
         return drawerWrapper;
     }
 
+    private static void openAccount(Context context) {
+        if (mUser == null)
+            return;
+        Intent intent = new Intent(context, UserProfileActivity.class);
+        intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
+        if (Build.VERSION.SDK_INT >= 21) {
+            context.startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
+        } else
+            context.startActivity(intent);
+    }
+
     private void setupMenu() {
         mDrawer.removeAllItems();
         mDrawer.addItems(
-                reelItem,
+                reelItem);
+        if (mUser != null && mUser.isEditor()) {
+            mDrawer.addItems(administrationItem);
+        }
+        mDrawer.addItems(
                 calendarItem,
+                ticketsItem,
                 friendsItem,
                 settingsItem,
                 organizationsItem,
@@ -146,7 +165,7 @@ public class DrawerWrapper {
         getDrawer().getRecyclerView().smoothScrollToPosition(0);
     }
 
-    protected Drawer getDrawer() {
+    public Drawer getDrawer() {
         return mDrawer;
     }
 
@@ -173,7 +192,7 @@ public class DrawerWrapper {
                         onError();
                 }, error -> {
                     onError();
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                 });
     }
 
@@ -188,6 +207,7 @@ public class DrawerWrapper {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
                         mUser = result.getData().get(0);
+                        onLoaded(mUser.getSubscriptions());
                         Account account = EvendateAccountManager.getSyncAccount(mContext);
                         if (account == null)
                             return;
@@ -240,19 +260,11 @@ public class DrawerWrapper {
     }
 
     public void start() {
-        loadSubs();
+        //loadSubs();
         loadMe();
     }
 
-    private static void openAccount(Context context) {
-        if (mUser == null)
-            return;
-        Intent intent = new Intent(context, UserProfileActivity.class);
-        intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
-        if (Build.VERSION.SDK_INT >= 21) {
-            context.startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
-        } else
-            context.startActivity(intent);
+    interface OnSubLoadListener {
+        void onSubLoaded();
     }
 }

@@ -17,6 +17,9 @@ import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.BuildConfig;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
@@ -26,9 +29,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static ru.evendate.android.EvendatePreferences.KEY_INDICATOR_COLOR;
 
@@ -113,9 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .subscribe(result -> {
                         if (result.isOk())
                             feedPrivacyPreference.setChecked(result.getData().get(0).isFeedShowedToFriend());
-                    }, error -> {
-                        Log.e(LOG_TAG, error.getMessage());
-                    });
+                    }, error -> Log.e(LOG_TAG, error.getMessage()));
 
             Preference dialogPreference = getPreferenceScreen().findPreference(KEY_INFO);
             dialogPreference.setOnPreferenceClickListener((Preference preference) -> {
@@ -166,9 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
             notificationObservable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> {
-                    }, error -> {
-                        Log.e(LOG_TAG, error.getMessage());
-                    });
+                    }, error -> Log.e(LOG_TAG, error.getMessage()));
         }
     }
 

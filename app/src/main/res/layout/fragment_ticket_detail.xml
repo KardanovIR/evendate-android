@@ -1,0 +1,142 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/ticket_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#FFF"
+            android:elevation="1dp">
+
+            <TextView
+                android:id="@+id/ticket_number"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#FF616161"
+                android:textSize="16sp"
+                tools:text="Билет №0000"/>
+        </android.support.v7.widget.Toolbar>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFAFAFA"
+                android:paddingBottom="16dp"
+                android:paddingEnd="24dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingStart="24dp"
+                android:paddingTop="16dp">
+
+                <TextView
+                    android:id="@+id/ticket_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textAllCaps="true"
+                    android:textColor="#FFF82969"
+                    android:textSize="12sp"
+                    tools:text="регистрация подтверждена"/>
+
+                <ImageView
+                    android:id="@+id/qr_code"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_below="@+id/ticket_status"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    app:srcCompat="@color/accent"/>
+
+                <TextView
+                    android:id="@+id/ticket_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/qr_code"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#FFF82969"
+                    android:textSize="20sp"
+                    tools:text="Билет спикера с VIP - комнатой"/>
+
+                <TextView
+                    android:id="@+id/event_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ticket_type"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#FF2E3B50"
+                    android:textSize="20sp"
+                    tools:text="Web Standards Days"/>
+
+                <TextView
+                    android:id="@+id/datetime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/event_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#8F000000"
+                    android:textSize="14sp"
+                    tools:text="28 Янв, 10:00 — 15:00"/>
+
+                <TextView
+                    android:id="@+id/place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/datetime"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center_horizontal"
+                    android:textAlignment="center"
+                    android:textColor="#8F000000"
+                    tools:text="г. Москва, ул. Льва Толстого 16, м. Парк Культуры"/>
+
+                <TextView
+                    android:id="@+id/order_datetime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/place"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="24dp"
+                    android:textColor="#8F000000"
+                    tools:text="2 Янв, 13:59"/>
+
+                <ImageView
+                    android:id="@+id/check_out_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/qr_code"
+                    android:layout_alignTop="@+id/qr_code"
+                    android:layout_centerHorizontal="true"
+                    android:saveEnabled="false"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/check_in"
+                    tools:visibility="visible"/>
+
+            </RelativeLayout>
+        </ScrollView>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

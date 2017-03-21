@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -31,6 +30,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
@@ -40,9 +42,6 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class OnboardingDialog extends DialogFragment implements LoadStateView.OnReloadListener {
     private static final String LOG_TAG = OnboardingDialog.class.getSimpleName();
@@ -74,7 +73,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
                 .setNeutralButton(R.string.dialog_skip, null);
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener((DialogInterface d) -> {
-            Button NeutralButton = ((AlertDialog) d).getButton(DialogInterface.BUTTON_NEUTRAL);
+            Button NeutralButton = ((AlertDialog)d).getButton(DialogInterface.BUTTON_NEUTRAL);
             NeutralButton.setTextColor(Color.parseColor("#FFB1B1B1"));
         });
         ButterKnife.bind(this, customTitle);
@@ -91,11 +90,6 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
 
     public void setOnOrgSelectedListener(OnOrgSelectedListener listener) {
         this.listener = listener;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     private void loadOrgs() {
@@ -190,16 +184,16 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
                 LayoutInflater inflater = context.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.item_onboarding, parent, false);
                 holder = new ViewHolder();
-                holder.textView = (TextView) rowView.findViewById(R.id.label);
-                holder.iconView = (ImageView) rowView.findViewById(R.id.icon);
-                holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkbox);
+                holder.textView = (TextView)rowView.findViewById(R.id.label);
+                holder.iconView = (ImageView)rowView.findViewById(R.id.icon);
+                holder.checkBox = (CheckBox)rowView.findViewById(R.id.checkbox);
                 holder.checkBox.setOnCheckedChangeListener(
                         (CompoundButton buttonView, boolean isChecked) ->
                                 checked[position] = isChecked
                 );
                 rowView.setTag(holder);
             } else {
-                holder = (ViewHolder) rowView.getTag();
+                holder = (ViewHolder)rowView.getTag();
             }
 
             OrganizationDetail organization = mList.get(position);

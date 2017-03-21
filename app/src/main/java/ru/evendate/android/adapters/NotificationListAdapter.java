@@ -12,33 +12,31 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.DateUtils;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.ui.DateFormatter;
 
 public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapter.Notification> {
     private static String LOG_TAG = NotificationListAdapter.class.getSimpleName();
 
     private final Context context;
-    private EventDetail mEvent;
+    private Event mEvent;
     private List<Notification> notifications;
 
-    public NotificationListAdapter(Context context, List<Notification> eventNotifications, EventDetail event) {
+    public NotificationListAdapter(Context context, List<Notification> eventNotifications, Event event) {
         super(context, R.layout.item_multichoice, eventNotifications);
         this.context = context;
         mEvent = event;
@@ -97,8 +95,8 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             type = notificationType;
         }
 
-        boolean checkNotificationAble(EventDetail event) {
-            Date date = new Date(event.getFirstDate() * 1000);
+        boolean checkNotificationAble(Event event) {
+            Date date = DateUtils.date(event.getFirstDate());
             Calendar notificationTime = Calendar.getInstance();
             notificationTime.setTime(date);
             switch (NotificationType.getType(type)) {
@@ -172,15 +170,9 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
             case BEFORE_QUARTER_OF_HOUR:
                 return context.getString(R.string.notification_before_quarter_of_hour);
             case CUSTOM:
-                return formatNotificationTime(notification.notification.getNotificationTimeInMillis());
+                return DateFormatter.formatNotification(new Date(notification.notification.getNotificationTimeInMillis()));
         }
         return null;
-    }
-
-    private String formatNotificationTime(long timeInMillis) {
-        DateFormat df = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(new Date(timeInMillis));
     }
 
     private void toastEventStarted() {

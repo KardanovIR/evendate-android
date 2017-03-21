@@ -1,10 +1,5 @@
 package ru.evendate.android.network;
 
-/**
- * Created by Dmitry on 08.09.2015.
- * Handle the transfer of data between a server and an
- * app, using the Android sync adapter framework.
- */
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -20,6 +15,11 @@ import android.util.Log;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 
+/**
+ * Created by Dmitry on 08.09.2015.
+ * Handle the transfer of data between a server and an
+ * app, using the Android sync adapter framework.
+ */
 @Deprecated
 public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     private static String LOG_TAG = EvendateSyncAdapter.class.getSimpleName();

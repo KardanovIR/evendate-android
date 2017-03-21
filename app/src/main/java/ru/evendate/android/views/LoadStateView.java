@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,16 +17,15 @@ import ru.evendate.android.R;
  */
 public class LoadStateView extends FrameLayout {
 
-    private Button reloadButton;
-    private TextView headerView;
-    private TextView descriptionView;
-    private ProgressBar progressBar;
     OnReloadListener listener;
-
     String header;
     String description;
     String emptyHeader;
     String emptyDescription;
+    private ImageButton reloadButton;
+    private TextView headerView;
+    private TextView descriptionView;
+    private ProgressBar progressBar;
 
     public LoadStateView(Context context) {
         super(context, null);
@@ -39,7 +38,7 @@ public class LoadStateView extends FrameLayout {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_load_state, this, true);
         ViewGroup viewGroup = (ViewGroup)getChildAt(0);
-        reloadButton = (Button)viewGroup.getChildAt(0);
+        reloadButton = (ImageButton) viewGroup.getChildAt(0);
         headerView = (TextView)viewGroup.getChildAt(1);
         descriptionView = (TextView)viewGroup.getChildAt(2);
         progressBar = (ProgressBar)viewGroup.getChildAt(3);
@@ -50,10 +49,6 @@ public class LoadStateView extends FrameLayout {
             if (listener != null)
                 listener.onReload();
         });
-    }
-
-    public interface OnReloadListener {
-        void onReload();
     }
 
     public void setOnReloadListener(OnReloadListener listener) {
@@ -101,7 +96,6 @@ public class LoadStateView extends FrameLayout {
         headerView.setText(getContext().getString(R.string.state_no_connection));
         descriptionView.setText(getContext().getString(R.string.state_no_connection_description));
     }
-
 
     private void showReloadButton() {
         reloadButton.setVisibility(VISIBLE);
@@ -154,6 +148,14 @@ public class LoadStateView extends FrameLayout {
         hideProgress();
         headerView.setVisibility(VISIBLE);
         descriptionView.setVisibility(VISIBLE);
+    }
+
+    public boolean isLoading() {
+        return progressBar.getVisibility() == VISIBLE;
+    }
+
+    public interface OnReloadListener {
+        void onReload();
     }
 
 }

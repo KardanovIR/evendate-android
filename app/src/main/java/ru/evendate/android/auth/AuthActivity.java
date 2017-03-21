@@ -2,6 +2,8 @@ package ru.evendate.android.auth;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.transition.Slide;
@@ -47,25 +50,23 @@ import ru.evendate.android.network.ApiFactory;
 
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
-    private final String LOG_TAG = AuthActivity.class.getSimpleName();
-
-    private String FB_URL;
-
     private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
-
-    static public String URL_KEY = "url";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
-    private final int REQUEST_WEB_AUTH = 2;
     private static final int REQUEST_SIGN_IN = 3;
-
-    private boolean isGoogleServicesAvailable = false;
-
-    GoogleApiClient apiClient;
-    private ProgressDialog mProgressDialog;
-
-    @Bind(R.id.sing_in_google_button) View googleButton;
-    private Dialog serviceDialog;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    static public String URL_KEY = "url";
+    private final String LOG_TAG = AuthActivity.class.getSimpleName();
+    private final int REQUEST_WEB_AUTH = 2;
+    GoogleApiClient apiClient;
+    @Bind(R.id.sing_in_google_button) View googleButton;
+    private String FB_URL;
+    private boolean isGoogleServicesAvailable = false;
+    private ProgressDialog mProgressDialog;
+    private Dialog serviceDialog;
+
+    public static String getGoogleUrl(Context context) {
+        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +105,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         //todo change to https (when move testing to prod server?)
         FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
 
-    }
-
-    public static String getGoogleUrl(Context context) {
-        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
     }
 
     private void initTransitions() {
@@ -223,16 +220,17 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             public void onResult(VKAccessToken res) {
                 onVkTokenReceived(res);
             }
+
             @Override
             public void onError(VKError error) {
                 onErrorOccurred();
             }
         }))
 
-        if (requestCode == REQUEST_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleGoogleSignInResult(result);
-        }
+            if (requestCode == REQUEST_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                handleGoogleSignInResult(result);
+            }
         if (requestCode == REQUEST_WEB_AUTH) {
             if (resultCode == RESULT_OK) {
                 String email = data.getStringExtra(WebAuthActivity.EMAIL);
@@ -245,6 +243,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     }
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
+        if (result == null) {
+            onErrorOccurred();
+            return;
+        }
         Log.d(LOG_TAG, "handleSignInResult:" + result.isSuccess());
         GoogleSignInAccount acct = result.getSignInAccount();
         if (result.isSuccess() && acct != null) {
@@ -252,31 +254,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         } else {
             if (result.getStatus().isCanceled())
                 onErrorOccurred();
-        }
-    }
-
-    private class RetrieveGoogleTokenTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String email = params[0];
-            String token = null;
-            try {
-                token = GoogleAuthUtil.getToken(getApplicationContext(), email, GOOGLE_SCOPE);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            } catch (UserRecoverableAuthException e) {
-                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
-            } catch (GoogleAuthException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            }
-            return token;
-        }
-
-        @Override
-        protected void onPostExecute(String token) {
-            super.onPostExecute(token);
-            onGoogleTokenReceived(token);
         }
     }
 
@@ -304,23 +281,47 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         Account account = new Account(email, accountType);
 
         final Bundle result = new Bundle();
-        if (manager.addAccountExplicitly(account, "", new Bundle())) {
+        if (manager.getAccounts().length > 0) {
+            manager.removeAccount(manager.getAccounts()[0], new AccountManagerCallback<Boolean>() {
+                @Override
+                public void run(AccountManagerFuture<Boolean> future) {
+                    if (future.isDone()) {
+                        if (manager.addAccountExplicitly(account, "", new Bundle())) {
+                            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+                            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+                            result.putString(AccountManager.KEY_AUTHTOKEN, token);
+                            manager.setAuthToken(account, account.type, token);
+                            EvendateAccountManager.setActiveAccountName(getBaseContext(), account.name);
+                            setAccountAuthenticatorResult(result);
+                            setResult(RESULT_OK);
+                            finish();
+                            Log.i(LOG_TAG, "Account added. Auth done");
+                            return;
+                        }
+                    }
+                    result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
+                    setResult(RESULT_CANCELED);
+                    finish();
+                    Log.e(LOG_TAG, "Auth error");
+                }
+            }, new Handler());
+        } else if (manager.addAccountExplicitly(account, "", new Bundle())) {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
             manager.setAuthToken(account, account.type, token);
             EvendateAccountManager.setActiveAccountName(this, account.name);
+            setAccountAuthenticatorResult(result);
+            setResult(RESULT_OK);
+            finish();
+            Log.i(LOG_TAG, "Account added. Auth done");
         } else {
-            Log.i(LOG_TAG, "cannot add account");
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
-            return;
+            Log.e(LOG_TAG, "Auth error");
         }
 
-        setAccountAuthenticatorResult(result);
-        setResult(RESULT_OK);
-        finish();
     }
 
     @Override
@@ -335,5 +336,30 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     protected void onDestroy() {
         super.onDestroy();
         EvendateAccountManager.setAuthDone(this);
+    }
+
+    private class RetrieveGoogleTokenTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String email = params[0];
+            String token = null;
+            try {
+                token = GoogleAuthUtil.getToken(getApplicationContext(), email, GOOGLE_SCOPE);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            } catch (UserRecoverableAuthException e) {
+                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
+            } catch (GoogleAuthException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+            return token;
+        }
+
+        @Override
+        protected void onPostExecute(String token) {
+            super.onPostExecute(token);
+            onGoogleTokenReceived(token);
+        }
     }
 }

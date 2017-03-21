@@ -15,11 +15,14 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.UsersAdapter;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.UserDetail;
@@ -27,9 +30,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class UserListFragment extends Fragment implements LoadStateView.OnReloadListener {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
@@ -174,9 +174,9 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
 
     private void loadEvent() {
         ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventDetail>> eventObservable =
+        Observable<ResponseArray<Event>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
-                        eventId, EventDetail.FIELDS_LIST);
+                        eventId, Event.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -206,10 +206,10 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
     }
 
 
-    public void onLoadedEvents(ArrayList<EventDetail> events) {
+    public void onLoadedEvents(ArrayList<Event> events) {
         if (!isAdded())
             return;
-        EventDetail event = events.get(0);
+        Event event = events.get(0);
         onLoaded(event.getUserList());
     }
 
