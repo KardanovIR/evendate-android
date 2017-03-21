@@ -32,7 +32,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
 
         initToolbar();
 
-        LocationFragment locationFragment = (LocationFragment) getSupportFragmentManager()
+        LocationFragment locationFragment = (LocationFragment)getSupportFragmentManager()
                 .findFragmentByTag(TAG_LOCATION);
         if (locationFragment == null) {
             locationFragment = new LocationFragment();
@@ -40,7 +40,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
                     .add(locationFragment, TAG_LOCATION).commit();
         }
 
-        CityFragment cityFragment = (CityFragment) getSupportFragmentManager()
+        CityFragment cityFragment = (CityFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.container);
         if (cityFragment == null) {
             cityFragment = new CityFragment();
@@ -81,7 +81,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
     @Override
     public void onPlaceButtonClick() {
         getSupportFragmentManager().beginTransaction().
-                remove(getSupportFragmentManager().findFragmentByTag(TAG_PROMPT)).commit();
+                remove(getSupportFragmentManager().findFragmentByTag(TAG_PROMPT)).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE).commit();
     }
 
 }

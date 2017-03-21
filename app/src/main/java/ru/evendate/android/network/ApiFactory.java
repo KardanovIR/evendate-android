@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.evendate.android.ui.SettingsActivity;
 
@@ -47,7 +47,7 @@ public class ApiFactory {
     private static Retrofit getRetrofit(Context context) {
         return new Retrofit.Builder().baseUrl(getHostName(context))
                 .addConverterFactory(GsonConverterFactory.create()
-                ).addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                ).addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(CLIENT).build();
     }
 

@@ -3,8 +3,8 @@ package ru.evendate.android.ui.checkin;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.data.DataRepository;
-import rx.Subscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -15,8 +15,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CheckInConfirmPresenter implements CheckInContract.TicketConfirmPresenter {
     private static String LOG_TAG = CheckInConfirmPresenter.class.getSimpleName();
     private DataRepository mDataRepository;
-    private Subscription mSubscription;
-    private Subscription mConfirmSubscription;
+    private Disposable mDisposable;
+    private Disposable mConfirmDisposable;
     private CheckInContract.TicketConfirmView mView;
 
     CheckInConfirmPresenter(@NonNull DataRepository dataRepository,
@@ -32,16 +32,16 @@ public class CheckInConfirmPresenter implements CheckInContract.TicketConfirmPre
 
     @Override
     public void stop() {
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
-        if (mConfirmSubscription != null)
-            mConfirmSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
+        if (mConfirmDisposable != null)
+            mConfirmDisposable.dispose();
     }
 
     @Override
     public void confirm(String ticketUuid, int eventId, boolean checkout) {
         mView.showConfirmLoading(true);
-        mConfirmSubscription = mDataRepository.checkoutTicket(eventId, ticketUuid, checkout)
+        mConfirmDisposable = mDataRepository.checkoutTicket(eventId, ticketUuid, checkout)
                 .subscribe(result -> {
                             if (result.isOk()) {
                                 if (checkout) {
@@ -66,7 +66,7 @@ public class CheckInConfirmPresenter implements CheckInContract.TicketConfirmPre
     @Override
     public void loadTicket(String ticketUuid, int eventId) {
         mView.showTicketLoading(true);
-        mSubscription = mDataRepository.getTicket(eventId, ticketUuid)
+        mDisposable = mDataRepository.getTicket(eventId, ticketUuid)
                 .subscribe(result -> {
                             CheckInContract.TicketAdmin ticket = result.getData().get(0);
                             if (result.isOk()) {

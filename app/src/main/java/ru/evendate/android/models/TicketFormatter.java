@@ -21,7 +21,7 @@ public class TicketFormatter {
 
     public static String formatTicketCount(Locale locale, int ticketCount, String formatString) {
         if (!locale.getLanguage().equals("ru"))
-            return ticketCount + formatString;
+            return ticketCount + " " + formatString;
         int count = ticketCount;
         if (ticketCount > 20)
             count = ticketCount % 20;

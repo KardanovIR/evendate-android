@@ -6,9 +6,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.EventRegistered;
-import rx.Subscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,7 +21,7 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
     private static final int LENGTH = 10;
     private static String LOG_TAG = EventRegisteredPresenter.class.getSimpleName();
     private DataRepository mDataRepository;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
     private EventRegisteredContract.View mView;
     private boolean isFuture = true;
 
@@ -40,13 +40,13 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
 
     @Override
     public void stop() {
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
     }
 
     public void loadEvents(boolean forceLoad, int page) {
         mView.setLoadingIndicator(true);
-        mSubscription = mDataRepository.getRegisteredEvents(isFuture, page, LENGTH)
+        mDisposable = mDataRepository.getRegisteredEvents(isFuture, page, LENGTH)
                 .subscribe(result -> {
                             List<EventRegistered> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;

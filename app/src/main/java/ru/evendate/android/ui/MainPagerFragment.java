@@ -74,7 +74,7 @@ public class MainPagerFragment extends Fragment {
         });
     }
 
-    public void refresh(){
+    public void refresh() {
         mMainPagerAdapter.refresh();
     }
 }

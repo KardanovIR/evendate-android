@@ -29,6 +29,7 @@ import java.util.Arrays;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.OrganizationCategoryAdapter;
@@ -37,7 +38,6 @@ import ru.evendate.android.models.City;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.ui.cities.CityActivity;
 import ru.evendate.android.views.LoadStateView;
-import rx.Subscription;
 
 import static ru.evendate.android.ui.cities.CityFragment.KEY_CITY;
 
@@ -55,7 +55,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
     City mSelectedCity;
-    Subscription mSubscription;
+    Disposable mDisposable;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationCategory> mCategoryList;
@@ -132,8 +132,8 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
     }
 
     private void startSelectCity() {
@@ -159,7 +159,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private void loadCatalog() {
         mLoadStateView.showProgress();
         DataRepository dataRepository = new DataRepository(this);
-        mSubscription = dataRepository.getCatalog(mSelectedCity.getEntryId()).subscribe(
+        mDisposable = dataRepository.getCatalog(mSelectedCity.getEntryId()).subscribe(
                 result -> onLoaded(result.getData()),
                 this::onError,
                 mLoadStateView::hideProgress

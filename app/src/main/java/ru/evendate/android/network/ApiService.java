@@ -2,6 +2,7 @@ package ru.evendate.android.network;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -23,7 +24,6 @@ import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.Tag;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.UserDetail;
-import rx.Observable;
 
 /**
  * Created by Dmitry on 18.10.2015.

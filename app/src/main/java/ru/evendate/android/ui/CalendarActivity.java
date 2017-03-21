@@ -35,6 +35,9 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateCalendar;
@@ -42,9 +45,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by fj on 28.09.2015.
@@ -113,7 +113,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
 
         dateFormatMonths = new DateFormatSymbols();
-        if(getResources().getConfiguration().locale.getLanguage().equals("ru"))
+        if (getResources().getConfiguration().locale.getLanguage().equals("ru"))
             dateFormatMonths.setMonths(
                     new String[]{"январь", "февраль", "март", "апрель", "май", "июнь",
                             "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"});
@@ -148,6 +148,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
     }
+
     private int getPeekHeightInPx() {
         return getResources().getDimensionPixelSize(R.dimen.calendar_slide_height);
     }
@@ -159,6 +160,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
+
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -180,13 +182,13 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         loadDates();
     }
 
-    private void setToolbarDate(CalendarDay date){
+    private void setToolbarDate(CalendarDay date) {
         String month = dateFormatMonths.getMonths()[date.getMonth()];
         month = capitalize(month);
         mToolbar.setTitle(month);
     }
 
-    private String capitalize(String str){
+    private String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
@@ -231,7 +233,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         setSelectedDate();
     }
 
-    private void setSelectedDate(){
+    private void setSelectedDate() {
         mSelectedDateTextView.setText(DateFormatter.formatCalendarLabel(mCalendarView.getSelectedDate().getDate()));
     }
 

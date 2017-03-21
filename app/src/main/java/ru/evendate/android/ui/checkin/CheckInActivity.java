@@ -52,7 +52,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
         ButterKnife.bind(this);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener((View v) -> {
@@ -76,10 +76,10 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         mTabs.setVisibility(View.GONE);
         mFab.setVisibility(View.INVISIBLE);
 
-        CheckInContract.EventAdminView fragment = (CheckInContract.EventAdminView) getSupportFragmentManager().findFragmentByTag(TAG_EVENTS);
+        CheckInContract.EventAdminView fragment = (CheckInContract.EventAdminView)getSupportFragmentManager().findFragmentByTag(TAG_EVENTS);
         if (fragment == null) {
             fragment = new EventAdminListFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.container, (Fragment) fragment, TAG_EVENTS).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.container, (Fragment)fragment, TAG_EVENTS).commit();
         }
         new EventAdminListPresenter(new DataRepository(this), fragment);
 
@@ -116,7 +116,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         //hide keyboard
         View view = getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
         super.onBackPressed();
@@ -147,7 +147,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         Fragment fragmentSearchTickets = getSupportFragmentManager().findFragmentByTag(TAG_SEARCH_TICKETS);
         Fragment fragmentEvent = getSupportFragmentManager().findFragmentByTag(TAG_EVENTS);
         if (fragmentEvent != null) {
-            new EventAdminListPresenter(new DataRepository(this), (CheckInContract.EventAdminView) fragmentEvent);
+            new EventAdminListPresenter(new DataRepository(this), (CheckInContract.EventAdminView)fragmentEvent);
         }
         if (getSupportFragmentManager().findFragmentByTag(TAG_SEARCH_TICKETS) == null &&
                 getSupportFragmentManager().findFragmentByTag(TAG_QR_SCANNER) == null) {
@@ -156,10 +156,10 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
             mFab.show();
         }
         if (fragmentSearchTickets != null) {
-            new TicketsAdminPresenter(new DataRepository(this), (CheckInContract.TicketsAdminView) fragmentSearchTickets);
+            new TicketsAdminPresenter(new DataRepository(this), (CheckInContract.TicketsAdminView)fragmentSearchTickets);
         }
         if (getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM) != null) {
-            new CheckInConfirmPresenter(new DataRepository(this), (CheckInContract.TicketConfirmView) getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM));
+            new CheckInConfirmPresenter(new DataRepository(this), (CheckInContract.TicketConfirmView)getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM));
         }
     }
 
@@ -185,7 +185,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         if (fragment == null) {
             fragment = TicketsAdminFragment.TicketsAdminListFragment.newSearchInstance(selectedEventId);
         }
-        new TicketsAdminPresenter(new DataRepository(this), (CheckInContract.TicketsAdminView) fragment);
+        new TicketsAdminPresenter(new DataRepository(this), (CheckInContract.TicketsAdminView)fragment);
         TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         getSupportFragmentManager().beginTransaction().add(R.id.container, fragment, TAG_SEARCH_TICKETS)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -218,11 +218,11 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         Toast.makeText(this, R.string.check_in_confirm, Toast.LENGTH_LONG).show();
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_QR_SCANNER);
         if (fragment != null) {
-            ((QrScannerFragment) fragment).startQrDecoding();
+            ((QrScannerFragment)fragment).startQrDecoding();
         }
         Fragment fragmentTickets = getSupportFragmentManager().findFragmentByTag(TAG_TICKETS);
         if (fragmentTickets != null) {
-            ((TicketsAdminFragment) fragmentTickets).updateData();
+            ((TicketsAdminFragment)fragmentTickets).updateData();
         }
 
     }
@@ -232,11 +232,11 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         Toast.makeText(this, R.string.check_in_confirm_dialog_button_revert, Toast.LENGTH_LONG).show();
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_QR_SCANNER);
         if (fragment != null) {
-            ((QrScannerFragment) fragment).startQrDecoding();
+            ((QrScannerFragment)fragment).startQrDecoding();
         }
         Fragment fragmentTickets = getSupportFragmentManager().findFragmentByTag(TAG_TICKETS);
         if (fragmentTickets != null) {
-            ((TicketsAdminFragment) fragmentTickets).updateData();
+            ((TicketsAdminFragment)fragmentTickets).updateData();
         }
     }
 
@@ -244,7 +244,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
     public void onConfirmCheckInCancel() {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_QR_SCANNER);
         if (fragment != null) {
-            ((QrScannerFragment) fragment).startQrDecoding();
+            ((QrScannerFragment)fragment).startQrDecoding();
         }
     }
 

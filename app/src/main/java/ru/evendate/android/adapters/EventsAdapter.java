@@ -22,6 +22,9 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
@@ -32,9 +35,6 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class EventsAdapter extends AppendableAdapter<EventFeed> {
     private String LOG_TAG = EventsAdapter.class.getSimpleName();
@@ -214,7 +214,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> Log.i(LOG_TAG, "event hided"),
-                        error -> Log.e(LOG_TAG, error.getMessage())
+                        error -> Log.e(LOG_TAG, "" + error.getMessage())
                 );
         remove(event);
     }
@@ -235,7 +235,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> Log.i(LOG_TAG, "event liked/disliked"),
-                        error -> Log.e(LOG_TAG, error.getMessage())
+                        error -> Log.e(LOG_TAG, "" + error.getMessage())
                 );
 
         event.setIsFavorite(!event.isFavorite());

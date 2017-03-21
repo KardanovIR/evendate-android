@@ -16,6 +16,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateUtils;
@@ -25,9 +28,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.ui.DateFormatter;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapter.Notification> {
     private static String LOG_TAG = NotificationListAdapter.class.getSimpleName();

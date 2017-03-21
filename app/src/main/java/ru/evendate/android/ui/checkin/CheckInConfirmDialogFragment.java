@@ -78,7 +78,7 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (CheckInContract.ConfirmInteractionListener) context;
+        mListener = (CheckInContract.ConfirmInteractionListener)context;
     }
 
     @Override

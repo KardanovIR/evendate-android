@@ -23,6 +23,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
@@ -33,9 +36,6 @@ import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 11.02.2016.
@@ -126,7 +126,7 @@ public class DrawerWrapper {
         intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
         if (Build.VERSION.SDK_INT >= 21) {
             context.startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation((Activity) context).toBundle());
+                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
         } else
             context.startActivity(intent);
     }
@@ -155,7 +155,7 @@ public class DrawerWrapper {
     private void updateSubs() {
         setupMenu();
         for (OrganizationSubscription org : mSubscriptions) {
-            SubscriptionDrawerItem item = (SubscriptionDrawerItem) new SubscriptionDrawerItem().withName(org.getShortName())
+            SubscriptionDrawerItem item = (SubscriptionDrawerItem)new SubscriptionDrawerItem().withName(org.getShortName())
                     .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false);
             if (org.getNewEventsCount() != 0) {
                 item.withBadge(String.valueOf(org.getNewEventsCount())).withBadgeStyle(new BadgeStyle().withTextColorRes(R.color.accent));
@@ -223,7 +223,7 @@ public class DrawerWrapper {
                                         .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
                                             EvendateAccountManager.deleteAccount(mContext);
                                             //todo ditch
-                                            ((Activity) mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
+                                            ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
                                             return false;
                                         })
                         );

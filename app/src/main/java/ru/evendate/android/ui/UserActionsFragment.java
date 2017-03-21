@@ -13,6 +13,9 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
@@ -26,9 +29,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Dmitry on 21.02.2016.
@@ -83,20 +83,20 @@ public class UserActionsFragment extends Fragment implements LoadStateView.OnRel
     }
 
     public void loadActions() {
-        ApiService evendateService = ApiFactory.getService(getActivity());
+        ApiService service = ApiFactory.getService(getActivity());
         Observable<ResponseArray<Action>> actionObservable =
-                evendateService.getActions(EvendateAccountManager.peekToken(getActivity()),
+                service.getActions(EvendateAccountManager.peekToken(getActivity()),
                         userId, Action.FIELDS_LIST, Action.ORDER_BY);
 
         actionObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (result.isOk())
-                        onLoaded(result.getData());
-                    else
-                        mLoadStateView.showErrorHint();
-                },
+                            Log.i(LOG_TAG, "loaded");
+                            if (result.isOk())
+                                onLoaded(result.getData());
+                            else
+                                mLoadStateView.showErrorHint();
+                        },
                         this::onError,
                         mLoadStateView::hideProgress);
     }

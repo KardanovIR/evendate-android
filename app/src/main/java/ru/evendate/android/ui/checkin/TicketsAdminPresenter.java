@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.Subscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +23,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
     private static final int LENGTH = 10;
     private static String LOG_TAG = TicketsAdminPresenter.class.getSimpleName();
     private DataRepository mDataRepository;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
     private CheckInContract.TicketsAdminView mView;
 
     TicketsAdminPresenter(@NonNull DataRepository dataRepository,
@@ -40,14 +40,14 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
 
     @Override
     public void stop() {
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
     }
 
     @Override
     public void loadList(int eventId, boolean isCheckOut, boolean forceLoad, int page) {
         mView.setLoadingIndicator(true);
-        mSubscription = mDataRepository.getTickets(eventId, isCheckOut, page, LENGTH)
+        mDisposable = mDataRepository.getTickets(eventId, isCheckOut, page, LENGTH)
                 .subscribe(result -> {
                             List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
@@ -83,7 +83,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
             observable = mDataRepository.getTicketsByName(eventId, query, page, LENGTH);
         }
         mView.setLoadingIndicator(true);
-        mSubscription = observable.subscribe(result -> {
+        mDisposable = observable.subscribe(result -> {
                     List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                     boolean isLast = list.size() < LENGTH;
                     boolean isEmpty = list.size() == 0;

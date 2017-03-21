@@ -30,7 +30,7 @@ public class CityPromptDialog extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof PromptInteractionListener) {
-            mListener = (PromptInteractionListener) context;
+            mListener = (PromptInteractionListener)context;
         } else {
             throw new RuntimeException("Activity should implement PromptInteractionListener" +
                     "interface");

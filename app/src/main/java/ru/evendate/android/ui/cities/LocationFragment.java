@@ -58,7 +58,7 @@ public class LocationFragment extends Fragment implements LocationListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
         mBestProvider = mLocationManager.getBestProvider(criteria, false);

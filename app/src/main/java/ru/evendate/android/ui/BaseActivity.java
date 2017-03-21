@@ -11,7 +11,7 @@ public class BaseActivity extends AppCompatActivity {
 
     //TODO deprecated parasha
     protected void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        ActivityManager activityManager = (ActivityManager)getSystemService(Activity.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
 
         if (taskList.get(0).numActivities == 1 &&

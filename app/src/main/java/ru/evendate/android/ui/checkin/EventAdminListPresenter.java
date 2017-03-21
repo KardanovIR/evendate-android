@@ -6,9 +6,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.EventRegistered;
-import rx.Subscription;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,7 +20,7 @@ class EventAdminListPresenter implements CheckInContract.EventAdminPresenter {
     private static final int LENGTH = 10;
     private static String LOG_TAG = EventAdminListPresenter.class.getSimpleName();
     private DataRepository mDataRepository;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
     private CheckInContract.EventAdminView mView;
 
     EventAdminListPresenter(@NonNull DataRepository dataRepository,
@@ -37,13 +37,13 @@ class EventAdminListPresenter implements CheckInContract.EventAdminPresenter {
 
     @Override
     public void stop() {
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
     }
 
     public void loadList(boolean forceLoad, int page) {
         mView.setLoadingIndicator(forceLoad);
-        mSubscription = mDataRepository.getEventsAdmin(true, page, LENGTH)
+        mDisposable = mDataRepository.getEventsAdmin(true, page, LENGTH)
                 .subscribe(result -> {
                             List<EventRegistered> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;

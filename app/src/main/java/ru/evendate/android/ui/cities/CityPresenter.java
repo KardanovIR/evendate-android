@@ -12,10 +12,10 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.City;
-import rx.Subscription;
 
 import static android.app.Activity.RESULT_OK;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,7 +33,7 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
     private String LOG_TAG = CityPresenter.class.getSimpleName();
     @NonNull
     private DataRepository mDataRepository;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
     @Nullable
     private City mSelectedCity;
     private List<City> mCities;
@@ -56,13 +56,13 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
 
     @Override
     public void stop() {
-        mSubscription.unsubscribe();
+        mDisposable.dispose();
     }
 
     @Override
     public void loadCities() {
         mCityView.setLoadingIndicator(true);
-        mSubscription = mDataRepository.getCities().subscribe(
+        mDisposable = mDataRepository.getCities().subscribe(
                 result -> {
                     mCities = result.getData();
                     pushUpSelectedCity(mCities);
@@ -94,7 +94,7 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
      * check city in evendate list and select it
      */
     @Override
-    public void onRecognizeAddress(Location location, Address address)  {
+    public void onRecognizeAddress(Location location, Address address) {
         for (City city : mCities) {
             if (city.getNameLocally().equals(address.getLocality()) ||
                     city.getName().equals(address.getLocality())) {
@@ -114,7 +114,7 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
 
     @Override
     public void loadNearestCities(Location location) {
-        mSubscription = mDataRepository.getNearestCities(location.getLatitude(), location.getLongitude()).subscribe(
+        mDisposable = mDataRepository.getNearestCities(location.getLatitude(), location.getLongitude()).subscribe(
                 result -> {
                     mSelectedCity = result.getData().get(0);
                     pushUpSelectedCity(mCities);

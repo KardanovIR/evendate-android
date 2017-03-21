@@ -118,7 +118,7 @@ public class NavigationItemSelectedListener
         return ((OrganizationModel)drawerItem.getTag()).getEntryId();
     }
 
-    private Intent addFlags(Intent intent){
+    private Intent addFlags(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;

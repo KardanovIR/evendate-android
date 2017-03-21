@@ -97,6 +97,7 @@ public class TicketDetailFragment extends Fragment {
         return view;
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.event_title)
     public void onEventTitleClicked(View view) {
         if (mListener != null) {
@@ -108,7 +109,7 @@ public class TicketDetailFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnTicketInteractionListener) {
-            mListener = (OnTicketInteractionListener) context;
+            mListener = (OnTicketInteractionListener)context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnTicketInteractionListener");

@@ -133,7 +133,7 @@ public class QrScannerFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (CheckInContract.QRReadListener) context;
+        mListener = (CheckInContract.QRReadListener)context;
     }
 
     public void startQrDecoding() {

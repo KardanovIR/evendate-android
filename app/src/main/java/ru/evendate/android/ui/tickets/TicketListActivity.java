@@ -18,6 +18,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.data.EvendateContract;
@@ -27,7 +28,6 @@ import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.NavigationItemSelectedListener;
-import rx.Subscription;
 
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
     public static final String EVENT_KEY = "event";
@@ -35,7 +35,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.pager) ViewPager mViewPager;
     PagerAdapter mAdapter;
-    Subscription mSubscription;
+    Disposable mDisposable;
     DataRepository mDataRepository;
     EventRegistered mEvent;
     List<Ticket> mTickets;
@@ -145,7 +145,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
 
     public void loadTickets(int page) {
 
-        mSubscription = mDataRepository.getTickets(page, LENGTH).subscribe(result -> {
+        mDisposable = mDataRepository.getTickets(page, LENGTH).subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
                         onLoaded(new ArrayList<>(result.getData()));
@@ -164,8 +164,8 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mSubscription != null)
-            mSubscription.unsubscribe();
+        if (mDisposable != null)
+            mDisposable.dispose();
         isLoading = false;
     }
 

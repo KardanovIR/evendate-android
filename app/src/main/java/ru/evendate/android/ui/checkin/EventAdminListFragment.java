@@ -50,9 +50,9 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         super.onAttach(context);
         final Fragment parent = getParentFragment();
         if (parent != null) {
-            mListener = (CheckInContract.EventInteractionListener) parent;
+            mListener = (CheckInContract.EventInteractionListener)parent;
         } else {
-            mListener = (CheckInContract.EventInteractionListener) context;
+            mListener = (CheckInContract.EventInteractionListener)context;
         }
     }
 

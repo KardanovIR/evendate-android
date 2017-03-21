@@ -65,11 +65,11 @@ public class TicketsAdminFragment extends Fragment {
                 switch (position) {
                     case 0:
                         fragment = TicketsAdminListFragment.newInstance(eventId, false);
-                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView) fragment);
+                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView)fragment);
                         return fragment;
                     case 1:
                         fragment2 = TicketsAdminListFragment.newInstance(eventId, true);
-                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView) fragment2);
+                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView)fragment2);
                         return fragment2;
                     default:
                         throw new RuntimeException();
@@ -96,9 +96,9 @@ public class TicketsAdminFragment extends Fragment {
             @Override
             public void restoreState(Parcelable state, ClassLoader loader) {
                 super.restoreState(state, loader);
-                fragment = (TicketsAdminListFragment) getChildFragmentManager().getFragment((Bundle) state, "f0");
+                fragment = (TicketsAdminListFragment)getChildFragmentManager().getFragment((Bundle)state, "f0");
                 new TicketsAdminPresenter(new DataRepository(getContext()), fragment);
-                fragment2 = (TicketsAdminListFragment) getChildFragmentManager().getFragment((Bundle) state, "f1");
+                fragment2 = (TicketsAdminListFragment)getChildFragmentManager().getFragment((Bundle)state, "f1");
                 new TicketsAdminPresenter(new DataRepository(getContext()), fragment2);
             }
         });
@@ -122,14 +122,14 @@ public class TicketsAdminFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        TabLayout tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout)getActivity().findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (CheckInContract.SearchClickListener) context;
+        mListener = (CheckInContract.SearchClickListener)context;
     }
 
     //todo need be replace by caching and observers
@@ -253,8 +253,8 @@ public class TicketsAdminFragment extends Fragment {
         @Override
         public void onAttach(Context context) {
             super.onAttach(context);
-            mListener = (CheckInContract.TicketInteractionListener) context;
-            mParent = (TicketsAdminFragment) getParentFragment();
+            mListener = (CheckInContract.TicketInteractionListener)context;
+            mParent = (TicketsAdminFragment)getParentFragment();
         }
 
         @Override
@@ -274,7 +274,7 @@ public class TicketsAdminFragment extends Fragment {
             MenuItem searchItem = menu.findItem(R.id.action_search);
             TicketsAdminListFragment fragment = this;
 
-            SearchView searchView = (SearchView) searchItem.getActionView();
+            SearchView searchView = (SearchView)searchItem.getActionView();
             searchView.setIconified(false);
             searchView.setQueryHint(getString(R.string.check_in_search_tickets_query_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -402,12 +402,12 @@ public class TicketsAdminFragment extends Fragment {
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
                 super.onViewRecycled(holder);
                 if (holder instanceof TicketAdminViewHolder)
-                    ((TicketAdminViewHolder) holder).mAvatar.setImageDrawable(null);
+                    ((TicketAdminViewHolder)holder).mAvatar.setImageDrawable(null);
             }
 
             @Override
             public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-                TicketAdminViewHolder viewHolder = (TicketAdminViewHolder) holder;
+                TicketAdminViewHolder viewHolder = (TicketAdminViewHolder)holder;
                 CheckInContract.TicketAdmin ticket = getItem(position);
                 viewHolder.mTicket = ticket;
                 viewHolder.mName.setText(UserFormatter.formatUserName(ticket.getUser()));

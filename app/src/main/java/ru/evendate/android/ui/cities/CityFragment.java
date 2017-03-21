@@ -136,7 +136,7 @@ public class CityFragment extends Fragment implements CityContract.View,
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof CityViewHolder) {
-                CityViewHolder castHolder = (CityViewHolder) holder;
+                CityViewHolder castHolder = (CityViewHolder)holder;
                 castHolder.mItem = mCities.get(position - 1);
                 castHolder.mCityTitle.setText(mCities.get(position - 1).getNameLocally());
 
@@ -146,7 +146,7 @@ public class CityFragment extends Fragment implements CityContract.View,
                     }
                 });
             } else {
-                HeaderViewHolder castHolder = (HeaderViewHolder) holder;
+                HeaderViewHolder castHolder = (HeaderViewHolder)holder;
                 castHolder.mLocationButton.setOnClickListener((View v) -> {
                     if (null != mListener) {
                         mListener.onLocationClicked();

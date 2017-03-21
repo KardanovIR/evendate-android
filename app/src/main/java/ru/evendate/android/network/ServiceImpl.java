@@ -6,14 +6,14 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.statistics.Statistics;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Aedirn on 16.10.16.

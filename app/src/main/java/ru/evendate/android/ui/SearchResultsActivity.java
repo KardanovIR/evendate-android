@@ -32,6 +32,9 @@ import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
@@ -53,9 +56,6 @@ import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class SearchResultsActivity extends AppCompatActivity {
     public static final String SEARCH_BY_TAG = "search_by_tag";
@@ -275,7 +275,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             return rootView;
         }
 
-        private void initLoadStateView(){
+        private void initLoadStateView() {
             mLoadStateView.setOnReloadListener(this);
             mLoadStateView.setEmptyHeader(getContext().getString(R.string.search_empty_header));
             mLoadStateView.setEmptyDescription(getContext().getString(R.string.search_empty_description));

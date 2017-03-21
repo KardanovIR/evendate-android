@@ -17,6 +17,9 @@ import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.BuildConfig;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
@@ -26,9 +29,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static ru.evendate.android.EvendatePreferences.KEY_INDICATOR_COLOR;
 

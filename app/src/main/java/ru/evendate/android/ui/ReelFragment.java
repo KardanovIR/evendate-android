@@ -16,6 +16,9 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
@@ -28,9 +31,6 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * fragment containing a reel

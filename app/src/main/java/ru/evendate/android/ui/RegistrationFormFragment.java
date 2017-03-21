@@ -32,6 +32,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
@@ -43,9 +46,6 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class RegistrationFormFragment extends DialogFragment implements FormInitializer,
         LoadStateView.OnReloadListener {
@@ -122,7 +122,7 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnRegistrationCallbackListener) {
-            mListener = (OnRegistrationCallbackListener) context;
+            mListener = (OnRegistrationCallbackListener)context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnRegistrationCallbackListener");
@@ -151,7 +151,7 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
             section.addElement(new EditTextController(ctxt, field.getUuid(), field.getLabel(), "", field.isRequired()));
         }
         controller.addSection(section);
-        ViewGroup containerView = (ViewGroup) getActivity().findViewById(R.id.form_elements_container);
+        ViewGroup containerView = (ViewGroup)getActivity().findViewById(R.id.form_elements_container);
         controller.recreateViews(containerView);
     }
 
@@ -177,7 +177,7 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
         if (getFormController().isValidInput()) {
             List<RegistrationField> input = new ArrayList<>();
             for (RegistrationField field : mEvent.getRegistrationFields())
-                input.add(new RegistrationField(field.getUuid(), (String) getModel().getValue(field.getUuid())));
+                input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
             mRegistration = new Registration();
             mRegistration.setRegistrationFieldsList(new ArrayList<>(input));
             ArrayList<Ticket> ticketOrderList = new ArrayList<>();

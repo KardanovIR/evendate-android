@@ -71,21 +71,23 @@ public class AdapterController {
     }
 
     public void requestNext() {
-        if(isDisable || isRequesting){
+        if (isDisable || isRequesting) {
             Log.d(LOG_TAG, "requesting denied");
             return;
         }
         mAdapterContext.requestNext();
         isRequesting = true;
     }
-    public void loaded(ArrayList list){
+
+    public void loaded(ArrayList list) {
         checkNextShouldBeDisable(list.size());
         mAdapter.add(list);
         isRequesting = false;
         mAdapter.setLoaded();
         increaseOffset();
     }
-    public void reloaded(ArrayList list){
+
+    public void reloaded(ArrayList list) {
         checkNextShouldBeDisable(list.size());
         mAdapter.replace(list);
         isRequesting = false;
@@ -93,21 +95,20 @@ public class AdapterController {
         increaseOffset();
     }
 
-    private void checkNextShouldBeDisable(int size){
+    private void checkNextShouldBeDisable(int size) {
         if (size < getLength()) {
             disableNext();
-        }
-        else
+        } else
             isDisable = false;
     }
 
-    public void loaded(){
+    public void loaded() {
         isRequesting = false;
         mAdapter.setLoaded();
         increaseOffset();
     }
 
-    public void notLoadedCauseError(){
+    public void notLoadedCauseError() {
         isRequesting = false;
         mAdapter.setLoaded();
     }

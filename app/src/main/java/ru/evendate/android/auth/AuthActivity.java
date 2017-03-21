@@ -2,6 +2,8 @@ package ru.evendate.android.auth;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.transition.Slide;
@@ -278,24 +281,47 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         Account account = new Account(email, accountType);
 
         final Bundle result = new Bundle();
-        if (manager.addAccountExplicitly(account, "", new Bundle())) {
+        if (manager.getAccounts().length > 0) {
+            manager.removeAccount(manager.getAccounts()[0], new AccountManagerCallback<Boolean>() {
+                @Override
+                public void run(AccountManagerFuture<Boolean> future) {
+                    if (future.isDone()) {
+                        if (manager.addAccountExplicitly(account, "", new Bundle())) {
+                            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+                            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+                            result.putString(AccountManager.KEY_AUTHTOKEN, token);
+                            manager.setAuthToken(account, account.type, token);
+                            EvendateAccountManager.setActiveAccountName(getBaseContext(), account.name);
+                            setAccountAuthenticatorResult(result);
+                            setResult(RESULT_OK);
+                            finish();
+                            Log.i(LOG_TAG, "Account added. Auth done");
+                            return;
+                        }
+                    }
+                    result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
+                    setResult(RESULT_CANCELED);
+                    finish();
+                    Log.e(LOG_TAG, "Auth error");
+                }
+            }, new Handler());
+        } else if (manager.addAccountExplicitly(account, "", new Bundle())) {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
             manager.setAuthToken(account, account.type, token);
             EvendateAccountManager.setActiveAccountName(this, account.name);
+            setAccountAuthenticatorResult(result);
+            setResult(RESULT_OK);
+            finish();
+            Log.i(LOG_TAG, "Account added. Auth done");
         } else {
-            //todo update account
-            Log.i(LOG_TAG, "cannot add account");
             result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.auth_account_already_exists));
             setResult(RESULT_CANCELED);
             finish();
-            return;
+            Log.e(LOG_TAG, "Auth error");
         }
 
-        setAccountAuthenticatorResult(result);
-        setResult(RESULT_OK);
-        finish();
     }
 
     @Override

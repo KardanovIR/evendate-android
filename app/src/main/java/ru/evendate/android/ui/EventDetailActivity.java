@@ -66,6 +66,9 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NotificationConverter;
@@ -85,9 +88,6 @@ import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
 import ru.evendate.android.views.UserFavoritedCard;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static ru.evendate.android.ui.UiUtils.revealView;
 
@@ -268,7 +268,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 mCoordinatorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int bottom = mTitleContainer.getBottom();
                 //int size = mFAB.getHeight();
-                int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56,
+                int size = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56,
                         getResources().getDisplayMetrics());
                 mFabHeight = bottom - size / 2;
                 TransitionManager.beginDelayedTransition(mCoordinatorLayout);
