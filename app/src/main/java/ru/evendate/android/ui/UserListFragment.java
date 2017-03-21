@@ -1,39 +1,37 @@
 package ru.evendate.android.ui;
 
-import android.content.DialogInterface;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.UsersAdapter;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.views.LoadStateView;
 
-public class UserListFragment extends Fragment {
+public class UserListFragment extends Fragment implements LoadStateView.OnReloadListener {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
@@ -44,8 +42,7 @@ public class UserListFragment extends Fragment {
     private int type = 0;
     private int organizationId;
     private int eventId;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
-    @Bind(R.id.ll_feed_empty) View mFeedEmptyLayout;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
     public enum TypeFormat {
         EVENT(0),
@@ -110,10 +107,9 @@ public class UserListFragment extends Fragment {
         mAdapter = new UsersAdapter(getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
+        mLoadStateView.setOnReloadListener(this);
+        setEmptyCap();
 
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(getActivity(), R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
         return rootView;
     }
 
@@ -122,6 +118,10 @@ public class UserListFragment extends Fragment {
             getActivity().getWindow().setEnterTransition(new Explode());
             getActivity().getWindow().setExitTransition(new Explode());
         }
+    }
+
+    private void setEmptyCap() {
+        mLoadStateView.setEmptyHeader(getString(R.string.list_users_empty_text));
     }
 
     @Override
@@ -137,8 +137,11 @@ public class UserListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        hideCap();
+        loadData();
+        mLoadStateView.showProgress();
+    }
 
+    private void loadData() {
         switch (UserListFragment.TypeFormat.getType(type)) {
             case EVENT:
                 loadEvent();
@@ -161,48 +164,29 @@ public class UserListFragment extends Fragment {
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (!isAdded())
-                        return;
-                    if (!result.isOk()) {
-                        onError();
-                        return;
-                    }
-                    OrganizationDetail organization = result.getData().get(0);
-                    mAdapter.replace(organization.getSubscribedUsersList());
-                    mProgressBar.setVisibility(View.GONE);
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                            if (!result.isOk())
+                                mLoadStateView.showErrorHint();
+                            else
+                                onLoadedOrgs(result.getData());
+                        }, this::onError,
+                        mLoadStateView::hideProgress);
     }
 
     private void loadEvent() {
         ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventDetail>> eventObservable =
+        Observable<ResponseArray<Event>> eventObservable =
                 apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
-                        eventId, EventDetail.FIELDS_LIST);
+                        eventId, Event.FIELDS_LIST);
 
         eventObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (!isAdded())
-                        return;
-                    if (!result.isOk()) {
-                        onError();
-                        return;
-                    }
-                    EventDetail event = result.getData().get(0);
-                    mAdapter.replace(event.getUserList());
-                    mProgressBar.setVisibility(View.GONE);
-                    if (mAdapter.isEmpty()) {
-                        displayCap();
-                    }
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                            if (!result.isOk())
+                                mLoadStateView.showErrorHint();
+                            else
+                                onLoadedEvents(result.getData());
+                        }, this::onError,
+                        mLoadStateView::hideProgress);
     }
 
     private void loadFriends() {
@@ -213,43 +197,50 @@ public class UserListFragment extends Fragment {
         friendsObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (!isAdded())
-                        return;
-                    if (!result.isOk()) {
-                        onError();
-                        return;
-                    }
-                    mAdapter.replace(result.getData());
-                    mProgressBar.setVisibility(View.GONE);
-                    if (mAdapter.isEmpty()) {
-                        displayCap();
-                    }
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, error.getMessage());
-                }, () -> Log.i(LOG_TAG, "completed"));
+                            if (!result.isOk())
+                                mLoadStateView.showErrorHint();
+                            else
+                                onLoaded(result.getData());
+                        }, this::onError,
+                        mLoadStateView::hideProgress);
     }
 
-    private void onError() {
+
+    public void onLoadedEvents(ArrayList<Event> events) {
         if (!isAdded())
             return;
-        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(getActivity(),
-                (DialogInterface dialog, int which) -> {
-                    loadEvent();
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    dialog.dismiss();
-                });
-        alertDialog.show();
+        Event event = events.get(0);
+        onLoaded(event.getUserList());
     }
 
-    private void displayCap() {
-        mFeedEmptyLayout.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.GONE);
+    public void onLoadedOrgs(ArrayList<OrganizationFull> orgs) {
+        if (!isAdded())
+            return;
+        OrganizationFull organization = orgs.get(0);
+        onLoaded(organization.getSubscribedUsersList());
     }
 
-    private void hideCap() {
-        mFeedEmptyLayout.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+    public void onLoaded(ArrayList<UserDetail> friends) {
+        if (!isAdded())
+            return;
+        mAdapter.replace(friends);
+        checkListAndShowHint();
+    }
+
+    private void onError(Throwable error) {
+        if (!isAdded())
+            return;
+        Log.e(LOG_TAG, "" + error.getMessage());
+        mLoadStateView.showErrorHint();
+    }
+
+    @Override
+    public void onReload() {
+        loadData();
+    }
+
+    protected void checkListAndShowHint() {
+        if (mAdapter.isEmpty())
+            mLoadStateView.showEmptryHint();
     }
 }

@@ -13,7 +13,7 @@ public class UsersFormatter {
     public static String formatUsers(Context c, ArrayList<UserDetail> users) {
         int friend_count = 0;
         for (User user : users) {
-            if (user.is_friend())
+            if (user.isFriend())
                 friend_count++;
         }
         return users.size() + " " + c.getString(R.string.event_word_users_and)

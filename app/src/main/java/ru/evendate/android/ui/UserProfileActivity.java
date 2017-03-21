@@ -1,12 +1,7 @@
 package ru.evendate.android.ui;
 
-import android.animation.Animator;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -14,11 +9,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
@@ -26,9 +17,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -36,10 +25,12 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
@@ -49,14 +40,14 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.views.LoadStateView;
+
+import static ru.evendate.android.ui.UiUtils.revealView;
 
 /**
  * Created by ds_gordeev on 15.02.2016.
  */
-public class UserProfileActivity extends AppCompatActivity {
+public class UserProfileActivity extends BaseActivity implements LoadStateView.OnReloadListener {
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
 
     private Uri mUri;
@@ -72,7 +63,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Bind(R.id.user_avatar) ImageView mUserImageView;
     @Bind(R.id.avatar_container) View mUserImageContainer;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
     DrawerWrapper mDrawer;
 
     @Override
@@ -94,7 +85,6 @@ public class UserProfileActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         initToolbar();
-        initProgressBar();
         initDrawer();
         initTransitions();
 
@@ -107,9 +97,11 @@ public class UserProfileActivity extends AppCompatActivity {
         mUserAdapter = new UserAdapter();
         setupStat();
         mUserImageContainer.setVisibility(View.INVISIBLE);
+        mLoadStateView.setOnReloadListener(this);
 
         loadUser();
         mDrawer.start();
+        mLoadStateView.showProgress();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -128,11 +120,6 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void initProgressBar() {
-        mProgressBar.getProgressDrawable()
-                .setColorFilter(ContextCompat.getColor(this, R.color.accent), PorterDuff.Mode.SRC_IN);
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
 
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
@@ -167,20 +154,6 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    //TODO DRY
-    private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager)getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
-
-        if (taskList.get(0).numActivities == 1 &&
-                taskList.get(0).topActivity.getClassName().equals(getClass().getName())) {
-            Log.i(LOG_TAG, "This is last activity in the stack");
-            startActivity(NavUtils.getParentActivityIntent(this));
-        } else {
-            onBackPressed();
-        }
-    }
-
     public void loadUser() {
         ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<UserDetail>> organizationObservable =
@@ -190,14 +163,12 @@ public class UserProfileActivity extends AppCompatActivity {
         organizationObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    if (result.isOk())
-                        onLoaded(result.getData());
-                    else
-                        Log.e(LOG_TAG, "Error with response with user");
-                }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
-                    onError();
-                });
+                            if (!result.isOk())
+                                mLoadStateView.showErrorHint();
+                            else
+                                onLoaded(result.getData());
+                        }, this::onError,
+                        mLoadStateView::hideProgress);
     }
 
     public void onLoaded(ArrayList<UserDetail> users) {
@@ -205,17 +176,16 @@ public class UserProfileActivity extends AppCompatActivity {
         mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, mUserAdapter.getUser());
         mViewPager.setAdapter(mUserPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-        mProgressBar.setVisibility(View.GONE);
     }
 
-    public void onError() {
-        mProgressBar.setVisibility(View.GONE);
-        AlertDialog alertDialog = ErrorAlertDialogBuilder.newInstance(this, (DialogInterface dialog, int which) -> {
-            loadUser();
-            mProgressBar.setVisibility(View.VISIBLE);
-            dialog.dismiss();
-        });
-        alertDialog.show();
+    public void onError(Throwable error) {
+        Log.e(LOG_TAG, "" + error.getMessage());
+        mLoadStateView.showErrorHint();
+    }
+
+    @Override
+    public void onReload() {
+        loadUser();
     }
 
     private class UserAdapter {
@@ -257,24 +227,11 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void revealView(View view) {
-        if (view.getVisibility() == View.VISIBLE)
-            return;
-        view.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT < 21)
-            return;
-        int cx = (view.getLeft() + view.getRight()) / 2;
-        int cy = (view.getTop() + view.getBottom()) / 2;
-
-        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-        Animator animation = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-        animation.start();
-    }
-
     private void setupStat() {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -285,7 +242,8 @@ public class UserProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
     }
 }

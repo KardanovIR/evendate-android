@@ -5,26 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary">
-    <FrameLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/ll_feed_empty">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/tv_feed_header"
-            android:fontFamily="sans-serif-light"
-            android:textSize="24sp"
-            android:textColor="@color/feed_empty_text_color"
-            android:text="@string/list_users_empty_text"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"/>
-    </FrameLayout>
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,13 +12,9 @@
         android:layout_gravity="center_horizontal|top"
         tools:listitem="@layout/item_user_list"
         android:background="@color/window_reel_background"/>
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleLarge"
+    <ru.evendate.android.views.LoadStateView
+        android:id="@+id/load_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        android:layout_gravity="center_horizontal"
-        android:indeterminate="false" />
+        android:layout_gravity="center"/>
 </FrameLayout>

@@ -1,7 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,9 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.style.ForegroundColorSpan;
@@ -30,50 +29,47 @@ import com.prolificinteractive.materialcalendarview.OnDateChangedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.views.LoadStateView;
 
 /**
  * Created by fj on 28.09.2015.
  */
 public class CalendarActivity extends AppCompatActivity implements ReelFragment.OnEventsDataLoadedListener,
-        OnDateChangedListener {
+        OnDateChangedListener, LoadStateView.OnReloadListener {
+    /**
+     * change localize months in rus
+     */
+    private static DateFormatSymbols dateFormatMonths;
     private final String LOG_TAG = CalendarActivity.class.getSimpleName();
     @Bind(R.id.calendarView) MaterialCalendarView mCalendarView;
-    private ReelFragment mReelFragment;
-    private OneDayDecorator mOneDayDecorator;
-    private Date yesterdayDate;
     @Bind(R.id.calendar_button) ToggleButton mToggleButton;
     @Bind(R.id.calendar_date) TextView mSelectedDateTextView;
     @Bind(R.id.calendar_event_count) TextView mEventCountTextView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
-    @Bind(R.id.coordinator_layout) CoordinatorLayout coordinatorLayout;
+    @Bind(R.id.coordinator_layout) CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    private ReelFragment mReelFragment;
+    private OneDayDecorator mOneDayDecorator;
+    private Date yesterdayDate;
     private BottomSheetBehavior<View> behavior;
-
     private DateAdapter mAdapter;
     private DrawerWrapper mDrawer;
-    AlertDialog errorDialog;
-
-    /**
-     * change localize months in rus
-     */
-    private static DateFormatSymbols dateFormatMonths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +85,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mAdapter = new DateAdapter();
 
         setToolbarDate(mCalendarView.getCurrentDate());
-        loadDates();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
-        mDrawer.start();
+        mLoadStateView.setOnReloadListener(this);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -119,7 +113,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mCalendarView.setSelectedDate(mOneDayDecorator.getDate());
 
         dateFormatMonths = new DateFormatSymbols();
-        if(getResources().getConfiguration().locale.getLanguage().equals("ru"))
+        if (getResources().getConfiguration().locale.getLanguage().equals("ru"))
             dateFormatMonths.setMonths(
                     new String[]{"январь", "февраль", "март", "апрель", "май", "июнь",
                             "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"});
@@ -133,7 +127,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     private void initBottomSheet() {
-        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        View bottomSheet = mCoordinatorLayout.findViewById(R.id.bottom_sheet);
         behavior = BottomSheetBehavior.from(bottomSheet);
         behavior.setPeekHeight(getPeekHeightInPx());
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -154,6 +148,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
     }
+
     private int getPeekHeightInPx() {
         return getResources().getDimensionPixelSize(R.dimen.calendar_slide_height);
     }
@@ -165,6 +160,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
+
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
@@ -172,18 +168,27 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if(errorDialog != null)
-            errorDialog.dismiss();
+    protected void onStart() {
+        super.onStart();
+        mCalendarView.setVisibility(View.GONE);
+        mLoadStateView.showProgress();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
+        mDrawer.start();
+        loadDates();
     }
 
-    private void setToolbarDate(CalendarDay date){
+    @Override
+    public void onReload() {
+        loadDates();
+    }
+
+    private void setToolbarDate(CalendarDay date) {
         String month = dateFormatMonths.getMonths()[date.getMonth()];
         month = capitalize(month);
         mToolbar.setTitle(month);
     }
-    private String capitalize(String str){
+
+    private String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
@@ -196,12 +201,17 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> onLoadedDates(result.getData()),
-                        this::onError
+                        this::onError,
+                        mLoadStateView::hideProgress
                 );
     }
 
     public void onLoadedDates(ArrayList<DateCalendar> dateList) {
         Log.i(LOG_TAG, "loaded");
+        if (Build.VERSION.SDK_INT > 19)
+            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mCalendarView.setVisibility(View.VISIBLE);
+
         mAdapter.setDateList(dateList);
         mAdapter.setDates();
         mReelFragment.setDateAndReload(mCalendarView.getSelectedDate().getDate());
@@ -209,13 +219,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
-        errorDialog = ErrorAlertDialogBuilder.newInstance(getBaseContext(),
-                (DialogInterface dialog, int which) -> {
-                        loadDates();
-                        dialog.dismiss();
-                });
-        errorDialog.show();
+        Log.e(LOG_TAG, "" + error.getMessage());
+        mLoadStateView.showErrorHint();
     }
 
     @Override
@@ -228,9 +233,8 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         setSelectedDate();
     }
 
-    private void setSelectedDate(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
-        mSelectedDateTextView.setText(dateFormat.format(mCalendarView.getSelectedDate().getDate()));
+    private void setSelectedDate() {
+        mSelectedDateTextView.setText(DateFormatter.formatCalendarLabel(mCalendarView.getSelectedDate().getDate()));
     }
 
     @Override
@@ -342,15 +346,15 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             view.addSpan(new ForegroundColorSpan(Color.WHITE));
         }
 
+        public CalendarDay getDate() {
+            return date;
+        }
+
         /**
          * We're changing the internals, so make sure to call {@linkplain MaterialCalendarView#invalidateDecorators()}
          */
         public void setDate(Date date) {
             this.date = CalendarDay.from(date);
-        }
-
-        public CalendarDay getDate() {
-            return date;
         }
     }
 

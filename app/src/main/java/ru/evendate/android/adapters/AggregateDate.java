@@ -1,5 +1,7 @@
 package ru.evendate.android.adapters;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 
 /**
@@ -26,7 +28,7 @@ public class AggregateDate<T> implements Comparable<AggregateDate> {
     }
 
     @Override
-    public int compareTo(AggregateDate another) {
+    public int compareTo(@NonNull AggregateDate another) {
         return date > another.date ? 1 : date == another.date ? 0 : -1;
     }
 }

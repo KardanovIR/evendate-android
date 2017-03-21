@@ -12,13 +12,14 @@ import java.util.Locale;
 
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.ui.DateFormatter;
 
 /**
  * Created by Dmitry on 04.12.2015.
  */
 
 public class EventFormatter {
-    public static String formatDate(EventDetail event) {
+    public static String formatDateInterval(Event event) {
         //10-13, 15, 20-31 december; 23 january
         if (event.getDateList().size() == 0) {
             //no dates -> error at server
@@ -40,8 +41,8 @@ public class EventFormatter {
         String curStr = "";
         for (Date date : event.getDateList()) {
             if (firstDay.equals("")) {
-                firstDay = formatDay(date);
-                firstMonth = formatMonth(date);
+                firstDay = formatDay(date.getEventDate());
+                firstMonth = formatMonth(date.getEventDate());
                 curDay = firstDay;
                 curMonth = firstMonth;
                 curStr = curDay;
@@ -49,8 +50,8 @@ public class EventFormatter {
             }
             prevDay = curDay;
             prevMonth = curMonth;
-            curDay = formatDay(date);
-            curMonth = formatMonth(date);
+            curDay = formatDay(date.getEventDate());
+            curMonth = formatMonth(date.getEventDate());
             if (Integer.parseInt(curDay) - 1 != Integer.parseInt(prevDay)) {
                 resStr += curStr;
                 curStr = "";
@@ -106,68 +107,36 @@ public class EventFormatter {
         return resStr;
     }
 
-    public static String formatTags(EventDetail event) {
-        String tags = null;
-        for (Tag tag : event.getTagList()) {
-            if (tags == null)
-                tags = tag.getName();
-            else
-                tags += ", " + tag.getName();
-        }
-        return tags;
-    }
-
-    public static String formatMonth(Date date) {
-        return formatMonth(date.getEventDate());
-    }
-
-    public static String formatMonth(long date) {
-        DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
-        return monthFormat.format(new java.util.Date(date * 1000));
-    }
-
-    public static String formatDay(Date date) {
-        return formatDay(date.getEventDate());
-    }
-
-    public static String formatDay(long date) {
+    private static String formatDay(long date) {
         DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
         return dayFormat.format(new java.util.Date(date * 1000));
     }
 
-    public static String formatTime(Date date) {
-        return formatTime(date.getEventDate());
+    private static String formatMonth(long date) {
+        DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
+        return monthFormat.format(new java.util.Date(date * 1000));
     }
 
-    public static String formatTime(long date) {
-        DateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        return dayFormat.format(new java.util.Date(date * 1000));
-    }
 
-    public static String formatTime(String date) {
-        return date.substring(0, date.lastIndexOf(":"));
-    }
 
-    public static String formatDate(Date date) {
-        return formatDay(date.getEventDate()) + " " + formatMonth(date.getEventDate());
+    public static String formatEventTime(String startTime, String endTime) {
+        return catSeconds(startTime) + (endTime != null ? " - " + catSeconds(endTime) : "");
     }
 
     public static String formatDate(long date) {
-        return formatDay(date) + " " + formatMonth(date);
-    }
-
-    public static String formatRegistrationDate(long date) {
-        DateFormat monthFormat = new SimpleDateFormat("d.MM.yyyy", Locale.getDefault());
-        return monthFormat.format(date * 1000);
+        return DateFormatter.formatEventSingleDate(DateUtils.date(date));
     }
 
     public static String formatEventTime(Context c, DateFull date) {
         if (date.getStartTime().equals(date.getEndTime()) && date.getStartTime().equals("00:00:00"))
             return c.getString(R.string.event_all_day);
-        return catEventTime(date.getStartTime()) + " - " + catEventTime(date.getEndTime());
+        return catSeconds(date.getStartTime()) + " - " + catSeconds(date.getEndTime());
     }
 
-    private static String catEventTime(String time) {
+    /**
+     * remove seconds from time string HH:mm:ss
+     */
+    private static String catSeconds(String time) {
         return time.substring(0, time.lastIndexOf(":"));
     }
 

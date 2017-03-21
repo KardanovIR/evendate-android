@@ -19,7 +19,7 @@ import ru.evendate.android.models.Tag;
 /**
  * Created by Dmitry on 27.02.2016.
  */
-@SuppressWarnings("unused")
+@Deprecated
 public class TagsView extends ViewGroup {
     private ArrayList<Tag> mTags;
     private OnTagClickListener listener;

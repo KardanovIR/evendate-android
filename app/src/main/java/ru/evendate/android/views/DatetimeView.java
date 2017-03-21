@@ -14,7 +14,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateFull;
+import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.ui.DateFormatter;
 
 /**
  * Created by Dmitry on 04.03.2016.
@@ -48,15 +50,14 @@ public class DatetimeView extends LinearLayout {
 
     public void setDate(DateFull date) {
         mDate = date;
-        String endTime = mDate.getEndTime();
-        mTimeView.setText(EventFormatter.formatTime(mDate.getStartTime()) + (endTime != null ? " - " + EventFormatter.formatTime(mDate.getEndTime()) : ""));
-        mDateView.setText(EventFormatter.formatDate(mDate));
+        mTimeView.setText(EventFormatter.formatEventTime(mDate.getStartTime(), mDate.getEndTime()));
+        mDateView.setText(EventFormatter.formatDate(mDate.getEventDate()));
     }
 
     public void setDate(long date) {
         if (!isInEditMode())
             throw new IllegalArgumentException("Only for using in edit mode");
-        mTimeView.setText(EventFormatter.formatTime(date) + " - " + EventFormatter.formatTime(date));
-        mDateView.setText(EventFormatter.formatDate(date));
+        mTimeView.setText(DateFormatter.formatEventSingleTime(DateUtils.date(date), DateUtils.date(date)));
+        mDateView.setText(DateFormatter.formatEventSingleDate(DateUtils.date(date)));
     }
 }

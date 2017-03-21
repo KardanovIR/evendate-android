@@ -25,14 +25,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
@@ -42,7 +44,7 @@ import ru.evendate.android.adapters.EventsAdapter;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.adapters.OrganizationCatalogAdapter;
 import ru.evendate.android.adapters.UsersAdapter;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
@@ -53,14 +55,10 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
-import ru.evendate.android.views.TagsView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.views.TagsRecyclerView;
 
 public class SearchResultsActivity extends AppCompatActivity {
-    private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
-
+    public static final String SEARCH_BY_TAG = "search_by_tag";
     String query = "";
     SearchView mSearchView;
     @Bind(R.id.main_content) RelativeLayout mRelativeLayout;
@@ -68,15 +66,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     @Bind(R.id.tabs) TabLayout mTabs;
     @Bind(R.id.pager) ViewPager mViewPager;
     @Bind(R.id.hint) TextView mHintView;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @Bind(R.id.tags) TagsRecyclerView tagsView;
+    private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
     private SearchPagerAdapter mSearchPagerAdapter;
     private DrawerWrapper mDrawer;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    public static final String SEARCH_BY_TAG = "search_by_tag";
     private boolean isSearchByTag;
-
     private SearchEventFragment searchEventByTagFragment;
-    @Bind(R.id.tags) TagsView tagsView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,7 +99,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             setSearchHint();
             setSearchQueryAndStart();
         });
-        mLoadStateView.setOnReloadListener(() -> loadTags());
+        mLoadStateView.setOnReloadListener(this::loadTags);
         loadTags();
         mDrawer.start();
     }
@@ -196,21 +192,20 @@ public class SearchResultsActivity extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -10);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Observable<ResponseArray<Tag>> observable =
-                apiService.getTopTags(EvendateAccountManager.peekToken(this), dateFormat.format(c.getTime()), 10);
+                apiService.getTopTags(EvendateAccountManager.peekToken(this), DateFormatter.formatDateRequest(c.getTime()), 10);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> tagsView.setTags(result.getData()),
+                        result -> tagsView.setTags(result.getData(), ChipsLayoutManager.STRATEGY_CENTER),
                         this::onError,
                         mLoadStateView::hideProgress
                 );
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
@@ -263,87 +258,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         mViewPager.setVisibility(View.GONE);
     }
 
-    class SearchPagerAdapter extends FragmentPagerAdapter {
-        private final int TAB_COUNT = 3;
-        private final int EVENT_TAB = 0;
-        private final int ORG_TAB = 1;
-        private final int USER_TAB = 2;
-        private Context mContext;
-        private ArrayList<SearchResultFragment> fragments = new ArrayList<>();
-
-        public SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
-            super(fragmentManager);
-            mContext = context;
-            fragments.add(EVENT_TAB, new SearchEventFragment());
-            fragments.add(ORG_TAB, new SearchOrgFragment());
-            fragments.add(USER_TAB, new SearchUsersFragment());
-
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case EVENT_TAB: {
-                    return fragments.get(EVENT_TAB);
-                }
-                case ORG_TAB: {
-                    return fragments.get(ORG_TAB);
-                }
-                case USER_TAB: {
-                    return fragments.get(USER_TAB);
-                }
-                default:
-                    throw new IllegalArgumentException("invalid page number");
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return TAB_COUNT;
-        }
-
-        public ArrayList<SearchResultFragment> getFragments() {
-            return fragments;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case EVENT_TAB:
-                    return mContext.getString(R.string.tab_search_events);
-                case ORG_TAB:
-                    return mContext.getString(R.string.tab_search_organizations);
-                case USER_TAB:
-                    return mContext.getString(R.string.tab_search_users);
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * return strings for statistics
-         */
-        public String getPageLabel(int position) {
-            switch (position) {
-                case EVENT_TAB:
-                    return mContext.getString(R.string.stat_page_search_events);
-                case ORG_TAB:
-                    return mContext.getString(R.string.stat_page_search_orgs);
-                case USER_TAB:
-                    return mContext.getString(R.string.stat_page_search_users);
-                default:
-                    return null;
-            }
-        }
-    }
-
     public abstract static class SearchResultFragment extends Fragment implements LoadStateView.OnReloadListener {
         protected static final String LOG_TAG = SearchResultFragment.class.getSimpleName();
-
-        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-        @Bind(R.id.load_state) LoadStateView mLoadStateView;
         protected AbstractAdapter mAdapter;
         protected String query;
+        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+        @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
         @Nullable
         @Override
@@ -355,7 +275,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             return rootView;
         }
 
-        private void initLoadStateView(){
+        private void initLoadStateView() {
             mLoadStateView.setOnReloadListener(this);
             mLoadStateView.setEmptyHeader(getContext().getString(R.string.search_empty_header));
             mLoadStateView.setEmptyDescription(getContext().getString(R.string.search_empty_description));
@@ -420,9 +340,9 @@ public class SearchResultsActivity extends AppCompatActivity {
             final int length = mAdapterController.getLength();
             final int offset = mAdapterController.getOffset();
 
-            Observable<ResponseArray<EventDetail>> observable =
+            Observable<ResponseArray<Event>> observable =
                     apiService.findEvents(EvendateAccountManager.peekToken(getContext()), query, true,
-                            EventDetail.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
+                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -438,7 +358,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             loadAdaptive();
         }
 
-        public void onLoadedEvents(ArrayList<EventDetail> subList) {
+        public void onLoadedEvents(ArrayList<Event> subList) {
             Log.i(LOG_TAG, "loaded " + subList.size() + " events");
             mAdapterController.loaded(subList);
             checkListAndShowHint();
@@ -534,9 +454,9 @@ public class SearchResultsActivity extends AppCompatActivity {
             final int length = mAdapterController.getLength();
             final int offset = mAdapterController.getOffset();
 
-            Observable<ResponseArray<EventDetail>> observable =
+            Observable<ResponseArray<Event>> observable =
                     apiService.findEventsByTags(EvendateAccountManager.peekToken(getContext()), query, true,
-                            EventDetail.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
+                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -545,6 +465,80 @@ public class SearchResultsActivity extends AppCompatActivity {
                             this::onError,
                             mLoadStateView::hideProgress
                     );
+        }
+    }
+
+    class SearchPagerAdapter extends FragmentPagerAdapter {
+        private final int TAB_COUNT = 3;
+        private final int EVENT_TAB = 0;
+        private final int ORG_TAB = 1;
+        private final int USER_TAB = 2;
+        private Context mContext;
+        private ArrayList<SearchResultFragment> fragments = new ArrayList<>();
+
+        SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
+            super(fragmentManager);
+            mContext = context;
+            fragments.add(EVENT_TAB, new SearchEventFragment());
+            fragments.add(ORG_TAB, new SearchOrgFragment());
+            fragments.add(USER_TAB, new SearchUsersFragment());
+
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case EVENT_TAB: {
+                    return fragments.get(EVENT_TAB);
+                }
+                case ORG_TAB: {
+                    return fragments.get(ORG_TAB);
+                }
+                case USER_TAB: {
+                    return fragments.get(USER_TAB);
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        ArrayList<SearchResultFragment> getFragments() {
+            return fragments;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case EVENT_TAB:
+                    return mContext.getString(R.string.tab_search_events);
+                case ORG_TAB:
+                    return mContext.getString(R.string.tab_search_organizations);
+                case USER_TAB:
+                    return mContext.getString(R.string.tab_search_users);
+                default:
+                    return null;
+            }
+        }
+
+        /**
+         * return strings for statistics
+         */
+        String getPageLabel(int position) {
+            switch (position) {
+                case EVENT_TAB:
+                    return mContext.getString(R.string.stat_page_search_events);
+                case ORG_TAB:
+                    return mContext.getString(R.string.stat_page_search_orgs);
+                case USER_TAB:
+                    return mContext.getString(R.string.stat_page_search_users);
+                default:
+                    return null;
+            }
         }
     }
 }

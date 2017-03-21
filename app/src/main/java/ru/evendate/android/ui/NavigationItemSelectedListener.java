@@ -11,6 +11,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationModel;
+import ru.evendate.android.ui.checkin.CheckInActivity;
+import ru.evendate.android.ui.tickets.EventRegisteredActivity;
 
 /**
  * Created by ds_gordeev on 14.03.2016.
@@ -45,6 +47,12 @@ public class NavigationItemSelectedListener
                 break;
             case DrawerWrapper.SETTINGS_IDENTIFIER:
                 openSettingsActivity();
+                break;
+            case DrawerWrapper.TICKETS_IDENTIFIER:
+                openTicketsActivity();
+                break;
+            case DrawerWrapper.ADMINISTRATION_IDENTIFIER:
+                openAdminActivity();
                 break;
             //case R.id.nav_add_account:
             //    Intent authIntent = new Intent(mContext, AuthActivity.class);
@@ -87,6 +95,18 @@ public class NavigationItemSelectedListener
         openActivity(settingsIntent);
     }
 
+    private void openTicketsActivity() {
+        Intent ticketsIntent = new Intent(mContext, EventRegisteredActivity.class);
+        ticketsIntent = addFlags(ticketsIntent);
+        openActivity(ticketsIntent);
+    }
+
+    private void openAdminActivity() {
+        Intent adminIntent = new Intent(mContext, CheckInActivity.class);
+        adminIntent = addFlags(adminIntent);
+        openActivity(adminIntent);
+    }
+
     private void openOrganizationFromSub(IDrawerItem drawerItem) {
         int id = getOrgIdFromDrawerItem(drawerItem);
         Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
@@ -98,7 +118,7 @@ public class NavigationItemSelectedListener
         return ((OrganizationModel)drawerItem.getTag()).getEntryId();
     }
 
-    private Intent addFlags(Intent intent){
+    private Intent addFlags(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;

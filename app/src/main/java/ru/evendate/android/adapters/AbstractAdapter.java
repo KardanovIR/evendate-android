@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
+@Deprecated
 public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     protected Context mContext;
     private List<T> mList = new ArrayList<>();

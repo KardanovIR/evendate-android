@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -20,7 +19,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -30,6 +28,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.OrganizationDetail;
@@ -38,16 +41,13 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceImpl;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.evendate.android.views.LoadStateView;
 
-public class OnboardingDialog extends DialogFragment {
+public class OnboardingDialog extends DialogFragment implements LoadStateView.OnReloadListener {
     private static final String LOG_TAG = OnboardingDialog.class.getSimpleName();
 
     private OnboardingAdapter mAdapter;
-    private ProgressBar mProgressBar;
-    AlertDialog errorDialog;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
     OnOrgSelectedListener listener;
 
     interface OnOrgSelectedListener {
@@ -60,7 +60,6 @@ public class OnboardingDialog extends DialogFragment {
 
         View customTitle = getActivity().getLayoutInflater()
                 .inflate(R.layout.dialog_title, null);
-        mProgressBar = (ProgressBar) customTitle.findViewById(R.id.progress_bar);
 
         mAdapter = (new OnboardingAdapter(getActivity()));
 
@@ -74,29 +73,23 @@ public class OnboardingDialog extends DialogFragment {
                 .setNeutralButton(R.string.dialog_skip, null);
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener((DialogInterface d) -> {
-            Button NeutralButton = ((AlertDialog) d).getButton(DialogInterface.BUTTON_NEUTRAL);
+            Button NeutralButton = ((AlertDialog)d).getButton(DialogInterface.BUTTON_NEUTRAL);
             NeutralButton.setTextColor(Color.parseColor("#FFB1B1B1"));
         });
-        loadOrgs();
-        displayProgress();
+        ButterKnife.bind(this, customTitle);
+        mLoadStateView.setOnReloadListener(this);
         return dialog;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mLoadStateView.showProgress();
+        loadOrgs();
     }
 
     public void setOnOrgSelectedListener(OnOrgSelectedListener listener) {
         this.listener = listener;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (errorDialog != null) {
-            errorDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     private void loadOrgs() {
@@ -110,38 +103,28 @@ public class OnboardingDialog extends DialogFragment {
                 .subscribe(
                         result -> onLoaded(new ArrayList<>(result.getData())),
                         this::onError,
-                        this::hideProgress
+                        mLoadStateView::hideProgress
                 );
     }
 
     public void onLoaded(ArrayList<OrganizationDetail> subList) {
-        if(!isAdded())
+        if (!isAdded())
             return;
         Log.i(LOG_TAG, "loaded");
         mAdapter.setList(new ArrayList<>(subList));
     }
 
+    @Override
+    public void onReload() {
+        loadOrgs();
+    }
+
     public void onError(Throwable error) {
-        if(!isAdded())
+        if (!isAdded())
             return;
-        Log.e(LOG_TAG, error.getMessage());
-        errorDialog = ErrorAlertDialogBuilder.newInstance(getContext(),
-                (DialogInterface dialog, int which) -> {
-                    loadOrgs();
-                    displayProgress();
-                    dialog.dismiss();
-                });
-        errorDialog.show();
+        Log.e("" + LOG_TAG, error.getMessage());
+        mLoadStateView.showErrorHint();
     }
-
-    private void displayProgress() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgress() {
-        mProgressBar.setVisibility(View.GONE);
-    }
-
 
     class OnboardingAdapter extends ArrayAdapter<OrganizationDetail> {
         private final Activity context;
@@ -201,16 +184,16 @@ public class OnboardingDialog extends DialogFragment {
                 LayoutInflater inflater = context.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.item_onboarding, parent, false);
                 holder = new ViewHolder();
-                holder.textView = (TextView) rowView.findViewById(R.id.label);
+                holder.textView = (TextView)rowView.findViewById(R.id.label);
                 holder.iconView = (ImageView)rowView.findViewById(R.id.icon);
-                holder.checkBox = (CheckBox) rowView.findViewById(R.id.checkbox);
+                holder.checkBox = (CheckBox)rowView.findViewById(R.id.checkbox);
                 holder.checkBox.setOnCheckedChangeListener(
                         (CompoundButton buttonView, boolean isChecked) ->
                                 checked[position] = isChecked
                 );
                 rowView.setTag(holder);
             } else {
-                holder = (ViewHolder) rowView.getTag();
+                holder = (ViewHolder)rowView.getTag();
             }
 
             OrganizationDetail organization = mList.get(position);

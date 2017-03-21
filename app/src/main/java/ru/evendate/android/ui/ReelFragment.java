@@ -1,9 +1,5 @@
 package ru.evendate.android.ui;
 
-/**
- * Created by Dmitry on 23.09.2015.
- */
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,30 +10,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.EventsAdapter;
 import ru.evendate.android.adapters.NpaLinearLayoutManager;
-import ru.evendate.android.models.EventDetail;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.views.LoadStateView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * fragment containing a reel
@@ -175,8 +168,8 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     private void initRecyclerView() {
         mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
-        /**
-         * listener that let using refresh on top of the event list
+        /*
+          listener that let using refresh on top of the event list
          */
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -284,9 +277,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
                 );
     }
 
-    private Observable<ResponseArray<EventDetail>> getDataObservable() {
+    private Observable<ResponseArray<Event>> getDataObservable() {
         ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<EventDetail>> observable;
+        Observable<ResponseArray<Event>> observable;
 
         final int length = mAdapterController.getLength();
         final int offset = mAdapterController.getOffset();
@@ -316,40 +309,39 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         return observable;
     }
 
-    private Observable<ResponseArray<EventDetail>> getFeed(ApiService apiService,
-                                                           int length, int offset) {
+    private Observable<ResponseArray<Event>> getFeed(ApiService apiService,
+                                                     int length, int offset) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
-    private Observable<ResponseArray<EventDetail>> getFavorite(ApiService apiService,
-                                                               int length, int offset) {
+    private Observable<ResponseArray<Event>> getFavorite(ApiService apiService,
+                                                         int length, int offset) {
         return apiService.getFavorite(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
-    private Observable<ResponseArray<EventDetail>> getOrgEvent(
+    private Observable<ResponseArray<Event>> getOrgEvent(
             ApiService apiService, int length, int offset, int organizationId) {
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                 organizationId, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
-    private Observable<ResponseArray<EventDetail>> getOrgPastEvent(
+    private Observable<ResponseArray<Event>> getOrgPastEvent(
             ApiService apiService, int length, int offset, int organizationId) {
         String date = ServiceUtils.formatDateForServer(Calendar.getInstance().getTime());
         return apiService.getEvents(EvendateAccountManager.peekToken(getActivity()),
                 organizationId, date, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_LAST_DATE, length, offset);
     }
 
-    private Observable<ResponseArray<EventDetail>> getCalendarEvent(ApiService apiService,
-                                                                    int length, int offset, Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private Observable<ResponseArray<Event>> getCalendarEvent(ApiService apiService,
+                                                              int length, int offset, Date date) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                dateFormat.format(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
+                DateFormatter.formatDateRequest(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
-    private Observable<ResponseArray<EventDetail>> getRecommendation(ApiService apiService,
-                                                                     int length, int offset) {
+    private Observable<ResponseArray<Event>> getRecommendation(ApiService apiService,
+                                                               int length, int offset) {
         return apiService.getRecommendations(EvendateAccountManager.peekToken(getActivity()),
                 true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }

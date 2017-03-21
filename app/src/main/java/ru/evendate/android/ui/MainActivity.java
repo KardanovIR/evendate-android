@@ -1,6 +1,5 @@
 package ru.evendate.android.ui;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -9,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +24,9 @@ import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
 import ru.evendate.android.network.ServiceImpl;
+import ru.evendate.android.ui.cities.CityActivity;
+
+import static ru.evendate.android.ui.cities.CityActivity.KEY_PROMPT;
 
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener, OnboardingDialog.OnOrgSelectedListener {
@@ -33,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     private DrawerWrapper mDrawer;
 
     public static final int REQUEST_AUTH = 1;
+    public static final int REQUEST_SELECT_CITY = 2;
     public static final String SHOW_ONBOARDING = "onboarding";
+    public static final String TAG_ONBOARDING = "tag_onboarding";
     private static boolean requestOnboarding = false;
     OnboardingDialog onboarding;
 
@@ -52,10 +57,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mFragment).commit();
 
-        checkAccount();
-        checkDeviceTokenSynced();
 
-        if(getIntent() != null)
+        if (getIntent() != null)
             handleIntent(getIntent());
     }
 
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mToolbar.setNavigationIcon(R.drawable.ic_menu);
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
+
     private void initTransitions() {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setEnterTransition(new Fade());
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
         mDrawer.setListener(() -> {
-            if(mDrawer.getSubs().size() == 0)
+            if (mDrawer.getSubs().size() == 0)
                 showOnboarding();
         });
     }
@@ -108,40 +112,62 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         handleIntent(intent);
     }
 
-    private void handleIntent(Intent intent){
+    private void handleIntent(Intent intent) {
         requestOnboarding = intent.getBooleanExtra(SHOW_ONBOARDING, false);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (!checkAccount()) {
+            startSignIn();
+            return;
+        }
+        checkDeviceTokenSynced();
+        if (!checkCity()) {
+            startSelectCity();
+            return;
+        }
+
         //TODO cause auth flow
         mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
         mDrawer.start();
-        if(requestOnboarding){
+        if (requestOnboarding) {
             forceShowOnboarding();
             requestOnboarding = false;
         }
     }
 
     /**
-     * check account exists and start auth if no
+     * check account exists
      */
-    private void checkAccount() {
-        Account account = EvendateAccountManager.getSyncAccount(this);
-        if (account == null) {
-            Intent authIntent = new Intent(this, AuthActivity.class);
+    private boolean checkAccount() {
+        return EvendateAccountManager.getSyncAccount(this) != null;
+    }
 
-            //if(Build.VERSION.SDK_INT >= 21) {
-                //startActivityForResult(authIntent, REQUEST_AUTH, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-            //}else
-                startActivityForResult(authIntent, REQUEST_AUTH);
-        }
+    private void startSignIn() {
+        Intent authIntent = new Intent(this, AuthActivity.class);
+        startActivityForResult(authIntent, REQUEST_AUTH);
+    }
+
+    /**
+     * check user city selected and start if no
+     */
+    private boolean checkCity() {
+        return EvendatePreferences.newInstance(this).getUserCitySelected();
+    }
+
+    private void startSelectCity() {
+        Intent cityIntent = new Intent(this, CityActivity.class);
+        cityIntent.putExtra(KEY_PROMPT, true);
+        startActivityForResult(cityIntent, REQUEST_SELECT_CITY);
     }
 
     private void checkDeviceTokenSynced() {
+        String token = EvendatePreferences.getDeviceToken(this);
+        Log.d(MainActivity.class.getSimpleName(), "checking device token synced for: " + token);
         if (!EvendatePreferences.getDeviceTokenSynced(this)) {
-            String token = EvendatePreferences.getDeviceToken(this);
             ServiceImpl.sendRegistrationToServer(this, token);
         }
     }
@@ -150,6 +176,11 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_AUTH) {
+            if (resultCode == RESULT_CANCELED) {
+                finish();
+            }
+        }
+        if (requestCode == REQUEST_SELECT_CITY) {
             if (resultCode == RESULT_CANCELED) {
                 finish();
             }
@@ -166,15 +197,15 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             return;
         onboarding = new OnboardingDialog();
         onboarding.setOnOrgSelectedListener(this);
-        onboarding.show(getSupportFragmentManager(), "onboarding");
+        onboarding.show(getSupportFragmentManager(), TAG_ONBOARDING);
     }
 
     private void forceShowOnboarding() {
-        if(getSupportFragmentManager().findFragmentByTag("onboarding") != null)
+        if (getSupportFragmentManager().findFragmentByTag(TAG_ONBOARDING) != null)
             return;
         onboarding = new OnboardingDialog();
         onboarding.setOnOrgSelectedListener(this);
-        onboarding.show(getSupportFragmentManager(), "onboarding");
+        onboarding.show(getSupportFragmentManager(), TAG_ONBOARDING);
     }
 
     @Override

@@ -31,7 +31,7 @@
             android:paddingRight="20dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            style="@style/Caption.Light" />
+            style="@style/Caption.Light"/>
         <ru.evendate.android.views.UsersView
             android:id="@+id/user_container"
             android:layout_width="match_parent"

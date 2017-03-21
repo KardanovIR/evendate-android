@@ -34,8 +34,7 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
     @Override
     public void onBindViewHolder(DateHolder holder, int position) {
         AggregateDate<ActionType> entry = getItem(position);
-        String date = EventFormatter.formatDay(entry.getDate()) + " " +
-                EventFormatter.formatMonth(entry.getDate());
+        String date = EventFormatter.formatDate(entry.getDate());
         holder.mDateTextView.setText(date);
         holder.mActionsAdapter = new ActionTypesAdapter(mContext, actionItemsPool);
         WrapLinearLayoutManager manager =

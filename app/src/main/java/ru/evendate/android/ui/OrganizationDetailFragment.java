@@ -1,8 +1,6 @@
 package ru.evendate.android.ui;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -51,12 +48,14 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
@@ -71,9 +70,6 @@ import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.UserFavoritedCard;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION;
 import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION_PAST;
@@ -82,13 +78,10 @@ import static ru.evendate.android.ui.UiUtils.revealView;
 /**
  * Contain details of organization
  */
-public class OrganizationDetailFragment extends Fragment implements LoadStateView.OnReloadListener {
-    private final String LOG_TAG = "OrganizationFragment";
-
-    private int organizationId = -1;
+public class OrganizationDetailFragment extends BaseFragment implements LoadStateView.OnReloadListener {
     public static final String URI_KEY = "uri";
-    private Uri mUri;
-
+    final int TITLE_SHIFTED_BY_BUTTON = 2;
+    private final String LOG_TAG = "OrganizationFragment";
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
@@ -99,20 +92,10 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     @Bind(R.id.organization_image) ImageView mBackgroundView;
     @Bind(R.id.organization_image_foreground) ImageView mForegroundView;
     @Bind(R.id.organization_icon) CircleImageView mIconView;
-
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.tabs) TabLayout mTabs;
     @Bind(R.id.pager) ViewPager mViewPager;
-    private OrganizationPagerAdapter mPagerAdapter;
-    private DrawerWrapper mDrawer;
-    private OrganizationDetail mOrganization;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    ObjectAnimator mTitleAppearAnimation;
-    ObjectAnimator mTitleDisappearAnimation;
-
-    final int TITLE_SHIFTED_BY_BUTTON = 2;
-
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -150,6 +133,13 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {}
     };
+    ObjectAnimator mTitleAppearAnimation;
+    ObjectAnimator mTitleDisappearAnimation;
+    private int organizationId = -1;
+    private Uri mUri;
+    private OrganizationPagerAdapter mPagerAdapter;
+    private DrawerWrapper mDrawer;
+    private OrganizationDetail mOrganization;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -318,20 +308,6 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         mDrawer.start();
     }
 
-    //TODO DRY
-    private void onUpPressed() {
-        ActivityManager activityManager = (ActivityManager)getActivity().getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(10);
-
-        if (taskList.get(0).numActivities == 1 &&
-                taskList.get(0).topActivity.getClassName().equals(getActivity().getClass().getName())) {
-            Log.i(LOG_TAG, "This is last activity in the stack");
-            getActivity().startActivity(NavUtils.getParentActivityIntent(getActivity()));
-        } else {
-            getActivity().onBackPressed();
-        }
-    }
-
     private void loadOrg() {
         ApiService apiService = ApiFactory.getService(getActivity());
         Observable<ResponseArray<OrganizationFull>> organizationObservable =
@@ -363,7 +339,7 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
     }
 
     public void onError(Throwable error) {
-        Log.e(LOG_TAG, error.getMessage());
+        Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
@@ -384,70 +360,9 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
         }
     }
 
-    class OrganizationPagerAdapter extends FragmentPagerAdapter {
-        private final int TAB_COUNT = 2;
-        private final int FUTURE_TAB = 0;
-        private final int PAST_TAB = 1;
-        private Context mContext;
-        ReelFragment mFutureReelFragment;
-        ReelFragment mPastReelFragment;
-
-        OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
-            super(fragmentManager);
-            mContext = context;
-            mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
-            mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case FUTURE_TAB: {
-                    return mFutureReelFragment;
-                }
-                case PAST_TAB: {
-                    return mPastReelFragment;
-                }
-                default:
-                    throw new IllegalArgumentException("invalid page number");
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return TAB_COUNT;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case FUTURE_TAB:
-                    return mContext.getString(R.string.tab_organization_future_events);
-                case PAST_TAB:
-                    return mContext.getString(R.string.tab_organization_past_events);
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * return strings for statistics
-         */
-        String getPageLabel(int position) {
-            switch (position) {
-                case FUTURE_TAB:
-                    return mContext.getString(R.string.stat_page_organization_events);
-                case PAST_TAB:
-                    return mContext.getString(R.string.stat_page_organization_past_events);
-                default:
-                    return null;
-            }
-        }
-    }
-
     public static class OrganizationInfo extends Fragment {
-        Fragment parentFragment;
         private static final String ORG_OBJ_KEY = "organization";
+        Fragment parentFragment;
         OrganizationDetail mOrganization;
 
         @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -545,5 +460,66 @@ public class OrganizationDetailFragment extends Fragment implements LoadStateVie
                 getActivity().startActivity(intent);
         }
 
+    }
+
+    class OrganizationPagerAdapter extends FragmentPagerAdapter {
+        private final int TAB_COUNT = 2;
+        private final int FUTURE_TAB = 0;
+        private final int PAST_TAB = 1;
+        ReelFragment mFutureReelFragment;
+        ReelFragment mPastReelFragment;
+        private Context mContext;
+
+        OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
+            super(fragmentManager);
+            mContext = context;
+            mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
+            mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case FUTURE_TAB: {
+                    return mFutureReelFragment;
+                }
+                case PAST_TAB: {
+                    return mPastReelFragment;
+                }
+                default:
+                    throw new IllegalArgumentException("invalid page number");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.tab_organization_future_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.tab_organization_past_events);
+                default:
+                    return null;
+            }
+        }
+
+        /**
+         * return strings for statistics
+         */
+        String getPageLabel(int position) {
+            switch (position) {
+                case FUTURE_TAB:
+                    return mContext.getString(R.string.stat_page_organization_events);
+                case PAST_TAB:
+                    return mContext.getString(R.string.stat_page_organization_past_events);
+                default:
+                    return null;
+            }
+        }
     }
 }
