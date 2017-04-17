@@ -13,6 +13,7 @@
     <dimen name="list_item_spacing">16dp</dimen>
     <dimen name="list_item_spacing_half">8dp</dimen>
 
+    <dimen name="event_background_width">480dp</dimen>
 
     <!-- font sizes -->
     <!--<dimen name="font_larger">22sp</dimen>

@@ -12,7 +12,8 @@ import java.util.ArrayList;
 @SuppressWarnings("unused")
 @Parcel
 public class Event extends DataModel implements EventFeed, EventRegistered {
-    public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
+    public static final String FIELDS_LIST = "location,latitude,longitude," +
+            "imageHorizontalSmallUrl,imageHorizontalMediumUrl,organization_name," +
             "organization_type_name,organization_short_name," +
             "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
@@ -44,6 +45,10 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     String location;
     double latitude;
     double longitude;
+    @SerializedName("imageHorizontalSmallUrl")
+    String imageHorizontalSmallUrl;
+    @SerializedName("imageHorizontalMediumUrl")
+    String imageHorizontalMediumUrl;
     @SerializedName("organization_name")
     String organizationName;
     @SerializedName("organization_type_name")
@@ -166,6 +171,14 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getImageHorizontalSmallUrl() {
+        return imageHorizontalSmallUrl;
+    }
+
+    public String getImageHorizontalMediumUrl() {
+        return imageHorizontalMediumUrl;
     }
 
     public String getOrganizationName() {

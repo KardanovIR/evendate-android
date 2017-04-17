@@ -13,27 +13,6 @@ import ru.evendate.android.data.EvendateContract;
 public class Action extends DataModel implements ActionTarget, Comparable<Action> {
     public static final String FIELDS_LIST = "name,created_at,event,organization{fields:'" + OrganizationSubscription.FIELDS_LIST + "'},user{fields:'" + User.FIELDS_LIST + "'}";
     public static final String ORDER_BY = "-created_at";
-
-    public enum Type {
-        ACTION_LIKE(5),
-        ACTION_DISLIKE(4),
-        ACTION_SUBSCRIBE(3),
-        ACTION_UNSUBSCRIBE(6),
-        ACTION_VIEW_EVENT(2),
-        ACTION_VIEW_ORGANIZATION(1),
-        ACTION_VIEW_EVENT_INFO(7);
-
-        final int type;
-
-        Type(int type) {
-            this.type = type;
-        }
-
-        public int type() {
-            return type;
-        }
-    }
-
     @SerializedName("stat_type_id")
     long statTypeId;
     @SerializedName("organization_id")
@@ -44,11 +23,9 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     long userId;
     @SerializedName("entity")
     String entity;
-
     String name;
     @SerializedName("created_at")
     long createdAt;
-
     Event event;
     OrganizationFull organization;
     User user;
@@ -121,7 +98,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     @Override
     public String getTargetImageLink() {
         if (statTypeId == Type.ACTION_DISLIKE.type() || statTypeId == Type.ACTION_LIKE.type())
-            return getEvent().getImageHorizontalUrl();
+            return getEvent().getImageHorizontalSmallUrl();
         else if (statTypeId == Type.ACTION_SUBSCRIBE.type() || statTypeId == Type.ACTION_UNSUBSCRIBE.type())
             return organization.getLogoSmallUrl();
         else
@@ -140,5 +117,25 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     @Override
     public int compareTo(@NonNull Action another) {
         return createdAt > another.createdAt ? 1 : createdAt == another.createdAt ? 0 : -1;
+    }
+
+    public enum Type {
+        ACTION_LIKE(5),
+        ACTION_DISLIKE(4),
+        ACTION_SUBSCRIBE(3),
+        ACTION_UNSUBSCRIBE(6),
+        ACTION_VIEW_EVENT(2),
+        ACTION_VIEW_ORGANIZATION(1),
+        ACTION_VIEW_EVENT_INFO(7);
+
+        final int type;
+
+        Type(int type) {
+            this.type = type;
+        }
+
+        public int type() {
+            return type;
+        }
     }
 }
