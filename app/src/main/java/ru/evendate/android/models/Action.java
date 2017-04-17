@@ -11,7 +11,7 @@ import ru.evendate.android.data.EvendateContract;
  * Created by ds_gordeev on 17.02.2016.
  */
 public class Action extends DataModel implements ActionTarget, Comparable<Action> {
-    public static final String FIELDS_LIST = "name,created_at,event,organization{fields:'" + OrganizationSubscription.FIELDS_LIST + "'},user{fields:'" + User.FIELDS_LIST + "'}";
+    public static final String FIELDS_LIST = "name,created_at,event{fields:'image_horizontal_small_url,image_horizontal_medium_url'},organization{fields:'" + OrganizationSubscription.FIELDS_LIST + "'},user{fields:'" + User.FIELDS_LIST + "'}";
     public static final String ORDER_BY = "-created_at";
     @SerializedName("stat_type_id")
     long statTypeId;
