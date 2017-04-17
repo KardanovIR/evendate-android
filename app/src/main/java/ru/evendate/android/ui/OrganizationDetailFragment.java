@@ -221,7 +221,7 @@ public class OrganizationDetailFragment extends BaseFragment implements LoadStat
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(getActivity());
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(getActivity(), mDrawer.getDrawer()));
     }
 
     private void animateAppearToolbar() {

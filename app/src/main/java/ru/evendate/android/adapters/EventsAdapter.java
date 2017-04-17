@@ -125,6 +125,44 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
 
+    private void hideEvent(EventFeed event) {
+        ApiService apiService = ApiFactory.getService(mContext);
+        Observable<Response> hideObservable =
+                apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
+                        event.getEntryId(), true);
+        Log.i(LOG_TAG, "hiding event " + event.getEntryId());
+        hideObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> Log.i(LOG_TAG, "event hided"),
+                        error -> Log.e(LOG_TAG, "" + error.getMessage())
+                );
+        remove(event);
+    }
+
+    private void likeEvent(EventFeed event) {
+        ApiService apiService = ApiFactory.getService(mContext);
+        Observable<Response> likeObservable;
+        int id = event.getEntryId();
+        if (event.isFavorite()) {
+            likeObservable = apiService.eventPostFavorite(EvendateAccountManager.peekToken(mContext), id);
+            Log.i(LOG_TAG, "disliking event " + id);
+        } else {
+            likeObservable = apiService.eventDeleteFavorite(EvendateAccountManager.peekToken(mContext), id);
+            Log.i(LOG_TAG, "liking event " + id);
+        }
+
+        likeObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> Log.i(LOG_TAG, "event liked/disliked"),
+                        error -> Log.e(LOG_TAG, "" + error.getMessage())
+                );
+
+        event.setIsFavorite(!event.isFavorite());
+        update(event);
+    }
+
     class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         View holderView;
         EventFeed event;
@@ -135,9 +173,8 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         @Nullable @Bind(R.id.event_item_organization) TextView mOrganizationTextView;
         @Nullable @Bind(R.id.event_item_organization_icon) ImageView mOrganizationLogo;
         @Bind(R.id.event_item_favorite_indicator) View mFavoriteIndicator;
-
-        private boolean isFavorited;
         @BindString(R.string.event_free) String eventFreeLabel;
+        private boolean isFavorited;
 
         EventHolder(View itemView) {
             super(itemView);
@@ -201,44 +238,5 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 //mContext.getString(R.string.dialog_event_invite_friend)
             };
         }
-    }
-
-
-    private void hideEvent(EventFeed event) {
-        ApiService apiService = ApiFactory.getService(mContext);
-        Observable<Response> hideObservable =
-                apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
-                        event.getEntryId(), true);
-        Log.i(LOG_TAG, "hiding event " + event.getEntryId());
-        hideObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> Log.i(LOG_TAG, "event hided"),
-                        error -> Log.e(LOG_TAG, "" + error.getMessage())
-                );
-        remove(event);
-    }
-
-    private void likeEvent(EventFeed event) {
-        ApiService apiService = ApiFactory.getService(mContext);
-        Observable<Response> likeObservable;
-        int id = event.getEntryId();
-        if (event.isFavorite()) {
-            likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
-            Log.i(LOG_TAG, "disliking event " + id);
-        } else {
-            likeObservable = apiService.likeEvent(id, EvendateAccountManager.peekToken(mContext));
-            Log.i(LOG_TAG, "liking event " + id);
-        }
-
-        likeObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> Log.i(LOG_TAG, "event liked/disliked"),
-                        error -> Log.e(LOG_TAG, "" + error.getMessage())
-                );
-
-        event.setIsFavorite(!event.isFavorite());
-        update(event);
     }
 }

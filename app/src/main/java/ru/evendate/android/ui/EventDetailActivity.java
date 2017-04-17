@@ -2,6 +2,7 @@ package ru.evendate.android.ui;
 
 import android.animation.ObjectAnimator;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -28,7 +29,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -73,6 +73,8 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.Event;
@@ -96,14 +98,8 @@ import static ru.evendate.android.ui.UiUtils.revealView;
  */
 public class EventDetailActivity extends BaseActivity implements TagsRecyclerView.OnTagClickListener,
         LoadStateView.OnReloadListener, RegistrationFormFragment.OnRegistrationCallbackListener {
-    private static String LOG_TAG = EventDetailActivity.class.getSimpleName();
-
     public static final String URI_KEY = "uri";
-    private Uri mUri;
-    private int eventId;
-
-    private EventAdapter mAdapter;
-
+    private static String LOG_TAG = EventDetailActivity.class.getSimpleName();
     @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.scroll_view) ScrollView mScrollView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -114,71 +110,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     ObjectAnimator mTitleAppearAnimation;
     ObjectAnimator mTitleDisappearAnimation;
     @Bind(R.id.fab) FloatingActionButton mFAB;
-
     @Bind(R.id.event_image) ImageView mEventImageView;
     @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
-    @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
-    @Bind(R.id.event_description) TextView mDescriptionTextView;
-    @Bind(R.id.event_title) TextView mTitleTextView;
-    @Bind(R.id.event_place_button) View mPlaceButtonView;
-    @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
-    @Bind(R.id.event_link_card) View mLinkCard;
-    @Bind(R.id.event_title_container) View mTitleContainer;
-    @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
-
-    @Bind(R.id.tag_layout) TagsRecyclerView mTagsView;
-    @Bind(R.id.event_registration_card) android.support.v7.widget.CardView mPriceCard;
-    @Bind(R.id.event_price) TextView mPriceTextView;
-
-    @Bind(R.id.event_registration) TextView mRegistrationTextView;
-    @Bind(R.id.event_registration_button) Button mRegistrationButton;
-    @Bind(R.id.event_registration_cap) TextView mRegistrationCap;
-
-
-    @Bind(R.id.event_dates) DatesView mDatesView;
-    @Bind(R.id.event_dates_light) CardView mDatesLightView;
-    @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
-    @Bind(R.id.event_time) TextView mEventTimeTextView;
-
-    @Bind(R.id.event_content_container) View mEventContentContainer;
-    @Bind(R.id.event_image_container) View mEventImageContainer;
-
-    @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
-
-    @BindString(R.string.event_free) String eventFreeLabel;
-    @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
-    @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
-
-    DrawerWrapper mDrawer;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    int mFabHeight;
-    boolean isFabDown = false;
-
-    ObjectAnimator mFabUpAnimation;
-    ObjectAnimator mFabDownAnimation;
-
-    private int mPalleteColor;
-
-    private AlertDialog notificationDialog;
-
-    final Target eventTarget = new Target() {
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-        }
-
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            if (bitmap == null)
-                return;
-            mEventImageView.setImageBitmap(bitmap);
-            palette(bitmap);
-            revealView(mEventImageContainer);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-        }
-    };
     final Target orgTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -197,6 +130,59 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             Log.d(LOG_TAG, "onPrepareLoad");
         }
     };
+    @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
+    @Bind(R.id.event_description) TextView mDescriptionTextView;
+    @Bind(R.id.event_title) TextView mTitleTextView;
+    @Bind(R.id.event_place_button) View mPlaceButtonView;
+    @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
+    @Bind(R.id.event_link_card) View mLinkCard;
+    @Bind(R.id.event_title_container) View mTitleContainer;
+    @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
+    @Bind(R.id.tag_layout) TagsRecyclerView mTagsView;
+    @Bind(R.id.event_registration_card) android.support.v7.widget.CardView mPriceCard;
+    @Bind(R.id.event_price) TextView mPriceTextView;
+    @Bind(R.id.event_registration) TextView mRegistrationTextView;
+    @Bind(R.id.event_registration_button) Button mRegistrationButton;
+    @Bind(R.id.event_registration_cap) TextView mRegistrationCap;
+    @Bind(R.id.event_dates) DatesView mDatesView;
+    @Bind(R.id.event_dates_light) CardView mDatesLightView;
+    @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
+    @Bind(R.id.event_time) TextView mEventTimeTextView;
+    @Bind(R.id.event_content_container) View mEventContentContainer;
+    @Bind(R.id.event_image_container) View mEventImageContainer;
+    @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+    @BindString(R.string.event_free) String eventFreeLabel;
+    @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
+    @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
+    DrawerWrapper mDrawer;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    int mFabHeight;
+    boolean isFabDown = false;
+    ObjectAnimator mFabUpAnimation;
+    ObjectAnimator mFabDownAnimation;
+    private Uri mUri;
+    private int eventId;
+    private EventAdapter mAdapter;
+    private int mPalleteColor;
+    final Target eventTarget = new Target() {
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (bitmap == null)
+                return;
+            mEventImageView.setImageBitmap(bitmap);
+            palette(bitmap);
+            revealView(mEventImageContainer);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+        }
+    };
+    private AlertDialog notificationDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -363,7 +349,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     private void initUserFavoriteCard() {
@@ -464,100 +450,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mRegistrationButton.setEnabled(false);
     }
 
-    private class EventAdapter {
-        private Context mContext;
-        private Event mEvent;
-
-        EventAdapter(Context context) {
-            this.mContext = context;
-        }
-
-        public void setEvent(Event event) {
-            mEvent = event;
-        }
-
-        public Event getEvent() {
-            return mEvent;
-        }
-
-        private void setEventInfo() {
-            mOrganizationTextView.setText(mEvent.getOrganizationName());
-            mDescriptionTextView.setText(mEvent.getDescription());
-            setAdaptiveTitle();
-            mPlacePlaceTextView.setText(mEvent.getLocation());
-            mTagsView.setTags(mEvent.getTagList());
-            Picasso.with(mContext)
-                    .load(mEvent.getImageHorizontalUrl())
-                    .error(R.drawable.default_background)
-                    .noFade()
-                    .into(eventTarget);
-            Picasso.with(mContext)
-                    .load(mEvent.getOrganizationLogoUrl())
-                    .error(R.mipmap.ic_launcher)
-                    .noFade()
-                    .into(orgTarget);
-            mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(mContext, mEvent.getUserList()));
-            if (mEvent.getUserList().size() == 0) {
-                mUserFavoritedCard.setVisibility(View.GONE);
-            }
-            mToolbarTitle.setText(mEvent.getTitle());
-            setFabIcon();
-            mUserFavoritedCard.setUsers(mEvent.getUserList());
-            setDates();
-
-            mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
-                    EventFormatter.formatPrice(mContext, mEvent.getMinPrice()));
-            setRegistration();
-        }
-
-        private void setAdaptiveTitle() {
-            String title = mEvent.getTitle();
-            if (title.length() > 24)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            if (title.length() > 64)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            if (title.length() > 84)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            mTitleTextView.setText(mEvent.getTitle());
-        }
-
-        private void setDates() {
-            if (mEvent.isSameTime()) {
-                mDatesLightView.setVisibility(View.VISIBLE);
-                mEventTimeTextView.setText(EventFormatter.formatEventTime(mContext, mEvent.getDateList().get(0)));
-                mEventDateIntervalsTextView.setText(EventFormatter.formatDateInterval(mEvent));
-            } else {
-                mDatesView.setVisibility(View.VISIBLE);
-                mDatesView.setDates(mEvent.getDateList());
-            }
-
-        }
-
-        private void setRegistration() {
-            if (!mEvent.isRegistrationRequired()) {
-                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
-            } else {
-                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
-                        + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));
-            }
-            if (!mEvent.isRegistrationAvailable()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_not_available);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
-            if (mEvent.isRegistered()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
-            if (mEvent.isRegistrationApproved()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     private void setFabIcon() {
         if (!mFAB.isShown())
             mFAB.show();
@@ -615,26 +507,21 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         if (mAdapter.getEvent() == null)
             return;
         Event event = mAdapter.getEvent();
-
-        ApiService apiService = ApiFactory.getService(this);
+        DataSource dataSource = new DataRepository(this);
         Observable<Response> LikeEventObservable;
 
         if (event.isFavorite()) {
-            LikeEventObservable = apiService.eventDeleteFavorite(event.getEntryId(),
-                    EvendateAccountManager.peekToken(this));
+            LikeEventObservable = dataSource.unfaveEvent(event.getEntryId());
         } else {
-            LikeEventObservable = apiService.eventPostFavorite(event.getEntryId(),
-                    EvendateAccountManager.peekToken(this));
+            LikeEventObservable = dataSource.faveEvent(event.getEntryId());
         }
-        LikeEventObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
+        LikeEventObservable.subscribe(result -> {
                     if (result.isOk())
                         Log.i(LOG_TAG, "performed like");
                     else
                         Log.e(LOG_TAG, "Error with response with like");
                 }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
+            Log.e(LOG_TAG, "" + error.getMessage());
                     Toast.makeText(this, R.string.download_error, Toast.LENGTH_SHORT).show();
                 });
 
@@ -674,8 +561,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         startActivity(openLink);
     }
 
-    // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
-
     /**
      * Returns the URI_KEY path to the Bitmap displayed in specified ImageView
      */
@@ -705,6 +590,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         }
         return bmpUri;
     }
+
+    // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
 
     public void palette(Bitmap bitmap) {
         if (bitmap == null)
@@ -829,6 +716,100 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                         });
             }, 0, 0, true);
             newFragment2.show();
+        }
+    }
+
+    private class EventAdapter {
+        private Context mContext;
+        private Event mEvent;
+
+        EventAdapter(Context context) {
+            this.mContext = context;
+        }
+
+        public Event getEvent() {
+            return mEvent;
+        }
+
+        public void setEvent(Event event) {
+            mEvent = event;
+        }
+
+        private void setEventInfo() {
+            mOrganizationTextView.setText(mEvent.getOrganizationName());
+            mDescriptionTextView.setText(mEvent.getDescription());
+            setAdaptiveTitle();
+            mPlacePlaceTextView.setText(mEvent.getLocation());
+            mTagsView.setTags(mEvent.getTagList());
+            Picasso.with(mContext)
+                    .load(mEvent.getImageHorizontalUrl())
+                    .error(R.drawable.default_background)
+                    .noFade()
+                    .into(eventTarget);
+            Picasso.with(mContext)
+                    .load(mEvent.getOrganizationLogoUrl())
+                    .error(R.mipmap.ic_launcher)
+                    .noFade()
+                    .into(orgTarget);
+            mUserFavoritedCard.setTitle(UsersFormatter.formatUsers(mContext, mEvent.getUserList()));
+            if (mEvent.getUserList().size() == 0) {
+                mUserFavoritedCard.setVisibility(View.GONE);
+            }
+            mToolbarTitle.setText(mEvent.getTitle());
+            setFabIcon();
+            mUserFavoritedCard.setUsers(mEvent.getUserList());
+            setDates();
+
+            mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
+                    EventFormatter.formatPrice(mContext, mEvent.getMinPrice()));
+            setRegistration();
+        }
+
+        private void setAdaptiveTitle() {
+            String title = mEvent.getTitle();
+            if (title.length() > 24)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            if (title.length() > 64)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            if (title.length() > 84)
+                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            mTitleTextView.setText(mEvent.getTitle());
+        }
+
+        private void setDates() {
+            if (mEvent.isSameTime()) {
+                mDatesLightView.setVisibility(View.VISIBLE);
+                mEventTimeTextView.setText(EventFormatter.formatEventTime(mContext, mEvent.getDateList().get(0)));
+                mEventDateIntervalsTextView.setText(EventFormatter.formatDateInterval(mEvent));
+            } else {
+                mDatesView.setVisibility(View.VISIBLE);
+                mDatesView.setDates(mEvent.getDateList());
+            }
+
+        }
+
+        private void setRegistration() {
+            if (!mEvent.isRegistrationRequired()) {
+                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
+            } else {
+                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
+                        + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));
+            }
+            if (!mEvent.isRegistrationAvailable()) {
+                mRegistrationButton.setEnabled(false);
+                mRegistrationCap.setText(R.string.event_registration_status_not_available);
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
+            if (mEvent.isRegistered()) {
+                mRegistrationButton.setEnabled(false);
+                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
+            if (mEvent.isRegistrationApproved()) {
+                mRegistrationButton.setEnabled(false);
+                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

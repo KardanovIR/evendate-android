@@ -1,0 +1,74 @@
+<com.daprlabs.aaron.swipedeck.layouts.SwipeFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                       xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                       xmlns:tools="http://schemas.android.com/tools"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent"
+                                                       tools:context="ru.evendate.android.ui.tinder.RecommenderFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <FrameLayout
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="bottom|left">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/hide_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="24dp"
+                android:scaleType="center"
+                app:backgroundTint="@color/white"
+                app:elevation="4dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_thumb_down_red"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="center">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/revert_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="32dp"
+                android:scaleType="center"
+                app:backgroundTint="@color/white"
+                app:elevation="4dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_replay_black"
+                />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="bottom|right">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fave_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="24dp"
+                android:scaleType="center"
+                app:backgroundTint="@color/white"
+                app:elevation="4dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_thumb_up_green"/>
+        </FrameLayout>
+    </FrameLayout>
+
+    <com.daprlabs.aaron.swipedeck.SwipeDeck
+        android:id="@+id/swipe_deck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="112dp"
+        app:card_spacing="8dp"
+        app:max_visible="3"
+        app:swipe_enabled="true"/>
+</com.daprlabs.aaron.swipedeck.layouts.SwipeFrameLayout>

@@ -377,7 +377,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class CalendarNavigationItemClickListener extends NavigationItemSelectedListener {
+    private class CalendarNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
 
         CalendarNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
