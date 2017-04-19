@@ -19,12 +19,18 @@ public class CardContainer {
     private long id;
     private int swipeDuration = SwipeDeck.ANIMATION_DURATION;
 
-    public CardContainer(View view, SwipeDeck parent, SwipeCallback callback) {
+    public CardContainer(final View view, SwipeDeck parent, final SwipeCallback callback) {
         this.view = view;
         this.parent = parent;
         this.callback = callback;
 
         setupSwipeListener();
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callback.onClick(view);
+            }
+        });
     }
 
     public int getPositionWithinViewGroup() {

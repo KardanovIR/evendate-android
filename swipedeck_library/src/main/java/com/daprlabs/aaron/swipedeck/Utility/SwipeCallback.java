@@ -22,4 +22,6 @@ public interface SwipeCallback {
      * @return true if we can start dragging view, false otherwise
      */
     boolean isDragEnabled();
+
+    void onClick(View card);
 }

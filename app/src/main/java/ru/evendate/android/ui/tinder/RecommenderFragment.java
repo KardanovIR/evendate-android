@@ -1,7 +1,12 @@
 package ru.evendate.android.ui.tinder;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daprlabs.aaron.swipedeck.SwipeDeck;
 import com.squareup.picasso.Picasso;
@@ -21,13 +25,22 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
+import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
 
-public class RecommenderFragment extends Fragment implements RecommenderContract.View {
+import static ru.evendate.android.ui.tinder.RecommenderContract.PAGE_LENGTH;
 
+public class RecommenderFragment extends Fragment implements RecommenderContract.View, LoadStateView.OnReloadListener {
+
+    final int LOAD_OFFSET = 3;
     @Bind(R.id.swipe_deck) SwipeDeck swipeDeck;
     SwipeDeckAdapter mAdapter;
+    boolean canLoadMore = true;
+    boolean loading = true;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
     private RecommenderContract.Presenter mPresenter;
 
     public static RecommenderFragment newInstance() {
@@ -43,12 +56,6 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.start();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -59,16 +66,14 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         swipeDeck.setCallback(new SwipeDeck.SwipeDeckCallback() {
             @Override
             public void cardSwipedLeft(long stableId) {
-                Event event = mAdapter.getItem((int) swipeDeck.getTopCardItemId());
+                Event event = mAdapter.getItem((int) stableId);
                 mPresenter.hideEvent(event);
-                Toast.makeText(getContext(), "=(((((", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void cardSwipedRight(long stableId) {
-                Event event = mAdapter.getItem((int) swipeDeck.getTopCardItemId());
+                Event event = mAdapter.getItem((int) stableId);
                 mPresenter.faveEvent(event);
-                Toast.makeText(getContext(), "=)))", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -78,16 +83,36 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
 
             @Override
             public void cardUnSwipe(long itemId) {
-                Event event = mAdapter.getItem((int) swipeDeck.getTopCardItemId());
+                Event event = mAdapter.getItem((int) itemId);
                 mPresenter.unfaveEvent(event);
                 mPresenter.unhideEvent(event);
             }
 
+            @Override
+            public void onClick(long itemId) {
+                Event event = mAdapter.getItem((int) itemId);
+                Intent intent = new Intent(getContext(), EventDetailActivity.class);
+                intent.setData(EvendateContract.EventEntry.getContentUri(event.getEntryId()));
+                if (Build.VERSION.SDK_INT >= 21) {
+                    getContext().startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation((Activity) getContext()).toBundle());
+                } else
+                    getContext().startActivity(intent);
+            }
         });
         swipeDeck.setLeftImage(R.id.image_hide);
         swipeDeck.setRightImage(R.id.image_fave);
         swipeDeck.setMask(R.id.tinder_mask);
+        mLoadStateView.setOnReloadListener(this);
+        mLoadStateView.setEmptyHeader(getString(R.string.recommender_empty_header));
+        mLoadStateView.setEmptyDescription(getString(R.string.recommender_empty_description));
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPresenter.start();
     }
 
     @Override
@@ -111,30 +136,56 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
     }
 
+    public void loadNext() {
+        if (canLoadMore && !loading) {
+            loading = true;
+            mPresenter.loadRecommends(false, mAdapter.getCount() / PAGE_LENGTH);
+        }
+    }
+
+    @Override
+    public void onReload() {
+        mPresenter.loadRecommends(true, 0);
+    }
+
     @Override
     public void setLoadingIndicator(boolean active) {
-
+        if (active) {
+            mLoadStateView.showProgress();
+        } else {
+            mLoadStateView.hideProgress();
+        }
     }
 
     @Override
     public void showRecommends(List<Event> events, boolean isLast) {
-
+        if (isLast) {
+            canLoadMore = false;
+            mLoadStateView.showEmptryHint();
+        }
+        loading = false;
+        mAdapter.addData(events);
     }
 
     @Override
     public void reshowRecommends(List<Event> events, boolean isLast) {
+        if (isLast) {
+            canLoadMore = false;
+            mLoadStateView.showEmptryHint();
+        }
+        loading = false;
         mAdapter.setData(events);
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void showEmptyState() {
-
+        mLoadStateView.showEmptryHint();
     }
 
     @Override
     public void showError() {
-
+        loading = false;
+        mLoadStateView.showErrorHint();
     }
 
     class SwipeDeckAdapter extends BaseAdapter {
@@ -151,6 +202,11 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
             notifyDataSetChanged();
         }
 
+        public void addData(List<Event> data) {
+            this.data.addAll(data);
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
             return data.size();
@@ -158,6 +214,8 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
 
         @Override
         public Event getItem(int position) {
+            if (data.size() - LOAD_OFFSET < position)
+                loadNext();
             return data.get(position);
         }
 
@@ -178,7 +236,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
-            Event event = (Event) getItem(position);
+            Event event = getItem(position);
             Picasso.with(context).load(event.getImageHorizontalUrl()).into(viewHolder.eventImage);
             viewHolder.eventTitle.setText(event.getTitle());
             viewHolder.eventOrganizator.setText(event.getOrganizationShortName());

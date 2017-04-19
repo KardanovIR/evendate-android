@@ -5,6 +5,22 @@
                                                        android:layout_height="match_parent"
                                                        tools:context="ru.evendate.android.ui.tinder.RecommenderFragment">
 
+    <ru.evendate.android.views.LoadStateView
+        android:id="@+id/load_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginBottom="112dp"/>
+
+    <com.daprlabs.aaron.swipedeck.SwipeDeck
+        android:id="@+id/swipe_deck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="112dp"
+        app:card_spacing="8dp"
+        app:max_visible="3"
+        app:swipe_enabled="true"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,13 +52,14 @@
                 android:id="@+id/revert_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_margin="32dp"
                 android:scaleType="center"
+                android:visibility="visible"
                 app:backgroundTint="@color/white"
                 app:elevation="4dp"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/ic_replay_black"
-                />
+                app:srcCompat="@drawable/ic_replay_black"/>
         </FrameLayout>
 
         <FrameLayout
@@ -62,13 +79,4 @@
                 app:srcCompat="@drawable/ic_thumb_up_green"/>
         </FrameLayout>
     </FrameLayout>
-
-    <com.daprlabs.aaron.swipedeck.SwipeDeck
-        android:id="@+id/swipe_deck"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="112dp"
-        app:card_spacing="8dp"
-        app:max_visible="3"
-        app:swipe_enabled="true"/>
 </com.daprlabs.aaron.swipedeck.layouts.SwipeFrameLayout>

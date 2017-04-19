@@ -79,7 +79,7 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_receipt_black).withIdentifier(TICKETS_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem administrationItem = new PrimaryDrawerItem().withName(R.string.drawer_check_in)
             .withIcon(R.drawable.ic_event_note_black).withIdentifier(ADMINISTRATION_IDENTIFIER).withSelectable(true);
-    private PrimaryDrawerItem recommenderItem = new PrimaryDrawerItem().withName("Рекомендашки")
+    private PrimaryDrawerItem recommenderItem = new PrimaryDrawerItem().withName(R.string.drawer_recommendations)
             .withIcon(R.drawable.ic_whatshot).withIdentifier(RECOMMENDER_IDENTIFIER).withSelectable(true);
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {

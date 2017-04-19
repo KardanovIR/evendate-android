@@ -60,7 +60,7 @@ public class RecommenderActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.TICKETS_IDENTIFIER);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.RECOMMENDER_IDENTIFIER);
         mDrawer.start();
     }
 
@@ -77,7 +77,7 @@ public class RecommenderActivity extends AppCompatActivity {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             switch (drawerItem.getIdentifier()) {
-                case DrawerWrapper.TICKETS_IDENTIFIER:
+                case DrawerWrapper.RECOMMENDER_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
                 default:

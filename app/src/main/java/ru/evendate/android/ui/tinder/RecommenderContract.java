@@ -11,6 +11,7 @@ import ru.evendate.android.ui.BaseView;
  */
 
 public class RecommenderContract {
+    public static final int PAGE_LENGTH = 4;
 
     interface View extends BaseView<Presenter> {
         void setLoadingIndicator(boolean active);

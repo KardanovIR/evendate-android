@@ -436,6 +436,8 @@ public class SwipeDeck extends FrameLayout {
          * @return true if we can start dragging view, false otherwise
          */
         boolean isDragEnabled(long itemId);
+
+        void onClick(long itemId);
     }
 
     private class CardContainerCallback implements SwipeCallback {
@@ -495,6 +497,12 @@ public class SwipeDeck extends FrameLayout {
 
         }
 
+        @Override
+        public void onClick(View card) {
+            if (callback != null) {
+                callback.onClick(viewId);
+            }
+        }
     }
 }
 
