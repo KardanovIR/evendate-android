@@ -798,6 +798,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         private void setRegistration() {
             if (!mEvent.isRegistrationRequired()) {
                 mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
+                mRegistrationButton.setVisibility(View.GONE);
+                mRegistrationCap.setVisibility(View.GONE);
+                return;
             } else {
                 mRegistrationTextView.setText(eventRegistrationTillLabel + " "
                         + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));
