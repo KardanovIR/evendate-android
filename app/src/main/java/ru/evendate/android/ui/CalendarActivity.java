@@ -41,6 +41,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.DateCalendar;
+import ru.evendate.android.models.EventDate;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
@@ -195,7 +196,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     private void loadDates() {
         ApiService apiService = ApiFactory.getService(this);
         Observable<ResponseArray<DateCalendar>> observable =
-                apiService.getCalendarDates(EvendateAccountManager.peekToken(this), true, true, true, null);
+                apiService.getCalendarDates(EvendateAccountManager.peekToken(this), true, true, true, EventDate.FIELDS_LIST);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -261,7 +262,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
             ArrayList<CalendarDay> activeDates = new ArrayList<>();
             ArrayList<CalendarDay> favoritesDates = new ArrayList<>();
             for (DateCalendar date : mDateList) {
-                CalendarDay day = CalendarDay.from(new Date(date.getEventDate() * 1000));
+                CalendarDay day = CalendarDay.from(date.getEventDate());
                 if (date.getEventCount() != 0)
                     activeDates.add(day);
                 if (date.getFavoredCount() != 0)

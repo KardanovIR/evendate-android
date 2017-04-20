@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -76,8 +77,8 @@ import ru.evendate.android.adapters.NotificationListAdapter;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
-import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.models.EventDate;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.UsersFormatter;
@@ -85,6 +86,7 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.views.DatesView;
 import ru.evendate.android.views.LoadStateView;
@@ -139,7 +141,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @Bind(R.id.event_title_container) View mTitleContainer;
     @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
     @Bind(R.id.tag_layout) TagsRecyclerView mTagsView;
-    @Bind(R.id.event_registration_card) android.support.v7.widget.CardView mPriceCard;
+    @Bind(R.id.event_registration_card) CardView mPriceCard;
     @Bind(R.id.event_price) TextView mPriceTextView;
     @Bind(R.id.event_registration) TextView mRegistrationTextView;
     @Bind(R.id.event_registration_button) Button mRegistrationButton;
@@ -188,6 +190,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent == null)
@@ -254,7 +257,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 mCoordinatorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int bottom = mTitleContainer.getBottom();
                 //int size = mFAB.getHeight();
-                int size = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56,
+                int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56,
                         getResources().getDisplayMetrics());
                 mFabHeight = bottom - size / 2;
                 TransitionManager.beginDelayedTransition(mCoordinatorLayout);
@@ -340,7 +343,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     private void paintMask(float scrolled) {
         int height = mEventImageView.getHeight();
         int maskColor = Color.argb(
-                (int)((scrolled / height) * 255),
+                (int) ((scrolled / height) * 255),
                 Color.red(mPalleteColor), Color.green(mPalleteColor), Color.blue(mPalleteColor));
         mEventImageMask.setBackgroundColor(maskColor);
         mEventTitleMask.setBackgroundColor(maskColor);
@@ -395,6 +398,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             case R.id.action_add_notification:
                 loadNotifications();
                 return true;
+            //case R.id.action_export:
+            //    exportEventToCalendar();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -556,6 +561,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     }
 
     void openSite() {
+        if (mAdapter.getEvent().getDetailInfoUrl() == null)
+            return;
         Intent openLink = new Intent(Intent.ACTION_VIEW);
         openLink.setData(Uri.parse(mAdapter.getEvent().getDetailInfoUrl()));
         startActivity(openLink);
@@ -569,7 +576,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp;
         if (drawable instanceof BitmapDrawable) {
-            bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         } else {
             return null;
         }
@@ -598,9 +605,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             return;
         Palette palette = Palette.from(bitmap).generate();
         mPalleteColor = palette.getDarkMutedColor(ContextCompat.getColor(this, R.color.primary));
-        int red = (int)(Color.red(mPalleteColor) * 0.8);
-        int blue = (int)(Color.blue(mPalleteColor) * 0.8);
-        int green = (int)(Color.green(mPalleteColor) * 0.8);
+        int red = (int) (Color.red(mPalleteColor) * 0.8);
+        int blue = (int) (Color.blue(mPalleteColor) * 0.8);
+        int green = (int) (Color.green(mPalleteColor) * 0.8);
 
         int vibrantDark = Color.argb(255, red, green, blue);
         int colorShadow = Color.argb(150, red, green, blue);
@@ -616,6 +623,29 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(vibrantDark);
         }
+    }
+
+    public void exportEventToCalendar() {
+        Intent intent = new Intent(Intent.ACTION_EDIT);
+        intent.setType("vnd.android.cursor.item/event");
+        intent.putExtra(CalendarContract.Events.TITLE, mAdapter.getEvent().getTitle());
+        intent.putExtra(CalendarContract.Events.DESCRIPTION, mAdapter.getEvent().getDescription());
+        intent.putExtra(CalendarContract.Events.EVENT_LOCATION, mAdapter.getEvent().getLocation());
+        intent.putExtra(CalendarContract.Events.RDATE, constructTime(mAdapter.getEvent()));
+        startActivity(intent);
+    }
+
+    private String constructTime(Event event) {
+        String dateString = "RDATE;VALUE=PERIOD:";
+        boolean firstAdded = false;
+        for (EventDate date : event.getDateList()) {
+            if (firstAdded) {
+                dateString += ",";
+            }
+            dateString += DateFormatter.formatExportCalendarDateTime(date.getStartDateTime(), date.getEndDateTime());
+            firstAdded = true;
+        }
+        return dateString;
     }
 
     //todo SOLID
@@ -635,7 +665,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                         initNotificationDialog(result.getData());
                 }, error -> {
                     Log.e(LOG_TAG, "Error with response with notification");
-                    Log.e(LOG_TAG, error.getMessage());
+                    Log.e(LOG_TAG, "" + error.getMessage());
                 });
     }
 
@@ -643,7 +673,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         NotificationListAdapter adapter;
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
         LayoutInflater inflater = this.getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.dialog_add_notifiaction_button, null);
+        View convertView = inflater.inflate(R.layout.dialog_add_notification_button, null);
         alertDialog.setTitle(getString(R.string.action_add_notification));
         adapter = new NotificationListAdapter(this,
                 NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
@@ -652,7 +682,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> adapter.update());
         alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> notificationDialog.dismiss());
 
-        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        Button addNotificationButton = (Button) convertView.findViewById(R.id.add_notification);
         addNotificationButton.setOnClickListener((View view) -> {
             DialogFragment newFragment = DatePickerFragment.getInstance(this, eventId);
             newFragment.show(getSupportFragmentManager(), "datePicker");
@@ -741,8 +771,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             setAdaptiveTitle();
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
+            String eventBackgroundUrl = ServiceUtils.constructEventBackgroundURL(
+                    mEvent.getImageHorizontalUrl(),
+                    (int) mContext.getResources().getDimension(R.dimen.event_background_width));
             Picasso.with(mContext)
-                    .load(mEvent.getImageHorizontalUrl())
+                    .load(eventBackgroundUrl)
                     .error(R.drawable.default_background)
                     .noFade()
                     .into(eventTarget);
@@ -763,6 +796,10 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     EventFormatter.formatPrice(mContext, mEvent.getMinPrice()));
             setRegistration();
+
+            if (mEvent.getDetailInfoUrl() == null) {
+                mLinkCard.setVisibility(View.GONE);
+            }
         }
 
         private void setAdaptiveTitle() {
@@ -779,7 +816,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         private void setDates() {
             if (mEvent.isSameTime()) {
                 mDatesLightView.setVisibility(View.VISIBLE);
-                mEventTimeTextView.setText(EventFormatter.formatEventTime(mContext, mEvent.getDateList().get(0)));
+                EventDate date = mEvent.getDateList().get(0);
+                mEventTimeTextView.setText(EventFormatter.formatEventTime(date.getStartDateTime(), date.getEndDateTime()));
                 mEventDateIntervalsTextView.setText(EventFormatter.formatDateInterval(mEvent));
             } else {
                 mDatesView.setVisibility(View.VISIBLE);
@@ -791,6 +829,10 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         private void setRegistration() {
             if (!mEvent.isRegistrationRequired()) {
                 mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
+                mRegistrationButton.setVisibility(View.GONE);
+                mRegistrationCap.setVisibility(View.GONE);
+                mRegistrationButton.setEnabled(false);
+                return;
             } else {
                 mRegistrationTextView.setText(eventRegistrationTillLabel + " "
                         + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));

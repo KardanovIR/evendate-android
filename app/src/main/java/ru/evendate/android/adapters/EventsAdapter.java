@@ -30,11 +30,13 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
+import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.ui.ReelFragment;
 
@@ -95,13 +97,13 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         String date;
-        if (eventEntry.getNearestDate() != 0)
-            date = EventFormatter.formatDate(eventEntry.getNearestDate());
-        else
-            date = EventFormatter.formatDate(eventEntry.getLastDate());
+        date = EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) eventEntry));
         holder.mDateTextView.setText(date);
+        String eventBackGroundUrl = ServiceUtils.constructEventBackgroundURL(
+                eventEntry.getImageHorizontalUrl(),
+                (int) mContext.getResources().getDimension(R.dimen.event_background_width));
         Picasso.with(mContext)
-                .load(eventEntry.getImageHorizontalUrl())
+                .load(eventBackGroundUrl)
                 .error(R.drawable.default_background)
                 .into(holder.mEventImageView);
 

@@ -9,7 +9,7 @@ public class Tag extends DataModel {
     @SerializedName("id")
     int tagId;
     String name;
-    String events_count;
+    String eventsCount;
 
     @Override
     public int getEntryId() {
@@ -20,7 +20,7 @@ public class Tag extends DataModel {
         return name;
     }
 
-    public String getEvents_count() {
-        return events_count;
+    public String getEventsCount() {
+        return eventsCount;
     }
 }

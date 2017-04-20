@@ -3,19 +3,20 @@ package ru.evendate.android.adapters;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ds_gordeev on 19.02.2016.
  */
 public class AggregateDate<T> implements Comparable<AggregateDate> {
-    private long date;
+    private Date date;
     private ArrayList<T> mList;
 
-    public AggregateDate(long date) {
+    public AggregateDate(Date date) {
         this.date = date;
     }
 
-    public long getDate() {
+    public Date getDate() {
         return date;
     }
 
@@ -29,6 +30,6 @@ public class AggregateDate<T> implements Comparable<AggregateDate> {
 
     @Override
     public int compareTo(@NonNull AggregateDate another) {
-        return date > another.date ? 1 : date == another.date ? 0 : -1;
+        return date.getTime() > another.date.getTime() ? 1 : date.getTime() == another.date.getTime() ? 0 : -1;
     }
 }
