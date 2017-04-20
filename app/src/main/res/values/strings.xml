@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Evendate</string>
+    <string name="app_name" translatable="false">Evendate</string>
     <string name="title_activity_detail">Event</string>
     <string name="title_activity_organization">Organizer catalog</string>
     <string name="title_activity_friends">Friends</string>
@@ -90,6 +90,7 @@
     <string name="event_go_to_page">Go to event page</string>
 
     <string name="action_share">Share</string>
+    <string name="action_export_to_calendar">Export to calendar</string>
     <string name="action_add_notification">Notify about event</string>
 
     <string name="event_favorite_confirm">Event added to favorite</string>
@@ -267,7 +268,6 @@
 
     <!-- cities -->
     <string name="city_prompt_where_user">Where are you?</string>
-    <string name="city_prompt_where_user_description">Let us know so we can recommend nearby event</string>
     <string name="city_prompt_button">Enter your city</string>
 
     <string name="city_location_button">Use my location</string>
@@ -298,4 +298,5 @@
     <string name="check_in_confirm_dialog_button_revert">Revert confirm</string>
     <string name="ticket_number_word">Ticket</string>
     <string name="check_event_tickets">ticket</string>
+    <string name="city_prompt_where_user_description">To start using Evendate, enter your city</string>
 </resources>

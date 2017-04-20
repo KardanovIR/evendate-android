@@ -1,13 +1,18 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ds_gordeev on 11.03.2016.
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
-            "organization_short_name,is_favorite,dates,organization_logo_small_url," +
+            "organization_short_name,is_favorite," +
+            "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + "," +
+            "organization_logo_small_url," +
             "registration_required,registration_till,is_free,min_price,is_same_time" +
             ",created_at,actuality";
     String ORDER_BY_TIME = "created_at";
@@ -19,19 +24,18 @@ public interface EventFeed {
 
     String getTitle();
 
-    long getFirstDate();
+    Date getFirstDateTime();
 
-    long getLastDate();
+    Date getLastDateTime();
 
-    long getNearestDate();
+    @Nullable
+    Date getNearestDateTime();
 
     String getImageHorizontalUrl();
 
-    String getImageVerticalUrl();
-
     int getOrganizationId();
 
-    ArrayList<DateFull> getDateList();
+    ArrayList<EventDate> getDateList();
 
     boolean isFavorite();
 
@@ -45,7 +49,7 @@ public interface EventFeed {
 
     boolean isRegistrationRequired();
 
-    long getRegistrationTill();
+    Date getRegistrationTill();
 
     boolean isFree();
 

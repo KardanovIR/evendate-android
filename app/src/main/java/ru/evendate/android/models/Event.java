@@ -1,10 +1,13 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Dmitry on 07.02.2016.
@@ -12,28 +15,31 @@ import java.util.ArrayList;
 @SuppressWarnings("unused")
 @Parcel
 public class Event extends DataModel implements EventFeed, EventRegistered {
-    public static final String FIELDS_LIST = "location,latitude,longitude,organization_name," +
+    public static final String FIELDS_LIST = "location,latitude,longitude," +
+            "image_horizontal_small_url,image_horizontal_medium_url,organization_name," +
             "organization_type_name,organization_short_name," +
             "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
             "favored_users_count,description,detail_info_url,is_favorite,link," +
 
             "registration_required,registration_approvement_required,registration_limit_count," +
             "registration_locally,registration_till,registration_approved,registration_available," +
-            "registered_count,registration_fields,is_registered,orders,tickets,my_tickets_count" +
+            "registered_count,registration_fields,is_registered,orders,tickets,my_tickets_count," +
 
             "is_free,min_price,is_same_time,created_at," +
 
-            "dates" + DataUtil.encloseFields(DateFull.FIELDS_LIST) + ",tags,favored{fields:\'" + User.FIELDS_LIST + "\'}";
+            "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + ",tags," +
+            "favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
     @SerializedName("id")
     int eventId;
     String title;
     @SerializedName("first_event_date")
-    long firstDate;
+    int firstDateTime;
     @SerializedName("last_event_date")
-    long lastDate;
+    int lastDateTime;
     @SerializedName("nearest_event_date")
-    long nearestDate;
+    @Nullable
+    Integer nearestDateTime;
     @SerializedName("image_horizontal_url")
     String imageHorizontalUrl;
     @SerializedName("image_vertical_url")
@@ -44,6 +50,10 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     String location;
     double latitude;
     double longitude;
+    @SerializedName("image_horizontal_small_url")
+    String imageHorizontalSmallUrl;
+    @SerializedName("image_horizontal_medium_url")
+    String imageHorizontalMediumUrl;
     @SerializedName("organization_name")
     String organizationName;
     @SerializedName("organization_type_name")
@@ -60,6 +70,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     int likedUsersCount;
     String description;
     @SerializedName("detail_info_url")
+    @Nullable
     String detailInfoUrl;
     @SerializedName("is_favorite")
     boolean isFavorite;
@@ -75,7 +86,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     @SerializedName("registration_locally")
     boolean registrationLocally;
     @SerializedName("registration_till")
-    long registrationTill;
+    int registrationTill;
     @SerializedName("registration_approved")
     boolean registrationApproved;
     @SerializedName("registration_available")
@@ -106,7 +117,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     @SerializedName("tags")
     ArrayList<Tag> tagList;
     @SerializedName("dates")
-    ArrayList<DateFull> dateList;
+    ArrayList<EventDate> dateList;
     @SerializedName("favored")
     ArrayList<UserDetail> userList;
 
@@ -120,16 +131,17 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return title;
     }
 
-    public long getFirstDate() {
-        return firstDate;
+    public Date getFirstDateTime() {
+        return DateUtils.date(firstDateTime);
     }
 
-    public long getLastDate() {
-        return lastDate;
+    public Date getLastDateTime() {
+        return DateUtils.date(lastDateTime);
     }
 
-    public long getNearestDate() {
-        return nearestDate;
+    @Nullable
+    public Date getNearestDateTime() {
+        return nearestDateTime == null ? null : DateUtils.date(nearestDateTime);
     }
 
     public String getImageHorizontalUrl() {
@@ -152,7 +164,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return userList;
     }
 
-    public ArrayList<DateFull> getDateList() {
+    public ArrayList<EventDate> getDateList() {
         return dateList;
     }
 
@@ -166,6 +178,14 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getImageHorizontalSmallUrl() {
+        return imageHorizontalSmallUrl;
+    }
+
+    public String getImageHorizontalMediumUrl() {
+        return imageHorizontalMediumUrl;
     }
 
     public String getOrganizationName() {
@@ -204,8 +224,9 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return longitude;
     }
 
+    @Nullable
     public String getDetailInfoUrl() {
-        return detailInfoUrl;
+        return detailInfoUrl != null && detailInfoUrl.equals("") ? null : detailInfoUrl;
     }
 
     public int getLikedUsersCount() {
@@ -241,8 +262,8 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return registrationLocally;
     }
 
-    public long getRegistrationTill() {
-        return registrationTill;
+    public Date getRegistrationTill() {
+        return DateUtils.date(registrationTill);
     }
 
     public boolean isRegistrationApproved() {

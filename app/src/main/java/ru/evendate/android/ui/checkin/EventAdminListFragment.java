@@ -175,7 +175,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         public void onBindViewHolder(final EventAdminViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDate()));
+            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDateTime()));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             holder.mTicketCount.setText(

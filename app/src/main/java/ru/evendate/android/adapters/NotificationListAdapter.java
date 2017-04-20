@@ -21,7 +21,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.network.ApiFactory;
@@ -41,86 +40,6 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         this.context = context;
         mEvent = event;
         notifications = eventNotifications;
-    }
-
-    static class ViewHolder {
-        View holderView;
-        CheckBox checkBox;
-        TextView textView;
-    }
-
-    enum NotificationType {
-        ON_CREATION("notification-now"),
-        CUSTOM("notification-custom"),
-        ON_DATE_CHANGED("notification-event-changed-dates"),
-        BEFORE_THREE_HOURS("notification-before-three-hours"),
-        BEFORE_THREE_DAYS("notification-before-three-days"),
-        BEFORE_DAY("notification-before-day"),
-        BEFORE_WEEK("notification-before-week"),
-        BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
-        EVENT_CHANGED_PRICE("notification-event-changed-price"),
-        EVENT_ONE_DAY_REGISTRATION_CLOSE("notification-one-day-registration-close"),
-
-        NOTIFICATION_UNDEFINED("undefined");
-
-        final String type;
-
-
-        NotificationType(String type) {
-            this.type = type;
-        }
-
-        static public NotificationType getType(String pType) {
-            for (NotificationType type : NotificationType.values()) {
-                if (type.type().equals(pType)) {
-                    return type;
-                }
-            }
-            return NOTIFICATION_UNDEFINED;
-        }
-
-        public String type() {
-            return type;
-        }
-    }
-
-    public static class Notification {
-        public String type;
-        boolean checked = false;
-        Boolean newChecked = null;
-        public EventNotification notification;
-        boolean changed = false;
-
-        public Notification(String notificationType) {
-            type = notificationType;
-        }
-
-        boolean checkNotificationAble(Event event) {
-            Date date = DateUtils.date(event.getFirstDate());
-            Calendar notificationTime = Calendar.getInstance();
-            notificationTime.setTime(date);
-            switch (NotificationType.getType(type)) {
-                case BEFORE_THREE_HOURS:
-                    notificationTime.add(Calendar.HOUR, -3);
-                    break;
-                case BEFORE_DAY:
-                    notificationTime.add(Calendar.DATE, -1);
-                    break;
-                case BEFORE_THREE_DAYS:
-                    notificationTime.add(Calendar.DATE, -3);
-                    break;
-                case BEFORE_WEEK:
-                    notificationTime.add(Calendar.WEEK_OF_MONTH, -1);
-                    break;
-                case BEFORE_QUARTER_OF_HOUR:
-                    notificationTime.add(Calendar.MINUTE, -15);
-                    break;
-                default:
-                    return true;
-            }
-            Calendar now = Calendar.getInstance();
-            return notificationTime.getTimeInMillis() > now.getTimeInMillis();
-        }
     }
 
     @Override
@@ -207,6 +126,86 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
                                 error -> Log.e(LOG_TAG, error.getMessage()),
                                 () -> Log.i(LOG_TAG, "completed"));
             }
+        }
+    }
+
+    enum NotificationType {
+        ON_CREATION("notification-now"),
+        CUSTOM("notification-custom"),
+        ON_DATE_CHANGED("notification-event-changed-dates"),
+        BEFORE_THREE_HOURS("notification-before-three-hours"),
+        BEFORE_THREE_DAYS("notification-before-three-days"),
+        BEFORE_DAY("notification-before-day"),
+        BEFORE_WEEK("notification-before-week"),
+        BEFORE_QUARTER_OF_HOUR("notification-before-quarter-of-hour"),
+        EVENT_CHANGED_PRICE("notification-event-changed-price"),
+        EVENT_ONE_DAY_REGISTRATION_CLOSE("notification-one-day-registration-close"),
+
+        NOTIFICATION_UNDEFINED("undefined");
+
+        final String type;
+
+
+        NotificationType(String type) {
+            this.type = type;
+        }
+
+        static public NotificationType getType(String pType) {
+            for (NotificationType type : NotificationType.values()) {
+                if (type.type().equals(pType)) {
+                    return type;
+                }
+            }
+            return NOTIFICATION_UNDEFINED;
+        }
+
+        public String type() {
+            return type;
+        }
+    }
+
+    static class ViewHolder {
+        View holderView;
+        CheckBox checkBox;
+        TextView textView;
+    }
+
+    public static class Notification {
+        public String type;
+        public EventNotification notification;
+        boolean checked = false;
+        Boolean newChecked = null;
+        boolean changed = false;
+
+        public Notification(String notificationType) {
+            type = notificationType;
+        }
+
+        boolean checkNotificationAble(Event event) {
+            Date date = event.getFirstDateTime();
+            Calendar notificationTime = Calendar.getInstance();
+            notificationTime.setTime(date);
+            switch (NotificationType.getType(type)) {
+                case BEFORE_THREE_HOURS:
+                    notificationTime.add(Calendar.HOUR, -3);
+                    break;
+                case BEFORE_DAY:
+                    notificationTime.add(Calendar.DATE, -1);
+                    break;
+                case BEFORE_THREE_DAYS:
+                    notificationTime.add(Calendar.DATE, -3);
+                    break;
+                case BEFORE_WEEK:
+                    notificationTime.add(Calendar.WEEK_OF_MONTH, -1);
+                    break;
+                case BEFORE_QUARTER_OF_HOUR:
+                    notificationTime.add(Calendar.MINUTE, -15);
+                    break;
+                default:
+                    return true;
+            }
+            Calendar now = Calendar.getInstance();
+            return notificationTime.getTimeInMillis() > now.getTimeInMillis();
         }
     }
 }

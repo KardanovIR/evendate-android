@@ -8,6 +8,7 @@ import com.google.android.gms.analytics.Tracker;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Locale;
 
 import ru.evendate.android.EvendateApplication;
@@ -39,10 +40,10 @@ public class EventFormatter {
         String prevMonth = "";
         String resStr = "";
         String curStr = "";
-        for (Date date : event.getDateList()) {
+        for (EventDate eventDate : event.getDateList()) {
             if (firstDay.equals("")) {
-                firstDay = formatDay(date.getEventDate());
-                firstMonth = formatMonth(date.getEventDate());
+                firstDay = formatDay(eventDate.getEventDate());
+                firstMonth = formatMonth(eventDate.getEventDate());
                 curDay = firstDay;
                 curMonth = firstMonth;
                 curStr = curDay;
@@ -50,8 +51,8 @@ public class EventFormatter {
             }
             prevDay = curDay;
             prevMonth = curMonth;
-            curDay = formatDay(date.getEventDate());
-            curMonth = formatMonth(date.getEventDate());
+            curDay = formatDay(eventDate.getEventDate());
+            curMonth = formatMonth(eventDate.getEventDate());
             if (Integer.parseInt(curDay) - 1 != Integer.parseInt(prevDay)) {
                 resStr += curStr;
                 curStr = "";
@@ -107,40 +108,40 @@ public class EventFormatter {
         return resStr;
     }
 
-    private static String formatDay(long date) {
+    private static String formatDay(Date date) {
         DateFormat dayFormat = new SimpleDateFormat("d", Locale.getDefault());
-        return dayFormat.format(new java.util.Date(date * 1000));
+        return dayFormat.format(date);
     }
 
-    private static String formatMonth(long date) {
+    private static String formatMonth(Date date) {
         DateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.getDefault());
-        return monthFormat.format(new java.util.Date(date * 1000));
+        return monthFormat.format(date);
     }
 
-
-
-    public static String formatEventTime(String startTime, String endTime) {
-        return catSeconds(startTime) + (endTime != null ? " - " + catSeconds(endTime) : "");
+    public static String formatDate(Date date) {
+        return DateFormatter.formatEventSingleDate(date);
     }
 
-    public static String formatDate(long date) {
-        return DateFormatter.formatEventSingleDate(DateUtils.date(date));
-    }
-
-    public static String formatEventTime(Context c, DateFull date) {
-        if (date.getStartTime().equals(date.getEndTime()) && date.getStartTime().equals("00:00:00"))
-            return c.getString(R.string.event_all_day);
-        return catSeconds(date.getStartTime()) + " - " + catSeconds(date.getEndTime());
-    }
-
-    /**
-     * remove seconds from time string HH:mm:ss
-     */
-    private static String catSeconds(String time) {
-        return time.substring(0, time.lastIndexOf(":"));
+    public static String formatEventTime(Date startDateTime, Date endDateTime) {
+        return DateFormatter.formatTime(startDateTime) + " - " +
+                DateFormatter.formatTime(endDateTime);
     }
 
     public static String formatPrice(Context c, int price) {
         return c.getString(R.string.event_price_from) + " " + price + " " + c.getString(R.string.event_price_rub);
+    }
+
+    public static Date getNearestDateTime(Event event) {
+        Date currentDate = new Date(System.currentTimeMillis());
+        for (EventDate eventDate : event.getDateList()) {
+            if (eventDate.getStartDateTime().getTime() <= currentDate.getTime()
+                    && eventDate.getEndDateTime().getTime() >= currentDate.getTime()) {
+                return currentDate;
+            }
+        }
+        if (event.getNearestDateTime() == null) {
+            return event.getLastDateTime();
+        }
+        return event.getNearestDateTime();
     }
 }

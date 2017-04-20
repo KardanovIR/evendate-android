@@ -1,5 +1,6 @@
 package ru.evendate.android.models;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public interface EventRegistered {
 
     String getLocation();
 
-    long getNearestDate();
+    Date getNearestDateTime();
 
     List<Ticket> getTickets();
 

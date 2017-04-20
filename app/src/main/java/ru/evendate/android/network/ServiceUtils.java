@@ -17,4 +17,8 @@ public class ServiceUtils {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(d.getTime());
     }
+
+    public static String constructEventBackgroundURL(String baseUrl, int width) {
+        return baseUrl + "?width=" + String.valueOf(width);
+    }
 }

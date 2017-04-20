@@ -205,7 +205,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         public void onBindViewHolder(final EventRegisteredViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDate()));
+            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDateTime()));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             if (event.getMyTicketsCount() > 1) {

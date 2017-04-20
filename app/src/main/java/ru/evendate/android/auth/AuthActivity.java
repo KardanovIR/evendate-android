@@ -281,8 +281,8 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         Account account = new Account(email, accountType);
 
         final Bundle result = new Bundle();
-        if (manager.getAccounts().length > 0) {
-            manager.removeAccount(manager.getAccounts()[0], new AccountManagerCallback<Boolean>() {
+        if (manager.getAccountsByType(getString(R.string.account_type)).length > 0) {
+            manager.removeAccount(manager.getAccountsByType(getString(R.string.account_type))[0], new AccountManagerCallback<Boolean>() {
                 @Override
                 public void run(AccountManagerFuture<Boolean> future) {
                     if (future.isDone()) {
