@@ -19,8 +19,6 @@ import ru.evendate.android.auth.AuthActivity;
  * управляет аккаунтами: смена, обнова, выпил
  */
 public class EvendateAccountManager {
-    private static String LOG_TAG = EvendateAccountManager.class.getSimpleName();
-
     /**
      * field in preferences that contain active account name
      * needed for getSyncAccount
@@ -28,6 +26,7 @@ public class EvendateAccountManager {
     private static final String ACTIVE_ACCOUNT_NAME = "active_account_name";
     private static final String ACCOUNT_PREFERENCES = "account_preferences";
     private static final String KEY_AUTH_ACTIVE = "auth_active";
+    private static String LOG_TAG = EvendateAccountManager.class.getSimpleName();
 
     public static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
@@ -68,27 +67,6 @@ public class EvendateAccountManager {
         Log.i(LOG_TAG, "account removed");
     }
 
-    private static class UnregisterGCMTask extends AsyncTask<Void, Void, Void> {
-        Context context;
-
-        public UnregisterGCMTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                InstanceID instanceID = InstanceID.getInstance(context);
-                instanceID.deleteInstanceID();
-                Log.d(LOG_TAG, "GCM UNREGISTERED");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(LOG_TAG, "can't delete gcm registration");
-            }
-            return null;
-        }
-    }
-
     public static String peekToken(Context context) {
         AccountManager accountManager = AccountManager.get(context);
         String token = null;
@@ -111,8 +89,11 @@ public class EvendateAccountManager {
     }
 
     private static void startAuth(Context context) {
-        if (!isAuthRunning(context))
-            context.startActivity(new Intent(context, AuthActivity.class));
+        if (!isAuthRunning(context)) {
+            Intent intent = new Intent(context, AuthActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
     }
 
     public static void setAuthRunning(Context context) {
@@ -134,5 +115,26 @@ public class EvendateAccountManager {
     //true cause first start in main activity
     public static boolean isAuthRunning(Context context) {
         return getAuthPreference(context).getBoolean(KEY_AUTH_ACTIVE, true);
+    }
+
+    private static class UnregisterGCMTask extends AsyncTask<Void, Void, Void> {
+        Context context;
+
+        public UnregisterGCMTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                InstanceID instanceID = InstanceID.getInstance(context);
+                instanceID.deleteInstanceID();
+                Log.d(LOG_TAG, "GCM UNREGISTERED");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(LOG_TAG, "can't delete gcm registration");
+            }
+            return null;
+        }
     }
 }

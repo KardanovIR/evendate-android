@@ -18,7 +18,7 @@
         android:minHeight="0dp"
         android:minWidth="0dp"
         android:visibility="gone"
-        app:srcCompat="@drawable/reload_icon"
+        app:srcCompat="@drawable/ic_refresh"
         tools:visibility="visible"/>
 
     <TextView

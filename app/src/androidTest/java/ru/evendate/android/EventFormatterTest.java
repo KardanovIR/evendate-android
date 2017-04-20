@@ -6,8 +6,9 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.models.DateFull;
+import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.models.EventDate;
 import ru.evendate.android.models.EventFormatter;
 
 import static org.mockito.Mockito.when;
@@ -16,39 +17,27 @@ import static org.mockito.Mockito.when;
  * Created by Dmitry on 13.02.2016.
  */
 public class EventFormatterTest extends AndroidTestCase {
-    //TODO Work only on ru device
-    public void testFormatDate() {
-        //Log.d("EventFormatter", EventFormatter.formatDateInterval(getEventDetail(0)));
-        assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(0)));
-        assertEquals("1 декабря", EventFormatter.formatDateInterval(getEventDetail(1)));
-        assertEquals("27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(2)));
-        assertEquals("25-29 февраля; 1-10 марта", EventFormatter.formatDateInterval(getEventDetail(3)));
-        assertEquals("1-10 марта", EventFormatter.formatDateInterval(getEventDetail(4)));
-        assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDateInterval(getEventDetail(5)));
-        assertEquals("13, 14 февраля", EventFormatter.formatDateInterval(getEventDetail(6)));
-    }
-
     public static Event getEventDetail(int num) {
         Event event = Mockito.mock(Event.class);
-        ArrayList<DateFull> dates = getDates(num);
+        ArrayList<EventDate> dates = getDates(num);
         when(event.getDateList()).thenReturn(dates);
         return event;
     }
 
-    private static ArrayList<DateFull> getDates(int num) {
-        ArrayList<DateFull> dateList = new ArrayList<>();
-        for (long date : getIntDates(num)) {
-            DateFull dateModel = Mockito.mock(DateFull.class);
-            when(dateModel.getEventDate()).thenReturn(date);
+    private static ArrayList<EventDate> getDates(int num) {
+        ArrayList<EventDate> dateList = new ArrayList<>();
+        for (int date : getIntDates(num)) {
+            EventDate dateModel = Mockito.mock(EventDate.class);
+            when(dateModel.getEventDate()).thenReturn(DateUtils.date(date));
             dateList.add(dateModel);
         }
         return dateList;
     }
 
-    private static long[] getIntDates(int num) {
+    private static int[] getIntDates(int num) {
         switch (num) {
             case 0: {
-                long[] str = {
+                return new int[]{
                         1446508800,
                         1446681600,
                         1446768000,
@@ -61,23 +50,20 @@ public class EventFormatterTest extends AndroidTestCase {
                         1448582400,
                         1448928000
                 };
-                return str;
             }
             case 1: {
-                long[] str = {
+                return new int[]{
                         1448928000
                 };
-                return str;
             }
             case 2: {
-                long[] str = {
+                return new int[]{
                         1448582400,
                         1448928000
                 };
-                return str;
             }
             case 3: {
-                long[] str = {
+                return new int[]{
                         1456358400,
                         1456444800,
                         1456531200,
@@ -93,12 +79,10 @@ public class EventFormatterTest extends AndroidTestCase {
                         1457395200,
                         1457481600,
                         1457568000
-
                 };
-                return str;
             }
             case 4: {
-                long[] str = {
+                return new int[]{
                         1456790400,
                         1456876800,
                         1456963200,
@@ -111,25 +95,35 @@ public class EventFormatterTest extends AndroidTestCase {
                         1457568000
 
                 };
-                return str;
             }
             case 5: {
-                long[] str = {
+                return new int[]{
                         1446508800,
                         1448928000,
                         1449014400,
                         1449100800
                 };
-                return str;
             }
             case 6: {
-                long[] str = {
+                return new int[]{
                         1455321600,
                         1455408000
                 };
-                return str;
             }
+            default:
+                return new int[]{};
         }
-        return null;
+    }
+
+    //TODO Work only on ru device
+    public void testFormatDate() {
+        //Log.d("EventFormatter", EventFormatter.formatDateInterval(getEventDetail(0)));
+        assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(0)));
+        assertEquals("1 декабря", EventFormatter.formatDateInterval(getEventDetail(1)));
+        assertEquals("27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(2)));
+        assertEquals("25-29 февраля; 1-10 марта", EventFormatter.formatDateInterval(getEventDetail(3)));
+        assertEquals("1-10 марта", EventFormatter.formatDateInterval(getEventDetail(4)));
+        assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDateInterval(getEventDetail(5)));
+        assertEquals("13, 14 февраля", EventFormatter.formatDateInterval(getEventDetail(6)));
     }
 }

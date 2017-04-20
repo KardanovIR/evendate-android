@@ -2,11 +2,11 @@
 <Button
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_notification"
+    style="?android:attr/borderlessButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="0dp"
-    android:textSize="14sp"
-    style="?android:attr/borderlessButtonStyle"
     android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:minHeight="0dp"
+    android:text="@string/notification_add_custom"
     android:textColor="#000"
-    android:text="@string/notification_add_custom"/>
+    android:textSize="14sp"/>

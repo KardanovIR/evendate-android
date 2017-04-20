@@ -28,6 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.network.ApiFactory;
@@ -84,7 +85,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (!(viewHolder instanceof EventHolder))
             return;
         EventFeed eventEntry = getItem(position);
-        EventHolder holder = (EventHolder)viewHolder;
+        EventHolder holder = (EventHolder) viewHolder;
         holder.event = eventEntry;
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
@@ -93,10 +94,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         String date;
-        if (eventEntry.getNearestDate() != 0)
-            date = EventFormatter.formatDate(eventEntry.getNearestDate());
-        else
-            date = EventFormatter.formatDate(eventEntry.getLastDate());
+        date = EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) eventEntry));
         holder.mDateTextView.setText(date);
         String eventBackGroundUrl = ServiceUtils.constructEventBackgroundURL(
                 eventEntry.getImageHorizontalUrl(),
@@ -124,7 +122,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         super.onViewRecycled(viewHolder);
         if (!(viewHolder instanceof EventHolder))
             return;
-        EventHolder holder = (EventHolder)viewHolder;
+        EventHolder holder = (EventHolder) viewHolder;
         if (holder.mFavoriteIndicator != null)
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
@@ -195,7 +193,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 intent.setData(EvendateContract.EventEntry.getContentUri(event.getEntryId()));
                 if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
+                            ActivityOptions.makeSceneTransitionAnimation((Activity) mContext).toBundle());
                 } else
                     mContext.startActivity(intent);
             }
@@ -209,25 +207,25 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle(mTitleTextView.getText())
                     .setItems(getDialogTextItems(), (DialogInterface dialog, int which) -> {
-                            String toastText = mContext.getString(R.string.toast_event) +
-                                    " «" + mTitleTextView.getText() + "» ";
-                            switch (which) {
-                                case HIDE_ID:
-                                    hideEvent(event);
-                                    toastText += mContext.getString(R.string.toast_event_hide);
-                                    break;
-                                case FAVE_ID:
-                                    likeEvent(event);
-                                    if (isFavorited) {
-                                        toastText += mContext.getString(R.string.toast_event_unfave);
-                                    } else {
-                                        toastText += mContext.getString(R.string.toast_event_fave);
-                                    }
-                                    break;
-                                case INVITE_ID:
-                                    break;
-                            }
-                            Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
+                        String toastText = mContext.getString(R.string.toast_event) +
+                                " «" + mTitleTextView.getText() + "» ";
+                        switch (which) {
+                            case HIDE_ID:
+                                hideEvent(event);
+                                toastText += mContext.getString(R.string.toast_event_hide);
+                                break;
+                            case FAVE_ID:
+                                likeEvent(event);
+                                if (isFavorited) {
+                                    toastText += mContext.getString(R.string.toast_event_unfave);
+                                } else {
+                                    toastText += mContext.getString(R.string.toast_event_fave);
+                                }
+                                break;
+                            case INVITE_ID:
+                                break;
+                        }
+                        Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
                     });
             builder.create().show();
             return true;
@@ -236,10 +234,10 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         private CharSequence[] getDialogTextItems() {
             String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
                     mContext.getString(R.string.dialog_event_fave);
-            return new CharSequence[] {
-                mContext.getString(R.string.dialog_event_hide),
-                        fave,
-                //mContext.getString(R.string.dialog_event_invite_friend)
+            return new CharSequence[]{
+                    mContext.getString(R.string.dialog_event_hide),
+                    fave,
+                    //mContext.getString(R.string.dialog_event_invite_friend)
             };
         }
     }

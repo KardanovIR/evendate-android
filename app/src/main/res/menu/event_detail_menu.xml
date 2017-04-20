@@ -6,10 +6,14 @@
         android:icon="@drawable/ic_add_alert_white"
         android:tint="@color/accent"
         android:title="@string/action_add_notification"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_share_white"
         android:title="@string/action_share"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom"/>
+    <!--<item
+        android:id="@+id/action_export"
+        android:title="@string/action_export_to_calendar"
+        app:showAsAction="withText"/>-->
 </menu>

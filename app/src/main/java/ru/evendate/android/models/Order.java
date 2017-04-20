@@ -5,10 +5,12 @@ import com.google.gson.annotations.SerializedName;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Aedirn on 06.03.17.
  */
+@SuppressWarnings("unused")
 @Parcel
 public class Order extends DataModel {
     public static final String FIELDS_LIST = "is_canceled,payed_at,canceled_at,status_name," +
@@ -25,12 +27,12 @@ public class Order extends DataModel {
     @SerializedName("status_name")
     String statusName;
     @SerializedName("payed_at")
-    long payedAt;
+    int payedAt;
 
     @SerializedName("is_canceled")
     boolean isCanceled;
     @SerializedName("canceled_at")
-    long canceledAt;
+    int canceledAt;
     @SerializedName("status_id")
     int statusId;
     @SerializedName("created_at")
@@ -67,12 +69,12 @@ public class Order extends DataModel {
         return isCanceled;
     }
 
-    public long getPayedAt() {
-        return payedAt;
+    public Date getPayedAt() {
+        return DateUtils.date(payedAt);
     }
 
-    public long getCanceledAt() {
-        return canceledAt;
+    public Date getCanceledAt() {
+        return DateUtils.date(canceledAt);
     }
 
     public String getStatusName() {

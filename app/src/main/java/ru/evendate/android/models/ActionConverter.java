@@ -2,6 +2,7 @@ package ru.evendate.android.models;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 import ru.evendate.android.adapters.AggregateDate;
@@ -14,10 +15,10 @@ public class ActionConverter {
      * sort by date actions
      */
     public static ArrayList<AggregateDate<ActionType>> convertActions(ArrayList<Action> actionList) {
-        HashMap<Long, ArrayList<Action>> map = new HashMap<>();
+        HashMap<Date, ArrayList<Action>> map = new HashMap<>();
         for (Action action : actionList) {
             //we want one date for one day
-            long date = action.getDate() - (action.getDate() % 86400);
+            Date date = new Date(action.getDate().getTime() - (action.getDate().getTime() % (86400 * 1000)));
             ArrayList<Action> actionTargetList = map.get(date);
             if (actionTargetList == null) {
                 actionTargetList = new ArrayList<>();
@@ -26,7 +27,7 @@ public class ActionConverter {
             actionTargetList.add(action);
         }
         ArrayList<AggregateDate<ActionType>> actionConvertedList = new ArrayList<>();
-        for (Long date : map.keySet()) {
+        for (Date date : map.keySet()) {
             AggregateDate<ActionType> aggregateDate = new AggregateDate<>(date);
             aggregateDate.setList(ActionSorter.processActions(map.get(date)));
             if (aggregateDate.getList().size() != 0)

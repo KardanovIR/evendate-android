@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 import ru.evendate.android.data.EvendateContract;
 
 /**
@@ -24,11 +26,11 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     @SerializedName("entity")
     String entity;
     String name;
-    @SerializedName("created_at")
-    long createdAt;
     Event event;
     OrganizationFull organization;
     User user;
+    @SerializedName("created_at")
+    private int createdAt;
 
     @Override
     public int getEntryId() {
@@ -59,8 +61,8 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
         return name;
     }
 
-    public long getDate() {
-        return createdAt;
+    public Date getDate() {
+        return DateUtils.date(createdAt);
     }
 
     public Event getEvent() {
@@ -119,7 +121,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
         return createdAt > another.createdAt ? 1 : createdAt == another.createdAt ? 0 : -1;
     }
 
-    public enum Type {
+    enum Type {
         ACTION_LIKE(5),
         ACTION_DISLIKE(4),
         ACTION_SUBSCRIBE(3),

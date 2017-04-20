@@ -17,7 +17,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
@@ -82,11 +81,10 @@ public class TicketDetailFragment extends Fragment {
                 .into(mQrCode);
         mTicketStatus.setText(mTicket.getOrder().getStatusName());
         mPlace.setText(mEvent.getLocation());
-        mDatetime.setText(EventFormatter.formatDate(mEvent.getNearestDate()));
+        mDatetime.setText(EventFormatter.formatDate(mEvent.getNearestDateTime()));
         mTicketType.setText(mTicket.getTicketType().getName());
-        long payedAt = mTicket.getOrder().getPayedAt();
         mOrderDatetime.setText(getString(R.string.ticket_date_label) + " " +
-                DateFormatter.formatOrderDateTime(DateUtils.date(payedAt)));
+                DateFormatter.formatOrderDateTime(mTicket.getOrder().getPayedAt()));
 
         mTicketNumber.setText(TicketFormatter.formatNumber(getContext(), mTicket.getNumber()));
         if (mTicket.isCheckout()) {
