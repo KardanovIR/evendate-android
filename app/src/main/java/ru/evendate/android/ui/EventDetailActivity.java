@@ -835,7 +835,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 return;
             } else {
                 mRegistrationTextView.setText(eventRegistrationTillLabel + " "
-                        + DateFormatter.formatRegistrationDate(DateUtils.date(mEvent.getRegistrationTill())));
+                        + DateFormatter.formatRegistrationDate(mEvent.getRegistrationTill()));
             }
             if (!mEvent.isRegistrationAvailable()) {
                 mRegistrationButton.setEnabled(false);
