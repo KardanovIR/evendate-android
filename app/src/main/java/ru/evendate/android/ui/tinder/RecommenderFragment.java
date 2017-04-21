@@ -27,6 +27,7 @@ import butterknife.OnClick;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.ui.EventDetailActivity;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
@@ -237,7 +238,10 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
                 viewHolder = (ViewHolder) view.getTag();
             }
             Event event = getItem(position);
-            Picasso.with(context).load(event.getImageHorizontalUrl()).into(viewHolder.eventImage);
+            String eventBackgroundUrl = ServiceUtils.constructEventBackgroundURL(
+                    event.getImageHorizontalUrl(),
+                    (int) getResources().getDimension(R.dimen.event_background_width));
+            Picasso.with(context).load(eventBackgroundUrl).into(viewHolder.eventImage);
             viewHolder.eventTitle.setText(event.getTitle());
             viewHolder.eventOrganizator.setText(event.getOrganizationShortName());
             viewHolder.eventTags.setTags(event.getTagList());

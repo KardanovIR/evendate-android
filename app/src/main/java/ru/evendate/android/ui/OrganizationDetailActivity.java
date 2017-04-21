@@ -214,7 +214,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     private void animateAppearToolbar() {

@@ -155,7 +155,7 @@
 
         <activity
             android:name=".ui.tinder.RecommenderActivity"
-            android:label="Рекомендульки"
+            android:label="@string/title_activity_recommendation"
             android:screenOrientation="portrait">
         </activity>
 
