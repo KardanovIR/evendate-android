@@ -25,11 +25,10 @@
     <color name="caribbean_green">#00dc88</color>
     <color name="medium_jungle_green">#323232</color>
     <color name="lavender_gray">#c5c9d1</color>
+  <color name="lavender_gray_tag">#8Ac5c9d1</color>
     <color name="snow">#fafafa</color>
     <color name="radical_red">#f82969</color>
     <color name="hot_pink">#ff76ac</color>
     <color name="coral_red">#ff4646</color>
     <color name="auro_metal_saurus">#657184</color>
-    <color name="bubble_gum_grad_start">#fd3573</color>
-    <color name="bubble_gum_grad_end">#fe65ac</color>
 </resources>

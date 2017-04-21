@@ -30,6 +30,7 @@ import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.AbstractEndlessAdapter;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.TicketFormatter;
@@ -205,7 +206,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         public void onBindViewHolder(final EventRegisteredViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDateTime()));
+            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) event)));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             if (event.getMyTicketsCount() > 1) {

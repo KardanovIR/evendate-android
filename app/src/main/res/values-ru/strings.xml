@@ -151,8 +151,8 @@
     <string name="search_empty_description">Попробуйте поискать что-нибудь другое</string>
     <string name="search_empty_header">Ничего не найдено</string>
     <string name="auth_error">Произошла ошибка. Пожалуйста, повторите</string>
-    <string name="tab_tickets_future_events">Будущие</string>
-    <string name="tab_tickets_past_events">Прошедшие</string>
+    <string name="tab_tickets_future_events">Активные</string>
+    <string name="tab_tickets_past_events">Использованные</string>
     <string name="drawer_tickets">Мои билеты</string>
     <string name="event_registration_button">Зарегистрироваться</string>
     <string name="event_registration_title">Регистрация на событие</string>
@@ -200,4 +200,5 @@
     <string name="toast_event_unhide">убрано из скрытых</string>
     <string name="action_export_to_calendar">Экспорт в календарь</string>
     <string name="city_prompt_where_user_description">Чтобы начать использовать Evendate, укажите свой город.</string>
+    <string name="title_activity_recommendation">Рекомендации</string>
 </resources>
