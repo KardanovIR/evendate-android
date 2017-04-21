@@ -4,11 +4,14 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 /**
  * Created by Dmitry on 07.02.2016.
  */
+@Parcel
 public class EventDate extends DataModel implements Comparable<EventDate> {
     public static final String FIELDS_LIST = "start_datetime_utc,end_datetime_utc";
 

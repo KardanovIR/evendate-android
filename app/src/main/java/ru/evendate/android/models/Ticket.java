@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
+import java.util.Date;
+
 import ru.evendate.android.ui.checkin.CheckInContract;
 
 import static ru.evendate.android.models.Ticket.TicketParams.CHECKOUT;
@@ -42,7 +44,7 @@ public class Ticket extends DataModel implements CheckInContract.TicketAdmin {
     @SerializedName("price")
     float price;
     @SerializedName("created_at")
-    long createdAt;
+    int createdAt;
     @SerializedName("updated_at")
     long updatedAt;
     @SerializedName("ticket_type")
@@ -89,8 +91,8 @@ public class Ticket extends DataModel implements CheckInContract.TicketAdmin {
         return price;
     }
 
-    public long getCreatedAt() {
-        return createdAt;
+    public Date getCreatedAt() {
+        return DateUtils.date(createdAt);
     }
 
     public long getUpdatedAt() {

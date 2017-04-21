@@ -89,7 +89,7 @@ public class DataRepository {
     public Observable<ResponseArray<Event>> getRegisteredEvents(boolean future, int page, int pageLength) {
         Observable<ResponseArray<Event>> eventsObservable =
                 mService.getEvents(EvendateAccountManager.peekToken(mContext), future, true,
-                        EventRegistered.FIELDS_LIST, "", pageLength, pageLength * page);
+                        EventRegistered.FIELDS_LIST, Event.ORDER_BY_LAST_DATE, pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());

@@ -15,7 +15,6 @@ public interface EventFeed {
             "organization_logo_small_url," +
             "registration_required,registration_till,is_free,min_price,is_same_time" +
             ",created_at,actuality";
-    String ORDER_BY_TIME = "created_at";
     String ORDER_BY_ACTUALITY = "-actuality";
     String ORDER_BY_FAVORITE_AND_FIRST_TIME = "-is_favorite,first_event_date";
     String ORDER_BY_LAST_DATE = "-last_event_date";

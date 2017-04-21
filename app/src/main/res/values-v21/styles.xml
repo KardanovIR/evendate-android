@@ -56,4 +56,8 @@
         <item name="android:numbersInnerTextColor" tools:targetApi="23">#AA000000</item>
         <item name="android:numbersBackgroundColor">#ffdddddd</item>
     </style>
+
+    <style name="SignInButton">
+        <item name="android:foreground">@drawable/ripple_signin</item>
+    </style>
 </resources>

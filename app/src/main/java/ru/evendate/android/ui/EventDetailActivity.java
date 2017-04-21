@@ -196,7 +196,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mUri = intent.getData();
 
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        new Statistics(this).sendOrganizationView(eventId);
+        new Statistics(this).sendEventView(eventId);
 
         initInterface();
 
