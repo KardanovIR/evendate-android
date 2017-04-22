@@ -50,12 +50,12 @@ import ru.evendate.android.network.ApiFactory;
 
 public class AuthActivity extends AccountAuthenticatorAppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
+    private final String LOG_TAG = AuthActivity.class.getSimpleName();
     private static final String GOOGLE_SCOPE = "oauth2:email profile https://www.googleapis.com/auth/plus.login";
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
     private static final int REQUEST_SIGN_IN = 3;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     static public String URL_KEY = "url";
-    private final String LOG_TAG = AuthActivity.class.getSimpleName();
     private final int REQUEST_WEB_AUTH = 2;
     GoogleApiClient apiClient;
     @Bind(R.id.sing_in_google_button) View googleButton;

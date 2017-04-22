@@ -16,6 +16,8 @@
     <dimen name="event_background_width">480dp</dimen>
     <dimen name="card_feed_max_width">376dp</dimen>
 
+    <dimen name="auth_button_left_padding">0dp</dimen>
+
     <!-- font sizes -->
     <!--<dimen name="font_larger">22sp</dimen>
     <dimen name="font_large">18sp</dimen>
