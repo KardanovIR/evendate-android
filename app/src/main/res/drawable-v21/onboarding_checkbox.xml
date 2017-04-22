@@ -4,19 +4,14 @@
         android:width="32dp"
         android:height="32dp">
         <shape android:shape="oval">
-            <solid android:color="@color/accent_light"
-                />
+            <solid android:color="@color/accent_light" />
         </shape>
     </item>
 
     <item
         android:width="24dp"
         android:height="24dp"
-        android:gravity="center">
-        <bitmap
-            android:gravity="center"
-            android:tint="@color/radical_red"
-            android:src="@drawable/ic_add_white"
-            />
-    </item>
+        android:drawable="@drawable/ic_add"
+        android:gravity="center" />
 </layer-list>
+

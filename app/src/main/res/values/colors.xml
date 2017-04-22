@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-  <color name="primary">#2e3b50</color>
-  <color name="primary_dark">#253040</color>
-  <color name="accent">#ff5f9e</color>
-  <color name="accent_light">#3DFF5F9E</color>
-  <color name="text_primary">#000</color>
-  <color name="window_background">#FFFFFF</color>
-  <color name="window_reel_background">#EEEEEE</color>
-  <color name="translucent">#00000000</color>
-  <color name="black_translucent">#50000000</color>
-  <color name="feed_empty_text_color">#99ffffff</color>
-  <color name="white">#ffffff</color>
-  <!--Colors for icons -->
-  <color name="vk_color">#567CA4</color>
-  <color name="fb_color">#3B5998</color>
-  <color name="google_plus_color">#DD4B39</color>
-  <color name="google_plus_color_inactive">#BDBDBD</color>
+    <color name="primary">#2e3b50</color>
+    <color name="primary_dark">#253040</color>
+    <color name="accent">#ff5f9e</color>
+    <color name="accent_light">#3DFF5F9E</color>
+    <color name="text_primary">#000</color>
+    <color name="window_background">#FFFFFF</color>
+    <color name="window_reel_background">#EEEEEE</color>
+    <color name="translucent">#00000000</color>
+    <color name="black_translucent">#50000000</color>
+    <color name="feed_empty_text_color">#99ffffff</color>
+    <color name="white">#ffffff</color>
+    <!--Colors for icons -->
+    <color name="vk_color">#567CA4</color>
+    <color name="fb_color">#3B5998</color>
+    <color name="google_plus_color">#DD4B39</color>
+    <color name="google_plus_color_inactive">#BDBDBD</color>
 
     <color name="charcoal">#3e4d66</color>
     <color name="charcoal_muted">#3e4d66</color>
@@ -25,7 +25,7 @@
     <color name="caribbean_green">#00dc88</color>
     <color name="medium_jungle_green">#323232</color>
     <color name="lavender_gray">#c5c9d1</color>
-  <color name="lavender_gray_tag">#8Ac5c9d1</color>
+    <color name="lavender_gray_tag">#8Ac5c9d1</color>
     <color name="snow">#fafafa</color>
     <color name="radical_red">#f82969</color>
     <color name="hot_pink">#ff76ac</color>
