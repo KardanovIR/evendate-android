@@ -1,16 +1,20 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ds_gordeev on 11.03.2016.
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
-            "organization_short_name,is_favorite,dates,organization_logo_small_url," +
-            "registration_required,registration_till,is_free,min_price,is_same_time" +
-            ",created_at,actuality";
-    String ORDER_BY_TIME = "created_at";
+            "organization_short_name,is_favorite,is_hidden," +
+            "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + "," +
+            "organization_logo_small_url," +
+            "registration_required,registration_till,is_free,min_price,is_same_time," +
+            "created_at,actuality";
     String ORDER_BY_ACTUALITY = "-actuality";
     String ORDER_BY_FAVORITE_AND_FIRST_TIME = "-is_favorite,first_event_date";
     String ORDER_BY_LAST_DATE = "-last_event_date";
@@ -19,23 +23,26 @@ public interface EventFeed {
 
     String getTitle();
 
-    long getFirstDate();
+    Date getFirstDateTime();
 
-    long getLastDate();
+    Date getLastDateTime();
 
-    long getNearestDate();
+    @Nullable
+    Date getNearestDateTime();
 
     String getImageHorizontalUrl();
 
-    String getImageVerticalUrl();
-
     int getOrganizationId();
 
-    ArrayList<DateFull> getDateList();
+    ArrayList<EventDate> getDateList();
 
     boolean isFavorite();
 
     void setIsFavorite(boolean isFavorite);
+
+    boolean isHidden();
+
+    void setHidden(boolean isHidden);
 
     String getOrganizationShortName();
 
@@ -45,7 +52,7 @@ public interface EventFeed {
 
     boolean isRegistrationRequired();
 
-    long getRegistrationTill();
+    Date getRegistrationTill();
 
     boolean isFree();
 

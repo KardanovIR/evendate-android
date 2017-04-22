@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,61 +39,27 @@ import ru.evendate.android.views.LoadStateView;
  * contain recycle view with cards for event list
  */
 public class ReelFragment extends Fragment implements AdapterController.AdapterContext, LoadStateView.OnReloadListener {
-    private String LOG_TAG = ReelFragment.class.getSimpleName();
-
-    @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
-    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-
-    boolean refreshTurnOn = false;
-    private EventsAdapter mAdapter;
-    private AdapterController mAdapterController;
-
     static final String TYPE_KEY = "type";
-    private int type = 0;
     /**
      * organization id from detail organization
      */
     static final String ORG_KEY = "organization_id";
-    private int organizationId;
-
     /**
      * selected date in calendar
      */
     static final String DATE_KEY = "date";
+    @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
+    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    boolean refreshTurnOn = false;
+    private String LOG_TAG = ReelFragment.class.getSimpleName();
+    private EventsAdapter mAdapter;
+    private AdapterController mAdapterController;
+    private int type = 0;
+    private int organizationId;
     private Date mDate;
-
-    public enum ReelType {
-        FEED(0),
-        FAVORITES(1),
-        ORGANIZATION(2),
-        ORGANIZATION_PAST(5),
-        CALENDAR(3),
-        RECOMMENDATION(4);
-
-        final int type;
-
-        ReelType(int type) {
-            this.type = type;
-        }
-
-        static public ReelType getType(int pType) {
-            for (ReelType type : ReelType.values()) {
-                if (type.type() == pType) {
-                    return type;
-                }
-            }
-            throw new RuntimeException("unknown type");
-        }
-
-        public int type() {
-            return type;
-        }
-    }
-
     private OnEventsDataLoadedListener mDataListener;
     private ArrayList<OnRefreshListener> mRefreshListenerList;
-
 
     public static ReelFragment newInstance(ReelType type, int organizationId, boolean enableRefreshing) {
         ReelFragment reel = new ReelFragment();
@@ -185,6 +152,30 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         });
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new LandingAnimator());
+
+        /*
+            centering cards in tablets
+         */
+        switch (ReelType.getType(type)) {
+            case RECOMMENDATION:
+            case FAVORITES:
+            case FEED:
+            case ORGANIZATION:
+            case ORGANIZATION_PAST:
+                mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                    @Override
+                    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                        int totalWidth = parent.getWidth();
+                        int maxCardWidth = getResources().getDimensionPixelOffset(R.dimen.card_feed_max_width);
+                        int sidePadding = (totalWidth - maxCardWidth) / 2;
+                        sidePadding = Math.max(0, sidePadding);
+                        outRect.set(sidePadding, 0, sidePadding, 0);
+                    }
+                });
+                break;
+            case CALENDAR:
+                break;
+        }
     }
 
     private void setEmptyCap() {
@@ -231,17 +222,6 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     public EventsAdapter getAdapter() {
         return mAdapter;
-    }
-
-    /**
-     * notify about finishing a download
-     */
-    public interface OnEventsDataLoadedListener {
-        void onEventsDataLoaded();
-    }
-
-    public interface OnRefreshListener {
-        void onRefresh();
     }
 
     /**
@@ -337,7 +317,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private Observable<ResponseArray<Event>> getCalendarEvent(ApiService apiService,
                                                               int length, int offset, Date date) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                DateFormatter.formatDateRequest(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
+                DateFormatter.formatDateRequestNotUtc(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<Event>> getRecommendation(ApiService apiService,
@@ -375,5 +355,44 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     public void requestNext() {
         loadEvents();
         mLoadStateView.hide();
+    }
+
+    public enum ReelType {
+        FEED(0),
+        FAVORITES(1),
+        ORGANIZATION(2),
+        ORGANIZATION_PAST(5),
+        CALENDAR(3),
+        RECOMMENDATION(4);
+
+        final int type;
+
+        ReelType(int type) {
+            this.type = type;
+        }
+
+        static public ReelType getType(int pType) {
+            for (ReelType type : ReelType.values()) {
+                if (type.type() == pType) {
+                    return type;
+                }
+            }
+            throw new RuntimeException("unknown type");
+        }
+
+        public int type() {
+            return type;
+        }
+    }
+
+    /**
+     * notify about finishing a download
+     */
+    public interface OnEventsDataLoadedListener {
+        void onEventsDataLoaded();
+    }
+
+    public interface OnRefreshListener {
+        void onRefresh();
     }
 }

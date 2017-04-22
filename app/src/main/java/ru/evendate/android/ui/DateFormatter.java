@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.text.DateFormat;
@@ -13,11 +14,12 @@ public class DateFormatter {
 
     private static DateFormat requestDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     private static DateFormat requestDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private static DateFormat registrationFormat = new SimpleDateFormat("d.MM.yyyy", Locale.getDefault());
+    private static DateFormat registrationFormat = new SimpleDateFormat("d.MM.yyyy HH:mm", Locale.getDefault());
     private static DateFormat calendarBottomSheetFormat = new SimpleDateFormat("cc, d MMMM", Locale.getDefault());
     private static DateFormat eventSingleDateFormat = new SimpleDateFormat("d MMMM", Locale.getDefault());
     private static DateFormat notificationDatetimeFormat = new SimpleDateFormat("d MMMM HH:mm", Locale.getDefault());
     private static DateFormat orderDatetimeFormat = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
+    private static DateFormat exportCalendarDatetimeFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault());
 
     public static String formatDateTimeRequest(Date date) {
         requestDateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -30,6 +32,13 @@ public class DateFormatter {
         requestDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         String formatted_date = requestDateFormat.format(date);
         logDate("formatDateRequest", formatted_date);
+        return formatted_date;
+    }
+
+    public static String formatDateRequestNotUtc(Date date) {
+        requestDateFormat.setTimeZone(TimeZone.getDefault());
+        String formatted_date = requestDateFormat.format(date);
+        logDate("formatDateRequestNotUtc", formatted_date);
         return formatted_date;
     }
 
@@ -57,7 +66,7 @@ public class DateFormatter {
         return formatted_date;
     }
 
-    public static String formatEventSingleTime(Date startDate, Date endDate) {
+    public static String formatEventSingleTime(Date startDate, @Nullable Date endDate) {
         return formatTime(startDate) + (endDate != null ? " - " + formatTime(endDate) : "");
     }
 
@@ -69,6 +78,15 @@ public class DateFormatter {
     public static String formatOrderDateTime(Date date) {
         String formatted_date = orderDatetimeFormat.format(date);
         logDate("formatOrderDateTime", formatted_date);
+        return formatted_date;
+    }
+
+    public static String formatExportCalendarDateTime(Date startDate, @Nullable Date endDate) {
+        String formatted_date = exportCalendarDatetimeFormat.format(startDate);
+        if (endDate != null) {
+            formatted_date += "/" + exportCalendarDatetimeFormat.format(endDate);
+        }
+        logDate("formatExportCalendarDateTime", formatted_date);
         return formatted_date;
     }
 

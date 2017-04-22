@@ -218,7 +218,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class CatalogNavigationItemClickListener extends NavigationItemSelectedListener {
+    private class CatalogNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
 
         CatalogNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);

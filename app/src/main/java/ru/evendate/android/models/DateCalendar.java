@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Dmitry on 08.02.2016.
  */
-public class DateCalendar extends Date {
-    @SerializedName("events_count")
-    long eventCount;
+public class DateCalendar extends EventDate {
+    @SerializedName("eventsCount")
+    int eventCount;
     @SerializedName("favorites_count")
-    long favoredCount;
+    int favoredCount;
 
-    public long getEventCount() {
+    public int getEventCount() {
         return eventCount;
     }
 
-    public long getFavoredCount() {
+    public int getFavoredCount() {
         return favoredCount;
     }
 }

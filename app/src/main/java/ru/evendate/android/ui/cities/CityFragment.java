@@ -108,6 +108,8 @@ public class CityFragment extends Fragment implements CityContract.View,
 
         private static final int TYPE_HEADER = 0;
         private static final int TYPE_ITEM = 1;
+        //Todo temporary geolocation item hidden cause bug in locating
+        private static final int ITEM_OFFSET = 0;
         private final CityContract.OnCityInteractionListener mListener;
         private List<City> mCities = new ArrayList<>();
 
@@ -137,8 +139,8 @@ public class CityFragment extends Fragment implements CityContract.View,
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof CityViewHolder) {
                 CityViewHolder castHolder = (CityViewHolder)holder;
-                castHolder.mItem = mCities.get(position - 1);
-                castHolder.mCityTitle.setText(mCities.get(position - 1).getNameLocally());
+                castHolder.mItem = mCities.get(position - ITEM_OFFSET);
+                castHolder.mCityTitle.setText(mCities.get(position - ITEM_OFFSET).getNameLocally());
 
                 castHolder.mView.setOnClickListener((View v) -> {
                     if (null != mListener) {
@@ -157,14 +159,14 @@ public class CityFragment extends Fragment implements CityContract.View,
 
         @Override
         public int getItemViewType(int position) {
-            if (position == 0)
-                return TYPE_HEADER;
+            //if (position == 0)
+            //    return TYPE_HEADER;
             return TYPE_ITEM;
         }
 
         @Override
         public int getItemCount() {
-            return mCities.size() + 1;
+            return mCities.size() + ITEM_OFFSET;
         }
 
         class CityViewHolder extends RecyclerView.ViewHolder {

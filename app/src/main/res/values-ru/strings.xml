@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Evendate</string>
     <string name="drawer_calendar">Календарь</string>
     <string name="event_all_day">Весь день</string>
     <string name="drawer_subscriptions">Мои подписки</string>
@@ -39,7 +38,7 @@
     <string name="action_share">Поделиться</string>
     <string name="tab_user_actions">Активность</string>
     <string name="tab_user_subscriptions">Подписки</string>
-    <string name="action_dislike">Удалил из ибранного события</string>
+    <string name="action_dislike">Удалил из избранного события</string>
     <string name="action_like">Добавил в избранное события</string>
     <string name="action_subscribe">Подписался на организации</string>
     <string name="action_unsubscribe">Отписался от организаций</string>
@@ -83,7 +82,7 @@
     <string name="toast_event_unfave">удалено из избранного</string>
     <string name="tab_main_recommendation">Для вас</string>
     <string name="auth_loading">Загрузка</string>
-    <string name="auth_description">Evendate – это сервис, позволяющий вам оставаться в курсе предстоящий событий в ваших любимых местах.</string>
+    <string name="auth_description">Evendate – это сервис, позволяющий вам оставаться в курсе предстоящих событий в ваших любимых местах.</string>
     <string name="auth_sign_in">Войдите через социальную сеть:</string>
     <string name="auth_welcome">Добро пожаловать в Evendate!</string>
     <string name="auth_vk">Войти через ВКонтакте</string>
@@ -103,7 +102,7 @@
     <string name="notification_before_three_hours">За 3 часа</string>
     <string name="notification_before_week">За неделю</string>
     <string name="notification_add_custom">Добавить свое время</string>
-    <string name="action_user_link">Profile in social net</string>
+    <string name="action_user_link">Профиль в социальной сети</string>
     <string name="title_activity_friends">Друзья</string>
     <string name="drawer_friends">Друзья</string>
     <string name="toast_notification_event_started">Событие уже началось</string>
@@ -152,8 +151,8 @@
     <string name="search_empty_description">Попробуйте поискать что-нибудь другое</string>
     <string name="search_empty_header">Ничего не найдено</string>
     <string name="auth_error">Произошла ошибка. Пожалуйста, повторите</string>
-    <string name="tab_tickets_future_events">Будущие</string>
-    <string name="tab_tickets_past_events">Прошедшие</string>
+    <string name="tab_tickets_future_events">Активные</string>
+    <string name="tab_tickets_past_events">Использованные</string>
     <string name="drawer_tickets">Мои билеты</string>
     <string name="event_registration_button">Зарегистрироваться</string>
     <string name="event_registration_title">Регистрация на событие</string>
@@ -171,10 +170,9 @@
     <string name="ticket_number_label">Билет №</string>
     <string name="event_registered_open_detail">Перейти к событию</string>
     <string name="city_available_list">Доступные города</string>
-    <string name="city_location_button">Использовать моё местополоние</string>
+    <string name="city_location_button">Использовать моё местоположение</string>
     <string name="city_prompt_button">Выбрать город</string>
-    <string name="city_prompt_where_user">Где вы?</string>
-    <string name="city_prompt_where_user_description">Дайте нам знать, что бы мы момгли рекомендовать события рядом</string>
+    <string name="city_prompt_where_user">Где вы находитесь?</string>
     <string name="title_activity_city">Города</string>
     <string name="title_activity_check_in">Контроль входа</string>
     <string name="drawer_check_in">Контроль входа</string>
@@ -196,4 +194,11 @@
     <string name="check_in_tickets_waiting">Ожидают</string>
     <string name="ticket_number_word">Билет</string>
     <string name="check_in_confirm_revert">Подтверждение отменено</string>
+    <string name="dialog_event_unhide">Убрать из скрытых</string>
+    <string name="drawer_recommendations">Рекомендации</string>
+    <string name="recommender_empty_description">Событий больше нет. Загляните позже.</string>
+    <string name="toast_event_unhide">убрано из скрытых</string>
+    <string name="action_export_to_calendar">Экспорт в календарь</string>
+    <string name="city_prompt_where_user_description">Чтобы начать использовать Evendate, укажите свой город.</string>
+    <string name="title_activity_recommendation">Рекомендации</string>
 </resources>

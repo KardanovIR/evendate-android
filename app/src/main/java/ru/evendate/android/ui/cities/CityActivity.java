@@ -17,6 +17,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
     public final static String KEY_PROMPT = "force_prompt";
     public final static String TAG_LOCATION = "location";
     private final static String TAG_PROMPT = "tag_prompt";
+    private final static String TAG_CITIES = "tag_cities";
     @Bind(R.id.toolbar) Toolbar mToolbar;
     boolean shouldShowPrompt = false;
     CityPresenter mCityPresenter;
@@ -41,11 +42,11 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
         }
 
         CityFragment cityFragment = (CityFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.container);
+                .findFragmentByTag(TAG_CITIES);
         if (cityFragment == null) {
             cityFragment = new CityFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, cityFragment).commit();
+                    .add(R.id.container, cityFragment, TAG_CITIES).commit();
         }
 
         mCityPresenter = new CityPresenter(this, new DataRepository(this),

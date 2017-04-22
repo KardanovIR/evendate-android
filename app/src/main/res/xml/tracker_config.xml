@@ -18,4 +18,10 @@
     <screenName name="ru.evendate.android.ui.CalendarActivity">Calendar Screen</screenName>
     <screenName name="ru.evendate.android.ui.SettingsActivity">Settings Screen</screenName>
     <screenName name="ru.evendate.android.ui.SearchResultsActivity">Search Screen</screenName>
+
+    <screenName name="ru.evendate.android.ui.EventRegisteredActivity">Event Registered Screen
+    </screenName>
+    <screenName name="ru.evendate.android.ui.TicketListActivity">Ticket List Screen</screenName>
+    <screenName name="ru.evendate.android.ui.CheckInActivity">Check In Screen</screenName>
+    <screenName name="ru.evendate.android.ui.RecommenderActivity">Recommendation Screen</screenName>
 </resources>

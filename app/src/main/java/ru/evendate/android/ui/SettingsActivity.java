@@ -33,16 +33,13 @@ import ru.evendate.android.network.ResponseArray;
 import static ru.evendate.android.EvendatePreferences.KEY_INDICATOR_COLOR;
 
 public class SettingsActivity extends AppCompatActivity {
-    private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
-
-    private DrawerWrapper mDrawer;
-
     //todo
     public static final String KEY_HTTPS = "key_https";
     public static final boolean KEY_HTTPS_DEFAULT = false;
-
+    private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
     private static final String KEY_PRIVACY_FEED = "key_feed_privacy";
     private static final String KEY_INFO = "key_info";
+    private DrawerWrapper mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,26 +65,6 @@ public class SettingsActivity extends AppCompatActivity {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new SettingsNavigationItemClickListener(this, mDrawer.getDrawer()));
-    }
-
-    private class SettingsNavigationItemClickListener extends NavigationItemSelectedListener {
-
-        SettingsNavigationItemClickListener(Activity context, Drawer drawer) {
-            super(context, drawer);
-            mContext = context;
-        }
-
-        @Override
-        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
-                case DrawerWrapper.SETTINGS_IDENTIFIER:
-                    mDrawer.closeDrawer();
-                    break;
-                default:
-                    super.onItemClick(view, position, drawerItem);
-            }
-            return true;
-        }
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -165,6 +142,26 @@ public class SettingsActivity extends AppCompatActivity {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> {
                     }, error -> Log.e(LOG_TAG, error.getMessage()));
+        }
+    }
+
+    private class SettingsNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
+
+        SettingsNavigationItemClickListener(Activity context, Drawer drawer) {
+            super(context, drawer);
+            mContext = context;
+        }
+
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            switch (drawerItem.getIdentifier()) {
+                case DrawerWrapper.SETTINGS_IDENTIFIER:
+                    mDrawer.closeDrawer();
+                    break;
+                default:
+                    super.onItemClick(view, position, drawerItem);
+            }
+            return true;
         }
     }
 

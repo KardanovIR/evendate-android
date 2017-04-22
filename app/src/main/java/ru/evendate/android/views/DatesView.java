@@ -18,7 +18,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateFull;
+import ru.evendate.android.models.EventDate;
 
 /**
  * Created by ds_gordeev on 15.03.2016.
@@ -26,11 +26,11 @@ import ru.evendate.android.models.DateFull;
  * contain also button to expand and collapse when dates more when more than 5
  */
 public class DatesView extends CardView {
-    private ArrayList<DateFull> mDates;
     @Bind(R.id.container) LinearLayout mLayout;
     @Bind(R.id.expand_container) LinearLayout mLayoutExpand;
-    private int minDates = 5;
     @Bind(R.id.expand_button) ToggleButton ExpandButton;
+    private ArrayList<EventDate> mDates;
+    private int minDates = 5;
 
     public DatesView(Context context) {
         this(context, null);
@@ -47,7 +47,11 @@ public class DatesView extends CardView {
         }
     }
 
-    public void setDates(ArrayList<DateFull> dates) {
+    public ArrayList<EventDate> getDates() {
+        return mDates;
+    }
+
+    public void setDates(ArrayList<EventDate> dates) {
         mDates = dates;
         initDates();
         if (dates.size() < minDates) {
@@ -56,16 +60,12 @@ public class DatesView extends CardView {
             mLayoutExpand.setVisibility(GONE);
     }
 
-    public ArrayList<DateFull> getDates() {
-        return mDates;
-    }
-
     private void initDates() {
         if (mDates == null)
             return;
         if (mLayout.getChildCount() != 0)
             mLayout.removeViewsInLayout(0, mLayout.getChildCount());
-        for (DateFull date : mDates) {
+        for (EventDate date : mDates) {
             DatetimeView dateView = new DatetimeView(getContext());
             dateView.setDate(date);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -140,13 +140,13 @@ public class DatesView extends CardView {
     }
 
     private void mockup() {
-        long[] str = {
+        int[] str = {
                 1446508800,
                 1448928000,
                 1449014400,
                 1449100800
         };
-        for (long date : str) {
+        for (int date : str) {
             DatetimeView dateView = new DatetimeView(getContext());
             dateView.setDate(date);
             ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

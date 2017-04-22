@@ -1,5 +1,7 @@
 package ru.evendate.android.models;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -7,7 +9,8 @@ import java.util.List;
  */
 
 public interface EventRegistered {
-    String FIELDS_LIST = "location,my_tickets_count,tickets" + DataUtil.encloseFields(Ticket.FIELDS_LIST, Ticket.ORDER_BY);
+    String FIELDS_LIST = "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + "," +
+            "location,my_tickets_count,tickets" + DataUtil.encloseFields(Ticket.FIELDS_LIST, Ticket.ORDER_BY);
 
     int getEntryId();
 
@@ -15,9 +18,11 @@ public interface EventRegistered {
 
     String getLocation();
 
-    long getNearestDate();
+    Date getNearestDateTime();
 
     List<Ticket> getTickets();
 
     int getMyTicketsCount();
+
+    ArrayList<EventDate> getDateList();
 }

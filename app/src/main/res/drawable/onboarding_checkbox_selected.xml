@@ -6,7 +6,7 @@
         android:height="32dp">
         <shape
             android:shape="oval">
-            <solid android:color="@color/accent"/>
+            <solid android:color="@color/radical_red"/>
         </shape>
     </item>
     <item android:drawable="@drawable/ic_check"

@@ -13,11 +13,13 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
+import java.util.Date;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateUtils;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
@@ -82,11 +84,11 @@ public class TicketDetailFragment extends Fragment {
                 .into(mQrCode);
         mTicketStatus.setText(mTicket.getOrder().getStatusName());
         mPlace.setText(mEvent.getLocation());
-        mDatetime.setText(EventFormatter.formatDate(mEvent.getNearestDate()));
+        mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) mEvent)));
         mTicketType.setText(mTicket.getTicketType().getName());
-        long payedAt = mTicket.getOrder().getPayedAt();
-        mOrderDatetime.setText(getString(R.string.ticket_date_label) + " " +
-                DateFormatter.formatOrderDateTime(DateUtils.date(payedAt)));
+        Date orderDate = mTicket.getOrder().getPayedAt() != null ?
+                mTicket.getOrder().getPayedAt() : mTicket.getCreatedAt();
+        mOrderDatetime.setText(getString(R.string.ticket_date_label) + " " + DateFormatter.formatOrderDateTime(orderDate));
 
         mTicketNumber.setText(TicketFormatter.formatNumber(getContext(), mTicket.getNumber()));
         if (mTicket.isCheckout()) {
@@ -109,7 +111,7 @@ public class TicketDetailFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnTicketInteractionListener) {
-            mListener = (OnTicketInteractionListener)context;
+            mListener = (OnTicketInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnTicketInteractionListener");

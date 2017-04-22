@@ -26,7 +26,6 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.NavigationItemSelectedListener;
 
 //todo on confirm update pages tickets
 public class CheckInActivity extends AppCompatActivity implements CheckInContract.ConfirmInteractionListener,
@@ -273,7 +272,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class CheckInNavigationItemClickListener extends NavigationItemSelectedListener {
+    private class CheckInNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
 
         CheckInNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);

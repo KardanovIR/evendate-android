@@ -13,8 +13,8 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateFull;
 import ru.evendate.android.models.DateUtils;
+import ru.evendate.android.models.EventDate;
 import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.ui.DateFormatter;
 
@@ -25,7 +25,7 @@ import ru.evendate.android.ui.DateFormatter;
 public class DatetimeView extends LinearLayout {
     @Bind(R.id.date) TextView mDateView;
     @Bind(R.id.time) TextView mTimeView;
-    private DateFull mDate;
+    private EventDate mDate;
 
     public DatetimeView(Context context) {
         this(context, null);
@@ -48,13 +48,13 @@ public class DatetimeView extends LinearLayout {
         }
     }
 
-    public void setDate(DateFull date) {
+    public void setDate(EventDate date) {
         mDate = date;
-        mTimeView.setText(EventFormatter.formatEventTime(mDate.getStartTime(), mDate.getEndTime()));
-        mDateView.setText(EventFormatter.formatDate(mDate.getEventDate()));
+        mTimeView.setText(EventFormatter.formatEventTime(date.getStartDateTime(), date.getEndDateTime()));
+        mDateView.setText(EventFormatter.formatDate(date.getStartDateTime()));
     }
 
-    public void setDate(long date) {
+    public void setDate(int date) {
         if (!isInEditMode())
             throw new IllegalArgumentException("Only for using in edit mode");
         mTimeView.setText(DateFormatter.formatEventSingleTime(DateUtils.date(date), DateUtils.date(date)));
