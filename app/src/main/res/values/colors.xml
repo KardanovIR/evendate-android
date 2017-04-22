@@ -17,7 +17,9 @@
   <color name="google_plus_color">#DD4B39</color>
   <color name="google_plus_color_inactive">#BDBDBD</color>
 
-
+    <color name="charcoal">#3e4d66</color>
+    <color name="charcoal_muted">#3e4d66</color>
+    <color name="charcoal_muted_80">#3e4d66</color>
     <color name="black">#000000</color>
     <color name="isabelline">#eeeeee</color>
     <color name="caribbean_green">#00dc88</color>

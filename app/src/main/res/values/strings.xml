@@ -25,6 +25,7 @@
     <string name="drawer_log_out">Log out</string>
     <string name="drawer_tickets">My tickets</string>
     <string name="drawer_check_in">Check in</string>
+    <string name="drawer_recommendations">Recommendations</string>
 
     <!-- tabs strings -->
     <string name="tab_main_feed">Feed</string>
@@ -157,12 +158,14 @@
 
 
     <string name="dialog_event_hide">Hide event</string>
+    <string name="dialog_event_unhide">Remove from hidden</string>
     <string name="dialog_event_fave">Add to favorites</string>
     <string name="dialog_event_unfave">Remove from favorites</string>
     <string name="dialog_event_invite_friend">Invite friend</string>
 
     <string name="toast_event">Event</string>
     <string name="toast_event_hide">hided</string>
+    <string name="toast_event_unhide">removed from hidden</string>
     <string name="toast_event_fave">added to favorites</string>
     <string name="toast_event_unfave">removed from favorites</string>
 
@@ -269,6 +272,7 @@
 
     <!-- cities -->
     <string name="city_prompt_where_user">Where are you?</string>
+    <string name="city_prompt_where_user_description">To start using Evendate, enter your city</string>
     <string name="city_prompt_button">Enter your city</string>
 
     <string name="city_location_button">Use my location</string>
@@ -299,5 +303,8 @@
     <string name="check_in_confirm_dialog_button_revert">Revert confirm</string>
     <string name="ticket_number_word">Ticket</string>
     <string name="check_event_tickets">ticket</string>
-    <string name="city_prompt_where_user_description">To start using Evendate, enter your city</string>
+
+    <!-- recommender strings -->
+    <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
+    <string name="recommender_empty_description">No more events. Take a look later.</string>
 </resources>

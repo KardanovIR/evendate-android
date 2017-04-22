@@ -194,6 +194,10 @@
     <string name="check_in_tickets_waiting">Ожидают</string>
     <string name="ticket_number_word">Билет</string>
     <string name="check_in_confirm_revert">Подтверждение отменено</string>
+    <string name="dialog_event_unhide">Убрать из скрытых</string>
+    <string name="drawer_recommendations">Рекомендации</string>
+    <string name="recommender_empty_description">Событий больше нет. Загляните позже.</string>
+    <string name="toast_event_unhide">убрано из скрытых</string>
     <string name="action_export_to_calendar">Экспорт в календарь</string>
     <string name="city_prompt_where_user_description">Чтобы начать использовать Evendate, укажите свой город.</string>
     <string name="title_activity_recommendation">Рекомендации</string>

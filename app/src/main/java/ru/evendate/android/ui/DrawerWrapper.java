@@ -31,11 +31,15 @@ import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.OrganizationModel;
 import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.ui.checkin.CheckInActivity;
+import ru.evendate.android.ui.tickets.EventRegisteredActivity;
+import ru.evendate.android.ui.tinder.RecommenderActivity;
 
 /**
  * Created by Dmitry on 11.02.2016.
@@ -43,6 +47,7 @@ import ru.evendate.android.network.ResponseArray;
 public class DrawerWrapper {
     public final static int TICKETS_IDENTIFIER = 6;
     public final static int ADMINISTRATION_IDENTIFIER = 7;
+    public final static int RECOMMENDER_IDENTIFIER = 8;
     final static int REEL_IDENTIFIER = 1;
     final static int CALENDAR_IDENTIFIER = 2;
     final static int CATALOG_IDENTIFIER = 3;
@@ -74,6 +79,8 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_receipt_black).withIdentifier(TICKETS_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem administrationItem = new PrimaryDrawerItem().withName(R.string.drawer_check_in)
             .withIcon(R.drawable.ic_event_note_black).withIdentifier(ADMINISTRATION_IDENTIFIER).withSelectable(true);
+    private PrimaryDrawerItem recommenderItem = new PrimaryDrawerItem().withName(R.string.drawer_recommendations)
+            .withIcon(R.drawable.ic_whatshot).withIdentifier(RECOMMENDER_IDENTIFIER).withSelectable(true);
 
     protected DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -126,7 +133,7 @@ public class DrawerWrapper {
         intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
         if (Build.VERSION.SDK_INT >= 21) {
             context.startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
+                    ActivityOptions.makeSceneTransitionAnimation((Activity) context).toBundle());
         } else
             context.startActivity(intent);
     }
@@ -134,16 +141,18 @@ public class DrawerWrapper {
     private void setupMenu() {
         mDrawer.removeAllItems();
         mDrawer.addItems(
-                reelItem);
+                reelItem
+        );
         if (mUser != null && mUser.isEditor()) {
             mDrawer.addItems(administrationItem);
         }
         mDrawer.addItems(
+                recommenderItem,
                 calendarItem,
                 ticketsItem,
                 friendsItem,
-                settingsItem,
                 organizationsItem,
+                settingsItem,
                 new SectionDrawerItem().withName(R.string.drawer_subscriptions)
         );
     }
@@ -155,7 +164,7 @@ public class DrawerWrapper {
     private void updateSubs() {
         setupMenu();
         for (OrganizationSubscription org : mSubscriptions) {
-            SubscriptionDrawerItem item = (SubscriptionDrawerItem)new SubscriptionDrawerItem().withName(org.getShortName())
+            SubscriptionDrawerItem item = (SubscriptionDrawerItem) new SubscriptionDrawerItem().withName(org.getShortName())
                     .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false);
             if (org.getNewEventsCount() != 0) {
                 item.withBadge(String.valueOf(org.getNewEventsCount())).withBadgeStyle(new BadgeStyle().withTextColorRes(R.color.accent));
@@ -223,7 +232,7 @@ public class DrawerWrapper {
                                         .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
                                             EvendateAccountManager.deleteAccount(mContext);
                                             //todo ditch
-                                            ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
+                                            ((Activity) mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
                                             return false;
                                         })
                         );
@@ -266,5 +275,131 @@ public class DrawerWrapper {
 
     interface OnSubLoadListener {
         void onSubLoaded();
+    }
+
+    /**
+     * handle clicks on items of navigation drawer list
+     * used for all activities except main activity
+     */
+    public static class NavigationItemSelectedListener
+            implements Drawer.OnDrawerItemClickListener {
+        protected Activity mContext;
+        protected Drawer mDrawer;
+
+        public NavigationItemSelectedListener(Activity context, Drawer drawer) {
+            mContext = context;
+            mDrawer = drawer;
+        }
+
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            switch (drawerItem.getIdentifier()) {
+                case DrawerWrapper.REEL_IDENTIFIER:
+                    openReelActivity();
+                    break;
+                case DrawerWrapper.CALENDAR_IDENTIFIER:
+                    openCalendarActivity();
+                    break;
+                case DrawerWrapper.CATALOG_IDENTIFIER:
+                    openCatalogActivity();
+                    break;
+                case DrawerWrapper.FRIENDS_IDENTIFIER:
+                    openFriendsActivity();
+                    break;
+                case DrawerWrapper.SETTINGS_IDENTIFIER:
+                    openSettingsActivity();
+                    break;
+                case DrawerWrapper.TICKETS_IDENTIFIER:
+                    openTicketsActivity();
+                    break;
+                case DrawerWrapper.ADMINISTRATION_IDENTIFIER:
+                    openAdminActivity();
+                    break;
+                case DrawerWrapper.RECOMMENDER_IDENTIFIER:
+                    openRecommenderActivity();
+                    break;
+                //case R.id.nav_add_account:
+                //    Intent authIntent = new Intent(mContext, AuthActivity.class);
+                //    mContext.startActivity(authIntent);
+                //    break;
+                default:
+                    openOrganizationFromSub(drawerItem);
+            }
+            mDrawer.closeDrawer();
+            return true;
+        }
+
+        private void openReelActivity() {
+            Intent reelIntent = new Intent(mContext, MainActivity.class);
+            reelIntent = addFlags(reelIntent);
+            openActivity(reelIntent);
+        }
+
+        private void openCalendarActivity() {
+            Intent calendarIntent = new Intent(mContext, CalendarActivity.class);
+            calendarIntent = addFlags(calendarIntent);
+            openActivity(calendarIntent);
+        }
+
+        private void openCatalogActivity() {
+            Intent orgIntent = new Intent(mContext, OrganizationCatalogActivity.class);
+            orgIntent = addFlags(orgIntent);
+            openActivity(orgIntent);
+        }
+
+        private void openFriendsActivity() {
+            Intent friendsIntent = new Intent(mContext, UserListActivity.class);
+            friendsIntent.putExtra(UserListFragment.TYPE, UserListFragment.TypeFormat.FRIENDS.type());
+            openActivity(friendsIntent);
+        }
+
+        private void openSettingsActivity() {
+            Intent settingsIntent = new Intent(mContext, SettingsActivity.class);
+            settingsIntent = addFlags(settingsIntent);
+            openActivity(settingsIntent);
+        }
+
+        private void openTicketsActivity() {
+            Intent ticketsIntent = new Intent(mContext, EventRegisteredActivity.class);
+            ticketsIntent = addFlags(ticketsIntent);
+            openActivity(ticketsIntent);
+        }
+
+        private void openAdminActivity() {
+            Intent adminIntent = new Intent(mContext, CheckInActivity.class);
+            adminIntent = addFlags(adminIntent);
+            openActivity(adminIntent);
+        }
+
+        private void openRecommenderActivity() {
+            Intent intent = new Intent(mContext, RecommenderActivity.class);
+            intent = addFlags(intent);
+            openActivity(intent);
+        }
+
+        private void openOrganizationFromSub(IDrawerItem drawerItem) {
+            int id = getOrgIdFromDrawerItem(drawerItem);
+            Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
+            detailIntent.setData(EvendateContract.OrganizationEntry.getContentUri(id));
+            openActivity(detailIntent);
+        }
+
+        private int getOrgIdFromDrawerItem(IDrawerItem drawerItem) {
+            return ((OrganizationModel) drawerItem.getTag()).getEntryId();
+        }
+
+        private Intent addFlags(Intent intent) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            return intent;
+        }
+
+        private void openActivity(Intent intent) {
+            if (Build.VERSION.SDK_INT >= 21) {
+                mContext.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(mContext).toBundle());
+            } else
+                mContext.startActivity(intent);
+        }
+
     }
 }

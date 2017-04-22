@@ -114,7 +114,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
         mDrawer.getDrawer().keyboardSupportEnabled(this, true);
     }
 
