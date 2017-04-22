@@ -269,7 +269,7 @@ public class SwipeDeck extends FrameLayout {
             deck.addFront(card);
             card.setPositionWithinAdapter(positionOfLastCard);
         }
-        if (unSwipe) {
+        if (unSwipe && deck.size() > 0) {
             callback.cardUnSwipe(deck.get(0).getId());
         }
     }

@@ -37,12 +37,15 @@ import static ru.evendate.android.ui.tinder.RecommenderContract.PAGE_LENGTH;
 public class RecommenderFragment extends Fragment implements RecommenderContract.View, LoadStateView.OnReloadListener {
 
     final int LOAD_OFFSET = 3;
-    @Bind(R.id.swipe_deck) SwipeDeck swipeDeck;
+    @Bind(R.id.swipe_deck)
+    SwipeDeck swipeDeck;
     SwipeDeckAdapter mAdapter;
     boolean canLoadMore = true;
     boolean loading = true;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @Bind(R.id.load_state)
+    LoadStateView mLoadStateView;
     private RecommenderContract.Presenter mPresenter;
+    boolean loaded = false;
 
     public static RecommenderFragment newInstance() {
         RecommenderFragment fragment = new RecommenderFragment();
@@ -113,7 +116,20 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mPresenter.start();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!loaded) {
+            mPresenter.start();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mPresenter.stop();
     }
 
     @Override
@@ -166,6 +182,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
         loading = false;
         mAdapter.addData(events);
+        loaded = true;
     }
 
     @Override
@@ -176,6 +193,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
         loading = false;
         mAdapter.setData(events);
+        loaded = true;
     }
 
     @Override
@@ -249,10 +267,14 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
 
         class ViewHolder {
-            @Bind(R.id.event_image) ImageView eventImage;
-            @Bind(R.id.event_title) TextView eventTitle;
-            @Bind(R.id.event_organizator) TextView eventOrganizator;
-            @Bind(R.id.event_tags) TagsRecyclerView eventTags;
+            @Bind(R.id.event_image)
+            ImageView eventImage;
+            @Bind(R.id.event_title)
+            TextView eventTitle;
+            @Bind(R.id.event_organizator)
+            TextView eventOrganizator;
+            @Bind(R.id.event_tags)
+            TagsRecyclerView eventTags;
 
             ViewHolder(View view) {
                 ButterKnife.bind(this, view);
