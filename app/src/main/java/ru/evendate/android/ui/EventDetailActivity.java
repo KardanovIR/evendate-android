@@ -74,6 +74,8 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.adapters.NotificationConverter;
 import ru.evendate.android.adapters.NotificationListAdapter;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventDate;
@@ -196,7 +198,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mUri = intent.getData();
 
         eventId = Integer.parseInt(mUri.getLastPathSegment());
-        new Statistics(this).sendOrganizationView(eventId);
+        new Statistics(this).sendEventView(eventId);
 
         initInterface();
 
@@ -350,7 +352,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     private void initUserFavoriteCard() {
@@ -510,26 +512,21 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         if (mAdapter.getEvent() == null)
             return;
         Event event = mAdapter.getEvent();
-
-        ApiService apiService = ApiFactory.getService(this);
+        DataSource dataSource = new DataRepository(this);
         Observable<Response> LikeEventObservable;
 
         if (event.isFavorite()) {
-            LikeEventObservable = apiService.eventDeleteFavorite(event.getEntryId(),
-                    EvendateAccountManager.peekToken(this));
+            LikeEventObservable = dataSource.unfaveEvent(event.getEntryId());
         } else {
-            LikeEventObservable = apiService.eventPostFavorite(event.getEntryId(),
-                    EvendateAccountManager.peekToken(this));
+            LikeEventObservable = dataSource.faveEvent(event.getEntryId());
         }
-        LikeEventObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
+        LikeEventObservable.subscribe(result -> {
                     if (result.isOk())
                         Log.i(LOG_TAG, "performed like");
                     else
                         Log.e(LOG_TAG, "Error with response with like");
                 }, error -> {
-                    Log.e(LOG_TAG, error.getMessage());
+            Log.e(LOG_TAG, "" + error.getMessage());
                     Toast.makeText(this, R.string.download_error, Toast.LENGTH_SHORT).show();
                 });
 
@@ -774,11 +771,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             setAdaptiveTitle();
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
-            String eventBackGroundUrl = ServiceUtils.constructEventBackgroundURL(
+            String eventBackgroundUrl = ServiceUtils.constructEventBackgroundURL(
                     mEvent.getImageHorizontalUrl(),
                     (int) mContext.getResources().getDimension(R.dimen.event_background_width));
             Picasso.with(mContext)
-                    .load(eventBackGroundUrl)
+                    .load(eventBackgroundUrl)
                     .error(R.drawable.default_background)
                     .noFade()
                     .into(eventTarget);

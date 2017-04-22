@@ -19,7 +19,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
             "image_horizontal_small_url,image_horizontal_medium_url,organization_name," +
             "organization_type_name,organization_short_name," +
             "organization_logo_large_url,organization_logo_medium_url,organization_logo_small_url," +
-            "favored_users_count,description,detail_info_url,is_favorite,link," +
+            "favored_users_count,description,detail_info_url,is_favorite,is_hidden,link," +
 
             "registration_required,registration_approvement_required,registration_limit_count," +
             "registration_locally,registration_till,registration_approved,registration_available," +
@@ -74,6 +74,8 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     String detailInfoUrl;
     @SerializedName("is_favorite")
     boolean isFavorite;
+    @SerializedName("is_hidden")
+    boolean isHidden;
     @SerializedName("link")
     String link;
 
@@ -174,6 +176,14 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
     public void setIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean isHidden) {
+        this.isHidden = isHidden;
     }
 
     public String getDescription() {

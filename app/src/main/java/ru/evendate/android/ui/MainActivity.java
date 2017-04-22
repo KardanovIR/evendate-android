@@ -31,16 +31,15 @@ import static ru.evendate.android.ui.cities.CityActivity.KEY_PROMPT;
 
 public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener, OnboardingDialog.OnOrgSelectedListener {
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    private MainPagerFragment mFragment;
-    private DrawerWrapper mDrawer;
-
     public static final int REQUEST_AUTH = 1;
     public static final int REQUEST_SELECT_CITY = 2;
     public static final String SHOW_ONBOARDING = "onboarding";
     public static final String TAG_ONBOARDING = "tag_onboarding";
     private static boolean requestOnboarding = false;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
     OnboardingDialog onboarding;
+    private MainPagerFragment mFragment;
+    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,10 +220,19 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
             onboarding.dismissAllowingStateLoss();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mDrawer.getDrawer().isDrawerOpen()) {
+            mDrawer.getDrawer().closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /**
      * handle clicks on items of navigation drawer list in main activity
      */
-    private class MainNavigationItemClickListener extends NavigationItemSelectedListener {
+    private class MainNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
 
         MainNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);
@@ -240,15 +248,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
                     super.onItemClick(view, position, drawerItem);
             }
             return true;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawer.getDrawer().isDrawerOpen()) {
-            mDrawer.getDrawer().closeDrawer();
-        } else {
-            super.onBackPressed();
         }
     }
 }

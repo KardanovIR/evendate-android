@@ -2,4 +2,8 @@
 <resources>
     <dimen name="splash_logo_margin_bottom">160dp</dimen>
     <dimen name="event_background_width">480dp</dimen>
+    <dimen name="recommender_card_width">328dp</dimen>
+    <dimen name="recommender_card_height">368dp</dimen>
+
+    <dimen name="auth_button_left_padding">0dp</dimen>
 </resources>

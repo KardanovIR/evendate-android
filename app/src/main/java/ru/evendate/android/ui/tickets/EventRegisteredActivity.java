@@ -20,7 +20,6 @@ import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.NavigationItemSelectedListener;
 
 public class EventRegisteredActivity extends AppCompatActivity {
 
@@ -112,7 +111,7 @@ public class EventRegisteredActivity extends AppCompatActivity {
     /**
      * handle clicks on items of navigation drawer list
      */
-    private class TicketsNavigationItemClickListener extends NavigationItemSelectedListener {
+    private class TicketsNavigationItemClickListener extends DrawerWrapper.NavigationItemSelectedListener {
 
         TicketsNavigationItemClickListener(Activity context, Drawer drawer) {
             super(context, drawer);

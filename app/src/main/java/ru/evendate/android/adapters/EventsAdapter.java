@@ -27,6 +27,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
@@ -91,6 +93,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
         holder.isFavorited = eventEntry.isFavorite();
+        holder.isHidden = eventEntry.isHidden();
         if (eventEntry.isFavorite())
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
         String date;
@@ -128,18 +131,41 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     }
 
     private void hideEvent(EventFeed event) {
-        ApiService apiService = ApiFactory.getService(mContext);
-        Observable<Response> hideObservable =
-                apiService.hideEvent(EvendateAccountManager.peekToken(mContext),
-                        event.getEntryId(), true);
-        Log.i(LOG_TAG, "hiding event " + event.getEntryId());
-        hideObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> Log.i(LOG_TAG, "event hided"),
-                        error -> Log.e(LOG_TAG, "" + error.getMessage())
-                );
-        remove(event);
+        DataSource dataRepository = new DataRepository(mContext);
+        if (!event.isHidden()) {
+            dataRepository.hideEvent(event.getEntryId()).subscribe(result -> {
+                        if (result.isOk()) {
+                            Log.i(LOG_TAG, "performed hide");
+                        } else
+                            Log.e(LOG_TAG, "Error with response with hide");
+                    }, error -> Log.e(LOG_TAG, "" + error.getMessage())
+            );
+        } else {
+            dataRepository.unhideEvent(event.getEntryId()).subscribe(result -> {
+                        if (result.isOk()) {
+                            Log.i(LOG_TAG, "performed unhide");
+                        } else
+                            Log.e(LOG_TAG, "Error with response with unhide");
+                    }, error -> Log.e(LOG_TAG, "" + error.getMessage())
+            );
+        }
+        event.setHidden(!event.isHidden());
+        switch (ReelFragment.ReelType.getType(type)) {
+            case ORGANIZATION:
+                update(event);
+                break;
+            case FAVORITES:
+                remove(event);
+                break;
+            case CALENDAR:
+                remove(event);
+                break;
+            case RECOMMENDATION:
+                remove(event);
+                break;
+            default:
+                remove(event);
+        }
     }
 
     private void likeEvent(EventFeed event) {
@@ -147,10 +173,10 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         Observable<Response> likeObservable;
         int id = event.getEntryId();
         if (event.isFavorite()) {
-            likeObservable = apiService.dislikeEvent(id, EvendateAccountManager.peekToken(mContext));
+            likeObservable = apiService.eventPostFavorite(EvendateAccountManager.peekToken(mContext), id);
             Log.i(LOG_TAG, "disliking event " + id);
         } else {
-            likeObservable = apiService.likeEvent(id, EvendateAccountManager.peekToken(mContext));
+            likeObservable = apiService.eventDeleteFavorite(EvendateAccountManager.peekToken(mContext), id);
             Log.i(LOG_TAG, "liking event " + id);
         }
 
@@ -177,6 +203,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         @Bind(R.id.event_item_favorite_indicator) View mFavoriteIndicator;
         @BindString(R.string.event_free) String eventFreeLabel;
         private boolean isFavorited;
+        private boolean isHidden;
 
         EventHolder(View itemView) {
             super(itemView);
@@ -212,7 +239,11 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                         switch (which) {
                             case HIDE_ID:
                                 hideEvent(event);
-                                toastText += mContext.getString(R.string.toast_event_hide);
+                                if (isHidden) {
+                                    toastText += mContext.getString(R.string.toast_event_unhide);
+                                } else {
+                                    toastText += mContext.getString(R.string.toast_event_hide);
+                                }
                                 break;
                             case FAVE_ID:
                                 likeEvent(event);
@@ -234,8 +265,10 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         private CharSequence[] getDialogTextItems() {
             String fave = isFavorited ? mContext.getString(R.string.dialog_event_unfave) :
                     mContext.getString(R.string.dialog_event_fave);
+            String hidden = isHidden ? mContext.getString(R.string.dialog_event_unhide) :
+                    mContext.getString(R.string.dialog_event_hide);
             return new CharSequence[]{
-                    mContext.getString(R.string.dialog_event_hide),
+                    hidden,
                     fave,
                     //mContext.getString(R.string.dialog_event_invite_friend)
             };

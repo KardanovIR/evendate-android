@@ -1,5 +1,7 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
@@ -26,8 +28,8 @@ public class Order extends DataModel {
     String statusTypeCode;
     @SerializedName("status_name")
     String statusName;
-    @SerializedName("payed_at")
-    int payedAt;
+    @SerializedName("payed_at") @Nullable
+    Integer payedAt;
 
     @SerializedName("is_canceled")
     boolean isCanceled;
@@ -70,7 +72,7 @@ public class Order extends DataModel {
     }
 
     public Date getPayedAt() {
-        return DateUtils.date(payedAt);
+        return payedAt == null ? null : DateUtils.date(payedAt);
     }
 
     public Date getCanceledAt() {

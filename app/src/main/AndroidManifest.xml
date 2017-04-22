@@ -149,7 +149,14 @@
         <activity
             android:name=".ui.checkin.CheckInActivity"
             android:label="@string/title_activity_check_in"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.AdminOverlay">
+        </activity>
+
+        <activity
+            android:name=".ui.tinder.RecommenderActivity"
+            android:label="@string/title_activity_recommendation"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity

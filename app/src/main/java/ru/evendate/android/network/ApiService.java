@@ -106,22 +106,14 @@ public interface ApiService {
 
     @POST(API_PATH + "/events/{id}/favorites")
     Observable<Response> eventPostFavorite(
-            @Path("id") int eventId, @Header("Authorization") String authorization
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId
     );
 
     @DELETE(API_PATH + "/events/{id}/favorites")
     Observable<Response> eventDeleteFavorite(
-            @Path("id") int eventId, @Header("Authorization") String authorization
-    );
-
-    @POST(API_PATH + "/events/{id}/favorites")
-    Observable<Response> likeEvent(
-            @Path("id") int eventId, @Header("Authorization") String authorization
-    );
-
-    @DELETE(API_PATH + "/events/{id}/favorites")
-    Observable<Response> dislikeEvent(
-            @Path("id") int eventId, @Header("Authorization") String authorization
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId
     );
 
     /**
@@ -327,7 +319,7 @@ public interface ApiService {
     @PUT(API_PATH + "/events/{id}/status")
     Observable<Response> hideEvent(
             @Header("Authorization") String authorization,
-            @Path("id") int organizationId,
+            @Path("id") int eventId,
             @Query("hidden") boolean hidden
     );
 

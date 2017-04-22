@@ -27,7 +27,6 @@ import ru.evendate.android.models.Ticket;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 import ru.evendate.android.ui.EventDetailActivity;
-import ru.evendate.android.ui.NavigationItemSelectedListener;
 
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
     public static final String EVENT_KEY = "event";
@@ -109,7 +108,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     @Override

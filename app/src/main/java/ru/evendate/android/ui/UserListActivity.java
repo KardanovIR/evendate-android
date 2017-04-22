@@ -12,9 +12,9 @@ import butterknife.ButterKnife;
 import ru.evendate.android.R;
 
 public class UserListActivity extends BaseActivity {
+    @Bind(R.id.toolbar) Toolbar mToolbar;
     private UserListFragment mUserListFragment;
     private DrawerWrapper mDrawer;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class UserListActivity extends BaseActivity {
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     private void handleIntent(Intent intent) {

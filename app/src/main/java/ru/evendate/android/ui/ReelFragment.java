@@ -1,5 +1,6 @@
 package ru.evendate.android.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -151,6 +152,30 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
         });
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new LandingAnimator());
+
+        /*
+            centering cards in tablets
+         */
+        switch (ReelType.getType(type)) {
+            case RECOMMENDATION:
+            case FAVORITES:
+            case FEED:
+            case ORGANIZATION:
+            case ORGANIZATION_PAST:
+                mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                    @Override
+                    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                        int totalWidth = parent.getWidth();
+                        int maxCardWidth = getResources().getDimensionPixelOffset(R.dimen.card_feed_max_width);
+                        int sidePadding = (totalWidth - maxCardWidth) / 2;
+                        sidePadding = Math.max(0, sidePadding);
+                        outRect.set(sidePadding, 0, sidePadding, 0);
+                    }
+                });
+                break;
+            case CALENDAR:
+                break;
+        }
     }
 
     private void setEmptyCap() {

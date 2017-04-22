@@ -48,23 +48,20 @@ import static ru.evendate.android.ui.UiUtils.revealView;
  * Created by ds_gordeev on 15.02.2016.
  */
 public class UserProfileActivity extends BaseActivity implements LoadStateView.OnReloadListener {
-    private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
-
-    private Uri mUri;
-    private int userId;
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-
-    private UserAdapter mUserAdapter;
+    private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
     @Bind(R.id.pager) ViewPager mViewPager;
-    private UserPagerAdapter mUserPagerAdapter;
     @Bind(R.id.tabs) TabLayout mTabLayout;
-
     @Bind(R.id.user_avatar) ImageView mUserImageView;
     @Bind(R.id.avatar_container) View mUserImageContainer;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.load_state) LoadStateView mLoadStateView;
     DrawerWrapper mDrawer;
+    private Uri mUri;
+    private int userId;
+    private UserAdapter mUserAdapter;
+    private UserPagerAdapter mUserPagerAdapter;
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -124,7 +121,7 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
     private void initDrawer() {
         mDrawer = DrawerWrapper.newInstance(this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
-                new NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+                new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
 
     @Override
@@ -188,16 +185,36 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
         loadUser();
     }
 
+    private void setupStat() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Tracker tracker = EvendateApplication.getTracker();
+                tracker.setScreenName("User Profile Screen ~" +
+                        mUserPagerAdapter.getPageLabel(position));
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
+
     private class UserAdapter {
         private UserDetail mUserDetail;
+
+        public UserDetail getUser() {
+            return mUserDetail;
+        }
 
         public void setUser(UserDetail user) {
             mUserDetail = user;
             setUserInfo();
-        }
-
-        public UserDetail getUser() {
-            return mUserDetail;
         }
 
         private void setUserInfo() {
@@ -225,25 +242,5 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
                     .error(R.mipmap.ic_launcher)
                     .into(target);
         }
-    }
-
-    private void setupStat() {
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Tracker tracker = EvendateApplication.getTracker();
-                tracker.setScreenName("User Profile Screen ~" +
-                        mUserPagerAdapter.getPageLabel(position));
-                tracker.send(new HitBuilders.ScreenViewBuilder().build());
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
     }
 }
