@@ -6,10 +6,10 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventDate;
-import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.ui.utils.DateUtils;
+import ru.evendate.android.ui.utils.EventFormatter;
 
 import static org.mockito.Mockito.when;
 

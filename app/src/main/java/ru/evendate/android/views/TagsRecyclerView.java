@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractAdapter;
 import ru.evendate.android.models.Tag;
+import ru.evendate.android.ui.AbstractAdapter;
 
 /**
  * Created by Dmitry on 07.02.2017.

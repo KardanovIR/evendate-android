@@ -7,6 +7,7 @@ import org.parceler.Parcel;
 import java.util.Date;
 
 import ru.evendate.android.ui.checkin.CheckInContract;
+import ru.evendate.android.ui.utils.DateUtils;
 
 import static ru.evendate.android.models.Ticket.TicketParams.CHECKOUT;
 

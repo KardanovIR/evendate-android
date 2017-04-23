@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.ui.utils.DateUtils;
 
 /**
  * Created by ds_gordeev on 17.02.2016.
@@ -31,6 +32,26 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     User user;
     @SerializedName("created_at")
     private int createdAt;
+
+    public enum Type {
+        ACTION_LIKE(5),
+        ACTION_DISLIKE(4),
+        ACTION_SUBSCRIBE(3),
+        ACTION_UNSUBSCRIBE(6),
+        ACTION_VIEW_EVENT(2),
+        ACTION_VIEW_ORGANIZATION(1),
+        ACTION_VIEW_EVENT_INFO(7);
+
+        final int type;
+
+        Type(int type) {
+            this.type = type;
+        }
+
+        public int type() {
+            return type;
+        }
+    }
 
     @Override
     public int getEntryId() {
@@ -119,25 +140,5 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     @Override
     public int compareTo(@NonNull Action another) {
         return createdAt > another.createdAt ? 1 : createdAt == another.createdAt ? 0 : -1;
-    }
-
-    enum Type {
-        ACTION_LIKE(5),
-        ACTION_DISLIKE(4),
-        ACTION_SUBSCRIBE(3),
-        ACTION_UNSUBSCRIBE(6),
-        ACTION_VIEW_EVENT(2),
-        ACTION_VIEW_ORGANIZATION(1),
-        ACTION_VIEW_EVENT_INFO(7);
-
-        final int type;
-
-        Type(int type) {
-            this.type = type;
-        }
-
-        public int type() {
-            return type;
-        }
     }
 }

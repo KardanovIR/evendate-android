@@ -22,11 +22,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractEndlessAdapter;
-import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.ui.FormatUtils;
+import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.utils.EventFormatter;
+import ru.evendate.android.ui.utils.FormatUtils;
+import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 //TODO DRY

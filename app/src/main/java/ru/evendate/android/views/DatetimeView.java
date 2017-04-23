@@ -13,10 +13,10 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
-import ru.evendate.android.models.DateUtils;
 import ru.evendate.android.models.EventDate;
-import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.ui.DateFormatter;
+import ru.evendate.android.ui.utils.DateFormatter;
+import ru.evendate.android.ui.utils.DateUtils;
+import ru.evendate.android.ui.utils.EventFormatter;
 
 /**
  * Created by Dmitry on 04.03.2016.

@@ -32,10 +32,10 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractEndlessAdapter;
 import ru.evendate.android.data.DataRepository;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.models.UserFormatter;
+import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.utils.TicketFormatter;
+import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 public class TicketsAdminFragment extends Fragment {

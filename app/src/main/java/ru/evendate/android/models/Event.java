@@ -9,6 +9,9 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ru.evendate.android.network.ServiceUtils;
+import ru.evendate.android.ui.utils.DateUtils;
+
 /**
  * Created by Dmitry on 07.02.2016.
  */
@@ -27,7 +30,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
             "is_free,min_price,is_same_time,created_at," +
 
-            "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + ",tags," +
+            "dates" + ServiceUtils.encloseFields(EventDate.FIELDS_LIST) + ",tags," +
             "favored{fields:\'" + User.FIELDS_LIST + "\'}";
 
     @SerializedName("id")

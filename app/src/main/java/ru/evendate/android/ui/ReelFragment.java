@@ -23,8 +23,6 @@ import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.EventsAdapter;
-import ru.evendate.android.adapters.NpaLinearLayoutManager;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.network.ApiFactory;
@@ -317,7 +315,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     private Observable<ResponseArray<Event>> getCalendarEvent(ApiService apiService,
                                                               int length, int offset, Date date) {
         return apiService.getFeed(EvendateAccountManager.peekToken(getActivity()),
-                DateFormatter.formatDateRequestNotUtc(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
+                ServiceUtils.formatDateRequestNotUtc(date), true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_ACTUALITY, length, offset);
     }
 
     private Observable<ResponseArray<Event>> getRecommendation(ApiService apiService,

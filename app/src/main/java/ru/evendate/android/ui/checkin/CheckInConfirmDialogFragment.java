@@ -20,8 +20,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.models.UserFormatter;
+import ru.evendate.android.ui.utils.TicketFormatter;
+import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment implements CheckInContract.TicketConfirmView {

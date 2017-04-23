@@ -26,7 +26,7 @@ import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
     public static final String EVENT_KEY = "event";

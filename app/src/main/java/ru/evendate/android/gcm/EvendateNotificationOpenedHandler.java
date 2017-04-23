@@ -12,10 +12,10 @@ import org.json.JSONObject;
 
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.statistics.Statistics;
-import ru.evendate.android.ui.EventDetailActivity;
-import ru.evendate.android.ui.MainActivity;
-import ru.evendate.android.ui.OrganizationDetailActivity;
-import ru.evendate.android.ui.UserProfileActivity;
+import ru.evendate.android.ui.eventdetail.EventDetailActivity;
+import ru.evendate.android.ui.feed.MainActivity;
+import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
+import ru.evendate.android.ui.userdetail.UserProfileActivity;
 
 import static ru.evendate.android.gcm.NotificationAdditionalData.EVENT_TYPE;
 import static ru.evendate.android.gcm.NotificationAdditionalData.ORGANIZATION_TYPE;

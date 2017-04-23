@@ -28,7 +28,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.network.ServiceUtils;
-import ru.evendate.android.ui.EventDetailActivity;
+import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
 
