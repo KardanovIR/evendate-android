@@ -23,9 +23,6 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.data.DataSource;
@@ -33,8 +30,6 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventFeed;
 import ru.evendate.android.models.EventFormatter;
-import ru.evendate.android.network.ApiFactory;
-import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.ui.EventDetailActivity;
@@ -87,21 +82,24 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         if (!(viewHolder instanceof EventHolder))
             return;
         EventFeed eventEntry = getItem(position);
-        EventHolder holder = (EventHolder) viewHolder;
+        EventHolder holder = (EventHolder)viewHolder;
         holder.event = eventEntry;
         holder.mTitleTextView.setText(eventEntry.getTitle());
         if (holder.mOrganizationTextView != null)
             holder.mOrganizationTextView.setText(eventEntry.getOrganizationShortName());
         holder.isFavorited = eventEntry.isFavorite();
         holder.isHidden = eventEntry.isHidden();
-        if (eventEntry.isFavorite())
+        if (eventEntry.isFavorite()) {
             holder.mFavoriteIndicator.setVisibility(View.VISIBLE);
+        } else {
+            holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
+        }
         String date;
-        date = EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) eventEntry));
+        date = EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event)eventEntry));
         holder.mDateTextView.setText(date);
         String eventBackGroundUrl = ServiceUtils.constructEventBackgroundURL(
                 eventEntry.getImageHorizontalUrl(),
-                (int) mContext.getResources().getDimension(R.dimen.event_background_width));
+                (int)mContext.getResources().getDimension(R.dimen.event_background_width));
         Picasso.with(mContext)
                 .load(eventBackGroundUrl)
                 .error(R.drawable.default_background)
@@ -125,7 +123,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         super.onViewRecycled(viewHolder);
         if (!(viewHolder instanceof EventHolder))
             return;
-        EventHolder holder = (EventHolder) viewHolder;
+        EventHolder holder = (EventHolder)viewHolder;
         if (holder.mFavoriteIndicator != null)
             holder.mFavoriteIndicator.setVisibility(View.INVISIBLE);
     }
@@ -168,24 +166,27 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
         }
     }
 
+    //todo SOLID
     private void likeEvent(EventFeed event) {
-        ApiService apiService = ApiFactory.getService(mContext);
-        Observable<Response> likeObservable;
+        DataSource dataSource = new DataRepository(mContext);
+        Observable<Response> likeEventObservable;
         int id = event.getEntryId();
         if (event.isFavorite()) {
-            likeObservable = apiService.eventPostFavorite(EvendateAccountManager.peekToken(mContext), id);
+            likeEventObservable = dataSource.unfaveEvent(id);
             Log.i(LOG_TAG, "disliking event " + id);
         } else {
-            likeObservable = apiService.eventDeleteFavorite(EvendateAccountManager.peekToken(mContext), id);
+            likeEventObservable = dataSource.faveEvent(id);
             Log.i(LOG_TAG, "liking event " + id);
         }
 
-        likeObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> Log.i(LOG_TAG, "event liked/disliked"),
-                        error -> Log.e(LOG_TAG, "" + error.getMessage())
-                );
+        likeEventObservable.subscribe(
+                result -> {
+                    if (result.isOk())
+                        Log.i(LOG_TAG, "performed like");
+                    else
+                        Log.e(LOG_TAG, "Error with response with like");
+                }, error -> Log.e(LOG_TAG, "" + error.getMessage())
+        );
 
         event.setIsFavorite(!event.isFavorite());
         update(event);
@@ -220,7 +221,7 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
                 intent.setData(EvendateContract.EventEntry.getContentUri(event.getEntryId()));
                 if (Build.VERSION.SDK_INT >= 21) {
                     mContext.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation((Activity) mContext).toBundle());
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)mContext).toBundle());
                 } else
                     mContext.startActivity(intent);
             }

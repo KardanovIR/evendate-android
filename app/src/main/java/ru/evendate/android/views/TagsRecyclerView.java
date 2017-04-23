@@ -27,17 +27,20 @@ import ru.evendate.android.models.Tag;
 public class TagsRecyclerView extends RecyclerView {
     private OnTagClickListener listener;
     private TagAdapter mAdapter;
+    ChipsLayoutManager mSpanLayoutManager;
 
     public TagsRecyclerView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public TagsRecyclerView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public TagsRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        addItemDecoration(new SpacingItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_tag_space),
+                getResources().getDimensionPixelOffset(R.dimen.item_tag_space)));
     }
 
     public void setTags(ArrayList<Tag> tags){
@@ -47,15 +50,12 @@ public class TagsRecyclerView extends RecyclerView {
     //todo SOLID
     public void setTags(ArrayList<Tag> tags, int strategy) {
         mAdapter = new TagAdapter(getContext(), tags);
-        ChipsLayoutManager spanLayoutManager = ChipsLayoutManager.newBuilder(getContext())
+        mSpanLayoutManager = ChipsLayoutManager.newBuilder(getContext())
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
                 .setScrollingEnabled(false)
                 .setRowStrategy(strategy)
                 .build();
-
-        addItemDecoration(new SpacingItemDecoration(getResources().getDimensionPixelOffset(R.dimen.item_tag_space),
-                getResources().getDimensionPixelOffset(R.dimen.item_tag_space)));
-        setLayoutManager(spanLayoutManager);
+        setLayoutManager(mSpanLayoutManager);
         setAdapter(mAdapter);
         setClipToPadding(false);
     }
