@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -132,7 +133,12 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
     }
 
     private void initRecyclerView() {
-        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
+        int columnCount = getResources().getInteger(R.integer.feed_column_count);
+        if (columnCount == 1) {
+            mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        }
         /*
           listener that let using refresh on top of the event list
          */
@@ -155,23 +161,21 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
             centering cards in tablets
          */
         switch (ReelType.getType(type)) {
-            case RECOMMENDATION:
-            case FAVORITES:
-            case FEED:
-            case ORGANIZATION:
-            case ORGANIZATION_PAST:
-                mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                    @Override
-                    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                        int totalWidth = parent.getWidth();
-                        int maxCardWidth = getResources().getDimensionPixelOffset(R.dimen.card_feed_max_width);
-                        int sidePadding = (totalWidth - maxCardWidth) / 2;
-                        sidePadding = Math.max(0, sidePadding);
-                        outRect.set(sidePadding, 0, sidePadding, 0);
-                    }
-                });
-                break;
             case CALENDAR:
+                break;
+            default:
+                if (columnCount == 1) {
+                    mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                        @Override
+                        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                            int totalWidth = parent.getWidth();
+                            int maxCardWidth = getResources().getDimensionPixelOffset(R.dimen.card_feed_max_width);
+                            int sidePadding = (totalWidth - maxCardWidth) / 2;
+                            sidePadding = Math.max(0, sidePadding);
+                            outRect.set(sidePadding, 0, sidePadding, 0);
+                        }
+                    });
+                }
                 break;
         }
     }
