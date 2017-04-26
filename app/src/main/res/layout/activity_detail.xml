@@ -60,6 +60,7 @@
                     android:layout_marginRight="64dp"
                     android:layout_marginStart="16dp"
                     android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="4sp"
                     android:textColor="#fff"
                     android:textIsSelectable="false"
                     android:textSize="24sp"

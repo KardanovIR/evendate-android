@@ -70,13 +70,13 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         swipeDeck.setCallback(new SwipeDeck.SwipeDeckCallback() {
             @Override
             public void cardSwipedLeft(long stableId) {
-                Event event = mAdapter.getItem((int) stableId);
+                Event event = mAdapter.getItem((int)stableId);
                 mPresenter.hideEvent(event);
             }
 
             @Override
             public void cardSwipedRight(long stableId) {
-                Event event = mAdapter.getItem((int) stableId);
+                Event event = mAdapter.getItem((int)stableId);
                 mPresenter.faveEvent(event);
             }
 
@@ -87,19 +87,19 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
 
             @Override
             public void cardUnSwipe(long itemId) {
-                Event event = mAdapter.getItem((int) itemId);
+                Event event = mAdapter.getItem((int)itemId);
                 mPresenter.unfaveEvent(event);
                 mPresenter.unhideEvent(event);
             }
 
             @Override
             public void onClick(long itemId) {
-                Event event = mAdapter.getItem((int) itemId);
+                Event event = mAdapter.getItem((int)itemId);
                 Intent intent = new Intent(getContext(), EventDetailActivity.class);
                 intent.setData(EvendateContract.EventEntry.getContentUri(event.getEntryId()));
                 if (Build.VERSION.SDK_INT >= 21) {
                     getContext().startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation((Activity) getContext()).toBundle());
+                            ActivityOptions.makeSceneTransitionAnimation((Activity)getContext()).toBundle());
                 } else
                     getContext().startActivity(intent);
             }
@@ -253,16 +253,20 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
                 view = inflater.inflate(R.layout.card_tinder_event, parent, false);
                 viewHolder = new ViewHolder(view);
             } else {
-                viewHolder = (ViewHolder) view.getTag();
+                viewHolder = (ViewHolder)view.getTag();
             }
             Event event = getItem(position);
             String eventBackgroundUrl = ServiceUtils.constructEventBackgroundURL(
                     event.getImageHorizontalUrl(),
-                    (int) getResources().getDimension(R.dimen.event_background_width));
+                    (int)getResources().getDimension(R.dimen.event_background_width));
             Picasso.with(context).load(eventBackgroundUrl).into(viewHolder.eventImage);
             viewHolder.eventTitle.setText(event.getTitle());
             viewHolder.eventOrganizator.setText(event.getOrganizationShortName());
             viewHolder.eventTags.setTags(event.getTagList());
+
+            viewHolder.eventTags.setTouchable(false);
+            viewHolder.eventTags.setClickable(false);
+            viewHolder.eventTags.setHasFixedSize(true);
             return view;
         }
 

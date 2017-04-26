@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ public class TagsRecyclerView extends RecyclerView {
     private OnTagClickListener listener;
     private TagAdapter mAdapter;
     ChipsLayoutManager mSpanLayoutManager;
+    boolean isTouchable = true;
+    boolean isClickable = true;
 
     public TagsRecyclerView(Context context) {
         this(context, null);
@@ -60,6 +63,21 @@ public class TagsRecyclerView extends RecyclerView {
         setClipToPadding(false);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return isTouchable;
+    }
+
+    public void setTouchable(boolean touchable) {
+        isTouchable = touchable;
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+        super.setClickable(clickable);
+        isClickable = clickable;
+    }
+
     public void setOnTagClickListener(OnTagClickListener listener){
         this.listener = listener;
     }
@@ -82,6 +100,7 @@ public class TagsRecyclerView extends RecyclerView {
             Tag tag = getItem(position);
             holder.id = tag.getEntryId();
             holder.mTitle.setText(tag.getName());
+            holder.holderView.setClickable(isClickable);
         }
 
     }

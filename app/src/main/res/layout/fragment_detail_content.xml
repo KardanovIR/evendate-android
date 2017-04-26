@@ -82,7 +82,7 @@
 
             <TextView
                 android:id="@+id/event_description"
-                style="@style/Body1.Light"
+                style="@style/EventDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -187,6 +187,7 @@
                 <TextView
                     android:id="@+id/event_price_label"
                     style="@style/Body2.Light"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/event_price"
                     app:layout_columnWeight="1"/>
 
