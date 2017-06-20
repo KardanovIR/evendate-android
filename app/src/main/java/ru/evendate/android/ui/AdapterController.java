@@ -4,8 +4,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import ru.evendate.android.adapters.AppendableAdapter;
-
 /**
  * Created by Dmitry on 09.06.2016.
  */

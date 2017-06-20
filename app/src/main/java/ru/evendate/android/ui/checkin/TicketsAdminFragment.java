@@ -32,10 +32,10 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractEndlessAdapter;
 import ru.evendate.android.data.DataRepository;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.models.UserFormatter;
+import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.utils.TicketFormatter;
+import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 public class TicketsAdminFragment extends Fragment {
@@ -224,6 +224,7 @@ public class TicketsAdminFragment extends Fragment {
 
             mSwipeRefreshLayout.setOnRefreshListener(() -> {
                 mEndless.setLoadMoreAvailable(false);
+                mEndless.setCurrentPage(0);
                 mParent.updateData();
                 if (getArguments().getBoolean(KEY_IS_SEARCH)) {
                     mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), true, 0);
@@ -314,7 +315,7 @@ public class TicketsAdminFragment extends Fragment {
 
         public void search(String query) {
             getArguments().putString(KEY_QUERY, query);
-            mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), query, true, 0);
+            mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), query, true, 1);
         }
 
         //todo may be inconsistent
@@ -362,10 +363,17 @@ public class TicketsAdminFragment extends Fragment {
         }
 
         @Override
+        public boolean isEmpty() {
+            return mAdapter.isEmpty();
+        }
+
+        @Override
         public void showEmptyState() {
             mSwipeRefreshLayout.setRefreshing(false);
             mRecyclerView.setVisibility(View.INVISIBLE);
             mLoadStateView.showEmptryHint();
+            mEndless.loadMoreComplete();
+            mEndless.setLoadMoreAvailable(false);
         }
 
         @Override

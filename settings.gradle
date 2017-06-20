@@ -1,1 +1,1 @@
-include ':app', ':vksdk_library', ':nexusdialog_library', ':swipedeck_library'
+include ':app', ':vksdk_library', ':nexusdialog_library', ':swipedeck_library', ':endless_library'

@@ -28,14 +28,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractEndlessAdapter;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
-import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.ui.EventDetailActivity;
-import ru.evendate.android.ui.FormatUtils;
+import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.eventdetail.EventDetailActivity;
+import ru.evendate.android.ui.utils.EventFormatter;
+import ru.evendate.android.ui.utils.FormatUtils;
+import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 //TODO DRY
@@ -73,6 +73,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(false);
+            mEndless.setCurrentPage(0);
             mPresenter.loadEvents(true, 0);
         });
         mLoadStateView.setOnReloadListener(() -> mPresenter.loadEvents(true, 0));
@@ -132,10 +133,17 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
     }
 
     @Override
+    public boolean isEmpty() {
+        return mAdapter.isEmpty();
+    }
+
+    @Override
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
         mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadStateView.showEmptryHint();
+        mEndless.loadMoreComplete();
+        mEndless.setLoadMoreAvailable(false);
     }
 
     @Override

@@ -35,7 +35,7 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
 
     @Override
     public void start() {
-        loadEvents(false, 0);
+        loadEvents(true, 0);
     }
 
     @Override
@@ -45,14 +45,14 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
     }
 
     public void loadEvents(boolean forceLoad, int page) {
-        mView.setLoadingIndicator(true);
+        mView.setLoadingIndicator(forceLoad);
         mDisposable = mDataRepository.getRegisteredEvents(isFuture, page, LENGTH)
                 .subscribe(result -> {
                             List<EventRegistered> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
-                            boolean isEmpty = list.size() == 0;
+                            boolean isEmpty = list.size() == 1;
                             if (result.isOk()) {
-                                if (isEmpty) {
+                                if (isEmpty && mView.isEmpty()) {
                                     mView.showEmptyState();
                                 } else if (forceLoad) {
                                     mView.reshowEvents(list, isLast);

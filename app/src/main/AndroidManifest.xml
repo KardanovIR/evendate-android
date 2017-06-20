@@ -51,12 +51,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.feed.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ui.OrganizationCatalogActivity"
+            android:name=".ui.catalog.OrganizationCatalogActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
@@ -65,13 +65,13 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ui.CalendarActivity"
+            android:name=".ui.calendar.CalendarActivity"
             android:label="@string/drawer_calendar"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ui.EventDetailActivity"
-            android:parentActivityName=".ui.MainActivity"
+            android:name=".ui.eventdetail.EventDetailActivity"
+            android:parentActivityName=".ui.feed.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -90,7 +90,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.OrganizationDetailActivity"
+            android:name=".ui.orgdetail.OrganizationDetailActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -109,15 +109,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.UserListActivity"
-            android:parentActivityName=".ui.MainActivity"
+            android:name=".ui.users.UserListActivity"
+            android:parentActivityName=".ui.feed.MainActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ui.UserProfileActivity"
-            android:parentActivityName=".ui.MainActivity"
+            android:name=".ui.userdetail.UserProfileActivity"
+            android:parentActivityName=".ui.feed.MainActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"/>
         <activity
@@ -127,7 +127,7 @@
             android:name=".auth.WebAuthActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ui.SearchResultsActivity"
+            android:name=".ui.search.SearchResultsActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">

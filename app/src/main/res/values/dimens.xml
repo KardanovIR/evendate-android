@@ -22,6 +22,7 @@
 
     <dimen name="auth_button_left_padding">0dp</dimen>
 
+    <integer name="feed_column_count">1</integer>
     <!-- font sizes -->
     <!--<dimen name="font_larger">22sp</dimen>
     <dimen name="font_large">18sp</dimen>

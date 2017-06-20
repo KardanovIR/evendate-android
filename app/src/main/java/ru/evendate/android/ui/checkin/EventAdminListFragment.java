@@ -22,11 +22,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
-import ru.evendate.android.adapters.AbstractEndlessAdapter;
-import ru.evendate.android.models.EventFormatter;
+import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.ui.FormatUtils;
+import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.utils.EventFormatter;
+import ru.evendate.android.ui.utils.FormatUtils;
+import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 //TODO DRY
@@ -76,7 +77,8 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         mEndless.setLoadMoreListener((int page) -> mPresenter.loadList(false, page));
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            mEndless.setLoadMoreAvailable(false);
+            mEndless.setLoadMoreAvailable(true);
+            mEndless.setCurrentPage(0);
             mPresenter.loadList(true, 0);
         });
         mLoadStateView.setOnReloadListener(() -> mPresenter.loadList(true, 0));
@@ -138,10 +140,17 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     }
 
     @Override
+    public boolean isEmpty() {
+        return mAdapter.isEmpty();
+    }
+
+    @Override
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
         mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadStateView.showEmptryHint();
+        mEndless.loadMoreComplete();
+        mEndless.setLoadMoreAvailable(false);
     }
 
     @Override
@@ -175,12 +184,12 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         public void onBindViewHolder(final EventAdminViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(event.getNearestDateTime()));
+            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) event)));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             holder.mTicketCount.setText(
                     TicketFormatter.formatTicketCount(FormatUtils.getCurrentLocale(mContext),
-                            event.getMyTicketsCount(), getString(R.string.check_event_tickets)));
+                            ((Event)event).getTicketsCount(), getString(R.string.check_event_tickets)));
             holder.mTicketCount.setVisibility(View.VISIBLE);
 
             holder.holderView.setOnClickListener((View v) -> mListener.onEventSelected(holder.mEvent));
