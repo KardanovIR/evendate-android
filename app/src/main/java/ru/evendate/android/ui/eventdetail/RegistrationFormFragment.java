@@ -21,12 +21,15 @@ import com.github.dkharrat.nexusdialog.FormElementController;
 import com.github.dkharrat.nexusdialog.FormInitializer;
 import com.github.dkharrat.nexusdialog.FormManager;
 import com.github.dkharrat.nexusdialog.FormModel;
+import com.github.dkharrat.nexusdialog.controllers.CheckBoxController;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
+import com.github.dkharrat.nexusdialog.controllers.RadioButtonController;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.Bind;
@@ -141,14 +144,30 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
         formManager.recreateViews();
     }
 
-
     @Override
     public void initForm(FormController controller) {
-        Context ctxt = getContext();
+        Context context = getContext();
 
-        FormSectionController section = new FormSectionController(ctxt, mEvent.getTitle());
+        FormSectionController section = new FormSectionController(context, mEvent.getTitle());
         for (RegistrationField field : mEvent.getRegistrationFields()) {
-            section.addElement(new EditTextController(ctxt, field.getUuid(), field.getLabel(), "", field.isRequired()));
+            if (field.getType().equals("select") || field.getType().equals("select_multi")) {
+                List<String> items = new ArrayList<>();
+                List<RegistrationField> values = new ArrayList<>();
+                for (RegistrationField selectValue : field.getValues()) {
+                    items.add(selectValue.getValue());
+                    values.add(selectValue);
+                }
+                if (field.getType().equals("select")) {
+                    section.addElement(new RadioButtonController(context, field.getUuid(), field.getLabel(),
+                            field.isRequired(), items, values));
+                } else {
+                    section.addElement(new CheckBoxController(context, field.getUuid(), field.getLabel(),
+                            field.isRequired(), items, values));
+                }
+            } else {
+                section.addElement(new EditTextController(context, field.getUuid(), field.getLabel(),
+                        "", field.isRequired()));
+            }
         }
         controller.addSection(section);
         ViewGroup containerView = (ViewGroup)getActivity().findViewById(R.id.form_elements_container);
@@ -176,11 +195,21 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
         getFormController().resetValidationErrors();
         if (getFormController().isValidInput()) {
             List<RegistrationField> input = new ArrayList<>();
-            for (RegistrationField field : mEvent.getRegistrationFields())
-                input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
+            for (RegistrationField field : mEvent.getRegistrationFields()) {
+                if (field.getType().equals("select") || field.getType().equals("select_multi")) {
+
+                    HashSet<RegistrationField> set = (HashSet<RegistrationField>)getModel().getValue(field.getUuid());
+                    ArrayList<RegistrationField> values = new ArrayList<>(set);
+                    input.add(new RegistrationField(field.getUuid(), values));
+
+                } else {
+                    input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
+                }
+            }
             mRegistration = new Registration();
             mRegistration.setRegistrationFieldsList(new ArrayList<>(input));
             ArrayList<Ticket> ticketOrderList = new ArrayList<>();
+            // registration without uuid
             ticketOrderList.add(new TicketOrder("", 1));
             mRegistration.setTickets(ticketOrderList);
             postRegistrationInput(mEvent.getEntryId(), mRegistration);
@@ -189,7 +218,6 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
             getFormController().showValidationErrors();
         }
     }
-
 
     public void postRegistrationInput(int eventId, Registration input) {
         ApiService apiService = ApiFactory.getService(getContext());

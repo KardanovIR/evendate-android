@@ -1,6 +1,10 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 
 public class RegistrationField extends DataModel {
 
@@ -14,13 +18,25 @@ public class RegistrationField extends DataModel {
     private boolean required;
     @SerializedName("value")
     private String value;
+    @Nullable
+    @SerializedName("values")
+    private ArrayList<RegistrationField> values;
+    @SerializedName("error")
+    private String error;
+
+    public RegistrationField(String uuid, String value) {
+        this.uuid = uuid;
+        this.value = value;
+    }
+
+    public RegistrationField(String uuid, @Nullable ArrayList<RegistrationField> values) {
+        this.uuid = uuid;
+        this.values = values;
+    }
 
     public String getError() {
         return error;
     }
-
-    @SerializedName("error")
-    private String error;
 
     @Override
     public int getEntryId() {
@@ -29,11 +45,6 @@ public class RegistrationField extends DataModel {
 
     public String getUuid() {
         return uuid;
-    }
-
-    public RegistrationField(String uuid, String value) {
-        this.uuid = uuid;
-        this.value = value;
     }
 
     public String getType() {
@@ -50,5 +61,10 @@ public class RegistrationField extends DataModel {
 
     public String getValue() {
         return value;
+    }
+
+    @Nullable
+    public ArrayList<RegistrationField> getValues() {
+        return values;
     }
 }

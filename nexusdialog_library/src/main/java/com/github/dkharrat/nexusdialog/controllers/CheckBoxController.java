@@ -22,9 +22,9 @@ import java.util.Set;
  * selection can be represented by returning {@code null} for the value of the field.
  */
 public class CheckBoxController extends LabeledFieldController {
-    private final static int CHECKBOX_ID = 101010;
-    private final List<String> items;
-    private final List<?> values;
+    protected final static int CHECKBOX_ID = 101010;
+    protected final List<String> items;
+    protected final List<?> values;
 
     /**
      * Constructs a new instance of a checkboxes field.
@@ -153,7 +153,7 @@ public class CheckBoxController extends LabeledFieldController {
      *
      * @return true if values entry can be used. false otherwise.
      */
-    private boolean areValuesDefined() {
+    protected boolean areValuesDefined() {
         return values != null;
     }
 
@@ -162,7 +162,7 @@ public class CheckBoxController extends LabeledFieldController {
      *
      * @return The values from the model.
      */
-    private Set<Object> retrieveModelValues() {
+    protected Set<Object> retrieveModelValues() {
         Set<Object> modelValues = (Set<Object>) getModel().getValue(getName());
         if (modelValues == null) {
             modelValues = new HashSet<>();
@@ -175,7 +175,7 @@ public class CheckBoxController extends LabeledFieldController {
      *
      * @return The View containing the checkboxes.
      */
-    private ViewGroup getContainer() {
+    protected ViewGroup getContainer() {
         return (ViewGroup) getView().findViewById(R.id.form_checkbox_container);
     }
 }
