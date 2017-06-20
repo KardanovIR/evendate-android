@@ -7,6 +7,8 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Fade;
 
+import ru.evendate.android.ui.feed.MainActivity;
+
 /**
  * Created by Aedirn on 01.07.16.
  */

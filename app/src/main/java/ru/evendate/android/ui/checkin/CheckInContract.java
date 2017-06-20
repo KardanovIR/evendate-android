@@ -4,11 +4,11 @@ import android.support.v4.view.ViewPager;
 
 import java.util.List;
 
-import ru.evendate.android.models.DataUtil;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.TicketType;
 import ru.evendate.android.models.User;
+import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.ui.BasePresenter;
 import ru.evendate.android.ui.BaseView;
 
@@ -59,6 +59,8 @@ public interface CheckInContract {
         void showEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface EventAdminPresenter extends BasePresenter {
@@ -77,6 +79,8 @@ public interface CheckInContract {
         void showSearchEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface TicketAdminPresenter extends BasePresenter {
@@ -108,7 +112,7 @@ public interface CheckInContract {
     }
 
     interface TicketAdmin {
-        String params = Ticket.TicketParams.get(new String[]{Ticket.TicketParams.USER + DataUtil.encloseFields(User.FIELDS_LIST),
+        String params = Ticket.TicketParams.get(new String[]{Ticket.TicketParams.USER + ServiceUtils.encloseFields(User.FIELDS_LIST),
                 Ticket.TicketParams.TICKET_TYPE});
 
         String getUuid();

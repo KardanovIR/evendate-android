@@ -46,14 +46,14 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
 
     @Override
     public void loadList(int eventId, boolean isCheckOut, boolean forceLoad, int page) {
-        mView.setLoadingIndicator(true);
+        mView.setLoadingIndicator(forceLoad);
         mDisposable = mDataRepository.getTickets(eventId, isCheckOut, page, LENGTH)
                 .subscribe(result -> {
                             List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
                             boolean isEmpty = list.size() == 0;
                             if (result.isOk()) {
-                                if (isEmpty) {
+                                if (isEmpty && mView.isEmpty()) {
                                     mView.showEmptyState();
                                 } else if (forceLoad) {
                                     mView.reshowList(list, isLast);
@@ -82,7 +82,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
         } else {
             observable = mDataRepository.getTicketsByName(eventId, query, page, LENGTH);
         }
-        mView.setLoadingIndicator(true);
+        mView.setLoadingIndicator(forceLoad);
         mDisposable = observable.subscribe(result -> {
                     List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                     boolean isLast = list.size() < LENGTH;

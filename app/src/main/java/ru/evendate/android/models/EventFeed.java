@@ -5,13 +5,15 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ru.evendate.android.network.ServiceUtils;
+
 /**
  * Created by ds_gordeev on 11.03.2016.
  */
 public interface EventFeed {
     String FIELDS_LIST = "organization_short_name," +
             "organization_short_name,is_favorite,is_hidden," +
-            "dates" + DataUtil.encloseFields(EventDate.FIELDS_LIST) + "," +
+            "dates" + ServiceUtils.encloseFields(EventDate.FIELDS_LIST) + "," +
             "organization_logo_small_url," +
             "registration_required,registration_till,is_free,min_price,is_same_time," +
             "created_at,actuality";

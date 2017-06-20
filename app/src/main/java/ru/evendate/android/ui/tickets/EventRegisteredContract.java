@@ -22,6 +22,8 @@ interface EventRegisteredContract {
         void showEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface Presenter extends BasePresenter {

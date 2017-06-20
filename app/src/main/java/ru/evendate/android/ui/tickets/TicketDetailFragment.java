@@ -20,11 +20,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
-import ru.evendate.android.models.EventFormatter;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
-import ru.evendate.android.models.TicketFormatter;
-import ru.evendate.android.ui.DateFormatter;
+import ru.evendate.android.ui.utils.DateFormatter;
+import ru.evendate.android.ui.utils.EventFormatter;
+import ru.evendate.android.ui.utils.TicketFormatter;
 
 public class TicketDetailFragment extends Fragment {
     private static final String EVENT_KEY = "event";

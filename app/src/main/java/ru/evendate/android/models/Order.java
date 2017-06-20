@@ -9,6 +9,8 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ru.evendate.android.ui.utils.DateUtils;
+
 /**
  * Created by Aedirn on 06.03.17.
  */

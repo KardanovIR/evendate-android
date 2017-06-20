@@ -8,6 +8,8 @@ import org.parceler.Parcel;
 
 import java.util.Date;
 
+import ru.evendate.android.ui.utils.DateUtils;
+
 /**
  * Created by Dmitry on 07.02.2016.
  */

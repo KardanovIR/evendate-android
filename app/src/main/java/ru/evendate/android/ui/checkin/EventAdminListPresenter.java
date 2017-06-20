@@ -49,7 +49,7 @@ class EventAdminListPresenter implements CheckInContract.EventAdminPresenter {
                             boolean isLast = list.size() < LENGTH;
                             boolean isEmpty = list.size() == 0;
                             if (result.isOk()) {
-                                if (isEmpty) {
+                                if (isEmpty && mView.isEmpty()) {
                                     mView.showEmptyState();
                                 } else if (forceLoad) {
                                     mView.reshowList(list, isLast);

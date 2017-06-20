@@ -302,7 +302,7 @@
     <string name="check_in_confirm_dialog_button_confirm">Confirm</string>
     <string name="check_in_confirm_dialog_button_revert">Revert confirm</string>
     <string name="ticket_number_word">Ticket</string>
-    <string name="check_event_tickets">ticket</string>
+    <string name="check_event_tickets">tickets</string>
 
     <!-- recommender strings -->
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>

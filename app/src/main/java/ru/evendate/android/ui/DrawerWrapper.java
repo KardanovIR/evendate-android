@@ -37,9 +37,17 @@ import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.ui.calendar.CalendarActivity;
+import ru.evendate.android.ui.catalog.OrganizationCatalogActivity;
 import ru.evendate.android.ui.checkin.CheckInActivity;
+import ru.evendate.android.ui.feed.MainActivity;
+import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
+import ru.evendate.android.ui.settings.SettingsActivity;
 import ru.evendate.android.ui.tickets.EventRegisteredActivity;
 import ru.evendate.android.ui.tinder.RecommenderActivity;
+import ru.evendate.android.ui.userdetail.UserProfileActivity;
+import ru.evendate.android.ui.users.UserListActivity;
+import ru.evendate.android.ui.users.UserListFragment;
 
 /**
  * Created by Dmitry on 11.02.2016.
@@ -48,11 +56,11 @@ public class DrawerWrapper {
     public final static int TICKETS_IDENTIFIER = 6;
     public final static int ADMINISTRATION_IDENTIFIER = 7;
     public final static int RECOMMENDER_IDENTIFIER = 8;
-    final static int REEL_IDENTIFIER = 1;
-    final static int CALENDAR_IDENTIFIER = 2;
-    final static int CATALOG_IDENTIFIER = 3;
-    final static int FRIENDS_IDENTIFIER = 4;
-    final static int SETTINGS_IDENTIFIER = 5;
+    public final static int REEL_IDENTIFIER = 1;
+    public final static int CALENDAR_IDENTIFIER = 2;
+    public final static int CATALOG_IDENTIFIER = 3;
+    public final static int FRIENDS_IDENTIFIER = 4;
+    public final static int SETTINGS_IDENTIFIER = 5;
     private static UserDetail mUser;
 
     static {
@@ -178,11 +186,11 @@ public class DrawerWrapper {
         return mDrawer;
     }
 
-    ArrayList<OrganizationSubscription> getSubs() {
+    public ArrayList<OrganizationSubscription> getSubs() {
         return mSubscriptions;
     }
 
-    void setListener(OnSubLoadListener listener) {
+    public void setListener(OnSubLoadListener listener) {
         this.listener = listener;
     }
 
@@ -251,7 +259,7 @@ public class DrawerWrapper {
             listener.onSubLoaded();
     }
 
-    void update() {
+    public void update() {
         loadSubs();
     }
 
@@ -273,7 +281,7 @@ public class DrawerWrapper {
         loadMe();
     }
 
-    interface OnSubLoadListener {
+    public interface OnSubLoadListener {
         void onSubLoaded();
     }
 
