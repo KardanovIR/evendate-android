@@ -73,6 +73,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(false);
+            mEndless.setCurrentPage(0);
             mPresenter.loadEvents(true, 0);
         });
         mLoadStateView.setOnReloadListener(() -> mPresenter.loadEvents(true, 0));
@@ -132,10 +133,17 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
     }
 
     @Override
+    public boolean isEmpty() {
+        return mAdapter.isEmpty();
+    }
+
+    @Override
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
         mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadStateView.showEmptryHint();
+        mEndless.loadMoreComplete();
+        mEndless.setLoadMoreAvailable(false);
     }
 
     @Override

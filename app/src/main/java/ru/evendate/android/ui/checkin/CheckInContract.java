@@ -59,6 +59,8 @@ public interface CheckInContract {
         void showEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface EventAdminPresenter extends BasePresenter {
@@ -77,6 +79,8 @@ public interface CheckInContract {
         void showSearchEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface TicketAdminPresenter extends BasePresenter {

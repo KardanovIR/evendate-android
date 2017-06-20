@@ -91,7 +91,8 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     @SerializedName("registration_locally")
     boolean registrationLocally;
     @SerializedName("registration_till")
-    int registrationTill;
+    @Nullable
+    Integer registrationTill;
     @SerializedName("registration_approved")
     boolean registrationApproved;
     @SerializedName("registration_available")
@@ -104,7 +105,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     ArrayList<Order> orders;
     @SerializedName("my_tickets_count")
     int myTicketsCount;
-    @SerializedName("tickets_count")
+    @SerializedName("sold_tickets_count")
     int ticketsCount;
     @SerializedName("tickets")
     ArrayList<Ticket> tickets;
@@ -276,7 +277,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     }
 
     public Date getRegistrationTill() {
-        return DateUtils.date(registrationTill);
+        return registrationTill == null ? null : DateUtils.date(registrationTill);
     }
 
     public boolean isRegistrationApproved() {
