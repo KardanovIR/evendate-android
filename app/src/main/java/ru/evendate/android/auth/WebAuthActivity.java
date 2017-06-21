@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,7 +51,7 @@ public class WebAuthActivity extends AppCompatActivity {
             throw new RuntimeException("no intent with uri");
         mUrl = intent.getExtras().getString(AuthActivity.URL_KEY);
 
-        mWebView.setWebViewClient(new MyWebViewClient());
+        mWebView.setWebViewClient(new AuthWebViewClient());
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
@@ -72,19 +74,30 @@ public class WebAuthActivity extends AppCompatActivity {
         mWebView.saveState(outState);
     }
 
-    protected class MyWebViewClient extends WebViewClient {
+    private class AuthWebViewClient extends WebViewClient {
+        boolean timeout = true;
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             Log.i(LOG_TAG, url);
+            Runnable run = () -> {
+                if (timeout) {
+                    Log.d(LOG_TAG, "auth connection timeout");
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
+            };
+            new Handler(Looper.getMainLooper()).postDelayed(run, 5000);
+
+
             mProgressBar.setVisibility(View.INVISIBLE);
             final String AUTH_PATH = "/mobileAuthDone.php";
 
             try {
                 URL currentURL = new URL(url);
                 if (currentURL.getPath().equals(AUTH_PATH)) {
-
+                    timeout = false;
                     String query = currentURL.getQuery();
                     Log.i(LOG_TAG, "start authorization");
                     Log.d(LOG_TAG, "query: " + query);
