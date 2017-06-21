@@ -22,6 +22,7 @@ import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
 import ru.evendate.android.models.Ticket;
+import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.ui.utils.DateFormatter;
 import ru.evendate.android.ui.utils.EventFormatter;
 import ru.evendate.android.ui.utils.TicketFormatter;
@@ -76,8 +77,8 @@ public class TicketDetailFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         mEventTitle.setText(mEvent.getTitle());
-        String QrLink = "https://evendate.ru/api/v1/events/" + mEvent.getEntryId() + "/tickets/" +
-                mTicket.getUuid() + "/qr?format=png&size=5";
+        String QrLink = ApiFactory.getHostName(getContext()) + "/api/v1/events/" + mEvent.getEntryId()
+                + "/tickets/" + mTicket.getUuid() + "/qr?format=png&size=5";
         Picasso.with(getActivity())
                 .load(QrLink)
                 .error(R.drawable.default_background)

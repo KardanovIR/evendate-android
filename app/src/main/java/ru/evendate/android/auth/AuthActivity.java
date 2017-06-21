@@ -223,6 +223,9 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
             @Override
             public void onError(VKError error) {
+                if (error.errorCode == VKError.VK_CANCELED)
+                    return;
+                Log.e(LOG_TAG, "VK get token error");
                 onErrorOccurred();
             }
         }))
@@ -237,6 +240,12 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 String token = data.getStringExtra(WebAuthActivity.TOKEN);
                 onTokenReceived(email, token);
             } else {
+                if (data != null) {
+                    boolean back_pressed = data.getBooleanExtra(WebAuthActivity.BACK_PRESSED, false);
+                    if (back_pressed)
+                        return;
+                }
+                Log.e(LOG_TAG, "WebAuth didn't return result ok");
                 onErrorOccurred();
             }
         }
@@ -244,6 +253,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
         if (result == null) {
+            Log.e(LOG_TAG, "Google sign in error");
             onErrorOccurred();
             return;
         }
@@ -252,8 +262,10 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
         if (result.isSuccess() && acct != null) {
             new RetrieveGoogleTokenTask().execute(acct.getEmail());
         } else {
-            if (result.getStatus().isCanceled())
+            if (result.getStatus().isCanceled()) {
+                Log.e(LOG_TAG, "Google retrieve token error");
                 onErrorOccurred();
+            }
         }
     }
 
@@ -328,7 +340,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
+        Log.e(LOG_TAG, "onConnectionFailed:" + connectionResult);
         onErrorOccurred();
     }
 

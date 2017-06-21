@@ -18,6 +18,8 @@ import android.widget.ProgressBar;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,6 +34,7 @@ public class WebAuthActivity extends AppCompatActivity {
 
     public final static String EMAIL = "email";
     public final static String TOKEN = "token";
+    public final static String BACK_PRESSED = "back_pressed";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,12 +86,12 @@ public class WebAuthActivity extends AppCompatActivity {
             Log.i(LOG_TAG, url);
             Runnable run = () -> {
                 if (timeout) {
-                    Log.d(LOG_TAG, "auth connection timeout");
+                    Log.e(LOG_TAG, "auth connection timeout");
                     setResult(RESULT_CANCELED);
                     finish();
                 }
             };
-            new Handler(Looper.getMainLooper()).postDelayed(run, 5000);
+            new Handler(Looper.getMainLooper()).postDelayed(run, 20000);
 
 
             mProgressBar.setVisibility(View.INVISIBLE);
@@ -122,13 +125,25 @@ public class WebAuthActivity extends AppCompatActivity {
         }
 
         private String retrieveToken(String query) {
-            int start = query.indexOf("=");
-            int end = query.indexOf("&");
-            return query.substring(start + 1, end);
+            String pattern = "(?<=token=)(.*?)(?=&|$)";
+            Pattern tokenPattern = Pattern.compile(pattern);
+            Matcher match = tokenPattern.matcher(query);
+            return match.find() ? match.group(0) : null;
         }
 
         private String retrieveEmail(String query) {
-            return query.substring(query.lastIndexOf("=") + 1);
+            String pattern = "(?<=email=)(.*?)(?=&|$)";
+            Pattern emailPattern = Pattern.compile(pattern);
+            Matcher match = emailPattern.matcher(query);
+            return match.find() ? match.group(0) : null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(BACK_PRESSED, true);
+        setResult(RESULT_CANCELED, intent);
+        super.onBackPressed();
     }
 }
