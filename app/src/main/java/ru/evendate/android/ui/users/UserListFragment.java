@@ -240,6 +240,6 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
 
     protected void checkListAndShowHint() {
         if (mAdapter.isEmpty())
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
     }
 }

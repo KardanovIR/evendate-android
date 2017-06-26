@@ -141,7 +141,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mLoadStateView.showEmptryHint();
+        mLoadStateView.showEmptyHint();
         mEndless.loadMoreComplete();
         mEndless.setLoadMoreAvailable(false);
     }

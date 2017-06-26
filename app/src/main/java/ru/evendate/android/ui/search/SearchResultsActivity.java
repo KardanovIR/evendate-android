@@ -310,7 +310,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         protected void checkListAndShowHint() {
             if (mAdapter.isEmpty())
-                mLoadStateView.showEmptryHint();
+                mLoadStateView.showEmptyHint();
         }
 
         @Override
