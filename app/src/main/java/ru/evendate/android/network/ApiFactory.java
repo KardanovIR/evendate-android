@@ -60,4 +60,8 @@ public class ApiFactory {
             return "http://" + HOST_NAME;
         }
     }
+
+    public static String getHttpsHostName(Context context) {
+        return "https://" + HOST_NAME;
+    }
 }

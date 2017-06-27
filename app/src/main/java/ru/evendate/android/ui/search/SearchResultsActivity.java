@@ -347,7 +347,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             Observable<ResponseArray<Event>> observable =
                     apiService.findEvents(EvendateAccountManager.peekToken(getContext()), query, true,
-                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
+                            Event.FIELDS_LIST, EventFeed.SEARCH_ORDER_BY, length, offset);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -386,7 +386,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             ApiService apiService = ApiFactory.getService(getContext());
             Observable<ResponseArray<OrganizationFull>> observable =
                     apiService.findOrganizations(EvendateAccountManager.peekToken(getContext()), query,
-                            OrganizationSubscription.FIELDS_LIST);
+                            OrganizationSubscription.FIELDS_LIST, OrganizationSubscription.SEARCH_ORDER_BY);
 
             observable.subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())

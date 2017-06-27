@@ -57,7 +57,11 @@ public class WebAuthActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new AuthWebViewClient());
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-
+        //cause google restriction
+        if (mUrl.equals(AuthActivity.getGoogleUrl(this))) {
+            mWebView.getSettings()
+                    .setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36");
+        }
         initProgressBar();
 
         if (mUrl != null)
@@ -77,9 +81,18 @@ public class WebAuthActivity extends AppCompatActivity {
         mWebView.saveState(outState);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(BACK_PRESSED, true);
+        setResult(RESULT_CANCELED, intent);
+        super.onBackPressed();
+    }
+
     private class AuthWebViewClient extends WebViewClient {
         boolean timeout = true;
 
+        //todo add timeout only for evendate
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -91,7 +104,7 @@ public class WebAuthActivity extends AppCompatActivity {
                     finish();
                 }
             };
-            new Handler(Looper.getMainLooper()).postDelayed(run, 20000);
+            new Handler(Looper.getMainLooper()).postDelayed(run, 60000);
 
 
             mProgressBar.setVisibility(View.INVISIBLE);
@@ -137,13 +150,5 @@ public class WebAuthActivity extends AppCompatActivity {
             Matcher match = emailPattern.matcher(query);
             return match.find() ? match.group(0) : null;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(BACK_PRESSED, true);
-        setResult(RESULT_CANCELED, intent);
-        super.onBackPressed();
     }
 }
