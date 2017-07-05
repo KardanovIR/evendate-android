@@ -59,20 +59,22 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     private final int REQUEST_WEB_AUTH = 2;
     GoogleApiClient apiClient;
     @Bind(R.id.sing_in_google_button) View googleButton;
-    private String FB_URL;
     private boolean isGoogleServicesAvailable = false;
     private ProgressDialog mProgressDialog;
     private Dialog serviceDialog;
 
     public static String getGoogleUrl(Context context) {
-        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHttpsHostName(context) + "/googleOauthDone.php?mobile=true&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+        return "https://accounts.google.com/o/oauth2/auth?scope=email profile https://www.googleapis.com/auth/plus.login &redirect_uri=" + ApiFactory.getHttpsHostName(context) + "/redirectOauth.php?mobile=true%26type=google&response_type=token&client_id=403640417782-lfkpm73j5gqqnq4d3d97vkgfjcoebucv.apps.googleusercontent.com";
+    }
+
+    public static String getFbUrl(Context context) {
+        return "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHttpsHostName(context) + "/redirectOauth.php?mobile=true&type=facebook";
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initLinks();
         EvendateAccountManager.setAuthRunning(this);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
@@ -99,12 +101,6 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
             showProgressDialog();
             apiClient.connect();
         }
-    }
-
-    private void initLinks() {
-        //todo change to https (when move testing to prod server?)
-        FB_URL = "https://www.facebook.com/dialog/oauth?client_id=1692270867652630&response_type=token&scope=public_profile,email,user_friends&display=popup&redirect_uri=" + ApiFactory.getHostName(this) + "/fbOauthDone.php?mobile=true";
-
     }
 
     private void initTransitions() {
@@ -174,7 +170,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
                 VKSdk.login(this, VKScope.FRIENDS, VKScope.EMAIL, VKScope.WALL, VKScope.OFFLINE, VKScope.PAGES, VKScope.PHOTOS, VKScope.GROUPS);
                 break;
             case R.id.sing_in_fb_button:
-                startWebAuth(FB_URL);
+                startWebAuth(getFbUrl(this));
                 break;
             case R.id.sing_in_google_button:
                 if (isGoogleServicesAvailable) {
