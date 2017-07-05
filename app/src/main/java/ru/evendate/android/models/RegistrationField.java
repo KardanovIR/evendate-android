@@ -4,25 +4,30 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
+@Parcel
 public class RegistrationField extends DataModel {
 
     @SerializedName("uuid")
-    private String uuid;
+    String uuid;
     @SerializedName("type")
-    private String type;
+    String type;
     @SerializedName("label")
-    private String label;
+    String label;
     @SerializedName("required")
-    private boolean required;
+    boolean required;
     @SerializedName("value")
-    private String value;
+    String value;
     @Nullable
     @SerializedName("values")
-    private ArrayList<RegistrationField> values;
+    ArrayList<RegistrationField> values;
     @SerializedName("error")
-    private String error;
+    String error;
+
+    public RegistrationField() {}
 
     public RegistrationField(String uuid, String value) {
         this.uuid = uuid;

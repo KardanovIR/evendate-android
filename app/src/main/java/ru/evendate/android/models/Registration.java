@@ -2,19 +2,22 @@ package ru.evendate.android.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
  * Created by Dmitry on 02.02.2017.
  */
 
+@Parcel
 public class Registration extends DataModel {
     @SerializedName("registration_fields")
-    private ArrayList<RegistrationField> registrationFields;
+    ArrayList<RegistrationField> registrationFields;
     @SerializedName("tickets")
-    private ArrayList<Ticket> tickets;
+    ArrayList<Ticket> tickets;
     @SerializedName("orders")
-    private ArrayList<Order> orders;
+    ArrayList<Order> orders;
 
 
     @Override
