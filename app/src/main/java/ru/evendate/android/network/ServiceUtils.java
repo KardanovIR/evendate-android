@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import ru.evendate.android.models.Event;
+import ru.evendate.android.models.Ticket;
+
 /**
  * Created by Dmitry on 13.11.2016.
  */
@@ -26,6 +29,11 @@ public class ServiceUtils {
 
     public static String constructEventBackgroundURL(String baseUrl, int width) {
         return baseUrl + "?width=" + String.valueOf(width);
+    }
+
+    public static String constructQrLink(String hostName, long eventId, String ticketUuid) {
+        return hostName + "/api/v1/events/" + eventId
+                + "/tickets/" + ticketUuid + "/qr?format=png&size=5";
     }
 
     public static String formatDateTimeRequest(Date date) {

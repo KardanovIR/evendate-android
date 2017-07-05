@@ -350,7 +350,7 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
 
     protected void checkListAndShowHint() {
         if (mAdapter.isEmpty())
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
     }
 
     @Override

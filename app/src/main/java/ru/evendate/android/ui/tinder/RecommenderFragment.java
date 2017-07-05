@@ -178,7 +178,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     public void showRecommends(List<Event> events, boolean isLast) {
         if (isLast) {
             canLoadMore = false;
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
         }
         loading = false;
         mAdapter.addData(events);
@@ -189,7 +189,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     public void reshowRecommends(List<Event> events, boolean isLast) {
         if (isLast) {
             canLoadMore = false;
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
         }
         loading = false;
         mAdapter.setData(events);
@@ -198,7 +198,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
 
     @Override
     public void showEmptyState() {
-        mLoadStateView.showEmptryHint();
+        mLoadStateView.showEmptyHint();
     }
 
     @Override

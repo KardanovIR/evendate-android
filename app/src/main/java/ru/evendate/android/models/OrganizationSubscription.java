@@ -5,6 +5,7 @@ package ru.evendate.android.models;
  */
 public interface OrganizationSubscription extends Organization {
     String FIELDS_LIST = "img_small_url,subscribed_count,is_subscribed,new_events_count";
+    String SEARCH_ORDER_BY = "-search_score";
 
     String getLogoSmallUrl();
 

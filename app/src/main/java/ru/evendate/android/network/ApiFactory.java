@@ -19,7 +19,7 @@ public class ApiFactory {
     private static final int CONNECT_TIMEOUT = 15;
     private static final int WRITE_TIMEOUT = 60;
     private static final int TIMEOUT = 60;
-    private static final String HOST_NAME = "evendate.ru";
+    private static final String HOST_NAME = "evendate.io";
 
     private static final OkHttpClient CLIENT;
 
@@ -59,5 +59,9 @@ public class ApiFactory {
         } else {
             return "http://" + HOST_NAME;
         }
+    }
+
+    public static String getHttpsHostName(Context context) {
+        return "https://" + HOST_NAME;
     }
 }

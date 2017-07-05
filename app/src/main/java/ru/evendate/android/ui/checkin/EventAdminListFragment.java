@@ -148,7 +148,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        mLoadStateView.showEmptryHint();
+        mLoadStateView.showEmptyHint();
         mEndless.loadMoreComplete();
         mEndless.setLoadMoreAvailable(false);
     }

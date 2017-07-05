@@ -65,11 +65,11 @@ public class TicketsAdminFragment extends Fragment {
                 switch (position) {
                     case 0:
                         fragment = TicketsAdminListFragment.newInstance(eventId, false);
-                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView)fragment);
+                        new TicketsAdminPresenter(new DataRepository(getContext()), fragment);
                         return fragment;
                     case 1:
                         fragment2 = TicketsAdminListFragment.newInstance(eventId, true);
-                        new TicketsAdminPresenter(new DataRepository(getContext()), (CheckInContract.TicketsAdminView)fragment2);
+                        new TicketsAdminPresenter(new DataRepository(getContext()), fragment2);
                         return fragment2;
                     default:
                         throw new RuntimeException();
@@ -333,7 +333,7 @@ public class TicketsAdminFragment extends Fragment {
         @Override
         public void showSearchEmptyState() {
             mRecyclerView.setVisibility(View.INVISIBLE);
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
         }
 
         @Override
@@ -371,7 +371,7 @@ public class TicketsAdminFragment extends Fragment {
         public void showEmptyState() {
             mSwipeRefreshLayout.setRefreshing(false);
             mRecyclerView.setVisibility(View.INVISIBLE);
-            mLoadStateView.showEmptryHint();
+            mLoadStateView.showEmptyHint();
             mEndless.loadMoreComplete();
             mEndless.setLoadMoreAvailable(false);
         }

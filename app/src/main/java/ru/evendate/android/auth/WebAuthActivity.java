@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +18,8 @@ import android.widget.ProgressBar;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,6 +34,7 @@ public class WebAuthActivity extends AppCompatActivity {
 
     public final static String EMAIL = "email";
     public final static String TOKEN = "token";
+    public final static String BACK_PRESSED = "back_pressed";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,10 +54,14 @@ public class WebAuthActivity extends AppCompatActivity {
             throw new RuntimeException("no intent with uri");
         mUrl = intent.getExtras().getString(AuthActivity.URL_KEY);
 
-        mWebView.setWebViewClient(new MyWebViewClient());
+        mWebView.setWebViewClient(new AuthWebViewClient());
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-
+        //cause google restriction
+        if (mUrl.equals(AuthActivity.getGoogleUrl(this))) {
+            mWebView.getSettings()
+                    .setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36");
+        }
         initProgressBar();
 
         if (mUrl != null)
@@ -72,19 +81,39 @@ public class WebAuthActivity extends AppCompatActivity {
         mWebView.saveState(outState);
     }
 
-    protected class MyWebViewClient extends WebViewClient {
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(BACK_PRESSED, true);
+        setResult(RESULT_CANCELED, intent);
+        super.onBackPressed();
+    }
 
+    private class AuthWebViewClient extends WebViewClient {
+        boolean timeout = true;
+
+        //todo add timeout only for evendate
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             Log.i(LOG_TAG, url);
+            Runnable run = () -> {
+                if (timeout) {
+                    Log.e(LOG_TAG, "auth connection timeout");
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
+            };
+            new Handler(Looper.getMainLooper()).postDelayed(run, 60000);
+
+
             mProgressBar.setVisibility(View.INVISIBLE);
             final String AUTH_PATH = "/mobileAuthDone.php";
 
             try {
                 URL currentURL = new URL(url);
                 if (currentURL.getPath().equals(AUTH_PATH)) {
-
+                    timeout = false;
                     String query = currentURL.getQuery();
                     Log.i(LOG_TAG, "start authorization");
                     Log.d(LOG_TAG, "query: " + query);
@@ -109,13 +138,17 @@ public class WebAuthActivity extends AppCompatActivity {
         }
 
         private String retrieveToken(String query) {
-            int start = query.indexOf("=");
-            int end = query.indexOf("&");
-            return query.substring(start + 1, end);
+            String pattern = "(?<=token=)(.*?)(?=&|$)";
+            Pattern tokenPattern = Pattern.compile(pattern);
+            Matcher match = tokenPattern.matcher(query);
+            return match.find() ? match.group(0) : null;
         }
 
         private String retrieveEmail(String query) {
-            return query.substring(query.lastIndexOf("=") + 1);
+            String pattern = "(?<=email=)(.*?)(?=&|$)";
+            Pattern emailPattern = Pattern.compile(pattern);
+            Matcher match = emailPattern.matcher(query);
+            return match.find() ? match.group(0) : null;
         }
     }
 }
