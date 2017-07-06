@@ -394,7 +394,8 @@ public interface ApiService {
     Observable<ResponseArray<OrganizationFull>> findOrganizations(
             @Header("Authorization") String authorization,
             @Query("q") String query,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy
     );
 
     @GET(API_PATH + "/users")

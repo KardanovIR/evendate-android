@@ -143,7 +143,7 @@ public class LoadStateView extends FrameLayout {
         descriptionView.setVisibility(VISIBLE);
     }
 
-    public void showEmptryHint() {
+    public void showEmptyHint() {
         setEmptyHint();
         hideProgress();
         headerView.setVisibility(VISIBLE);

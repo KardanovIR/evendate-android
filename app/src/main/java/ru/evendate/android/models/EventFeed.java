@@ -20,6 +20,7 @@ public interface EventFeed {
     String ORDER_BY_ACTUALITY = "-actuality";
     String ORDER_BY_FAVORITE_AND_FIRST_TIME = "-is_favorite,first_event_date";
     String ORDER_BY_LAST_DATE = "-last_event_date";
+    String SEARCH_ORDER_BY = "-search_score";
 
     int getEntryId();
 
