@@ -14,6 +14,7 @@ import ru.evendate.android.R;
 /**
  * Created by ds_gordeev on 31.03.2016.
  */
+@Deprecated
 public abstract class AppendableAdapter<T> extends AbstractAdapter<T, RecyclerView.ViewHolder> {
     private final String LOG_TAG = AppendableAdapter.class.getSimpleName();
 

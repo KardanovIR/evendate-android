@@ -25,7 +25,7 @@ import com.mikepenz.materialize.util.UIUtils;
 import ru.evendate.android.R;
 
 /**
- * Created by ds_gordeev on 04.03.2016.
+ * Custom implementation of drawer item for subscription with big icon
  */
 public class SubscriptionDrawerItem extends ProfileDrawerItem {
     protected StringHolder mBadge;

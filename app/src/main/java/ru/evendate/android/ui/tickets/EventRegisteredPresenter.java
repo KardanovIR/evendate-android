@@ -50,7 +50,7 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
                 .subscribe(result -> {
                             List<EventRegistered> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
-                            boolean isEmpty = list.size() == 1;
+                            boolean isEmpty = list.size() == 0;
                             if (result.isOk()) {
                                 if (isEmpty && mView.isEmpty()) {
                                     mView.showEmptyState();

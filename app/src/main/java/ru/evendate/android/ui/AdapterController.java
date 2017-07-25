@@ -7,6 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by Dmitry on 09.06.2016.
  */
+@Deprecated
 public class AdapterController {
     private final String LOG_TAG = AdapterController.class.getSimpleName();
 

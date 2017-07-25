@@ -35,7 +35,7 @@ import ru.evendate.android.views.LoadStateView;
 /**
  * fragment containing a reel
  * used in calendar, main pager activities
- * contain recycle view with cards for event list
+ * contain endless recycle view with cards for event list
  */
 public class ReelFragment extends Fragment implements AdapterController.AdapterContext, LoadStateView.OnReloadListener {
     static final String TYPE_KEY = "type";

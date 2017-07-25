@@ -1,10 +1,8 @@
 package ru.evendate.android.ui;
 
 /**
- * Created by Aedirn on 13.03.17.
+ * Base presenter for MVP architecture
  */
-
-
 public interface BasePresenter {
 
     void start();
