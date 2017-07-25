@@ -7,18 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Aedirn on 07.03.17.
+ * Recycler view adapter with endless listing support
  */
-
 public abstract class AbstractEndlessAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private List<T> mList = new ArrayList<>();
 
+    /**
+     * append items to end of the list
+     */
     public void add(final @NonNull List<T> list) {
         for (T item : list) {
             append(item);
         }
     }
 
+    /**
+     * replace current list by new list
+     */
     public void set(final @NonNull List<T> list) {
         int size = mList.size();
         for (int index = 0; index < list.size(); index++) {
@@ -38,6 +43,9 @@ public abstract class AbstractEndlessAdapter<T, VH extends RecyclerView.ViewHold
         }
     }
 
+    /**
+     * clear list
+     */
     public void reset() {
         int size = mList.size();
         mList.clear();
@@ -57,17 +65,26 @@ public abstract class AbstractEndlessAdapter<T, VH extends RecyclerView.ViewHold
         return mList.size();
     }
 
+    /**
+     * append item to end of the list
+     */
     private void append(T item) {
         mList.add(mList.size(), item);
         notifyItemInserted(getItemCount());
     }
 
+    /**
+     * remove concrete item from the list
+     */
     private void remove(T item) {
         int position = mList.indexOf(item);
         mList.remove(position);
         notifyItemRemoved(position);
     }
 
+    /**
+     * update concrete item in the list
+     */
     private void update(T item) {
         int position = mList.indexOf(item);
         notifyItemChanged(position);

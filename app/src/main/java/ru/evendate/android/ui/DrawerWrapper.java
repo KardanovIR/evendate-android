@@ -53,16 +53,17 @@ import ru.evendate.android.ui.users.UserListFragment;
  * Created by Dmitry on 11.02.2016.
  */
 public class DrawerWrapper {
-    public final static int TICKETS_IDENTIFIER = 6;
-    public final static int ADMINISTRATION_IDENTIFIER = 7;
-    public final static int RECOMMENDER_IDENTIFIER = 8;
     public final static int REEL_IDENTIFIER = 1;
     public final static int CALENDAR_IDENTIFIER = 2;
     public final static int CATALOG_IDENTIFIER = 3;
     public final static int FRIENDS_IDENTIFIER = 4;
     public final static int SETTINGS_IDENTIFIER = 5;
+    public final static int TICKETS_IDENTIFIER = 6;
+    public final static int ADMINISTRATION_IDENTIFIER = 7;
+    public final static int RECOMMENDER_IDENTIFIER = 8;
     private static UserDetail mUser;
 
+    // enable vector drawables support
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
@@ -73,6 +74,10 @@ public class DrawerWrapper {
     private ArrayList<OrganizationSubscription> mSubscriptions;
     private Context mContext;
     private OnSubLoadListener listener;
+
+    /**
+     * config drawable items
+     */
     private PrimaryDrawerItem reelItem = new PrimaryDrawerItem().withName(R.string.drawer_reel)
             .withIcon(R.drawable.ic_local_play_black).withIdentifier(REEL_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem calendarItem = new PrimaryDrawerItem().withName(R.string.drawer_calendar)
@@ -141,7 +146,7 @@ public class DrawerWrapper {
         intent.setData(EvendateContract.UserEntry.getContentUri(mUser.getEntryId()));
         if (Build.VERSION.SDK_INT >= 21) {
             context.startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation((Activity) context).toBundle());
+                    ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
         } else
             context.startActivity(intent);
     }
@@ -172,7 +177,7 @@ public class DrawerWrapper {
     private void updateSubs() {
         setupMenu();
         for (OrganizationSubscription org : mSubscriptions) {
-            SubscriptionDrawerItem item = (SubscriptionDrawerItem) new SubscriptionDrawerItem().withName(org.getShortName())
+            SubscriptionDrawerItem item = (SubscriptionDrawerItem)new SubscriptionDrawerItem().withName(org.getShortName())
                     .withIcon(org.getLogoSmallUrl()).withTag(org).withSelectable(false);
             if (org.getNewEventsCount() != 0) {
                 item.withBadge(String.valueOf(org.getNewEventsCount())).withBadgeStyle(new BadgeStyle().withTextColorRes(R.color.accent));
@@ -194,6 +199,35 @@ public class DrawerWrapper {
         this.listener = listener;
     }
 
+    /**
+     * load user model with subscription
+     */
+    //todo solid
+    private void loadMe() {
+        ApiService service = ApiFactory.getService(mContext);
+        Observable<ResponseArray<UserDetail>> subsObservable =
+                service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
+
+        subsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    Log.i(LOG_TAG, "loaded");
+                    if (result.isOk()) {
+                        mUser = result.getData().get(0);
+                        onLoaded(mUser.getSubscriptions());
+                        buildProfile();
+                    } else
+                        onError();
+                }, error -> {
+                    onError();
+                    Log.e(LOG_TAG, "" + error.getMessage());
+                });
+    }
+
+    /**
+     * load only subscriptions
+     */
+    //todo solid
     private void loadSubs() {
         ApiService service = ApiFactory.getService(mContext);
         Observable<ResponseArray<OrganizationFull>> subsObservable =
@@ -213,43 +247,26 @@ public class DrawerWrapper {
                 });
     }
 
-    private void loadMe() {
-        ApiService service = ApiFactory.getService(mContext);
-        Observable<ResponseArray<UserDetail>> subsObservable =
-                service.getMe(EvendateAccountManager.peekToken(mContext), UserDetail.FIELDS_LIST);
+    private void buildProfile() {
+        Account account = EvendateAccountManager.getSyncAccount(mContext);
+        if (account == null)
+            return;
 
-        subsObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    Log.i(LOG_TAG, "loaded");
-                    if (result.isOk()) {
-                        mUser = result.getData().get(0);
-                        onLoaded(mUser.getSubscriptions());
-                        Account account = EvendateAccountManager.getSyncAccount(mContext);
-                        if (account == null)
-                            return;
-
-                        getAccountHeader().clear();
-                        getAccountHeader().addProfiles(
-                                new ProfileDrawerItem().withName(mUser.getFirstName() + " " + mUser.getLastName())
-                                        .withEmail(account.name)
-                                        .withIcon(R.drawable.ic_avatar_cap)
-                                        .withIcon(mUser.getAvatarUrl()),
-                                new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
-                                        .withIcon(R.drawable.ic_exit_to_app_black)
-                                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
-                                            EvendateAccountManager.deleteAccount(mContext);
-                                            //todo ditch
-                                            ((Activity) mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
-                                            return false;
-                                        })
-                        );
-                    } else
-                        onError();
-                }, error -> {
-                    onError();
-                    Log.e(LOG_TAG, "" + error.getMessage());
-                });
+        getAccountHeader().clear();
+        getAccountHeader().addProfiles(
+                new ProfileDrawerItem().withName(mUser.getFirstName() + " " + mUser.getLastName())
+                        .withEmail(account.name)
+                        .withIcon(R.drawable.ic_avatar_cap)
+                        .withIcon(mUser.getAvatarUrl()),
+                new ProfileDrawerItem().withName(mContext.getString(R.string.drawer_log_out))
+                        .withIcon(R.drawable.ic_exit_to_app_black)
+                        .withOnDrawerItemClickListener((View view, int position, IDrawerItem drawerItem) -> {
+                            EvendateAccountManager.deleteAccount(mContext);
+                            //todo ditch
+                            ((Activity)mContext).startActivityForResult(new Intent(mContext, AuthActivity.class), MainActivity.REQUEST_AUTH);
+                            return false;
+                        })
+        );
     }
 
     private void onLoaded(ArrayList<OrganizationSubscription> subList) {
@@ -277,7 +294,6 @@ public class DrawerWrapper {
     }
 
     public void start() {
-        //loadSubs();
         loadMe();
     }
 
@@ -287,7 +303,6 @@ public class DrawerWrapper {
 
     /**
      * handle clicks on items of navigation drawer list
-     * used for all activities except main activity
      */
     public static class NavigationItemSelectedListener
             implements Drawer.OnDrawerItemClickListener {
@@ -326,10 +341,6 @@ public class DrawerWrapper {
                 case DrawerWrapper.RECOMMENDER_IDENTIFIER:
                     openRecommenderActivity();
                     break;
-                //case R.id.nav_add_account:
-                //    Intent authIntent = new Intent(mContext, AuthActivity.class);
-                //    mContext.startActivity(authIntent);
-                //    break;
                 default:
                     openOrganizationFromSub(drawerItem);
             }
@@ -393,7 +404,7 @@ public class DrawerWrapper {
         }
 
         private int getOrgIdFromDrawerItem(IDrawerItem drawerItem) {
-            return ((OrganizationModel) drawerItem.getTag()).getEntryId();
+            return ((OrganizationModel)drawerItem.getTag()).getEntryId();
         }
 
         private Intent addFlags(Intent intent) {
