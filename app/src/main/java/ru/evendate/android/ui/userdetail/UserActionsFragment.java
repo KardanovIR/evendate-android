@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -34,11 +35,12 @@ import ru.evendate.android.views.LoadStateView;
 public class UserActionsFragment extends Fragment implements LoadStateView.OnReloadListener {
     private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private static final String USER_ID_KEY = "user_id";
     private int userId;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private Unbinder unbinder;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment fragment = new UserActionsFragment();

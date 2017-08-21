@@ -41,7 +41,7 @@ import com.vk.sdk.api.VKError;
 
 import java.io.IOException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.EvendateAccountManager;
@@ -58,7 +58,7 @@ public class AuthActivity extends AccountAuthenticatorAppCompatActivity implemen
     static public String URL_KEY = "url";
     private final int REQUEST_WEB_AUTH = 2;
     GoogleApiClient apiClient;
-    @Bind(R.id.sing_in_google_button) View googleButton;
+    @BindView(R.id.sing_in_google_button) View googleButton;
     private boolean isGoogleServicesAvailable = false;
     private ProgressDialog mProgressDialog;
     private Dialog serviceDialog;

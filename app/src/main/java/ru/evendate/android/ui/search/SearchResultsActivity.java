@@ -30,8 +30,9 @@ import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -65,13 +66,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     public static final String SEARCH_BY_TAG = "search_by_tag";
     String query = "";
     SearchView mSearchView;
-    @Bind(R.id.main_content) RelativeLayout mRelativeLayout;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.tabs) TabLayout mTabs;
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.hint) TextView mHintView;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    @Bind(R.id.tags) TagsRecyclerView tagsView;
+    @BindView(R.id.main_content) RelativeLayout mRelativeLayout;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.hint) TextView mHintView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.tags) TagsRecyclerView tagsView;
     private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
     private SearchPagerAdapter mSearchPagerAdapter;
     private DrawerWrapper mDrawer;
@@ -267,14 +268,15 @@ public class SearchResultsActivity extends AppCompatActivity {
         protected static final String LOG_TAG = SearchResultFragment.class.getSimpleName();
         protected AbstractAdapter mAdapter;
         protected String query;
-        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-        @Bind(R.id.load_state) LoadStateView mLoadStateView;
+        @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+        @BindView(R.id.load_state) LoadStateView mLoadStateView;
+        private Unbinder unbinder;
 
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-            ButterKnife.bind(this, rootView);
+            unbinder = ButterKnife.bind(this, rootView);
             initRecyclerView();
             initLoadStateView();
             return rootView;
@@ -316,6 +318,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         @Override
         public void onReload() {
             loadData();
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            unbinder.unbind();
         }
     }
 

@@ -30,7 +30,7 @@ import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -56,12 +56,12 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
-    @Bind(R.id.user_avatar) ImageView mUserImageView;
-    @Bind(R.id.avatar_container) View mUserImageContainer;
-    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.user_avatar) ImageView mUserImageView;
+    @BindView(R.id.avatar_container) View mUserImageContainer;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     DrawerWrapper mDrawer;
     private Uri mUri;
     private int userId;

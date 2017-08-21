@@ -28,8 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -47,8 +48,9 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
     private static final String LOG_TAG = OnboardingDialog.class.getSimpleName();
 
     private OnboardingAdapter mAdapter;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     OnOrgSelectedListener listener;
+    private Unbinder unbinder;
 
     interface OnOrgSelectedListener {
         void onOrgSelected();
@@ -76,7 +78,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
             Button NeutralButton = ((AlertDialog)d).getButton(DialogInterface.BUTTON_NEUTRAL);
             NeutralButton.setTextColor(Color.parseColor("#FFB1B1B1"));
         });
-        ButterKnife.bind(this, customTitle);
+        unbinder = ButterKnife.bind(this, customTitle);
         mLoadStateView.setOnReloadListener(this);
         return dialog;
     }
@@ -218,4 +220,9 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
         listener.onOrgSelected();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }

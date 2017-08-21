@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -60,14 +60,14 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
      */
     private static DateFormatSymbols dateFormatMonths;
     private final String LOG_TAG = CalendarActivity.class.getSimpleName();
-    @Bind(R.id.calendarView) MaterialCalendarView mCalendarView;
-    @Bind(R.id.calendar_button) ToggleButton mToggleButton;
-    @Bind(R.id.calendar_date) TextView mSelectedDateTextView;
-    @Bind(R.id.calendar_event_count) TextView mEventCountTextView;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
-    @Bind(R.id.coordinator_layout) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.calendarView) MaterialCalendarView mCalendarView;
+    @BindView(R.id.calendar_button) ToggleButton mToggleButton;
+    @BindView(R.id.calendar_date) TextView mSelectedDateTextView;
+    @BindView(R.id.calendar_event_count) TextView mEventCountTextView;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @BindView(R.id.coordinator_layout) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private ReelFragment mReelFragment;
     private OneDayDecorator mOneDayDecorator;
     private Date yesterdayDate;

@@ -17,7 +17,7 @@ import android.view.View;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     public static final String SHOW_ONBOARDING = "onboarding";
     public static final String TAG_ONBOARDING = "tag_onboarding";
     private static boolean requestOnboarding = false;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
     OnboardingDialog onboarding;
     private MainPagerFragment mFragment;
     private DrawerWrapper mDrawer;

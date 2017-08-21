@@ -15,7 +15,7 @@ import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Tag;
@@ -108,7 +108,7 @@ public class TagsRecyclerView extends RecyclerView {
 
     class TagHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.title) TextView mTitle;
+        @BindView(R.id.title) TextView mTitle;
         public int id;
 
         TagHolder(View itemView) {

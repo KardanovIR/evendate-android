@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
@@ -38,9 +38,9 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
     private static final String TAG_SEARCH_TICKETS = "search_tickets";
     private static final String TAG_QR_SCANNER = "qr_scanner";
     private static final String TAG_CONFIRM = "confirm";
-    @Bind(R.id.fab) FloatingActionButton mFab;
-    @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.fab) FloatingActionButton mFab;
+    @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.tabs) TabLayout mTabs;
     Toolbar toolbar;
     int selectedEventId;
     int lastBackStackCount = 0;
@@ -201,6 +201,8 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack("")
                 .commit();
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mTabs.setVisibility(View.VISIBLE);
     }
 
     @Override

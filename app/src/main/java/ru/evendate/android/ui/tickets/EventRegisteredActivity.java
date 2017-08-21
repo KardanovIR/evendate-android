@@ -15,7 +15,7 @@ import android.view.View;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
@@ -23,9 +23,9 @@ import ru.evendate.android.ui.DrawerWrapper;
 
 public class EventRegisteredActivity extends AppCompatActivity {
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.pager) ViewPager mPager;
-    @Bind(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.pager) ViewPager mPager;
+    @BindView(R.id.tabs) TabLayout mTabs;
     DrawerWrapper mDrawer;
 
     @Override

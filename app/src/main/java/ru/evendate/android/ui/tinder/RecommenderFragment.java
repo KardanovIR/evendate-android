@@ -21,9 +21,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
@@ -37,15 +38,16 @@ import static ru.evendate.android.ui.tinder.RecommenderContract.PAGE_LENGTH;
 public class RecommenderFragment extends Fragment implements RecommenderContract.View, LoadStateView.OnReloadListener {
 
     final int LOAD_OFFSET = 3;
-    @Bind(R.id.swipe_deck)
+    @BindView(R.id.swipe_deck)
     SwipeDeck swipeDeck;
     SwipeDeckAdapter mAdapter;
     boolean canLoadMore = true;
     boolean loading = true;
-    @Bind(R.id.load_state)
+    @BindView(R.id.load_state)
     LoadStateView mLoadStateView;
     private RecommenderContract.Presenter mPresenter;
     boolean loaded = false;
+    private Unbinder unbinder;
 
     public static RecommenderFragment newInstance() {
         RecommenderFragment fragment = new RecommenderFragment();
@@ -64,7 +66,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tinder_recommender, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         mAdapter = new SwipeDeckAdapter(getContext());
         swipeDeck.setAdapter(mAdapter);
         swipeDeck.setCallback(new SwipeDeck.SwipeDeckCallback() {
@@ -135,7 +137,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @OnClick({R.id.hide_button, R.id.revert_button, R.id.fave_button})
@@ -271,14 +273,10 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
 
         class ViewHolder {
-            @Bind(R.id.event_image)
-            ImageView eventImage;
-            @Bind(R.id.event_title)
-            TextView eventTitle;
-            @Bind(R.id.event_organizator)
-            TextView eventOrganizator;
-            @Bind(R.id.event_tags)
-            TagsRecyclerView eventTags;
+            @BindView(R.id.event_image) ImageView eventImage;
+            @BindView(R.id.event_title) TextView eventTitle;
+            @BindView(R.id.event_organizator) TextView eventOrganizator;
+            @BindView(R.id.event_tags) TagsRecyclerView eventTags;
 
             ViewHolder(View view) {
                 ButterKnife.bind(this, view);

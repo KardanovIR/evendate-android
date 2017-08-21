@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
@@ -18,7 +18,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
     public final static String TAG_LOCATION = "location";
     private final static String TAG_PROMPT = "tag_prompt";
     private final static String TAG_CITIES = "tag_cities";
-    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
     boolean shouldShowPrompt = false;
     CityPresenter mCityPresenter;
 

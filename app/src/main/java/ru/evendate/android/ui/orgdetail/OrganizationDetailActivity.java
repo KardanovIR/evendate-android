@@ -48,9 +48,10 @@ import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -85,20 +86,20 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     public static final String URI_KEY = "uri";
     final int TITLE_SHIFTED_BY_BUTTON = 2;
     private final String LOG_TAG = "OrganizationFragment";
-    @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
-    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.org_toolbar_title) TextView mToolbarTitle;
-    @Bind(R.id.org_title) TextView mOrgTitle;
-    @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
-    @Bind(R.id.organization_image_container) View mImageContainer;
-    @Bind(R.id.organization_image) ImageView mBackgroundView;
-    @Bind(R.id.organization_image_foreground) ImageView mForegroundView;
-    @Bind(R.id.organization_icon) CircleImageView mIconView;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.tabs) TabLayout mTabs;
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.org_toolbar_title) TextView mToolbarTitle;
+    @BindView(R.id.org_title) TextView mOrgTitle;
+    @BindView(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
+    @BindView(R.id.organization_image_container) View mImageContainer;
+    @BindView(R.id.organization_image) ImageView mBackgroundView;
+    @BindView(R.id.organization_image_foreground) ImageView mForegroundView;
+    @BindView(R.id.organization_icon) CircleImageView mIconView;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -372,11 +373,12 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         private static final String ORG_OBJ_KEY = "organization";
         OrganizationDetail mOrganization;
 
-        @Bind(R.id.toolbar) Toolbar mToolbar;
-        @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
-        @Bind(R.id.organization_name) TextView mOrganizationTextView;
-        @Bind(R.id.organization_description) TextView mDescriptionTextView;
-        @Bind(R.id.organization_place_text) TextView mPlacePlaceTextView;
+        @BindView(R.id.toolbar) Toolbar mToolbar;
+        @BindView(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+        @BindView(R.id.organization_name) TextView mOrganizationTextView;
+        @BindView(R.id.organization_description) TextView mDescriptionTextView;
+        @BindView(R.id.organization_place_text) TextView mPlacePlaceTextView;
+        private Unbinder unbinder;
 
         public void setOrganization(OrganizationDetail organization) {
             mOrganization = organization;
@@ -393,7 +395,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_organization_info, container, false);
-            ButterKnife.bind(this, rootView);
+            unbinder = ButterKnife.bind(this, rootView);
 
             mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
             mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
@@ -463,6 +465,11 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
                 getActivity().startActivity(intent);
         }
 
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            unbinder.unbind();
+        }
     }
 
     private class OrganizationPagerAdapter extends FragmentPagerAdapter {

@@ -16,7 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
@@ -60,9 +60,9 @@ public class OrganizationCatalogAdapter extends AbstractAdapter<OrganizationSubs
 
     class OrganizationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private View mItem;
-        @Bind(R.id.item_title) TextView mTitle;
-        @Bind(R.id.organization_item_subs) TextView mSubCounts;
-        @Bind(R.id.organization_icon) ImageView mImageView;
+        @BindView(R.id.item_title) TextView mTitle;
+        @BindView(R.id.organization_item_subs) TextView mSubCounts;
+        @BindView(R.id.organization_icon) ImageView mImageView;
         public int id;
 
         OrganizationHolder(View itemView) {

@@ -26,7 +26,7 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
@@ -49,12 +49,12 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         implements OrganizationFilterDialog.OnCategorySelectListener, LoadStateView.OnReloadListener {
     public final static int SELECT_CITY_REQUEST = 0;
     private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.city_title) TextView mCityTitle;
-    @Bind(R.id.popup_city_down) ImageButton mPopupCityDown;
-    @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.city_title) TextView mCityTitle;
+    @BindView(R.id.popup_city_down) ImageButton mPopupCityDown;
+    @BindView(R.id.fab) FloatingActionButton mFAB;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     City mSelectedCity;
     Disposable mDisposable;
     private OrganizationCategoryAdapter mAdapter;

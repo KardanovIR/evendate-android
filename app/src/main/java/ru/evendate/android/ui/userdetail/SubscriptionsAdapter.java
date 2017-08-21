@@ -16,7 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
@@ -57,8 +57,8 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
 
     class SubscriptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.item_user_sub_organization_name) TextView mOrganizationNameTextView;
-        @Bind(R.id.item_user_sub_organization_icon) ImageView mOrganizationLogoImageView;
+        @BindView(R.id.item_user_sub_organization_name) TextView mOrganizationNameTextView;
+        @BindView(R.id.item_user_sub_organization_icon) ImageView mOrganizationLogoImageView;
         public int id;
 
         SubscriptionHolder(View itemView) {

@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.statistics.Statistics;
@@ -24,8 +24,8 @@ import ru.evendate.android.ui.ReelFragment;
  * contain logic of switching main fragments in main activity
  */
 public class MainPagerFragment extends Fragment {
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
     private MainPagerAdapter mMainPagerAdapter;
     private ReelFragment.OnRefreshListener mRefreshListener;
 

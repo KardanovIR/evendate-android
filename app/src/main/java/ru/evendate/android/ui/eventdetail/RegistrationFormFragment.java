@@ -32,9 +32,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -53,12 +54,13 @@ import ru.evendate.android.views.LoadStateView;
 public class RegistrationFormFragment extends DialogFragment implements FormInitializer,
         LoadStateView.OnReloadListener {
     private static String LOG_TAG = RegistrationFormFragment.class.getSimpleName();
-    @Bind(R.id.toolbar_registration) Toolbar mToolbar;
-    @Bind(R.id.scroll_view) ScrollView mScrollView;
-    @Bind(R.id.container) LinearLayout mContainer;
+    @BindView(R.id.toolbar_registration) Toolbar mToolbar;
+    @BindView(R.id.scroll_view) ScrollView mScrollView;
+    @BindView(R.id.container) LinearLayout mContainer;
 
     private FormManager formManager;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private Unbinder unbinder;
 
     Event mEvent;
     Registration mRegistration;
@@ -86,7 +88,7 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_registration, container, false);
-        ButterKnife.bind(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
         //todo
         mToolbar.setTitle(R.string.event_registration_title);
 
@@ -260,6 +262,6 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 }

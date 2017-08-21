@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
@@ -50,10 +50,10 @@ class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.
 
     class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.action_description) TextView mActionTextView;
-        @Bind(R.id.user_name) TextView mUserNameTextView;
-        @Bind(R.id.user_avatar) CircleImageView mAvatarView;
-        @Bind(R.id.recycler_view) RecyclerView recyclerView;
+        @BindView(R.id.action_description) TextView mActionTextView;
+        @BindView(R.id.user_name) TextView mUserNameTextView;
+        @BindView(R.id.user_avatar) CircleImageView mAvatarView;
+        @BindView(R.id.recycler_view) RecyclerView recyclerView;
         ActionTargetsAdapter mActionTargetsAdapter;
 
         ActionHolder(View itemView) {

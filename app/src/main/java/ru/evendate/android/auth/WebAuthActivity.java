@@ -21,15 +21,15 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 
 public class WebAuthActivity extends AppCompatActivity {
     private final String LOG_TAG = WebAuthActivity.class.getSimpleName();
 
-    @Bind(R.id.progress_bar) ProgressBar mProgressBar;
-    @Bind(R.id.auth_web_view) WebView mWebView;
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.auth_web_view) WebView mWebView;
     private String mUrl;
 
     public final static String EMAIL = "email";

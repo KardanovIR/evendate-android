@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,9 +47,9 @@ public class ReelFragment extends Fragment implements AdapterController.AdapterC
      * selected date in calendar
      */
     static final String DATE_KEY = "date";
-    @Bind(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
-    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.recycler_view) android.support.v7.widget.RecyclerView mRecyclerView;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     boolean refreshTurnOn = false;
     private String LOG_TAG = ReelFragment.class.getSimpleName();
     private EventsAdapter mAdapter;

@@ -22,8 +22,9 @@ import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Ticket;
 
@@ -33,11 +34,11 @@ public class QrScannerFragment extends Fragment
 
     public static final String KEY_EVENT_ID = "event_id";
     private static final int PERMISSION_REQUEST_CAMERA = 1;
-    @Bind(R.id.qr_reader_container) FrameLayout frameLayout;
+    @BindView(R.id.qr_reader_container) FrameLayout frameLayout;
     QRCodeReaderView qrCodeReaderView;
     CheckInContract.QRReadListener mListener;
     private boolean torchEnabled = false;
-
+    private Unbinder unbinder;
 
     public static QrScannerFragment newInstance(int eventId) {
 
@@ -52,7 +53,7 @@ public class QrScannerFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_qr_scanner, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -161,6 +162,6 @@ public class QrScannerFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 }

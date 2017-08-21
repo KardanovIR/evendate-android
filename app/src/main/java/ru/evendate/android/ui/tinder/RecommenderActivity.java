@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
@@ -20,9 +20,9 @@ import ru.evendate.android.ui.DrawerWrapper;
 public class RecommenderActivity extends AppCompatActivity {
 
     private static final String TAG_RECOMMENDER = "tag_recommender";
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.container) FrameLayout mContainer;
-    @Bind(R.id.main_content) CoordinatorLayout mMainContent;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.container) FrameLayout mContainer;
+    @BindView(R.id.main_content) CoordinatorLayout mMainContent;
     DrawerWrapper mDrawer;
 
     @Override

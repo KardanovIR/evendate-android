@@ -17,7 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
@@ -113,18 +114,18 @@ class OrganizationEventsAdapter extends EventsAdapter {
         View holderView;
         int id;
 
-        @Bind(R.id.organization_icon) ImageView mLogoView;
-        @Bind(R.id.organization_name) TextView mNameView;
-        @Bind(R.id.organization_users) UsersView mUsersView;
-        @Bind(R.id.organization_toggle_more) ToggleButton mMoreToggle;
-        @Bind(R.id.organization_description) TextView mDescriptionView;
-        @Bind(R.id.organization_place) TextView mPlaceView;
-        @Bind(R.id.organization_users_description) TextView mUsersDescriptionView;
-        @Bind(R.id.organization_users_container) RelativeLayout mUserContainer;
-        @Bind(R.id.organization_more_container) RelativeLayout mOrganizationMoreContainer;
-        @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
+        @BindView(R.id.organization_icon) ImageView mLogoView;
+        @BindView(R.id.organization_name) TextView mNameView;
+        @BindView(R.id.organization_users) UsersView mUsersView;
+        @BindView(R.id.organization_toggle_more) ToggleButton mMoreToggle;
+        @BindView(R.id.organization_description) TextView mDescriptionView;
+        @BindView(R.id.organization_place) TextView mPlaceView;
+        @BindView(R.id.organization_users_description) TextView mUsersDescriptionView;
+        @BindView(R.id.organization_users_container) RelativeLayout mUserContainer;
+        @BindView(R.id.organization_more_container) RelativeLayout mOrganizationMoreContainer;
+        @BindView(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
 
-        @Bind({R.id.organization_divider, R.id.organization_description_label,
+        @BindViews({R.id.organization_divider, R.id.organization_description_label,
                 R.id.organization_description, R.id.organization_place_label,
                 R.id.organization_place, R.id.organization_link_label, R.id.organization_link_container})
         List<View> mDescriptionViews;

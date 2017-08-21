@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -33,7 +33,7 @@ import ru.evendate.android.views.LoadStateView;
 public class UserListFragment extends Fragment implements LoadStateView.OnReloadListener {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
 
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private UsersAdapter mAdapter;
     public static final String TYPE = "type";
     public static final String EVENT_ID = "event_id";
@@ -41,7 +41,7 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
     private int type = 0;
     private int organizationId;
     private int eventId;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
 
     public enum TypeFormat {
         EVENT(0),

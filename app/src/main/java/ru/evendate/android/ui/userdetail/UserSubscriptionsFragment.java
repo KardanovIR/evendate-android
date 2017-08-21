@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.evendate.android.R;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.ui.NpaLinearLayoutManager;
@@ -20,10 +21,11 @@ import ru.evendate.android.ui.NpaLinearLayoutManager;
  */
 public class UserSubscriptionsFragment extends Fragment {
 
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private SubscriptionsAdapter mAdapter;
     private UserDetail mUser;
     private static final String USER_OBJ_KEY = "user";
+    private Unbinder unbinder;
 
     public static UserSubscriptionsFragment newInstance(UserDetail user) {
         UserSubscriptionsFragment fragment = new UserSubscriptionsFragment();
@@ -35,7 +37,7 @@ public class UserSubscriptionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_subs, container, false);
-        ButterKnife.bind(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
 
         if (savedInstanceState != null)
             mUser = new Gson().fromJson(savedInstanceState.getString(USER_OBJ_KEY), UserDetail.class);
@@ -51,5 +53,11 @@ public class UserSubscriptionsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(USER_OBJ_KEY, new Gson().toJson(mUser));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.UserDetail;
@@ -19,9 +19,9 @@ import ru.evendate.android.models.UserDetail;
  * users card for event detail
  */
 public class UserFavoritedCard extends CardView {
-    @Bind(R.id.user_container) UsersView mUsersView;
-    @Bind(R.id.all_users) TextView mAllTextView;
-    @Bind(R.id.title) TextView mTitleTextView;
+    @BindView(R.id.user_container) UsersView mUsersView;
+    @BindView(R.id.all_users) TextView mAllTextView;
+    @BindView(R.id.title) TextView mTitleTextView;
 
     public UserFavoritedCard(Context context) {
         this(context, null);

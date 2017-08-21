@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import butterknife.Bind;
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import ru.evendate.android.R;
@@ -194,13 +194,13 @@ public class EventsAdapter extends AppendableAdapter<EventFeed> {
     class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         View holderView;
         EventFeed event;
-        @Bind(R.id.event_item_image) ImageView mEventImageView;
-        @Bind(R.id.event_item_title) TextView mTitleTextView;
-        @Bind(R.id.event_item_date) TextView mDateTextView;
-        @Nullable @Bind(R.id.event_item_price) TextView mPriceTextView;
-        @Nullable @Bind(R.id.event_item_organization) TextView mOrganizationTextView;
-        @Nullable @Bind(R.id.event_item_organization_icon) ImageView mOrganizationLogo;
-        @Bind(R.id.event_item_favorite_indicator) View mFavoriteIndicator;
+        @BindView(R.id.event_item_image) ImageView mEventImageView;
+        @BindView(R.id.event_item_title) TextView mTitleTextView;
+        @BindView(R.id.event_item_date) TextView mDateTextView;
+        @Nullable @BindView(R.id.event_item_price) TextView mPriceTextView;
+        @Nullable @BindView(R.id.event_item_organization) TextView mOrganizationTextView;
+        @Nullable @BindView(R.id.event_item_organization_icon) ImageView mOrganizationLogo;
+        @BindView(R.id.event_item_favorite_indicator) View mFavoriteIndicator;
         @BindString(R.string.event_free) String eventFreeLabel;
         private boolean isFavorited;
         private boolean isHidden;

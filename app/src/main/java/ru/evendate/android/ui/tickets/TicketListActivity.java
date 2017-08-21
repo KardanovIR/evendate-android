@@ -16,7 +16,7 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import ru.evendate.android.R;
@@ -31,8 +31,8 @@ import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
     public static final String EVENT_KEY = "event";
     private static final String TICKETS_KEY = "tickets";
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.pager) ViewPager mViewPager;
     PagerAdapter mAdapter;
     Disposable mDisposable;
     DataRepository mDataRepository;
