@@ -3,17 +3,17 @@ package com.github.dkharrat.nexusdialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 /**
- * <code>FormFragment</code> provides a default Fragment implementation for using NexusDialog. It also handles retaining the
- * <code>FormModel</code> when the Fragment is recreated.
+ * Created by dmitry on 22.08.17.
  */
-public abstract class FormFragment extends Fragment {
+
+public abstract class FormDialogFragment extends DialogFragment {
     private FormModelFragment formModelFragment;
     private FormController formController;
 
@@ -78,4 +78,5 @@ public abstract class FormFragment extends Fragment {
         ViewGroup containerView = (ViewGroup)getActivity().findViewById(R.id.form_elements_container);
         formController.recreateViews(containerView);
     }
+
 }

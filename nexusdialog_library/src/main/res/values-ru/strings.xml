@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="validation_error_title">Неверный ввод</string>
-    <string name="required_field_error_msg">%s обязательное поле</string>
+    <string name="required_field_error_msg">%s — обязательное поле</string>
 </resources>

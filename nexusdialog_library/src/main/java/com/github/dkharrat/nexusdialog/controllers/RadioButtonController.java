@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 import com.github.dkharrat.nexusdialog.R;
 import com.github.dkharrat.nexusdialog.validations.InputValidator;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class RadioButtonController extends CheckBoxController {
                     return;
                 int position = i - CHECKBOX_ID;
                 Object value = areValuesDefined() ? values.get(position) : position;
-                Set<Object> modelValues = retrieveModelValues();
+                Set<Object> modelValues = new HashSet<>(retrieveModelValues());
                 modelValues.clear();
                 modelValues.add(value);
                 getModel().setValue(getName(), modelValues);
@@ -75,7 +76,7 @@ public class RadioButtonController extends CheckBoxController {
         Set<Object> modelValues = retrieveModelValues();
         radioButton.setChecked(
                 modelValues.contains(
-                        areValuesDefined() ? radioButton.getText() : index
+                        areValuesDefined() ? values.get(index) : index
                 )
         );
     }

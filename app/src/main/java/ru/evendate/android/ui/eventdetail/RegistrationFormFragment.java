@@ -17,10 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.github.dkharrat.nexusdialog.FormController;
+import com.github.dkharrat.nexusdialog.FormDialogFragment;
 import com.github.dkharrat.nexusdialog.FormElementController;
-import com.github.dkharrat.nexusdialog.FormInitializer;
-import com.github.dkharrat.nexusdialog.FormManager;
-import com.github.dkharrat.nexusdialog.FormModel;
 import com.github.dkharrat.nexusdialog.controllers.CheckBoxController;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
@@ -51,14 +49,13 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
 import ru.evendate.android.views.LoadStateView;
 
-public class RegistrationFormFragment extends DialogFragment implements FormInitializer,
-        LoadStateView.OnReloadListener {
+public class RegistrationFormFragment extends FormDialogFragment
+        implements LoadStateView.OnReloadListener {
     private static String LOG_TAG = RegistrationFormFragment.class.getSimpleName();
     @BindView(R.id.toolbar_registration) Toolbar mToolbar;
     @BindView(R.id.scroll_view) ScrollView mScrollView;
     @BindView(R.id.container) LinearLayout mContainer;
 
-    private FormManager formManager;
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Unbinder unbinder;
 
@@ -103,7 +100,6 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        formManager = new FormManager(this, this, R.id.form_elements_container);
     }
 
     @Override
@@ -134,18 +130,6 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
         }
     }
 
-    public FormController getFormController() {
-        return formManager.getFormController();
-    }
-
-    public FormModel getModel() {
-        return getFormController().getModel();
-    }
-
-    protected void recreateViews() {
-        formManager.recreateViews();
-    }
-
     @Override
     public void initForm(FormController controller) {
         Context context = getContext();
@@ -172,8 +156,6 @@ public class RegistrationFormFragment extends DialogFragment implements FormInit
             }
         }
         controller.addSection(section);
-        ViewGroup containerView = (ViewGroup)getActivity().findViewById(R.id.form_elements_container);
-        controller.recreateViews(containerView);
     }
 
     @Override

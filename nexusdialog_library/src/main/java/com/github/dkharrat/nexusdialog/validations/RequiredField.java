@@ -1,7 +1,6 @@
 package com.github.dkharrat.nexusdialog.validations;
 
 import android.content.res.Resources;
-
 import com.github.dkharrat.nexusdialog.R;
 
 /**

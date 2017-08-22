@@ -1,5 +1,10 @@
 package com.github.dkharrat.nexusdialog.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,11 +30,6 @@ import com.github.dkharrat.nexusdialog.FormController;
 import com.github.dkharrat.nexusdialog.R;
 import com.github.dkharrat.nexusdialog.utils.MessageUtil;
 import com.github.dkharrat.nexusdialog.validations.InputValidator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * Represents a field that allows a user to select from a list of items, with the ability to search for specific items.
