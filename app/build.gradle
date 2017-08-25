@@ -119,6 +119,7 @@ dependencies {
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+    compile 'com.github.travijuu:numberpicker:1.0.7'
 }
 
 apply plugin: 'com.google.gms.google-services'

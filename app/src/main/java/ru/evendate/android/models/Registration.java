@@ -16,9 +16,10 @@ public class Registration extends DataModel {
     ArrayList<RegistrationField> registrationFields;
     @SerializedName("tickets")
     ArrayList<Ticket> tickets;
-    @SerializedName("orders")
-    ArrayList<Order> orders;
-
+    @SerializedName("order")
+    Order order;
+    @SerializedName("promocode")
+    String promoCode;
 
     @Override
     public int getEntryId() {
@@ -35,5 +36,13 @@ public class Registration extends DataModel {
 
     public void setTickets(ArrayList<Ticket> tickets) {
         this.tickets = tickets;
+    }
+
+    public void setPromocode(String code) {
+        promoCode = code;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 }

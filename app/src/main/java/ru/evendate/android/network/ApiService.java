@@ -18,6 +18,7 @@ import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.Promocode;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
@@ -328,6 +329,13 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Body Registration registration_fields
+    );
+
+    @GET(API_PATH + "/events/{id}/promocodes")
+    Observable<ResponseObject<Promocode>> checkPromoCode(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("code") String code
     );
 
     //statistics

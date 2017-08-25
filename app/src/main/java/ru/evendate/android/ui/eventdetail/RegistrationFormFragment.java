@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,8 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.dkharrat.nexusdialog.FormController;
 import com.github.dkharrat.nexusdialog.FormDialogFragment;
@@ -40,21 +42,29 @@ import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.models.Promocode;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.RegistrationField;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.TicketOrder;
+import ru.evendate.android.models.TicketType;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
 import ru.evendate.android.views.LoadStateView;
+import ru.evendate.android.views.OrderTicketView;
 
 public class RegistrationFormFragment extends FormDialogFragment
-        implements LoadStateView.OnReloadListener {
+        implements LoadStateView.OnReloadListener, OrderTicketView.OnTotalSumChangedListener {
     private static String LOG_TAG = RegistrationFormFragment.class.getSimpleName();
     @BindView(R.id.toolbar_registration) Toolbar mToolbar;
     @BindView(R.id.scroll_view) ScrollView mScrollView;
     @BindView(R.id.container) LinearLayout mContainer;
+    @BindView(R.id.ticket_list) LinearLayout mTicketList;
+    @BindView(R.id.registration_total_sum) TextView mTotalSum;
+
+    @BindView(R.id.promocode_container) LinearLayout mPromocodeContainer;
+    @BindView(R.id.promocode) EditText mPromocode;
 
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Unbinder unbinder;
@@ -62,6 +72,10 @@ public class RegistrationFormFragment extends FormDialogFragment
     Event mEvent;
     Registration mRegistration;
     OnRegistrationCallbackListener mListener;
+    ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
+    float totalSum = 0;
+
+    @Nullable Promocode promocode;
 
     private static final String EVENT_KEY = "event";
     private static final String REGISTRATION_KEY = "registration";
@@ -85,6 +99,7 @@ public class RegistrationFormFragment extends FormDialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_registration, container, false);
+        //todo add promocode skidka label
         unbinder = ButterKnife.bind(this, rootView);
         //todo
         mToolbar.setTitle(R.string.event_registration_title);
@@ -94,6 +109,20 @@ public class RegistrationFormFragment extends FormDialogFragment
 
         mLoadStateView.setOnReloadListener(this);
         setHasOptionsMenu(true);
+
+        if (mEvent.isTicketingAvailable()) {
+            for (TicketType type : mEvent.getTicketTypes()) {
+                if (type.isSelling()) {
+                    OrderTicketView view = new OrderTicketView(getContext());
+                    view.setTicketType(type);
+                    view.setOnTicketTotalSumChangedListener(this);
+                    ticketViews.add(view);
+                    mTicketList.addView(view);
+                }
+            }
+        }
+        totalSumChanged();
+        //todo check registration or bying
         return rootView;
     }
 
@@ -173,33 +202,108 @@ public class RegistrationFormFragment extends FormDialogFragment
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void totalSumChanged() {
+        float sum = 0;
+        for (OrderTicketView view : ticketViews) {
+            sum += view.getTicketTotalSum();
+        }
+        setTotalSum(sum);
+        submitPromoCode();
+    }
+
+    private void setTotalSum(float sum) {
+        totalSum = sum;
+        mTotalSum.setText(totalSum + "");
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.promocode_submit_button)
+    void onPromoCodeEntered() {
+        checkPromoCode(mPromocode.getText().toString());
+    }
+
     @SuppressWarnings("unused")
     @OnClick(R.id.registration_submit_button)
     void onSubmitClick() {
         getFormController().resetValidationErrors();
         if (getFormController().isValidInput()) {
-            List<RegistrationField> input = new ArrayList<>();
-            for (RegistrationField field : mEvent.getRegistrationFields()) {
-                if (field.getType().equals("select") || field.getType().equals("select_multi")) {
 
-                    HashSet<RegistrationField> set = (HashSet<RegistrationField>)getModel().getValue(field.getUuid());
-                    ArrayList<RegistrationField> values = new ArrayList<>(set);
-                    input.add(new RegistrationField(field.getUuid(), values));
-
-                } else {
-                    input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
-                }
-            }
             mRegistration = new Registration();
-            mRegistration.setRegistrationFieldsList(new ArrayList<>(input));
-            ArrayList<Ticket> ticketOrderList = new ArrayList<>();
-            // registration without uuid
-            ticketOrderList.add(new TicketOrder("", 1));
-            mRegistration.setTickets(ticketOrderList);
+            setupRegistration(mRegistration);
             postRegistrationInput(mEvent.getEntryId(), mRegistration);
             mLoadStateView.showProgress();
         } else {
             getFormController().showValidationErrors();
+        }
+    }
+
+    private void setupRegistration(Registration registration) {
+        registration.setTickets(getTickets());
+        registration.setRegistrationFieldsList(getRegistrationFields());
+        if (promocode != null) {
+            registration.setPromocode(promocode.getCode());
+        }
+    }
+
+    private ArrayList<RegistrationField> getRegistrationFields() {
+        ArrayList<RegistrationField> input = new ArrayList<>();
+        for (RegistrationField field : mEvent.getRegistrationFields()) {
+            if (field.getType().equals("select") || field.getType().equals("select_multi")) {
+
+                HashSet<RegistrationField> set = (HashSet<RegistrationField>)getModel().getValue(field.getUuid());
+                ArrayList<RegistrationField> values = new ArrayList<>(set);
+                input.add(new RegistrationField(field.getUuid(), values));
+
+            } else {
+                input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
+            }
+        }
+        return input;
+    }
+
+    private ArrayList<Ticket> getTickets() {
+        ArrayList<Ticket> list = new ArrayList<>();
+        if (mEvent.isTicketingAvailable()) {
+            for (OrderTicketView view : ticketViews) {
+                list.add(new TicketOrder(view.getTicket().getUuid(), view.getNumber()));
+            }
+        } else if (mEvent.isRegistrationAvailable()) {
+            // registration without uuid
+            list.add(new TicketOrder("", 1));
+        }
+        return list;
+    }
+
+    public void checkPromoCode(String promoCode) {
+        ApiService apiService = ApiFactory.getService(getContext());
+        Observable<ResponseObject<Promocode>> checkPromoCodeObservable =
+                apiService.checkPromoCode(EvendateAccountManager.peekToken(getContext()),
+                        mEvent.getEntryId(), promoCode);
+        checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                            if (result.isOk()) {
+                                promocode = result.getData();
+                                submitPromoCode();
+                            } else {
+                                Toast.makeText(getActivity(), "Указанный промокод не существует или более не активен",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+    }
+
+    private void submitPromoCode() {
+        if (promocode == null)
+            return;
+        if (!promocode.isEnabled()) {
+            return;
+        }
+        if (promocode.isFixed()) {
+            setTotalSum(Math.max(totalSum - promocode.getEffort(), 0));
+        } else if (promocode.isPercentage()) {
+            setTotalSum(totalSum * (1 - promocode.getEffort() / 100));
         }
     }
 
@@ -211,14 +315,27 @@ public class RegistrationFormFragment extends FormDialogFragment
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                             if (result.isOk()) {
-                                getActivity().onBackPressed();
-                                mListener.onRegistered();
+                                onResult(result.getData());
                             } else {
                                 updateFields(result.getData());
                             }
                         }, this::onError,
                         mLoadStateView::hideProgress
                 );
+    }
+
+    private void onResult(Registration registration) {
+        if (mEvent.isRegistrationAvailable()) {
+            getActivity().onBackPressed();
+            mListener.onRegistered();
+        } else if (mEvent.isTicketingAvailable()) {
+            if (registration.getOrder().getFinalSum() == 0) {
+                getActivity().onBackPressed();
+                mListener.onRegistered();
+            } else {
+                //todo yandex cassa
+            }
+        }
     }
 
     @Override

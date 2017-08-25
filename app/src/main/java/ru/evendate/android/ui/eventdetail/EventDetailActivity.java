@@ -867,37 +867,38 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         }
 
         private void setRegistration() {
-            if (!mEvent.isRegistrationRequired()) {
-                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
-                mRegistrationButton.setVisibility(View.GONE);
-                mRegistrationCap.setVisibility(View.GONE);
-                mRegistrationButton.setEnabled(false);
-                return;
-            } else {
-                Date regDate;
-                if (mEvent.getRegistrationTill() != null) {
-                    regDate = mEvent.getRegistrationTill();
-                } else {
-                    regDate = mEvent.getFirstDateTime();
-                }
-                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
-                        + DateFormatter.formatRegistrationDate(regDate));
-            }
-            if (!mEvent.isRegistrationAvailable()) {
+            //            if (!mEvent.isRegistrationRequired()) {
+            //                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
+            //                mRegistrationButton.setVisibility(View.GONE);
+            //                mRegistrationCap.setVisibility(View.GONE);
+            //                mRegistrationButton.setEnabled(false);
+            //                return;
+            //            } else {
+            //                Date regDate;
+            //                if (mEvent.getRegistrationTill() != null) {
+            //                    regDate = mEvent.getRegistrationTill();
+            //                } else {
+            //                    regDate = mEvent.getFirstDateTime();
+            //                }
+            //                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
+            //                        + DateFormatter.formatRegistrationDate(regDate));
+            //            }
+            if (!mEvent.isRegistrationAvailable() || !mEvent.isTicketingAvailable()) {
                 mRegistrationButton.setEnabled(false);
                 mRegistrationCap.setText(R.string.event_registration_status_not_available);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
-            if (mEvent.isRegistered()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
-            if (mEvent.isRegistrationApproved()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
+            //  todo remove parameter
+            //            if (mEvent.isRegistered()) {
+            //                mRegistrationButton.setEnabled(false);
+            //                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+            //                mRegistrationCap.setVisibility(View.VISIBLE);
+            //            }
+            //            if (mEvent.isRegistrationApproved()) {
+            //                mRegistrationButton.setEnabled(false);
+            //                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
+            //                mRegistrationCap.setVisibility(View.VISIBLE);
+            //            }
         }
     }
 }

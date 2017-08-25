@@ -28,7 +28,7 @@ public class LoadStateView extends FrameLayout {
     private ProgressBar progressBar;
 
     public LoadStateView(Context context) {
-        super(context, null);
+        this(context, null);
     }
 
     public LoadStateView(Context context, AttributeSet attrs) {
