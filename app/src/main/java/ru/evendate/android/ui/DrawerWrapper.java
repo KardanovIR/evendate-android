@@ -27,6 +27,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.auth.AuthActivity;
 import ru.evendate.android.data.EvendateContract;
@@ -214,6 +215,7 @@ public class DrawerWrapper {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
                         mUser = result.getData().get(0);
+                        EvendatePreferences.newInstance(mContext).putUser(mUser);
                         onLoaded(mUser.getSubscriptions());
                         buildProfile();
                     } else

@@ -2,6 +2,7 @@ package ru.evendate.android.ui.eventdetail;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -25,12 +26,16 @@ import com.github.dkharrat.nexusdialog.controllers.CheckBoxController;
 import com.github.dkharrat.nexusdialog.controllers.EditTextController;
 import com.github.dkharrat.nexusdialog.controllers.FormSectionController;
 import com.github.dkharrat.nexusdialog.controllers.RadioButtonController;
+import com.yandex.money.api.methods.payment.params.PaymentParams;
+import com.yandex.money.api.methods.payment.params.ShopParams;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +45,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.Promocode;
@@ -53,6 +59,9 @@ import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.OrderTicketView;
+import ru.yandex.money.android.PaymentActivity;
+
+import static android.app.Activity.RESULT_OK;
 
 public class RegistrationFormFragment extends FormDialogFragment
         implements LoadStateView.OnReloadListener, OrderTicketView.OnTotalSumChangedListener {
@@ -80,8 +89,19 @@ public class RegistrationFormFragment extends FormDialogFragment
     private static final String EVENT_KEY = "event";
     private static final String REGISTRATION_KEY = "registration";
 
+
+    private static final String CLIENT_ID = "70591A44B101198444E8ACE2D970562B3994782B8A249C3A062662244F46B5E7";
+    private static final String HOST = "https://money.yandex.ru";
+    private static final int REQUEST_CODE = 1;
+    private static final String SHOP_ID = "132896";
+    private static final String SC_ID = "97111";
+
     interface OnRegistrationCallbackListener {
         void onRegistered();
+
+        void onPaymentCompleted();
+
+        void onPaymentError();
     }
 
     public static RegistrationFormFragment newInstance(Event event) {
@@ -325,16 +345,51 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void onResult(Registration registration) {
-        if (mEvent.isRegistrationAvailable()) {
-            getActivity().onBackPressed();
-            mListener.onRegistered();
-        } else if (mEvent.isTicketingAvailable()) {
+        if (mEvent.isTicketingAvailable()) {
             if (registration.getOrder().getFinalSum() == 0) {
                 getActivity().onBackPressed();
                 mListener.onRegistered();
             } else {
-                //todo yandex cassa
+                //todo get email from order form (юзер может ввести другое мыло в форму)
+                EvendatePreferences preferences = EvendatePreferences.newInstance(getContext());
+                payByYandex(registration.getOrder().getFinalSum(),
+                        preferences.getUser().getFirstName() + " " + preferences.getUser().getLastName(),
+                        registration.getOrder().getUuid(), EvendateAccountManager.getActiveAccountName(getContext())
+                );
             }
+        } else if (mEvent.isRegistrationAvailable()) {
+            getActivity().onBackPressed();
+            mListener.onRegistered();
+        }
+    }
+
+    private void payByYandex(float sum, String userId, String orderId, String email) {
+        Map<String, String> params = new HashMap<>();
+        params.put("shopId", SHOP_ID);
+        params.put("scid", SC_ID);
+        params.put("sum", "" + sum);
+        params.put("customerNumber", userId);
+        params.put("paymentType", "");
+        params.put("evendate_payment_id", "order-" + orderId);
+
+        PaymentParams shopParams = new ShopParams(SC_ID, params);
+        Intent intent = PaymentActivity.getBuilder(getContext())
+                .setPaymentParams(shopParams)
+                .setClientId(CLIENT_ID)
+                .setHost(HOST)
+                .build();
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            getActivity().onBackPressed();
+            mListener.onPaymentCompleted();
+            } else {
+            getActivity().onBackPressed();
+            mListener.onPaymentError();
         }
     }
 

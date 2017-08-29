@@ -487,8 +487,20 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     @Override
     public void onRegistered() {
-        Toast.makeText(this, R.string.event_registration_done, Toast.LENGTH_LONG).show();
-        mRegistrationButton.setEnabled(false);
+        Toast.makeText(this, R.string.event_registration_done, Toast.LENGTH_SHORT).show();
+        //mRegistrationButton.setEnabled(false);
+        mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+    }
+
+    @Override
+    public void onPaymentCompleted() {
+        Toast.makeText(this, "You have successfully paid", Toast.LENGTH_SHORT).show();
+        mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+    }
+
+    @Override
+    public void onPaymentError() {
+        Toast.makeText(this, "При оплате произошла ошибка", Toast.LENGTH_LONG).show();
     }
 
     private void setFabIcon() {
@@ -889,11 +901,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
             //  todo remove parameter
-            //            if (mEvent.isRegistered()) {
-            //                mRegistrationButton.setEnabled(false);
-            //                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
-            //                mRegistrationCap.setVisibility(View.VISIBLE);
-            //            }
+            if (mEvent.getTickets() == null || mEvent.getTickets().isEmpty()) {
+                //mRegistrationButton.setEnabled(false);
+                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
             //            if (mEvent.isRegistrationApproved()) {
             //                mRegistrationButton.setEnabled(false);
             //                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
