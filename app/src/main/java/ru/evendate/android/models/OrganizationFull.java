@@ -1,5 +1,7 @@
 package ru.evendate.android.models;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -36,6 +38,11 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
     ArrayList<UserDetail> mSubscribedUsersList;
     @SerializedName("events")
     ArrayList<Event> mEventsList;
+
+    @Nullable @SerializedName("brand_color")
+    String brandColor;
+    @Nullable @SerializedName("brand_color_accent")
+    String brandColorAccent;
 
     @Override
     public ArrayList<UserDetail> getSubscribedUsersList() {
@@ -95,5 +102,15 @@ public class OrganizationFull extends OrganizationModel implements OrganizationD
 
     public int getNewEventsCount() {
         return newEventsCount;
+    }
+
+    @Nullable
+    public String getBrandColor() {
+        return brandColor;
+    }
+
+    @Nullable
+    public String getBrandColorAccent() {
+        return brandColorAccent;
     }
 }

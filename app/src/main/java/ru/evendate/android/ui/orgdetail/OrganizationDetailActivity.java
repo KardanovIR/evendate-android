@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,7 +29,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -119,8 +121,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
                     new int[]{colorShadow, colorShadow2, colorShadowEnd});
             mForegroundView.setImageDrawable(shadow);
             revealView(mAppBarLayout);
-            if (Build.VERSION.SDK_INT > 19)
-                TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
             mViewPager.setVisibility(View.VISIBLE);
         }
 
@@ -345,6 +346,22 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         mSubscribeButton.setChecked(mOrganization.isSubscribed());
         mOrgTitle.setText(mOrganization.getName());
         mToolbarTitle.setText(mOrganization.getShortName());
+        tintByBrandColor();
+    }
+
+    private void tintByBrandColor() {
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        if (mOrganization.getBrandColor() != null) {
+            int brandColor = Color.parseColor(mOrganization.getBrandColor());
+            mAppBarLayout.setBackgroundColor(brandColor);
+            mCollapsingToolbar.setContentScrimColor(brandColor);
+        }
+        if (mOrganization.getBrandColorAccent() != null) {
+            int brandColorAccent = Color.parseColor(mOrganization.getBrandColorAccent());
+            StateListDrawable stateListDrawable = new StateListDrawable();
+            stateListDrawable.addState(new int[]{android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
+            stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(Color.WHITE));
+        }
     }
 
     public void onError(Throwable error) {

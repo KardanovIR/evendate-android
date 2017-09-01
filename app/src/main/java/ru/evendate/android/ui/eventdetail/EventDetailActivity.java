@@ -10,6 +10,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -62,6 +64,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -474,8 +477,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
-        //if (Build.VERSION.SDK_INT > 19)
-        //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        //TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
     }
@@ -519,11 +521,25 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @SuppressWarnings("unused")
     @OnClick(R.id.event_place_card)
     public void onPlaceClick() {
-        new Statistics(this).sendEventOpenMap(eventId);
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
                 "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        startActivity(mapIntent);
+        PackageManager manager = getPackageManager();
+        List<ResolveInfo> info = manager.queryIntentActivities(mapIntent, 0);
+        if (info.size() > 0) {
+            new Statistics(this).sendEventOpenMap(eventId);
+            startActivity(mapIntent);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.alert_maps_not_available);
+            builder.setCancelable(false);
+            builder.setPositiveButton(R.string.alert_install_google_maps, (DialogInterface dialogInterface, int i) -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.maps"));
+                startActivity(intent);
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 
     @SuppressWarnings("unused")
