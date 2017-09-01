@@ -154,8 +154,7 @@
     <string name="tab_tickets_future_events">Активные</string>
     <string name="tab_tickets_past_events">Использованные</string>
     <string name="drawer_tickets">Мои билеты</string>
-    <string name="event_registration_button">Зарегистрироваться</string>
-    <string name="event_registration_title">Регистрация на событие</string>
+    <string name="ticketing_form_register_button">Зарегистрироваться</string>
     <string name="tab_event_registered_future">Будущие</string>
     <string name="tab_event_registered_past">Прошедшие</string>
     <string name="title_activity_event_registered">Мои билеты</string>
@@ -201,4 +200,14 @@
     <string name="action_export_to_calendar">Экспорт в календарь</string>
     <string name="city_prompt_where_user_description">Чтобы начать использовать Evendate, укажите свой город.</string>
     <string name="title_activity_recommendation">Рекомендации</string>
+    <string name="event_ticketing_status_not_available">" Билеты не доступны"</string>
+    <string name="event_ticketing_status_already_purchased">Вы уже купили билеты</string>
+    <string name="event_registration_enter_fields">Введите поля</string>
+    <string name="event_ticketing_payment_error">При оплате произошла ошибка</string>
+    <string name="event_ticketing_payment_done">Вы успешно оплатили заказ</string>
+    <string name="ticketing_form_promo_code_sale">Скидка промокода: </string>
+    <string name="ticketing_form_promo_code_final_cost">Общая стоимость: </string>
+    <string name="ticketing_form_promo_code_hint">промокод</string>
+    <string name="ticketing_form_promo_code_enter">Применить</string>
+    <string name="ticketing_form_order_button">Оплатить</string>
 </resources>

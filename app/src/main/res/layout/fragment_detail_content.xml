@@ -224,7 +224,7 @@
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp"
                 android:paddingTop="8dp"
-                android:text="@string/event_registration_button"
+                android:text="@string/ticketing_form_register_button"
                 android:textAllCaps="true"
                 android:textColor="@drawable/button_event_reg"
                 android:textSize="14sp"/>

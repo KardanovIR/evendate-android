@@ -130,7 +130,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @BindView(R.id.tag_layout) TagsRecyclerView mTagsView;
     @BindView(R.id.event_registration_card) CardView mPriceCard;
     @BindView(R.id.event_price) TextView mPriceTextView;
-    @BindView(R.id.event_registration) TextView mRegistrationTextView;
+    @BindView(R.id.event_registration) TextView mRegistrationTillTextView;
     @BindView(R.id.event_registration_button) Button mRegistrationButton;
     @BindView(R.id.event_registration_cap) TextView mRegistrationCap;
     @BindView(R.id.event_dates) DatesView mDatesView;
@@ -474,8 +474,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
-        //if (Build.VERSION.SDK_INT > 19)
-        //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        //TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
     }
@@ -494,13 +493,13 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     @Override
     public void onPaymentCompleted() {
-        Toast.makeText(this, "You have successfully paid", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.event_ticketing_payment_done, Toast.LENGTH_SHORT).show();
         mRegistrationCap.setText(R.string.event_registration_status_already_registered);
     }
 
     @Override
     public void onPaymentError() {
-        Toast.makeText(this, "При оплате произошла ошибка", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.event_ticketing_payment_error, Toast.LENGTH_LONG).show();
     }
 
     private void setFabIcon() {
@@ -618,6 +617,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     /**
      * Returns the URI_KEY path to the Bitmap displayed in specified ImageView
+     * https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
      */
     public Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable
@@ -646,7 +646,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         return bmpUri;
     }
 
-    // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
 
     public void palette(Bitmap bitmap) {
         if (bitmap == null)
@@ -847,7 +846,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     EventFormatter.formatPrice(mContext, mEvent.getMinPrice()));
-            setRegistration();
+            setTicketingOrRegistration();
 
             if (mEvent.getDetailInfoUrl() == null) {
                 mLinkCard.setVisibility(View.GONE);
@@ -878,39 +877,64 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
         }
 
-        private void setRegistration() {
-            //            if (!mEvent.isRegistrationRequired()) {
-            //                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
-            //                mRegistrationButton.setVisibility(View.GONE);
-            //                mRegistrationCap.setVisibility(View.GONE);
-            //                mRegistrationButton.setEnabled(false);
-            //                return;
-            //            } else {
-            //                Date regDate;
-            //                if (mEvent.getRegistrationTill() != null) {
-            //                    regDate = mEvent.getRegistrationTill();
-            //                } else {
-            //                    regDate = mEvent.getFirstDateTime();
-            //                }
-            //                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
-            //                        + DateFormatter.formatRegistrationDate(regDate));
-            //            }
+        /**
+         * set Registration or Ticketing info cause very complex conditions
+         */
+        private void setTicketingOrRegistration() {
+            setTicketingAvailability();
+            setRegistrationTillDate();
+            setTicketsAlreadyBought();
+            setRegistrationApproved();
+        }
+
+        private void setTicketingAvailability() {
             if (!mEvent.isRegistrationAvailable() || !mEvent.isTicketingAvailable()) {
                 mRegistrationButton.setEnabled(false);
                 mRegistrationCap.setText(R.string.event_registration_status_not_available);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
-            //  todo remove parameter
-            if (mEvent.getTickets() == null || mEvent.getTickets().isEmpty()) {
-                //mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+        }
+
+        private void setRegistrationTillDate() {
+            if (!mEvent.isRegistrationAvailable() || mEvent.isTicketingAvailable()) {
+                findViewById(R.id.event_registration_label).setVisibility(View.INVISIBLE);
+                mRegistrationTillTextView.setVisibility(View.INVISIBLE);
+                return;
+            }
+            if (!mEvent.isRegistrationRequired()) {
+                mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
+                mRegistrationButton.setVisibility(View.GONE);
+                mRegistrationCap.setVisibility(View.GONE);
+                mRegistrationButton.setEnabled(false);
+                return;
+            } else {
+                Date regDate;
+                if (mEvent.getRegistrationTill() != null) {
+                    regDate = mEvent.getRegistrationTill();
+                } else {
+                    regDate = mEvent.getFirstDateTime();
+                }
+                mRegistrationTillTextView.setText(eventRegistrationTillLabel + " "
+                        + DateFormatter.formatRegistrationDate(regDate));
+            }
+        }
+
+        private void setTicketsAlreadyBought() {
+            if (mEvent.getTickets() != null || !mEvent.getTickets().isEmpty()) {
+                if (mEvent.isTicketingAvailable()) {
+                    mRegistrationCap.setText(R.string.event_ticketing_status_already_purchased);
+                } else {
+                    mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+                }
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
-            //            if (mEvent.isRegistrationApproved()) {
-            //                mRegistrationButton.setEnabled(false);
-            //                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
-            //                mRegistrationCap.setVisibility(View.VISIBLE);
-            //            }
+        }
+
+        private void setRegistrationApproved() {
+            if (mEvent.isRegistrationApproved()) {
+                mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

@@ -83,10 +83,16 @@
     <string name="event_registration">Registration</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
-    <string name="event_registration_button">Register</string>
     <string name="event_registration_status_not_available">Registration no available</string>
+    <string name="event_ticketing_status_not_available">Tickets no available</string>
     <string name="event_registration_status_already_registered">You are already registered</string>
+    <string name="event_ticketing_status_already_purchased">You are already bought tickets</string>
     <string name="event_registration_status_registration_approved">Registration approved</string>
+    <string name="event_registration_done">You have successfully registered</string>
+    <string name="event_registration_enter_fields">Enter fields</string>
+
+    <string name="event_ticketing_payment_error">Payment error</string>
+    <string name="event_ticketing_payment_done">You have successfully paid</string>
 
     <string name="event_show_on_map">Show on map</string>
     <string name="event_go_to_page">Go to event page</string>
@@ -101,11 +107,16 @@
     <string name="event_share_text_i_like">I like event ‘</string>
     <string name="event_share_text_in_org">’ by organizator </string>
 
-    <string name="event_registration_title">Event registration</string>
-    <string name="event_registration_done">You have successfully registered</string>
-
     <string name="event_notification_added">Notification added</string>
     <string name="event_notification_error">Error. Notification didn\'t added</string>
+
+    <!-- ticketing form-->
+    <string name="ticketing_form_promo_code_sale">Promocode sale: </string>
+    <string name="ticketing_form_promo_code_final_cost">Total cost: </string>
+    <string name="ticketing_form_promo_code_hint">promocode</string>
+    <string name="ticketing_form_promo_code_enter">Submit</string>
+    <string name="ticketing_form_register_button">Register</string>
+    <string name="ticketing_form_order_button">Pay</string>
 
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>

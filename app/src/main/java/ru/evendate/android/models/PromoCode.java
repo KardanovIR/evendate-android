@@ -9,7 +9,7 @@ import org.parceler.Parcel;
  */
 
 @Parcel
-public class Promocode extends DataModel {
+public class PromoCode extends DataModel {
 
     @SerializedName("uuid")
     String uuid;

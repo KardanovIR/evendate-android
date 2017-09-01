@@ -59,7 +59,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Общая стоимость: "
+                        android:text="@string/ticketing_form_promo_code_final_cost"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/black_translucent_170"/>
 
@@ -72,6 +72,27 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ticketing_form_promo_code_sale"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/black_translucent_170"/>
+
+                    <TextView
+                        android:id="@+id/registration_promocode_sale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        tools:text="500 ₽"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/promocode_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,14 +102,14 @@
                         android:id="@+id/promocode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="промокод"/>
+                        android:hint="@string/ticketing_form_promo_code_hint"/>
 
                     <Button
                         android:id="@+id/promocode_submit_button"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Применить"/>
+                        android:text="@string/ticketing_form_promo_code_enter"/>
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/form_elements_container"
@@ -112,7 +133,7 @@
                     android:paddingRight="24dp"
                     android:paddingStart="24dp"
                     android:paddingTop="16dp"
-                    android:text="@string/event_registration_button"
+                    android:text="@string/ticketing_form_register_button"
                     android:textColor="#FFFFFFFF"
                     android:textSize="14.0sp"/>
             </LinearLayout>

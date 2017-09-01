@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -48,15 +49,17 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
-import ru.evendate.android.models.Promocode;
+import ru.evendate.android.models.PromoCode;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.RegistrationField;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.TicketOrder;
 import ru.evendate.android.models.TicketType;
+import ru.evendate.android.models.User;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
+import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.OrderTicketView;
 import ru.yandex.money.android.PaymentActivity;
@@ -71,12 +74,14 @@ public class RegistrationFormFragment extends FormDialogFragment
     @BindView(R.id.container) LinearLayout mContainer;
     @BindView(R.id.ticket_list) LinearLayout mTicketList;
     @BindView(R.id.registration_total_sum) TextView mTotalSum;
+    @BindView(R.id.registration_submit_button) Button mSubmitButton;
 
-    @BindView(R.id.promocode_container) LinearLayout mPromocodeContainer;
-    @BindView(R.id.promocode) EditText mPromocode;
+    @BindView(R.id.promocode_container) LinearLayout mPromoCodeContainer;
+    @BindView(R.id.promocode) EditText mPromoCode;
 
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Unbinder unbinder;
+    @BindView(R.id.registration_promocode_sale) TextView mPromoSale;
 
     Event mEvent;
     Registration mRegistration;
@@ -84,17 +89,11 @@ public class RegistrationFormFragment extends FormDialogFragment
     ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
     float totalSum = 0;
 
-    @Nullable Promocode promocode;
+    @Nullable PromoCode promoCode;
 
     private static final String EVENT_KEY = "event";
     private static final String REGISTRATION_KEY = "registration";
-
-
-    private static final String CLIENT_ID = "70591A44B101198444E8ACE2D970562B3994782B8A249C3A062662244F46B5E7";
-    private static final String HOST = "https://money.yandex.ru";
-    private static final int REQUEST_CODE = 1;
-    private static final String SHOP_ID = "132896";
-    private static final String SC_ID = "97111";
+    private static final int PAYMENT_REQUEST_CODE = 1;
 
     interface OnRegistrationCallbackListener {
         void onRegistered();
@@ -119,11 +118,9 @@ public class RegistrationFormFragment extends FormDialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_registration, container, false);
-        //todo add promocode skidka label
         unbinder = ButterKnife.bind(this, rootView);
-        //todo
-        mToolbar.setTitle(R.string.event_registration_title);
 
+        mToolbar.setTitle(mEvent.getTitle());
         mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
         mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
 
@@ -140,9 +137,9 @@ public class RegistrationFormFragment extends FormDialogFragment
                     mTicketList.addView(view);
                 }
             }
+            totalSumChanged();
+            mSubmitButton.setText(R.string.ticketing_form_order_button);
         }
-        totalSumChanged();
-        //todo check registration or bying
         return rootView;
     }
 
@@ -183,7 +180,8 @@ public class RegistrationFormFragment extends FormDialogFragment
     public void initForm(FormController controller) {
         Context context = getContext();
 
-        FormSectionController section = new FormSectionController(context, mEvent.getTitle());
+        FormSectionController section = new FormSectionController(context,
+                getString(R.string.event_registration_enter_fields));
         for (RegistrationField field : mEvent.getRegistrationFields()) {
             if (field.getType().equals("select") || field.getType().equals("select_multi")) {
                 List<String> items = new ArrayList<>();
@@ -234,13 +232,13 @@ public class RegistrationFormFragment extends FormDialogFragment
 
     private void setTotalSum(float sum) {
         totalSum = sum;
-        mTotalSum.setText(totalSum + "");
+        mTotalSum.setText(TicketFormatter.formatCost(getContext(), totalSum));
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.promocode_submit_button)
     void onPromoCodeEntered() {
-        checkPromoCode(mPromocode.getText().toString());
+        checkPromoCode(mPromoCode.getText().toString());
     }
 
     @SuppressWarnings("unused")
@@ -261,8 +259,8 @@ public class RegistrationFormFragment extends FormDialogFragment
     private void setupRegistration(Registration registration) {
         registration.setTickets(getTickets());
         registration.setRegistrationFieldsList(getRegistrationFields());
-        if (promocode != null) {
-            registration.setPromocode(promocode.getCode());
+        if (promoCode != null) {
+            registration.setPromocode(promoCode.getCode());
         }
     }
 
@@ -297,14 +295,14 @@ public class RegistrationFormFragment extends FormDialogFragment
 
     public void checkPromoCode(String promoCode) {
         ApiService apiService = ApiFactory.getService(getContext());
-        Observable<ResponseObject<Promocode>> checkPromoCodeObservable =
+        Observable<ResponseObject<PromoCode>> checkPromoCodeObservable =
                 apiService.checkPromoCode(EvendateAccountManager.peekToken(getContext()),
                         mEvent.getEntryId(), promoCode);
         checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                             if (result.isOk()) {
-                                promocode = result.getData();
+                                this.promoCode = result.getData();
                                 submitPromoCode();
                             } else {
                                 Toast.makeText(getActivity(), "Указанный промокод не существует или более не активен",
@@ -315,16 +313,16 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void submitPromoCode() {
-        if (promocode == null)
+        if (promoCode == null || !promoCode.isEnabled())
             return;
-        if (!promocode.isEnabled()) {
-            return;
+        float dirtSum = totalSum;
+
+        if (promoCode.isFixed()) {
+            setTotalSum(Math.max(totalSum - promoCode.getEffort(), 0));
+        } else if (promoCode.isPercentage()) {
+            setTotalSum(totalSum * (1 - promoCode.getEffort() / 100));
         }
-        if (promocode.isFixed()) {
-            setTotalSum(Math.max(totalSum - promocode.getEffort(), 0));
-        } else if (promocode.isPercentage()) {
-            setTotalSum(totalSum * (1 - promocode.getEffort() / 100));
-        }
+        mPromoSale.setText(TicketFormatter.formatCost(getContext(), dirtSum - totalSum));
     }
 
     public void postRegistrationInput(int eventId, Registration input) {
@@ -346,16 +344,19 @@ public class RegistrationFormFragment extends FormDialogFragment
 
     private void onResult(Registration registration) {
         if (mEvent.isTicketingAvailable()) {
+            // order cost equals 0 => it's registration
             if (registration.getOrder().getFinalSum() == 0) {
                 getActivity().onBackPressed();
                 mListener.onRegistered();
             } else {
-                //todo get email from order form (юзер может ввести другое мыло в форму)
-                EvendatePreferences preferences = EvendatePreferences.newInstance(getContext());
-                payByYandex(registration.getOrder().getFinalSum(),
-                        preferences.getUser().getFirstName() + " " + preferences.getUser().getLastName(),
-                        registration.getOrder().getUuid(), EvendateAccountManager.getActiveAccountName(getContext())
-                );
+                String enteredEmail = getEmailFromFields(registration);
+                if (enteredEmail == null || enteredEmail.isEmpty()) {
+                    enteredEmail = EvendateAccountManager.getActiveAccountName(getContext());
+                }
+                User user = EvendatePreferences.newInstance(getContext()).getUser();
+                String userName = user.getFirstName() + " " + user.getLastName();
+                payByYandex(registration.getOrder().getFinalSum(), userName,
+                        registration.getOrder().getUuid(), enteredEmail);
             }
         } else if (mEvent.isRegistrationAvailable()) {
             getActivity().onBackPressed();
@@ -363,28 +364,39 @@ public class RegistrationFormFragment extends FormDialogFragment
         }
     }
 
+    private String getEmailFromFields(Registration registration) {
+        for (RegistrationField field : registration.getRegistrationFieldsList()) {
+            if (field.getType().equals("email")) {
+                return field.getValue();
+            }
+        }
+        return null;
+    }
+
     private void payByYandex(float sum, String userId, String orderId, String email) {
         Map<String, String> params = new HashMap<>();
-        params.put("shopId", SHOP_ID);
-        params.put("scid", SC_ID);
+        params.put("shopId", getString(R.string.yandex_money_shop_id));
+        params.put("scid", getString(R.string.yandex_money_sc_id));
         params.put("sum", "" + sum);
         params.put("customerNumber", userId);
         params.put("paymentType", "");
+        // todo need yandex docs
+        //params.put("cps_email", email);
         params.put("evendate_payment_id", "order-" + orderId);
 
-        PaymentParams shopParams = new ShopParams(SC_ID, params);
+        PaymentParams shopParams = new ShopParams(getString(R.string.yandex_money_sc_id), params);
         Intent intent = PaymentActivity.getBuilder(getContext())
                 .setPaymentParams(shopParams)
-                .setClientId(CLIENT_ID)
-                .setHost(HOST)
+                .setClientId(getString(R.string.yandex_money_client_id))
+                .setHost(getString(R.string.yandex_money_host))
                 .build();
-        startActivityForResult(intent, REQUEST_CODE);
+        startActivityForResult(intent, PAYMENT_REQUEST_CODE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == PAYMENT_REQUEST_CODE && resultCode == RESULT_OK) {
             getActivity().onBackPressed();
             mListener.onPaymentCompleted();
             } else {
