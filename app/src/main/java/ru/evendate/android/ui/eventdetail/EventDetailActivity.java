@@ -532,7 +532,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.alert_maps_not_available);
-            builder.setCancelable(false);
             builder.setPositiveButton(R.string.alert_install_google_maps, (DialogInterface dialogInterface, int i) -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.maps"));
                 startActivity(intent);

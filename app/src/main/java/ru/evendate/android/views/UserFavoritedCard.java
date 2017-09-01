@@ -41,6 +41,10 @@ public class UserFavoritedCard extends CardView {
         mAllTextView.setOnClickListener(clickListener);
     }
 
+    public void tintAllButton(int colorAccent) {
+        mAllTextView.setTextColor(colorAccent);
+    }
+
     public ArrayList<UserDetail> getUsers() {
         return mUsersView.getUsers();
     }

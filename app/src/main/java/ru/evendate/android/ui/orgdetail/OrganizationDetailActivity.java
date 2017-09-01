@@ -107,22 +107,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             mLoadStateView.hideProgress();
             mBackgroundView.setImageBitmap(bitmap);
-
-            int color = ContextCompat.getColor(getBaseContext(), R.color.primary);
-
-            int red = Color.red(color);
-            int blue = Color.blue(color);
-            int green = Color.green(color);
-
-            int colorShadow = Color.argb(255, red, green, blue);
-            int colorShadow2 = Color.argb(150, red, green, blue);
-            int colorShadowEnd = Color.argb(0, red, green, blue);
-            GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[]{colorShadow, colorShadow2, colorShadowEnd});
-            mForegroundView.setImageDrawable(shadow);
-            revealView(mAppBarLayout);
-            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-            mViewPager.setVisibility(View.VISIBLE);
+            tintImageShadow();
         }
 
         @Override
@@ -292,7 +277,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
                 onUpPressed();
                 return true;
             case R.id.action_info:
-                OrganizationInfo fragment = new OrganizationInfo();
+                OrganizationInfo fragment = OrganizationInfo.newInstance(
+                        mOrganization.getBrandColor(), mOrganization.getBrandColorAccent());
                 fragment.setOrganization(mOrganization);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.main_content, fragment)
@@ -355,13 +341,52 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
             int brandColor = Color.parseColor(mOrganization.getBrandColor());
             mAppBarLayout.setBackgroundColor(brandColor);
             mCollapsingToolbar.setContentScrimColor(brandColor);
+            tintStatusBar(brandColor);
         }
         if (mOrganization.getBrandColorAccent() != null) {
             int brandColorAccent = Color.parseColor(mOrganization.getBrandColorAccent());
             StateListDrawable stateListDrawable = new StateListDrawable();
-            stateListDrawable.addState(new int[]{android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
-            stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(Color.WHITE));
+            stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
+            stateListDrawable.addState(new int[]{android.R.attr.state_checked}, new ColorDrawable(Color.WHITE));
+            mSubscribeButton.setBackgroundDrawable(stateListDrawable);
+            mTabs.setSelectedTabIndicatorColor(brandColorAccent);
         }
+    }
+
+    private void tintStatusBar(int color) {
+
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        int colorDark = Color.argb(150, red, green, blue);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(colorDark);
+        }
+    }
+
+    private void tintImageShadow() {
+        int color;
+        if (mOrganization.getBrandColor() != null) {
+            color = Color.parseColor(mOrganization.getBrandColor());
+        } else {
+            color = ContextCompat.getColor(getBaseContext(), R.color.primary);
+        }
+
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        int colorShadow = Color.argb(255, red, green, blue);
+        int colorShadow2 = Color.argb(150, red, green, blue);
+        int colorShadowEnd = Color.argb(0, red, green, blue);
+        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                new int[]{colorShadow, colorShadow2, colorShadowEnd});
+        mForegroundView.setImageDrawable(shadow);
+        revealView(mAppBarLayout);
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 
     public void onError(Throwable error) {
@@ -388,6 +413,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
 
     public static class OrganizationInfo extends Fragment {
         private static final String ORG_OBJ_KEY = "organization";
+        private static final String BRAND_COLOR_KEY = "brand_color";
+        private static final String BRAND_COLOR_ACCENT_KEY = "brand_color_accent";
         OrganizationDetail mOrganization;
 
         @BindView(R.id.toolbar) Toolbar mToolbar;
@@ -395,8 +422,18 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         @BindView(R.id.organization_name) TextView mOrganizationTextView;
         @BindView(R.id.organization_description) TextView mDescriptionTextView;
         @BindView(R.id.organization_place_text) TextView mPlacePlaceTextView;
+        @BindView(R.id.org_place_button) TextView mOrgPlaceButton;
+        @BindView(R.id.org_link_button) TextView mOrgLinkButton;
         private Unbinder unbinder;
+        int brandColor;
+        int brandColorAccent;
 
+        public static OrganizationInfo newInstance(@Nullable String brandColor, @Nullable String brandColorAccent) {
+            OrganizationInfo fragment = new OrganizationInfo();
+            fragment.brandColor = brandColor == null ? 0 : Color.parseColor(brandColor);
+            fragment.brandColorAccent = brandColorAccent == null ? 0 : Color.parseColor(brandColorAccent);
+            return fragment;
+        }
         public void setOrganization(OrganizationDetail organization) {
             mOrganization = organization;
         }
@@ -404,9 +441,12 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            if (savedInstanceState != null)
+            if (savedInstanceState != null) {
                 mOrganization = new Gson().fromJson(savedInstanceState.getString(ORG_OBJ_KEY),
                         OrganizationFull.class);
+                brandColor = savedInstanceState.getInt(BRAND_COLOR_KEY);
+                brandColorAccent = savedInstanceState.getInt(BRAND_COLOR_ACCENT_KEY);
+            }
         }
 
         @Override
@@ -417,6 +457,9 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
             mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
             mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
             mToolbar.setTitle(mOrganization.getShortName());
+            if (brandColor != 0) {
+                mToolbar.setBackgroundColor(brandColor);
+            }
             initUserFavoriteCard();
             setOrg();
             return rootView;
@@ -426,6 +469,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putString(ORG_OBJ_KEY, new Gson().toJson(mOrganization));
+            outState.putInt(BRAND_COLOR_KEY, brandColor);
+            outState.putInt(BRAND_COLOR_ACCENT_KEY, brandColorAccent);
         }
 
         private void initUserFavoriteCard() {
@@ -441,6 +486,13 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
             }
             mUserFavoritedCard.setUsers(mOrganization.getSubscribedUsersList());
             mPlacePlaceTextView.setText(mOrganization.getDefaultAddress());
+            tintBrandColor();
+        }
+
+        private void tintBrandColor() {
+            mUserFavoritedCard.tintAllButton(brandColorAccent);
+            mOrgPlaceButton.setTextColor(brandColorAccent);
+            mOrgLinkButton.setTextColor(brandColorAccent);
         }
 
         /**

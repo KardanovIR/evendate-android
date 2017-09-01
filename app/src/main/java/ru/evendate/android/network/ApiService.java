@@ -281,7 +281,8 @@ public interface ApiService {
     Observable<ResponseArray<OrganizationCategory>> getCatalog(
             @Header("Authorization") String authorization,
             @Query("fields") String fields,
-            @Query("city_id") int cityId
+            @Query("city_id") int cityId,
+            @Query("new_separated") boolean newSeparated
     );
 
     @GET(API_PATH + "/organizations/cities")

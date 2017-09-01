@@ -201,4 +201,6 @@
     <string name="action_export_to_calendar">Экспорт в календарь</string>
     <string name="city_prompt_where_user_description">Чтобы начать использовать Evendate, укажите свой город.</string>
     <string name="title_activity_recommendation">Рекомендации</string>
+    <string name="alert_maps_not_available">Пожалуйста установите Google Maps или другое приложение с картами</string>
+    <string name="alert_install_google_maps">Установить Google maps</string>
 </resources>
