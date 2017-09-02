@@ -118,7 +118,7 @@ public class DataRepository implements DataSource {
     public Observable<ResponseArray<OrganizationCategory>> getCatalog(int cityId) {
         Observable<ResponseArray<OrganizationCategory>> observable =
                 mService.getCatalog(EvendateAccountManager.peekToken(mContext),
-                        OrganizationCategory.FIELDS_LIST, cityId);
+                        OrganizationCategory.FIELDS_LIST, cityId, true);
 
         return observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());

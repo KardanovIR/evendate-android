@@ -7,6 +7,7 @@
     <string name="title_activity_city">Cities</string>
     <string name="title_activity_check_in">Check in</string>
     <string name="title_activity_recommendation">Recommendation</string>
+    <string name="title_activity_event_registered">My tickets</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -44,6 +45,13 @@
 
     <string name="tab_tickets_future_events">Active</string>
     <string name="tab_tickets_past_events">Used</string>
+
+    <string name="tab_event_registered_future">Future</string>
+    <string name="tab_event_registered_past">Past</string>
+
+    <!-- alert strings -->
+    <string name="alert_maps_not_available">Please install Google Maps or another map app</string>
+    <string name="alert_install_google_maps">Install Google maps</string>
 
     <!-- todo -->
     <string name="download_error">Error occurred</string>
@@ -270,9 +278,6 @@
     <string name="action_search">Search</string>
 
     <!-- event registered strings -->
-    <string name="title_activity_event_registered">My tickets</string>
-    <string name="tab_event_registered_future">Future</string>
-    <string name="tab_event_registered_past">Past</string>
     <string name="event_registered_empty_cap">No tickets</string>
     <string name="event_registered_open_detail">Go to event</string>
 

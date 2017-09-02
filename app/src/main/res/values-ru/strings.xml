@@ -210,4 +210,6 @@
     <string name="ticketing_form_promo_code_hint">промокод</string>
     <string name="ticketing_form_promo_code_enter">Применить</string>
     <string name="ticketing_form_order_button">Оплатить</string>
+    <string name="alert_maps_not_available">Пожалуйста установите Google Maps или другое приложение с картами</string>
+    <string name="alert_install_google_maps">Установить Google maps</string>
 </resources>
