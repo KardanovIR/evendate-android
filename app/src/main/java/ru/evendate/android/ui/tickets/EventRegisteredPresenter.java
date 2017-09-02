@@ -35,13 +35,17 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
 
     @Override
     public void start() {
-        loadEvents(true, 0);
+        reloadEvents();
     }
 
     @Override
     public void stop() {
         if (mDisposable != null)
             mDisposable.dispose();
+    }
+
+    public void reloadEvents() {
+        loadEvents(true, 0);
     }
 
     public void loadEvents(boolean forceLoad, int page) {
