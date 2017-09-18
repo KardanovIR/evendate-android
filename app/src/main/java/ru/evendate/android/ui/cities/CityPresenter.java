@@ -13,6 +13,7 @@ import org.parceler.Parcels;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.City;
@@ -62,7 +63,8 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
     @Override
     public void loadCities() {
         mCityView.setLoadingIndicator(true);
-        mDisposable = mDataRepository.getCities().subscribe(
+        String token = EvendateAccountManager.peekToken(mContext);
+        mDisposable = mDataRepository.getCities(token).subscribe(
                 result -> {
                     mCities = result.getData();
                     pushUpSelectedCity(mCities);
@@ -114,7 +116,9 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
 
     @Override
     public void loadNearestCities(Location location) {
-        mDisposable = mDataRepository.getNearestCities(location.getLatitude(), location.getLongitude()).subscribe(
+        String token = EvendateAccountManager.peekToken(mContext);
+        mDisposable = mDataRepository.getNearestCities(token, location.getLatitude(),
+                location.getLongitude()).subscribe(
                 result -> {
                     mSelectedCity = result.getData().get(0);
                     pushUpSelectedCity(mCities);
@@ -140,7 +144,7 @@ class CityPresenter implements CityContract.Presenter, LocationFragment.OnLocati
         mSelectedCity = city;
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mCityView.showError();
     }

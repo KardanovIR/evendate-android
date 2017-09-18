@@ -17,11 +17,11 @@ import ru.evendate.android.R;
  */
 public class LoadStateView extends FrameLayout {
 
-    OnReloadListener listener;
-    String header;
-    String description;
-    String emptyHeader;
-    String emptyDescription;
+    private OnReloadListener listener;
+    private String header;
+    private String description;
+    private String emptyHeader;
+    private String emptyDescription;
     private ImageButton reloadButton;
     private TextView headerView;
     private TextView descriptionView;
@@ -38,7 +38,7 @@ public class LoadStateView extends FrameLayout {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_load_state, this, true);
         ViewGroup viewGroup = (ViewGroup)getChildAt(0);
-        reloadButton = (ImageButton) viewGroup.getChildAt(0);
+        reloadButton = (ImageButton)viewGroup.getChildAt(0);
         headerView = (TextView)viewGroup.getChildAt(1);
         descriptionView = (TextView)viewGroup.getChildAt(2);
         progressBar = (ProgressBar)viewGroup.getChildAt(3);
@@ -87,7 +87,7 @@ public class LoadStateView extends FrameLayout {
         descriptionView.setText(description);
     }
 
-    private void setEmptyHint(){
+    private void setEmptyHint() {
         headerView.setText(emptyHeader);
         descriptionView.setText(emptyDescription);
     }
@@ -110,7 +110,7 @@ public class LoadStateView extends FrameLayout {
         descriptionView.setVisibility(GONE);
     }
 
-    public void hide(){
+    public void hide() {
         progressBar.setVisibility(GONE);
         reloadButton.setVisibility(GONE);
         headerView.setVisibility(GONE);
@@ -119,6 +119,8 @@ public class LoadStateView extends FrameLayout {
 
     public void hideProgress() {
         progressBar.setVisibility(GONE);
+        hideText();
+        hideReloadButton();
     }
 
     public void showProgress() {

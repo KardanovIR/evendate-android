@@ -34,6 +34,8 @@ public class EvendatePreferences {
 
     Context mContext;
 
+    private EvendatePreferences() {}
+
     public static EvendatePreferences newInstance(Context context) {
         EvendatePreferences preferences = new EvendatePreferences();
         preferences.mContext = context;

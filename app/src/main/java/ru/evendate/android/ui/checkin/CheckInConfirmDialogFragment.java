@@ -21,7 +21,9 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
 import ru.evendate.android.R;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
@@ -30,9 +32,9 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
 
     private Unbinder unbinder;
 
-    static final ButterKnife.Action<View> VISIBLE =
+    private static final ButterKnife.Action<View> VISIBLE =
             (View view, int index) -> view.setVisibility(View.VISIBLE);
-    static final ButterKnife.Action<View> INVISIBLE =
+    private static final ButterKnife.Action<View> INVISIBLE =
             (View view, int index) -> view.setVisibility(View.INVISIBLE);
     private static final String KEY_TICKET_UUID = "key_ticket";
     private static final String KEY_EVENT_ID = "key_event_id";
@@ -48,7 +50,7 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
     @BindViews({R.id.ticket_type, R.id.avatar,
             R.id.ticket_number, R.id.user_name, R.id.icon_ticket})
     List<View> mTicketViews;
-    CheckInContract.TicketConfirmPresenter mPresenter;
+    private CheckInContract.TicketConfirmPresenter mPresenter;
     private CheckInContract.ConfirmInteractionListener mListener;
 
     public static CheckInConfirmDialogFragment newInstance(int eventId, String ticketUuid) {
@@ -100,6 +102,11 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
     }
 
     @Override

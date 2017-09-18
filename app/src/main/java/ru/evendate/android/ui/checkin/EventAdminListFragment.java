@@ -21,11 +21,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.AbstractAdapter;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.utils.EventFormatter;
 import ru.evendate.android.ui.utils.FormatUtils;
 import ru.evendate.android.ui.utils.TicketFormatter;
@@ -37,9 +39,9 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    EventAdminListFragment.EventAdminRecyclerViewAdapter mAdapter;
-    CheckInContract.EventAdminPresenter mPresenter;
-    CheckInContract.EventInteractionListener mListener;
+    private EventAdminListFragment.EventAdminRecyclerViewAdapter mAdapter;
+    private CheckInContract.EventAdminPresenter mPresenter;
+    private CheckInContract.EventInteractionListener mListener;
     private Endless mEndless;
     private Unbinder unbinder;
 
@@ -60,6 +62,11 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     }
 
     @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -76,14 +83,14 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
 
         View loadingView = inflater.inflate(R.layout.item_progress, container, false);
         mEndless = Endless.applyTo(mRecyclerView, loadingView);
-        mEndless.setLoadMoreListener((int page) -> mPresenter.loadList(false, page));
+        mEndless.setLoadMoreListener((int page) -> mPresenter.load(false, page));
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(true);
             mEndless.setCurrentPage(0);
-            mPresenter.loadList(true, 0);
+            mPresenter.reload();
         });
-        mLoadStateView.setOnReloadListener(() -> mPresenter.loadList(true, 0));
+        mLoadStateView.setOnReloadListener(() -> mPresenter.reload());
 
         setEmptyCap();
 
@@ -164,7 +171,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         mRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    class EventAdminRecyclerViewAdapter extends AbstractEndlessAdapter<EventRegistered,
+    class EventAdminRecyclerViewAdapter extends AbstractAdapter<EventRegistered,
             EventAdminRecyclerViewAdapter.EventAdminViewHolder> {
 
         private final CheckInContract.EventInteractionListener mListener;
@@ -186,7 +193,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         public void onBindViewHolder(final EventAdminViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) event)));
+            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event)event)));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             holder.mTicketCount.setText(

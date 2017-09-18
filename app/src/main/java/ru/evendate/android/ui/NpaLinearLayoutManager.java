@@ -27,7 +27,7 @@ public class NpaLinearLayoutManager extends LinearLayoutManager {
         super(context);
     }
 
-    public NpaLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+    NpaLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }
 }

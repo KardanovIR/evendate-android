@@ -4,13 +4,15 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
  * Created by Dmitry on 07.02.2016.
  */
+@Parcel
 public class OrganizationFull extends OrganizationModel implements OrganizationDetail {
-    private String FIELDS_LIST = "";
 
     String description;
     @SerializedName("background_medium_img_url")

@@ -45,4 +45,9 @@ public class TicketFormatter {
             return formattedCost + " \u20BD";
         return formattedCost;
     }
+
+    public static String formatTotalCost(Context context, float cost) {
+        return context.getString(R.string.ticketing_form_total_cost)
+                + " " + formatCost(context, cost);
+    }
 }

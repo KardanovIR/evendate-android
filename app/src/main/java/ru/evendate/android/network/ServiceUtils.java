@@ -8,9 +8,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import ru.evendate.android.models.Event;
-import ru.evendate.android.models.Ticket;
-
 /**
  * Created by Dmitry on 13.11.2016.
  */

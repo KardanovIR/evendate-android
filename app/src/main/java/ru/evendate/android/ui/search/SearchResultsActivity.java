@@ -4,22 +4,17 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,40 +27,32 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.models.Event;
-import ru.evendate.android.models.EventFeed;
-import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.models.OrganizationSubscription;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.models.Tag;
-import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.statistics.Statistics;
-import ru.evendate.android.ui.AbstractAdapter;
-import ru.evendate.android.ui.AdapterController;
-import ru.evendate.android.ui.AppendableAdapter;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.EventsAdapter;
-import ru.evendate.android.ui.NpaLinearLayoutManager;
-import ru.evendate.android.ui.ReelFragment;
-import ru.evendate.android.ui.catalog.OrganizationCatalogAdapter;
-import ru.evendate.android.ui.users.UsersAdapter;
+import ru.evendate.android.ui.feed.ReelFragment;
+import ru.evendate.android.ui.feed.ReelPresenter;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
 
-public class SearchResultsActivity extends AppCompatActivity {
+import static ru.evendate.android.ui.feed.ReelFragment.ReelType.SEARCH;
+
+public class SearchResultsActivity extends BaseActivity {
     public static final String SEARCH_BY_TAG = "search_by_tag";
-    String query = "";
-    SearchView mSearchView;
+    private String query = "";
+    private SearchView mSearchView;
     @BindView(R.id.main_content) RelativeLayout mRelativeLayout;
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.tabs) TabLayout mTabs;
@@ -75,9 +62,8 @@ public class SearchResultsActivity extends AppCompatActivity {
     @BindView(R.id.tags) TagsRecyclerView tagsView;
     private String LOG_TAG = SearchResultsActivity.class.getSimpleName();
     private SearchPagerAdapter mSearchPagerAdapter;
-    private DrawerWrapper mDrawer;
     private boolean isSearchByTag;
-    private SearchEventFragment searchEventByTagFragment;
+    private SearchResultFragment.SearchEventFragment searchEventByTagFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,8 +80,9 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         mTabs.setupWithViewPager(mViewPager);
         setupPagerStat();
-        searchEventByTagFragment = (SearchEventFragment)getSupportFragmentManager()
+        searchEventByTagFragment = (SearchResultFragment.SearchEventFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.search_tag_fragment);
+        ReelPresenter.newInstance(new DataRepository(this), searchEventByTagFragment, ReelFragment.ReelType.SEARCH_BY_TAG);
 
         handleIntent(getIntent());
         tagsView.setOnTagClickListener((String tag) -> {
@@ -106,7 +93,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         });
         mLoadStateView.setOnReloadListener(this::loadTags);
         loadTags();
-        mDrawer.start();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -116,11 +102,17 @@ public class SearchResultsActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener((View v) -> finish());
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
-        mDrawer.getDrawer().keyboardSupportEnabled(this, true);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.start();
     }
 
     /**
@@ -178,7 +170,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     private void removeCollapseIcon() {
-        ImageView collapsedIcon = (ImageView)mSearchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+        ImageView collapsedIcon = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
         collapsedIcon.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
     }
 
@@ -210,7 +202,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                 );
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
@@ -264,223 +256,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         mViewPager.setVisibility(View.GONE);
     }
 
-    public abstract static class SearchResultFragment extends Fragment implements LoadStateView.OnReloadListener {
-        protected static final String LOG_TAG = SearchResultFragment.class.getSimpleName();
-        protected AbstractAdapter mAdapter;
-        protected String query;
-        @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
-        @BindView(R.id.load_state) LoadStateView mLoadStateView;
-        private Unbinder unbinder;
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-            unbinder = ButterKnife.bind(this, rootView);
-            initRecyclerView();
-            initLoadStateView();
-            return rootView;
-        }
-
-        private void initLoadStateView() {
-            mLoadStateView.setOnReloadListener(this);
-            mLoadStateView.setEmptyHeader(getContext().getString(R.string.search_empty_header));
-            mLoadStateView.setEmptyDescription(getContext().getString(R.string.search_empty_description));
-        }
-
-        protected void initRecyclerView() {
-            mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getContext()));
-            mRecyclerView.setItemAnimator(new LandingAnimator());
-        }
-
-        abstract void loadData();
-
-        protected void onStartLoad() {
-            mLoadStateView.hide();
-            mAdapter.reset();
-        }
-
-        public void onError(Throwable error) {
-            Log.e(LOG_TAG, "" + error.getMessage());
-            mLoadStateView.showErrorHint();
-        }
-
-        public void search(String query) {
-            this.query = query;
-            loadData();
-        }
-
-        protected void checkListAndShowHint() {
-            if (mAdapter.isEmpty())
-                mLoadStateView.showEmptyHint();
-        }
-
-        @Override
-        public void onReload() {
-            loadData();
-        }
-
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-            unbinder.unbind();
-        }
-    }
-
-    public static class SearchEventFragment extends SearchResultFragment
-            implements AdapterController.AdapterContext {
-
-        protected AdapterController mAdapterController;
-
-        @Override
-        protected void initRecyclerView() {
-            super.initRecyclerView();
-            mAdapter = new EventsAdapter(getContext(), mRecyclerView, ReelFragment.ReelType.CALENDAR.type());
-            mAdapterController = new AdapterController(this, (AppendableAdapter)mAdapter);
-            mRecyclerView.setAdapter(mAdapter);
-        }
-
-        @Override
-        protected void loadData() {
-            onStartLoad();
-            mAdapterController.reset();
-            loadAdaptive();
-        }
-
-        protected void loadAdaptive() {
-            ApiService apiService = ApiFactory.getService(getContext());
-
-            final int length = mAdapterController.getLength();
-            final int offset = mAdapterController.getOffset();
-
-            Observable<ResponseArray<Event>> observable =
-                    apiService.findEvents(EvendateAccountManager.peekToken(getContext()), query, true,
-                            Event.FIELDS_LIST, EventFeed.SEARCH_ORDER_BY, length, offset);
-
-            observable.subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            result -> onLoadedEvents(result.getData()),
-                            this::onError,
-                            mLoadStateView::hideProgress
-                    );
-        }
-
-        @Override
-        public void requestNext() {
-            loadAdaptive();
-        }
-
-        public void onLoadedEvents(ArrayList<Event> subList) {
-            Log.i(LOG_TAG, "loaded " + subList.size() + " events");
-            mAdapterController.loaded(subList);
-            checkListAndShowHint();
-        }
-    }
-
-    public static class SearchOrgFragment extends SearchResultFragment
-            implements AdapterController.AdapterContext {
-
-        @Override
-        protected void initRecyclerView() {
-            super.initRecyclerView();
-            mAdapter = new OrganizationCatalogAdapter(getContext());
-            mRecyclerView.setAdapter(mAdapter);
-        }
-
-        @Override
-        protected void loadData() {
-            onStartLoad();
-            ApiService apiService = ApiFactory.getService(getContext());
-            Observable<ResponseArray<OrganizationFull>> observable =
-                    apiService.findOrganizations(EvendateAccountManager.peekToken(getContext()), query,
-                            OrganizationSubscription.FIELDS_LIST, OrganizationSubscription.SEARCH_ORDER_BY);
-
-            observable.subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            result -> onLoadedOrgs(new ArrayList<>(result.getData())),
-                            this::onError,
-                            mLoadStateView::hideProgress
-                    );
-        }
-
-        @Override
-        public void requestNext() {
-            loadData();
-        }
-
-
-        public void onLoadedOrgs(ArrayList<OrganizationSubscription> subList) {
-            Log.i(LOG_TAG, "loaded " + subList.size() + " orgs");
-            mAdapter.replace(new ArrayList<>(subList));
-            checkListAndShowHint();
-        }
-    }
-
-    public static class SearchUsersFragment extends SearchResultFragment
-            implements AdapterController.AdapterContext {
-
-        @Override
-        protected void initRecyclerView() {
-            super.initRecyclerView();
-            mAdapter = new UsersAdapter(getContext());
-            mRecyclerView.setAdapter(mAdapter);
-        }
-
-        @Override
-        protected void loadData() {
-            onStartLoad();
-            ApiService apiService = ApiFactory.getService(getContext());
-            Observable<ResponseArray<UserDetail>> observable =
-                    apiService.findUsers(EvendateAccountManager.peekToken(getContext()), query,
-                            UserDetail.FIELDS_LIST);
-
-            observable.subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            result -> onLoaded(result.getData()),
-                            this::onError,
-                            mLoadStateView::hideProgress
-                    );
-        }
-
-        @Override
-        public void requestNext() {
-            loadData();
-        }
-
-
-        public void onLoaded(ArrayList<UserDetail> subList) {
-            Log.i(LOG_TAG, "loaded " + subList.size() + " orgs");
-            mAdapter.replace(new ArrayList<>(subList));
-            checkListAndShowHint();
-        }
-    }
-
-    public static class SearchEventByTagFragment extends SearchEventFragment {
-
-        @Override
-        protected void loadAdaptive() {
-            ApiService apiService = ApiFactory.getService(getContext());
-
-            final int length = mAdapterController.getLength();
-            final int offset = mAdapterController.getOffset();
-
-            Observable<ResponseArray<Event>> observable =
-                    apiService.findEventsByTags(EvendateAccountManager.peekToken(getContext()), query, true,
-                            Event.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, length, offset);
-
-            observable.subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            result -> onLoadedEvents(result.getData()),
-                            this::onError,
-                            mLoadStateView::hideProgress
-                    );
-        }
-    }
-
     class SearchPagerAdapter extends FragmentPagerAdapter {
         private final int TAB_COUNT = 3;
         private final int EVENT_TAB = 0;
@@ -491,10 +266,19 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         SearchPagerAdapter(FragmentManager fragmentManager, Context context) {
             super(fragmentManager);
+            DataSource dataSource = new DataRepository(getBaseContext());
             mContext = context;
-            fragments.add(EVENT_TAB, new SearchEventFragment());
-            fragments.add(ORG_TAB, new SearchOrgFragment());
-            fragments.add(USER_TAB, new SearchUsersFragment());
+            SearchResultFragment.SearchEventFragment searchEventsFragment = new SearchResultFragment.SearchEventFragment();
+            fragments.add(EVENT_TAB, searchEventsFragment);
+            ReelPresenter.newInstance(dataSource, searchEventsFragment, SEARCH);
+
+            SearchResultFragment.SearchOrgFragment searchOrgFragment = new SearchResultFragment.SearchOrgFragment();
+            fragments.add(ORG_TAB, searchOrgFragment);
+            new OrganizationSearchPresenter(dataSource, searchOrgFragment);
+
+            SearchResultFragment.SearchUsersFragment searchUsersFragment = new SearchResultFragment.SearchUsersFragment();
+            fragments.add(USER_TAB, searchUsersFragment);
+            new UserSearchPresenter(dataSource, searchUsersFragment);
 
         }
 

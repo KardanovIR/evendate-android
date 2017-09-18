@@ -1,6 +1,7 @@
 package ru.evendate.android.ui.userdetail;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,9 +23,10 @@ import ru.evendate.android.ui.utils.EventFormatter;
 public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, DatesAdapter.DateHolder> {
     private RecyclerView.RecycledViewPool dateItemsPool = new RecyclerView.RecycledViewPool();
     private RecyclerView.RecycledViewPool actionItemsPool = new RecyclerView.RecycledViewPool();
+    private Context mContext;
 
-    public DatesAdapter(Context context) {
-        super(context);
+    DatesAdapter(@NonNull Context context) {
+        mContext = context;
     }
 
     @Override

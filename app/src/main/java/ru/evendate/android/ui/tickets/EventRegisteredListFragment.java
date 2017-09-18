@@ -32,22 +32,22 @@ import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.AbstractAdapter;
 import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 import ru.evendate.android.ui.utils.EventFormatter;
 import ru.evendate.android.ui.utils.FormatUtils;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 
-//TODO DRY
+//todo DRY
 public class EventRegisteredListFragment extends Fragment implements EventRegisteredContract.View,
         EventRegisteredContract.OnEventInteractionListener {
 
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    EventRegisteredRecyclerViewAdapter mAdapter;
-    EventRegisteredContract.Presenter mPresenter;
+    private EventRegisteredRecyclerViewAdapter mAdapter;
+    private EventRegisteredContract.Presenter mPresenter;
     private Endless mEndless;
     private Unbinder unbinder;
 
@@ -187,7 +187,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         builder.create().show();
     }
 
-    class EventRegisteredRecyclerViewAdapter extends AbstractEndlessAdapter<EventRegistered,
+    class EventRegisteredRecyclerViewAdapter extends AbstractAdapter<EventRegistered,
             EventRegisteredRecyclerViewAdapter.EventRegisteredViewHolder> {
 
         private final EventRegisteredContract.OnEventInteractionListener mListener;

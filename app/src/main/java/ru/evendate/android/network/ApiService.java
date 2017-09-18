@@ -11,6 +11,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import ru.evendate.android.auth.AuthUrls;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.City;
 import ru.evendate.android.models.DateCalendar;
@@ -32,6 +33,9 @@ import ru.evendate.android.models.UserDetail;
 @SuppressWarnings("SameParameterValue")
 public interface ApiService {
     String API_PATH = "/api/v1";
+
+    @GET("/auth.php?action=get_urls")
+    Observable<ResponseObject<AuthUrls>> getAuthUrls();
 
     @GET(API_PATH + "/events/dates")
     Observable<ResponseArray<DateCalendar>> getCalendarDates(
@@ -55,6 +59,17 @@ public interface ApiService {
             @Query("offset") int offset
     );
 
+    @GET(API_PATH + "/events/my")
+    Observable<ResponseArray<Event>> getFeed(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("city_id") int cityId,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
     /**
      * Get concrete event
      */
@@ -72,6 +87,17 @@ public interface ApiService {
     Observable<ResponseArray<Event>> getFavorite(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events/favorites")
+    Observable<ResponseArray<Event>> getFavorite(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("city_id") int cityId,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -383,7 +409,9 @@ public interface ApiService {
     @GET(API_PATH + "/users/friends")
     Observable<ResponseArray<UserDetail>> getFriends(
             @Header("Authorization") String authorization,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @GET(API_PATH + "/users/settings")
@@ -411,7 +439,10 @@ public interface ApiService {
     Observable<ResponseArray<UserDetail>> findUsers(
             @Header("Authorization") String authorization,
             @Query("name") String name,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @GET(API_PATH + "/events")

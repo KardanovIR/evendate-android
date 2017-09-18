@@ -7,6 +7,8 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Fade;
 
+import ru.evendate.android.EvendateAccountManager;
+import ru.evendate.android.auth.AuthDialog;
 import ru.evendate.android.ui.feed.MainActivity;
 
 /**
@@ -18,13 +20,33 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        Intent intent = new Intent(this, MainActivity.class);
-
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setAllowEnterTransitionOverlap(true);
             getWindow().setExitTransition(new Fade());
         }
+        if (!EvendateAccountManager.getFirstAuthDone(this)) {
+            AuthDialog authDialog = new AuthDialog();
+            authDialog.setAuthListener(new AuthDialog.AuthListener() {
+                @Override
+                public void OnAuthDone(String newToken) {
+                    EvendateAccountManager.setFirstAuthDone(getApplicationContext());
+                    startMain();
+                }
+
+                @Override
+                public void OnAuthSkipped() {
+                    EvendateAccountManager.setFirstAuthDone(getApplicationContext());
+                    startMain();
+                }
+            });
+            authDialog.show(getSupportFragmentManager(), "auth");
+        } else {
+            startMain();
+        }
+    }
+
+    private void startMain() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
         finish();
     }

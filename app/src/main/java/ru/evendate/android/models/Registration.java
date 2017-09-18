@@ -38,6 +38,10 @@ public class Registration extends DataModel {
         this.tickets = tickets;
     }
 
+    public ArrayList<Ticket> getTickets() {
+        return tickets;
+    }
+
     public void setPromocode(String code) {
         promoCode = code;
     }

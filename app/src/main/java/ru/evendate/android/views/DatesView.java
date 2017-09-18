@@ -43,7 +43,6 @@ public class DatesView extends CardView {
         ExpandButton.setChecked(false);
         if (isInEditMode()) {
             mockup();
-            return;
         }
     }
 
@@ -87,7 +86,7 @@ public class DatesView extends CardView {
             collapse(mLayoutExpand);
     }
 
-    public void expand(final View v) {
+    private void expand(final View v) {
         v.measure(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
@@ -114,7 +113,7 @@ public class DatesView extends CardView {
         v.startAnimation(a);
     }
 
-    public void collapse(final View v) {
+    private void collapse(final View v) {
         final int initialHeight = v.getMeasuredHeight();
 
         Animation a = new Animation() {

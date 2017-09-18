@@ -11,7 +11,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.transition.TransitionManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -40,20 +39,23 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.DateCalendar;
 import ru.evendate.android.models.EventDate;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.ReelFragment;
+import ru.evendate.android.ui.feed.ReelFragment;
+import ru.evendate.android.ui.feed.ReelPresenter;
 import ru.evendate.android.ui.utils.DateFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 /**
  * Created by fj on 28.09.2015.
  */
-public class CalendarActivity extends AppCompatActivity implements ReelFragment.OnEventsDataLoadedListener,
+public class CalendarActivity extends BaseActivity implements ReelFragment.OnEventsDataLoadedListener,
         OnDateChangedListener, LoadStateView.OnReloadListener {
     /**
      * change localize months in rus
@@ -73,7 +75,6 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     private Date yesterdayDate;
     private BottomSheetBehavior<View> behavior;
     private DateAdapter mAdapter;
-    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,15 +159,19 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     }
 
     private void initReel() {
-        mReelFragment = ReelFragment.newInstance(ReelFragment.ReelType.CALENDAR.type(),
-                mCalendarView.getSelectedDate().getDate(), false);
+        Date date = mCalendarView.getSelectedDate().getDate();
+        mReelFragment = ReelFragment.newInstance(ReelFragment.ReelType.CALENDAR.type(), date,
+                false);
         mReelFragment.setDataListener(this);
+        ReelPresenter.newInstance(new DataRepository(this), mReelFragment,
+                ReelFragment.ReelType.CALENDAR, date);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.container, mReelFragment).commit();
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CalendarNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -177,12 +182,12 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         mCalendarView.setVisibility(View.GONE);
         mLoadStateView.showProgress();
         mDrawer.getDrawer().setSelection(DrawerWrapper.CALENDAR_IDENTIFIER);
-        mDrawer.start();
         loadDates();
     }
 
     @Override
     public void onReload() {
+        super.onReload();
         loadDates();
     }
 
@@ -198,8 +203,9 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
 
     private void loadDates() {
         ApiService apiService = ApiFactory.getService(this);
+        String token = EvendateAccountManager.peekToken(this);
         Observable<ResponseArray<DateCalendar>> observable =
-                apiService.getCalendarDates(EvendateAccountManager.peekToken(this), true, true, true, EventDate.FIELDS_LIST);
+                apiService.getCalendarDates(token, true, token != null, true, EventDate.FIELDS_LIST);
 
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -210,7 +216,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
                 );
     }
 
-    public void onLoadedDates(ArrayList<DateCalendar> dateList) {
+    private void onLoadedDates(ArrayList<DateCalendar> dateList) {
         Log.i(LOG_TAG, "loaded");
         if (Build.VERSION.SDK_INT > 19)
             TransitionManager.beginDelayedTransition(mCoordinatorLayout);
@@ -222,7 +228,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
         setSelectedDate();
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
@@ -245,7 +251,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
     public void onEventsDataLoaded() {
         Log.i(LOG_TAG, "data loaded");
         //TODO нужно как-то изящнее это сделать
-        if (mReelFragment.getAdapter() != null && mReelFragment.getAdapter().isEmpty())
+        if (mReelFragment.isEmpty())
             return;
         //mEventCountTextView.setText(mReelFragment.getEventList().size() + " " + getString(R.string.calendar_events));
     }
@@ -390,7 +396,7 @@ public class CalendarActivity extends AppCompatActivity implements ReelFragment.
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.CALENDAR_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;

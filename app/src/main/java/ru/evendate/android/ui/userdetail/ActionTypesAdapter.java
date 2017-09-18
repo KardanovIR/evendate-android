@@ -1,6 +1,7 @@
 package ru.evendate.android.ui.userdetail;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,9 +24,10 @@ import ru.evendate.android.ui.WrapLinearLayoutManager;
  */
 class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
     private RecyclerView.RecycledViewPool actionItemsPool;
+    private Context mContext;
 
-    ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
-        super(context);
+    ActionTypesAdapter(@NonNull Context context, RecyclerView.RecycledViewPool actionItemsPool) {
+        mContext = context;
         this.actionItemsPool = actionItemsPool;
     }
 
@@ -45,7 +47,7 @@ class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.
                 .load(type.getUser().getAvatarUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mAvatarView);
-        holder.mActionTargetsAdapter.replace(type.getTargetList());
+        holder.mActionTargetsAdapter.set(type.getTargetList());
     }
 
     class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

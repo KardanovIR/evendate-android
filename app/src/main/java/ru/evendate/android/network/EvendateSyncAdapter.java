@@ -106,7 +106,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        Account account = EvendateAccountManager.getSyncAccount(context);
+        Account account = EvendateAccountManager.getAccount(context);
         if (account == null) {
             Log.e(LOG_TAG, "no account");
             return;
@@ -132,7 +132,7 @@ public class EvendateSyncAdapter extends AbstractThreadedSyncAdapter {
     //    syncImmediately(context);
     //}
     public static void initializeSyncAdapter(Context context) {
-        EvendateAccountManager.getSyncAccount(context);
+        EvendateAccountManager.getAccount(context);
     }
 
 

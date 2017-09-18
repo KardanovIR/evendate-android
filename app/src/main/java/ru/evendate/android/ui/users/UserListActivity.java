@@ -2,21 +2,23 @@ package ru.evendate.android.ui.users;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 
 public class UserListActivity extends BaseActivity {
     @BindView(R.id.toolbar) Toolbar mToolbar;
     private UserListFragment mUserListFragment;
-    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +27,9 @@ public class UserListActivity extends BaseActivity {
         ButterKnife.bind(this);
         initToolbar();
         initDrawer();
+        initTransitions();
 
         handleIntent(getIntent());
-        mDrawer.start();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -37,10 +39,18 @@ public class UserListActivity extends BaseActivity {
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
+    }
+
+    private void initTransitions() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setEnterTransition(new Explode());
+            getWindow().setExitTransition(new Explode());
+        }
     }
 
     private void handleIntent(Intent intent) {
@@ -63,6 +73,7 @@ public class UserListActivity extends BaseActivity {
                     break;
             }
         }
+        new UserListPresenter(new DataRepository(this), mUserListFragment);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mUserListFragment).commit();
     }
@@ -78,4 +89,9 @@ public class UserListActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onReload() {
+        super.onReload();
+        mUserListFragment.onReload();
+    }
 }

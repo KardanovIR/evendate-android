@@ -13,7 +13,7 @@ public class UserDetail extends User {
 
     ArrayList<OrganizationFull> subscriptions;
 
-    public ArrayList<OrganizationSubscription> getSubscriptions() {
-        return new ArrayList<>(subscriptions);
+    public ArrayList<OrganizationFull> getSubscriptions() {
+        return subscriptions;
     }
 }

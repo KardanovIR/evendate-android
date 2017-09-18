@@ -17,7 +17,7 @@ import ru.evendate.android.R;
  */
 
 public class CityPromptDialog extends Fragment {
-    PromptInteractionListener mListener;
+    private PromptInteractionListener mListener;
     private Unbinder unbinder;
 
     @Override

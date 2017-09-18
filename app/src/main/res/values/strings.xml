@@ -17,6 +17,7 @@
     <integer name="com_vk_sdk_AppId">5739514</integer>
 
     <!-- navigation drawer and main activity strings-->
+    <string name="drawer_login_description">To use all the features, sign in to your account</string>
     <string name="drawer_calendar">Calendar</string>
     <string name="drawer_reel">My events</string>
     <string name="drawer_friends">Friends</string>
@@ -119,10 +120,15 @@
     <string name="event_notification_error">Error. Notification didn\'t added</string>
 
     <!-- ticketing form-->
-    <string name="ticketing_form_promo_code_sale">Promocode sale: </string>
-    <string name="ticketing_form_promo_code_final_cost">Total cost: </string>
-    <string name="ticketing_form_promo_code_hint">promocode</string>
+    <string name="ticketing_form_choose_tickets">Choose tickets</string>
+    <string name="ticketing_form_total_cost">Total cost:</string>
+    <string name="ticketing_form_promo_code_label">Promocode</string>
     <string name="ticketing_form_promo_code_enter">Submit</string>
+    <string name="ticketing_form_promo_code_description">If you have a promotional code, enter it and get a discount</string>
+    <string name="ticketing_form_toast_tickets">Choose tickets to order</string>
+    <string name="ticketing_form_toast_promo_code">Enter promocode</string>
+    <string name="ticketing_form_toast_promo_code_error">This promocode does not exist or is no longer active</string>
+    <string name="ticketing_form_final_cost">To pay:</string>
     <string name="ticketing_form_register_button">Register</string>
     <string name="ticketing_form_order_button">Pay</string>
 
@@ -235,6 +241,7 @@
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
     <string name="auth_error">Error occurred. Please retry</string>
+    <string name="auth_skip">Skip</string>
 
     <!-- notification strings -->
     <string name="notification_before_three_hours">Before 3 hours</string>
@@ -323,4 +330,5 @@
     <!-- recommender strings -->
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recommender_empty_description">No more events. Take a look later.</string>
+    <string name="drawer_login">Sign in</string>
 </resources>

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
@@ -22,28 +21,26 @@ import butterknife.ButterKnife;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
-import ru.evendate.android.auth.AuthActivity;
 import ru.evendate.android.network.ServiceImpl;
+import ru.evendate.android.ui.AuthHandler;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.ReelFragment;
 import ru.evendate.android.ui.cities.CityActivity;
 import ru.evendate.android.ui.search.SearchResultsActivity;
 
 import static ru.evendate.android.ui.cities.CityActivity.KEY_PROMPT;
 
 
-public class MainActivity extends AppCompatActivity implements ReelFragment.OnRefreshListener,
-        OnboardingDialog.OnOrgSelectedListener {
+public class MainActivity extends BaseActivity implements ReelFragment.OnRefreshListener,
+        OnboardingDialog.OnOrgSelectedListener, AuthHandler {
 
-    public static final int REQUEST_AUTH = 1;
-    public static final int REQUEST_SELECT_CITY = 2;
+    private static final int REQUEST_SELECT_CITY = 2;
     public static final String SHOW_ONBOARDING = "onboarding";
-    public static final String TAG_ONBOARDING = "tag_onboarding";
+    private static final String TAG_ONBOARDING = "tag_onboarding";
     private static boolean requestOnboarding = false;
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    OnboardingDialog onboarding;
+    private OnboardingDialog onboarding;
     private MainPagerFragment mFragment;
-    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +78,17 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
         }
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new MainNavigationItemClickListener(this, mDrawer.getDrawer()));
         mDrawer.setListener(() -> {
-            if (mDrawer.getSubs().size() == 0)
+            if (mDrawer.getSubs().size() == 0 && !EvendateAccountManager.getOnboardingDone(this)
+                    && EvendateAccountManager.getAccount(this) != null) {
                 showOnboarding();
+                EvendateAccountManager.setOnboardingDone(this);
+            }
         });
     }
 
@@ -123,35 +124,17 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     protected void onStart() {
         super.onStart();
 
-        if (!checkAccount()) {
-            startSignIn();
-            return;
-        }
         checkDeviceTokenSynced();
         if (!checkCity()) {
             startSelectCity();
             return;
         }
 
-        //TODO cause auth flow
-        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
-        mDrawer.start();
         if (requestOnboarding) {
-            forceShowOnboarding();
+            showOnboarding();
             requestOnboarding = false;
         }
-    }
-
-    /**
-     * check account exists
-     */
-    private boolean checkAccount() {
-        return EvendateAccountManager.getSyncAccount(this) != null;
-    }
-
-    private void startSignIn() {
-        Intent authIntent = new Intent(this, AuthActivity.class);
-        startActivityForResult(authIntent, REQUEST_AUTH);
+        mDrawer.getDrawer().setSelection(DrawerWrapper.REEL_IDENTIFIER);
     }
 
     /**
@@ -178,11 +161,6 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_AUTH) {
-            if (resultCode == RESULT_CANCELED) {
-                finish();
-            }
-        }
         if (requestCode == REQUEST_SELECT_CITY) {
             if (resultCode == RESULT_CANCELED) {
                 finish();
@@ -192,19 +170,18 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     @Override
     public void onRefresh() {
-        mDrawer.update();
+        onReload();
+    }
+
+    @Override
+    protected void onReload() {
+        super.onReload();
+        mFragment.reload();
     }
 
     private void showOnboarding() {
+        onboarding = (OnboardingDialog)getSupportFragmentManager().findFragmentByTag(TAG_ONBOARDING);
         if (onboarding != null)
-            return;
-        onboarding = new OnboardingDialog();
-        onboarding.setOnOrgSelectedListener(this);
-        onboarding.show(getSupportFragmentManager(), TAG_ONBOARDING);
-    }
-
-    private void forceShowOnboarding() {
-        if (getSupportFragmentManager().findFragmentByTag(TAG_ONBOARDING) != null)
             return;
         onboarding = new OnboardingDialog();
         onboarding.setOnOrgSelectedListener(this);
@@ -213,8 +190,8 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
     @Override
     public void onOrgSelected() {
-        mFragment.refresh();
-        mDrawer.update();
+        // todo change to observer, потому что нужно вызывать после запросов на подписку, а это тупо по клику кнопки ОК
+        onReload();
     }
 
     @Override
@@ -244,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements ReelFragment.OnRe
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.REEL_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;

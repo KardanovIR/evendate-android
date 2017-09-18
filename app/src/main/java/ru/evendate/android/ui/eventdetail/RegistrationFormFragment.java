@@ -1,10 +1,11 @@
 package ru.evendate.android.ui.eventdetail;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.transition.TransitionManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
@@ -76,24 +78,38 @@ public class RegistrationFormFragment extends FormDialogFragment
     @BindView(R.id.registration_total_sum) TextView mTotalSum;
     @BindView(R.id.registration_submit_button) Button mSubmitButton;
 
-    @BindView(R.id.promocode_container) LinearLayout mPromoCodeContainer;
     @BindView(R.id.promocode) EditText mPromoCode;
 
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Unbinder unbinder;
-    @BindView(R.id.registration_promocode_sale) TextView mPromoSale;
+    @BindView(R.id.registration_final_cost) TextView mFinalCost;
+    @BindView(R.id.registration_crossed_out_cost) TextView mCrossedCost;
+    @BindView(R.id.registration_final_cost_container) ViewGroup mCostContainer;
+    @BindViews({R.id.registration_ticket_section,
+            R.id.ticket_list,
+            R.id.registration_total_sum,
+            R.id.promocode_container,
+            R.id.promocode_description,
+            R.id.registration_final_cost_container})
+    List<View> mTicketViews;
 
-    Event mEvent;
-    Registration mRegistration;
-    OnRegistrationCallbackListener mListener;
-    ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
-    float totalSum = 0;
+    private Event mEvent;
+    private Registration mRegistration;
+    private OnRegistrationCallbackListener mListener;
+    private ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
+    private float totalSum = 0;
+    private float finalSum = 0;
 
-    @Nullable PromoCode promoCode;
+    @Nullable private PromoCode promoCode;
 
     private static final String EVENT_KEY = "event";
     private static final String REGISTRATION_KEY = "registration";
     private static final int PAYMENT_REQUEST_CODE = 1;
+
+    private static final ButterKnife.Action<View> VISIBLE =
+            (View view, int index) -> view.setVisibility(View.VISIBLE);
+    private static final ButterKnife.Action<View> GONE =
+            (View view, int index) -> view.setVisibility(View.GONE);
 
     interface OnRegistrationCallbackListener {
         void onRegistered();
@@ -110,11 +126,6 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_registration, container, false);
@@ -128,9 +139,11 @@ public class RegistrationFormFragment extends FormDialogFragment
         setHasOptionsMenu(true);
 
         if (mEvent.isTicketingAvailable()) {
+            ButterKnife.apply(mTicketViews, VISIBLE);
             for (TicketType type : mEvent.getTicketTypes()) {
                 if (type.isSelling()) {
                     OrderTicketView view = new OrderTicketView(getContext());
+                    view.setFormatter((float cost) -> TicketFormatter.formatCost(getContext(), cost));
                     view.setTicketType(type);
                     view.setOnTicketTotalSumChangedListener(this);
                     ticketViews.add(view);
@@ -138,14 +151,11 @@ public class RegistrationFormFragment extends FormDialogFragment
                 }
             }
             totalSumChanged();
-            mSubmitButton.setText(R.string.ticketing_form_order_button);
+        } else {
+            ButterKnife.apply(mTicketViews, GONE);
         }
+        mCrossedCost.setPaintFlags(mFinalCost.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -228,11 +238,14 @@ public class RegistrationFormFragment extends FormDialogFragment
         }
         setTotalSum(sum);
         submitPromoCode();
+        setupButton();
     }
 
     private void setTotalSum(float sum) {
         totalSum = sum;
-        mTotalSum.setText(TicketFormatter.formatCost(getContext(), totalSum));
+        mTotalSum.setText(" " + TicketFormatter.formatTotalCost(getContext(), totalSum));
+        mFinalCost.setText(" " + TicketFormatter.formatCost(getContext(), totalSum));
+        mCrossedCost.setText(" " + TicketFormatter.formatCost(getContext(), totalSum));
     }
 
     @SuppressWarnings("unused")
@@ -249,6 +262,11 @@ public class RegistrationFormFragment extends FormDialogFragment
 
             mRegistration = new Registration();
             setupRegistration(mRegistration);
+            if (checkTicketsEmpty(mRegistration)) {
+                Toast.makeText(getActivity(), R.string.ticketing_form_choose_tickets,
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
             postRegistrationInput(mEvent.getEntryId(), mRegistration);
             mLoadStateView.showProgress();
         } else {
@@ -262,6 +280,15 @@ public class RegistrationFormFragment extends FormDialogFragment
         if (promoCode != null) {
             registration.setPromocode(promoCode.getCode());
         }
+    }
+
+    private boolean checkTicketsEmpty(Registration registration) {
+        for (Ticket ticket : registration.getTickets()) {
+            if (((TicketOrder)ticket).getCount() != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ArrayList<RegistrationField> getRegistrationFields() {
@@ -293,7 +320,18 @@ public class RegistrationFormFragment extends FormDialogFragment
         return list;
     }
 
-    public void checkPromoCode(String promoCode) {
+    private void checkPromoCode(String promoCode) {
+        setTotalSum(totalSum);
+        if (promoCode.isEmpty()) {
+            Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (this.promoCode != null && this.promoCode.getCode().equals(promoCode)) {
+            submitPromoCode();
+            setupButton();
+            return;
+        }
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseObject<PromoCode>> checkPromoCodeObservable =
                 apiService.checkPromoCode(EvendateAccountManager.peekToken(getContext()),
@@ -304,8 +342,9 @@ public class RegistrationFormFragment extends FormDialogFragment
                             if (result.isOk()) {
                                 this.promoCode = result.getData();
                                 submitPromoCode();
+                                setupButton();
                             } else {
-                                Toast.makeText(getActivity(), "Указанный промокод не существует или более не активен",
+                                Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code_error,
                                         Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -313,19 +352,34 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void submitPromoCode() {
-        if (promoCode == null || !promoCode.isEnabled())
+        TransitionManager.beginDelayedTransition(mCostContainer);
+        finalSum = totalSum;
+        if (promoCode == null || !promoCode.isEnabled()) {
+            mCrossedCost.setVisibility(View.GONE);
             return;
-        float dirtSum = totalSum;
-
-        if (promoCode.isFixed()) {
-            setTotalSum(Math.max(totalSum - promoCode.getEffort(), 0));
-        } else if (promoCode.isPercentage()) {
-            setTotalSum(totalSum * (1 - promoCode.getEffort() / 100));
         }
-        mPromoSale.setText(TicketFormatter.formatCost(getContext(), dirtSum - totalSum));
+        if (promoCode.isFixed()) {
+            finalSum = Math.max(finalSum - promoCode.getEffort(), 0);
+        } else if (promoCode.isPercentage()) {
+            finalSum = finalSum * (1 - promoCode.getEffort() / 100);
+        }
+        mFinalCost.setText(" " + TicketFormatter.formatCost(getContext(), finalSum));
+        if (totalSum != 0f) {
+            mCrossedCost.setVisibility(View.VISIBLE);
+        } else {
+            mCrossedCost.setVisibility(View.GONE);
+        }
     }
 
-    public void postRegistrationInput(int eventId, Registration input) {
+    private void setupButton() {
+        if (finalSum == 0f) {
+            mSubmitButton.setText(R.string.ticketing_form_register_button);
+        } else {
+            mSubmitButton.setText(R.string.ticketing_form_order_button);
+        }
+    }
+
+    private void postRegistrationInput(int eventId, Registration input) {
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseObject<Registration>> registrationObservable =
                 apiService.postRegistration(EvendateAccountManager.peekToken(getContext()), eventId, input);
@@ -399,7 +453,7 @@ public class RegistrationFormFragment extends FormDialogFragment
         if (requestCode == PAYMENT_REQUEST_CODE && resultCode == RESULT_OK) {
             getActivity().onBackPressed();
             mListener.onPaymentCompleted();
-            } else {
+        } else {
             getActivity().onBackPressed();
             mListener.onPaymentError();
         }
@@ -411,13 +465,13 @@ public class RegistrationFormFragment extends FormDialogFragment
         mScrollView.setVisibility(View.VISIBLE);
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
         mScrollView.setVisibility(View.INVISIBLE);
     }
 
-    public void updateFields(Registration registration) {
+    private void updateFields(Registration registration) {
         getFormController().resetValidationErrors();
         for (RegistrationField field : registration.getRegistrationFieldsList()) {
             FormElementController controller = getFormController().getElement(field.getUuid());

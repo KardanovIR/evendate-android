@@ -192,10 +192,6 @@ public class TagsView extends ViewGroup {
             //background.setLayoutParams(new RelativeLayout.LayoutParams(mTextView.getMeasuredWidth(), mTextView.getMeasuredHeight()));
         }
 
-        @Override
-        protected void onLayout(boolean changed, int l, int t, int r, int b) {
-            super.onLayout(changed, l, t, r, b);
-        }
     }
 
     public interface OnTagClickListener{

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.EventRegistered;
 
@@ -15,7 +16,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by Aedirn on 14.03.17.
  */
-
 //TODO DRY
 class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
     private static final int LENGTH = 10;
@@ -48,15 +48,16 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
         loadEvents(true, 0);
     }
 
+    //todo token
     public void loadEvents(boolean forceLoad, int page) {
         mView.setLoadingIndicator(forceLoad);
-        mDisposable = mDataRepository.getRegisteredEvents(isFuture, page, LENGTH)
+        String token = EvendateAccountManager.peekToken(mView.getContext());
+        mDisposable = mDataRepository.getRegisteredEvents(token, isFuture, page, LENGTH)
                 .subscribe(result -> {
                             List<EventRegistered> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
-                            boolean isEmpty = list.size() == 0;
                             if (result.isOk()) {
-                                if (isEmpty && mView.isEmpty()) {
+                                if (list.isEmpty() && mView.isEmpty()) {
                                     mView.showEmptyState();
                                 } else if (forceLoad) {
                                     mView.reshowEvents(list, isLast);
@@ -72,7 +73,7 @@ class EventRegisteredPresenter implements EventRegisteredContract.Presenter {
                 );
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mView.showError();
     }

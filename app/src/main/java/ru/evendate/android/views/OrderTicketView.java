@@ -21,14 +21,16 @@ import ru.evendate.android.models.TicketType;
  */
 
 public class OrderTicketView extends FrameLayout {
-    TextView mTicketTypeView;
-    TextView mTicketPrice;
-    TextView mTicketTotalSum;
-    NumberPicker mNumberPicker;
-    TicketType mTicketType;
+    private TextView mTicketTypeView;
+    private TextView mTicketPrice;
+    private TextView mTicketTotalSum;
+    private NumberPicker mNumberPicker;
+    private TicketType mTicketType;
+    private TextView mTicketComment;
+    private Formatter mFormatter;
 
-    float ticketTotalSum = 0;
-    @Nullable OnTotalSumChangedListener mListener;
+    private float ticketTotalSum = 0;
+    @Nullable private OnTotalSumChangedListener mListener;
 
     public OrderTicketView(@NonNull Context context) {
         this(context, null);
@@ -37,40 +39,57 @@ public class OrderTicketView extends FrameLayout {
     public OrderTicketView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs, 0);
 
-        LayoutInflater inflater = (LayoutInflater)context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.item_order_ticket, this, true);
+        LayoutInflater.from(context).inflate(R.layout.item_order_ticket, this, true);
         ViewGroup viewGroup = (ViewGroup)getChildAt(0);
         mTicketTypeView = viewGroup.findViewById(R.id.ticket_type);
         mTicketPrice = viewGroup.findViewById(R.id.ticket_price);
         mTicketTotalSum = viewGroup.findViewById(R.id.ticket_total_sum);
         mNumberPicker = viewGroup.findViewById(R.id.number_picker);
+        mTicketComment = viewGroup.findViewById(R.id.ticket_comment);
+    }
+
+    public void setFormatter(@NonNull Formatter formatter) {
+        mFormatter = formatter;
     }
 
     public void setTicketType(TicketType ticketType) {
         mTicketType = ticketType;
 
         mTicketTypeView.setText(mTicketType.getName());
-        //todo format
-        mTicketPrice.setText(mTicketType.getPrice() + "");
+        if (ticketType.getComment() != null) {
+            mTicketComment.setText(ticketType.getComment());
+            mTicketComment.setVisibility(VISIBLE);
+        }
         mNumberPicker.setMin(mTicketType.getMinCountPerUser());
         mNumberPicker.setMax(mTicketType.getMaxCountPerUser());
 
+        if (mFormatter != null) {
+            mTicketPrice.setText(mFormatter.formatNumber(mTicketType.getPrice()));
+        } else {
+            mTicketPrice.setText(String.valueOf(mTicketType.getPrice()));
+        }
         mNumberPicker.setValueChangedListener((int value, ActionEnum action) -> {
-            if (value == 0) {
-                mTicketTotalSum.setVisibility(INVISIBLE);
-            } else {
-                mTicketTotalSum.setVisibility(VISIBLE);
-            }
-            ticketTotalSum = mTicketType.getPrice() * value;
-            mTicketTotalSum.setText(ticketTotalSum + "");
+            setTicketTotalSum(value);
             if (mListener != null) {
                 mListener.totalSumChanged();
             }
         });
 
-        ticketTotalSum = mTicketType.getPrice() * mTicketType.getMinCountPerUser();
-        mTicketTotalSum.setText(ticketTotalSum + "");
+        setTicketTotalSum(mTicketType.getMinCountPerUser());
+    }
+
+    private void setTicketTotalSum(int num) {
+        ticketTotalSum = mTicketType.getPrice() * num;
+        if (ticketTotalSum == 0) {
+            mTicketTotalSum.setVisibility(INVISIBLE);
+        } else {
+            mTicketTotalSum.setVisibility(VISIBLE);
+        }
+        if (mFormatter != null) {
+            mTicketTotalSum.setText(mFormatter.formatNumber(ticketTotalSum));
+        } else {
+            mTicketTotalSum.setText(String.valueOf(ticketTotalSum));
+        }
     }
 
     public float getTicketTotalSum() {
@@ -91,5 +110,9 @@ public class OrderTicketView extends FrameLayout {
 
     public interface OnTotalSumChangedListener {
         void totalSumChanged();
+    }
+
+    public interface Formatter {
+        String formatNumber(float cost);
     }
 }

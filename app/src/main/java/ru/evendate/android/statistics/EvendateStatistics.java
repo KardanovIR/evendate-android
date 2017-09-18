@@ -4,7 +4,7 @@ package ru.evendate.android.statistics;
  * Created by Aedirn on 15.10.16.
  */
 
-public interface EvendateStatistics {
+interface EvendateStatistics {
 
     // View actions
     void sendEventViewFromFeed(int eventId);

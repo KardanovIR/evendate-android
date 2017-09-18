@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 
 import ru.evendate.android.data.EvendateContract;
@@ -13,6 +15,8 @@ import ru.evendate.android.ui.utils.DateUtils;
 /**
  * Created by ds_gordeev on 17.02.2016.
  */
+@Parcel
+@SuppressWarnings("WeakerAccess")
 public class Action extends DataModel implements ActionTarget, Comparable<Action> {
     public static final String FIELDS_LIST = "name,created_at,event{fields:'image_horizontal_small_url,image_horizontal_medium_url'},organization{fields:'" + OrganizationSubscription.FIELDS_LIST + "'},user{fields:'" + User.FIELDS_LIST + "'}";
     public static final String ORDER_BY = "-created_at";
@@ -31,7 +35,7 @@ public class Action extends DataModel implements ActionTarget, Comparable<Action
     OrganizationFull organization;
     User user;
     @SerializedName("created_at")
-    private int createdAt;
+    int createdAt;
 
     public enum Type {
         ACTION_LIKE(5),

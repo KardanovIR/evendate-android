@@ -3,9 +3,13 @@ package ru.evendate.android.network;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 /**
  * Created by Dmitry on 18.10.2015.
  */
+@Parcel
+@SuppressWarnings("WeakerAccess")
 public class Response {
     boolean status;
     String text;

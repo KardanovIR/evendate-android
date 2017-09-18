@@ -30,7 +30,7 @@ public class CityFragment extends Fragment implements CityContract.View,
     public final static String KEY_CITY = "city";
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.load_state) LoadStateView mLoadState;
-    CityRecyclerViewAdapter mAdapter;
+    private CityRecyclerViewAdapter mAdapter;
     private CityContract.Presenter mPresenter;
     private Unbinder unbinder;
 

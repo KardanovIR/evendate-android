@@ -143,7 +143,7 @@ public class LocationFragment extends Fragment implements LocationListener {
         });
     }
 
-    void requestPermission() {
+    private void requestPermission() {
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -174,7 +174,7 @@ public class LocationFragment extends Fragment implements LocationListener {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
-
+                    // todo
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }

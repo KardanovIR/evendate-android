@@ -35,8 +35,8 @@ public class QrScannerFragment extends Fragment
     public static final String KEY_EVENT_ID = "event_id";
     private static final int PERMISSION_REQUEST_CAMERA = 1;
     @BindView(R.id.qr_reader_container) FrameLayout frameLayout;
-    QRCodeReaderView qrCodeReaderView;
-    CheckInContract.QRReadListener mListener;
+    private QRCodeReaderView qrCodeReaderView;
+    private CheckInContract.QRReadListener mListener;
     private boolean torchEnabled = false;
     private Unbinder unbinder;
 
@@ -111,7 +111,7 @@ public class QrScannerFragment extends Fragment
         if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initQRCodeReaderView();
         } else {
-            //todo finish activity
+            // todo finish activity
         }
     }
 

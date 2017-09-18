@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
  * Created by Dmitry on 13.02.2016.
  */
 public class EventFormatterTest extends AndroidTestCase {
-    public static Event getEventDetail(int num) {
+    private static Event getEventDetail(int num) {
         Event event = Mockito.mock(Event.class);
         ArrayList<EventDate> dates = getDates(num);
         when(event.getDateList()).thenReturn(dates);

@@ -42,10 +42,8 @@ public class OrganizationFilterDialog extends DialogFragment {
                 .setMultiChoiceItems(
                         typeToStrings(),
                         mSelectedItems,
-                        (DialogInterface dialog, int which, boolean isChecked) -> {
-                            mSelectedItems[which] = isChecked;
-                        }
-                )
+                        (DialogInterface dialog, int which, boolean isChecked) ->
+                                mSelectedItems[which] = isChecked)
                 .setPositiveButton(R.string.dialog_ok, (DialogInterface dialog, int id) -> {
                     if (mCategorySelectListener != null) {
                         mCategorySelectListener.onCategorySelected(mSelectedItems);

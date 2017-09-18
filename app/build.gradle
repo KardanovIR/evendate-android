@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 7
-        versionName "0.4.1"
+        versionName ""
         multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -34,10 +34,10 @@ android {
         }
         dev {
             applicationIdSuffix ".dev"
-            versionNameSuffix "-dev-" + getDate()
+            versionNameSuffix "dev-" + getDate()
         }
         debug {
-            versionNameSuffix "-debug-" + getDate()
+            versionNameSuffix "debug-" + getDate()
             matchingFallbacks = ['debug']
         }
     }
@@ -76,6 +76,7 @@ dependencies {
     implementation project(':nexusdialog_library')
     implementation project(':swipedeck_library')
     implementation project(':endless_library')
+    implementation project(':numberpicker_library')
     compile 'com.android.support:multidex:1.0.2'
     compile "com.android.support:design:$suplib_ver"
     compile "com.android.support:cardview-v7:$suplib_ver"
@@ -90,9 +91,7 @@ dependencies {
     compile "com.google.android.gms:play-services-location:$playservices_ver"
     compile "com.google.android.gms:play-services-auth:$playservices_ver"
     compile 'com.onesignal:OneSignal:3.4.3'
-    compile('com.mikepenz:materialdrawer:4.6.4@aar') {
-        transitive = true
-    }
+    compile 'com.mikepenz:materialdrawer:5.9.5'
     compile 'com.prolificinteractive:material-calendarview:0.7.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
@@ -121,9 +120,11 @@ dependencies {
     androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-dx:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
     annotationProcessor 'org.parceler:parceler:1.1.6'
-    compile 'com.github.travijuu:numberpicker:1.0.7'
     compile 'com.yandex.money.api:yandex-money-sdk-android:4.1.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.26.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

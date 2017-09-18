@@ -2,6 +2,7 @@ package ru.evendate.android.models;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("WeakerAccess")
 public class EventNotification extends DataModel {
     public static final String FIELDS_LIST = "notification_type";
 

@@ -35,7 +35,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     private Event mEvent;
     private List<Notification> notifications;
 
-    public NotificationListAdapter(Context context, List<Notification> eventNotifications, Event event) {
+    NotificationListAdapter(Context context, List<Notification> eventNotifications, Event event) {
         super(context, R.layout.item_multichoice, eventNotifications);
         this.context = context;
         mEvent = event;
@@ -48,13 +48,12 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         ViewHolder holder;
         View rowView = convertView;
         if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater)context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = LayoutInflater.from(context);
             rowView = inflater.inflate(R.layout.item_multichoice, parent, false);
             holder = new ViewHolder();
             holder.holderView = rowView;
-            holder.checkBox = (CheckBox)rowView.findViewById(R.id.checkBox);
-            holder.textView = (TextView)rowView.findViewById(R.id.tv_checkboxtext);
+            holder.checkBox = rowView.findViewById(R.id.checkBox);
+            holder.textView = rowView.findViewById(R.id.tv_checkboxtext);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder)rowView.getTag();
@@ -99,7 +98,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
     }
 
     //todo SOLID
-    public void update() {
+    void update() {
         for (Notification notification : notifications) {
             if (!notification.changed && notification.newChecked == null)
                 continue;
@@ -177,7 +176,7 @@ public class NotificationListAdapter extends ArrayAdapter<NotificationListAdapte
         Boolean newChecked = null;
         boolean changed = false;
 
-        public Notification(String notificationType) {
+        Notification(String notificationType) {
             type = notificationType;
         }
 

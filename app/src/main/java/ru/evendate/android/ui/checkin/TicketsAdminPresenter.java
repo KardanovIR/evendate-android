@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.network.ResponseArray;
@@ -35,7 +36,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
 
     @Override
     public void start() {
-        //loadList(false, 0);
+        //load(false, 0);
     }
 
     @Override
@@ -45,9 +46,27 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
     }
 
     @Override
-    public void loadList(int eventId, boolean isCheckOut, boolean forceLoad, int page) {
+    public void reload(int eventId, boolean isCheckOut) {
+        load(eventId, isCheckOut, true, 0);
+    }
+
+    @Override
+    public void load(int eventId, boolean isCheckOut, boolean forceLoad, int page) {
         mView.setLoadingIndicator(forceLoad);
-        mDisposable = mDataRepository.getTickets(eventId, isCheckOut, page, LENGTH)
+        String token = EvendateAccountManager.peekToken(mView.getContext());
+        if (token == null) {
+            mView.requestAuth().subscribe((String newToken) -> {
+                if (newToken != null) {
+                    startLoadList(newToken, eventId, isCheckOut, forceLoad, page);
+                }
+            });
+        } else {
+            startLoadList(token, eventId, isCheckOut, forceLoad, page);
+        }
+    }
+
+    private void startLoadList(String token, int eventId, boolean isCheckOut, boolean forceLoad, int page) {
+        mDisposable = mDataRepository.getTickets(token, eventId, isCheckOut, page, LENGTH)
                 .subscribe(result -> {
                             List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
@@ -70,17 +89,24 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
     }
 
     @Override
-    public void loadList(int eventId, String query, boolean forceLoad, int page) {
+    public void reload(int eventId, String query) {
+        load(eventId, query, true, 0);
+    }
+
+    @Override
+    public void load(int eventId, String query, boolean forceLoad, int page) {
         if (query.isEmpty()) {
             mView.showEmptyState();
             return;
         }
+        //todo token
         Observable<ResponseArray<Ticket>> observable;
+        String token = EvendateAccountManager.peekToken(mView.getContext());
         if (Pattern.matches("[\\d\\s]*", query)) {
             query = query.replaceAll("[\\s]", "");
-            observable = mDataRepository.getTicketsByNumber(eventId, query, page, LENGTH);
+            observable = mDataRepository.getTicketsByNumber(token, eventId, query, page, LENGTH);
         } else {
-            observable = mDataRepository.getTicketsByName(eventId, query, page, LENGTH);
+            observable = mDataRepository.getTicketsByName(token, eventId, query, page, LENGTH);
         }
         mView.setLoadingIndicator(forceLoad);
         mDisposable = observable.subscribe(result -> {
@@ -104,7 +130,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
         );
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mView.showError();
     }

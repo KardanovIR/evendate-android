@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_reel_background"
+    android:background="@color/white"
     android:clickable="true"
     android:elevation="4dp"
     android:fitsSystemWindows="true"
@@ -43,74 +43,156 @@
                 android:paddingBottom="16dp"
                 android:paddingTop="16dp">
 
+                <TextView
+                    android:id="@+id/registration_ticket_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/ticketing_form_choose_tickets"
+                    android:textColor="#8A000000"
+                    android:textSize="16sp"/>
+
                 <LinearLayout
                     android:id="@+id/ticket_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                </LinearLayout>
+                    android:orientation="vertical"/>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/registration_total_sum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:orientation="horizontal">
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:orientation="horizontal"
+                    android:textColor="@color/charcoal"
+                    android:textSize="16sp"
+                    tools:text="Общая стоимость: 30 000 ₽"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ticketing_form_promo_code_final_cost"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                        android:textColor="@color/black_translucent_170"/>
-
-                    <TextView
-                        android:id="@+id/registration_total_sum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                        tools:text="2 500 ₽"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ticketing_form_promo_code_sale"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        android:textColor="@color/black_translucent_170"/>
-
-                    <TextView
-                        android:id="@+id/registration_promocode_sale"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        tools:text="500 ₽"/>
-                </LinearLayout>
-
-                <LinearLayout
+                <android.support.constraint.ConstraintLayout
                     android:id="@+id/promocode_container"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end">
+                    android:layout_gravity="end"
+                    tools:layout_editor_absoluteX="16dp"
+                    tools:layout_editor_absoluteY="80dp">
 
-                    <EditText
-                        android:id="@+id/promocode"
-                        android:layout_width="wrap_content"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/promocode_layout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="@string/ticketing_form_promo_code_hint"/>
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:hint="@string/ticketing_form_promo_code_label"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/promocode_submit_button"
+                        app:layout_constraintHorizontal_bias="0.94"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/promocode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"/>
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <Button
                         android:id="@+id/promocode_submit_button"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/ticketing_form_promo_code_enter"/>
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/promocode_background"
+                        android:minHeight="0dp"
+                        android:paddingBottom="7dp"
+                        android:paddingEnd="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="7dp"
+                        android:text="@string/ticketing_form_promo_code_enter"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/promocode_layout"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.63"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/promocode_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/ticketing_form_promo_code_description"
+                    android:textColor="#61000000"
+                    android:textSize="12sp"/>
+
+                <LinearLayout
+                    android:id="@+id/registration_final_cost_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="46dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="16dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/ticketing_form_final_cost"
+                        android:textColor="@color/charcoal"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/registration_crossed_out_cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#FF9FA6B3"
+                        android:textSize="14sp"
+                        android:visibility="gone"
+                        tools:text="30 000 ₽"
+                        tools:visibility="visible"/>
+
+                    <TextView
+                        android:id="@+id/registration_final_cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/charcoal"
+                        android:textSize="16sp"
+                        tools:text="500 ₽"/>
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/form_elements_container"
                     android:layout_width="match_parent"
@@ -135,7 +217,7 @@
                     android:paddingTop="16dp"
                     android:text="@string/ticketing_form_register_button"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="14.0sp"/>
+                    android:textSize="14sp"/>
             </LinearLayout>
 
         </ScrollView>

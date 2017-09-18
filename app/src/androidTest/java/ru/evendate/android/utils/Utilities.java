@@ -19,7 +19,7 @@ public class Utilities extends AndroidTestCase {
         return utilities;
     }
 
-    public void setLocale(String language, String country) {
+    private void setLocale(String language, String country) {
         Locale locale = new Locale(language, country);
         Locale.setDefault(locale);
         Resources res = mContext.getResources();

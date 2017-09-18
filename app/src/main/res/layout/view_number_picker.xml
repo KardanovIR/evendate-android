@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="30dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/number_picker_background"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/decrement"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/ic_minus"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:background="?attr/selectableItemBackground"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/lavender_gray"/>
+
+    <EditText
+        android:id="@+id/display"
+        android:layout_width="45dp"
+        android:layout_height="match_parent"
+
+        android:focusable="false"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:textColor="#FF4A4A4A"
+        android:textSize="14.0sp"
+        android:background="@null"
+        tools:text="1"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/lavender_gray"/>
+
+    <ImageButton
+        android:id="@+id/increment"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        app:srcCompat="@drawable/ic_plus"
+        android:background="?attr/selectableItemBackground"/>
+</LinearLayout>

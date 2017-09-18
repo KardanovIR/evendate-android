@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.widget.Toolbar;
@@ -29,18 +28,18 @@ import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 
 import static ru.evendate.android.EvendatePreferences.KEY_INDICATOR_COLOR;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     //todo
     public static final String KEY_HTTPS = "key_https";
     public static final boolean KEY_HTTPS_DEFAULT = false;
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
     private static final String KEY_PRIVACY_FEED = "key_feed_privacy";
     private static final String KEY_INFO = "key_info";
-    private DrawerWrapper mDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,23 +48,28 @@ public class SettingsActivity extends AppCompatActivity {
 
         initToolbar();
         initDrawer();
-        mDrawer.getDrawer().setSelection(DrawerWrapper.SETTINGS_IDENTIFIER);
-        mDrawer.start();
     }
 
     @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new SettingsNavigationItemClickListener(this, mDrawer.getDrawer()));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.SETTINGS_IDENTIFIER);
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -74,7 +78,13 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle bundle, String s) {
             addPreferencesFromResource(R.xml.preferences);
+            //initPrivacyPreference();
+            initVersionDialog();
+            initColorPreference();
+        }
 
+        //todo also need to handle non auth state
+        private void initPrivacyPreference() {
             CheckBoxPreference feedPrivacyPreference = (CheckBoxPreference)getPreferenceScreen().findPreference(KEY_PRIVACY_FEED);
             feedPrivacyPreference.setOnPreferenceChangeListener((Preference preference, Object newValue) -> {
                 updateFeedPrivacy((boolean)newValue);
@@ -91,8 +101,10 @@ public class SettingsActivity extends AppCompatActivity {
                     .subscribe(result -> {
                         if (result.isOk())
                             feedPrivacyPreference.setChecked(result.getData().get(0).isFeedShowedToFriend());
-                    }, error -> Log.e(LOG_TAG, error.getMessage()));
+                    }, error -> Log.e(LOG_TAG, "" + error.getMessage()));
+        }
 
+        private void initVersionDialog() {
             Preference dialogPreference = getPreferenceScreen().findPreference(KEY_INFO);
             dialogPreference.setOnPreferenceClickListener((Preference preference) -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
@@ -109,7 +121,9 @@ public class SettingsActivity extends AppCompatActivity {
                 dialog.show();
                 return true;
             });
+        }
 
+        private void initColorPreference() {
             indicatorColor = EvendatePreferences.getLedColor(getActivity());
 
             Preference colorPreference = getPreferenceScreen().findPreference(KEY_INDICATOR_COLOR);
@@ -155,7 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.SETTINGS_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;

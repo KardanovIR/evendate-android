@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -19,14 +18,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 
-public class EventRegisteredActivity extends AppCompatActivity {
+public class EventRegisteredActivity extends BaseActivity {
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.pager) ViewPager mPager;
     @BindView(R.id.tabs) TabLayout mTabs;
-    DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +48,9 @@ public class EventRegisteredActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener((View v) -> mDrawer.getDrawer().openDrawer());
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new TicketsNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -59,7 +59,6 @@ public class EventRegisteredActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mDrawer.getDrawer().setSelection(DrawerWrapper.TICKETS_IDENTIFIER);
-        mDrawer.start();
     }
 
     private class EventRegisteredPagerAdapter extends FragmentStatePagerAdapter {
@@ -120,7 +119,7 @@ public class EventRegisteredActivity extends AppCompatActivity {
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.TICKETS_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;
