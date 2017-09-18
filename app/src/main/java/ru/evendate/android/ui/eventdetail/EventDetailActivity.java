@@ -936,7 +936,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             if (!mEvent.isRegistrationAvailable() || mEvent.isTicketingAvailable()) {
                 findViewById(R.id.event_registration_label).setVisibility(View.INVISIBLE);
                 mRegistrationTillTextView.setVisibility(View.INVISIBLE);
-                return;
             }
             if (!mEvent.isRegistrationRequired()) {
                 mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
