@@ -57,6 +57,7 @@ import ru.evendate.android.ui.users.UserListFragment;
  * Created by Dmitry on 11.02.2016.
  */
 public class DrawerWrapper {
+    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     public final static int REEL_IDENTIFIER = 1;
     public final static int CALENDAR_IDENTIFIER = 2;
     public final static int CATALOG_IDENTIFIER = 3;
@@ -72,7 +73,6 @@ public class DrawerWrapper {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private ArrayList<OrganizationSubscription> mSubscriptions;
@@ -236,6 +236,7 @@ public class DrawerWrapper {
                         mUser = result.getData().get(0);
                         EvendatePreferences.newInstance(mContext).putUser(mUser);
                         buildProfile();
+                        setupMenu();
                         if (mUser.getSubscriptions() != null) {
                             onLoaded(mUser.getSubscriptions());
                         }

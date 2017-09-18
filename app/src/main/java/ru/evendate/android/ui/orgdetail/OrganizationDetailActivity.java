@@ -331,14 +331,15 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     }
 
     private void tintByBrandColor() {
+        //todo handle illegal argument (bad color string)
         TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-        if (mOrganization.getBrandColor() != null) {
+        if (mOrganization.getBrandColor() != null || mOrganization.getBrandColor().isEmpty()) {
             int brandColor = Color.parseColor(mOrganization.getBrandColor());
             mAppBarLayout.setBackgroundColor(brandColor);
             mCollapsingToolbar.setContentScrimColor(brandColor);
             tintStatusBar(brandColor);
         }
-        if (mOrganization.getBrandColorAccent() != null) {
+        if (mOrganization.getBrandColorAccent() != null || mOrganization.getBrandColorAccent().isEmpty()) {
             int brandColorAccent = Color.parseColor(mOrganization.getBrandColorAccent());
             StateListDrawable stateListDrawable = new StateListDrawable();
             stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
@@ -458,8 +459,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
 
         public static OrganizationInfo newInstance(@Nullable String brandColor, @Nullable String brandColorAccent) {
             OrganizationInfo fragment = new OrganizationInfo();
-            fragment.brandColor = brandColor == null ? 0 : Color.parseColor(brandColor);
-            fragment.brandColorAccent = brandColorAccent == null ? 0 : Color.parseColor(brandColorAccent);
+            fragment.brandColor = brandColor == null || brandColor.isEmpty() ? 0 : Color.parseColor(brandColor);
+            fragment.brandColorAccent = brandColorAccent == null || brandColorAccent.isEmpty() ? 0 : Color.parseColor(brandColorAccent);
             return fragment;
         }
 

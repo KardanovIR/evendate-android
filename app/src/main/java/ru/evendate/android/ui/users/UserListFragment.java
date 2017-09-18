@@ -12,6 +12,7 @@ import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.ui.AbstractAdapter;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.EndlessListFragment;
 import ru.evendate.android.ui.userdetail.UserProfileActivity;
 
@@ -105,9 +106,8 @@ public class UserListFragment extends EndlessListFragment<UserListPresenter, Use
     }
 
     @Override
-    //todo
     public Observable<String> requestAuth() {
-        return null;
+        return ((BaseActivity)getActivity()).requestAuth();
     }
 
     @Override

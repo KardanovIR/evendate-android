@@ -186,15 +186,6 @@
             </intent-filter>
         </activity>
 
-
-        <!--
-        <provider
-            android:name=".data.EvendateProvider"
-            android:authorities="@string/content_authority"
-            android:exported="false"
-            android:syncable="true"/>
-        -->
-
         <service
             android:name=".auth.AuthenticatorService"
             android:exported="false">
@@ -206,23 +197,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/evendate_authenticator"/>
         </service>
-        <!--
-        <service
-            android:name=".network.EvendateSyncService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
 
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/evendate_sync_adapter" />
-        </service>
-        -->
-        <!--
-             Optionally, register AnalyticsReceiver and AnalyticsService to support background
-             dispatching on non-Google Play devices
-        -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true"

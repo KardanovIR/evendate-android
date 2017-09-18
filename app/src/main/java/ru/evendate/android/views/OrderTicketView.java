@@ -80,7 +80,7 @@ public class OrderTicketView extends FrameLayout {
 
     private void setTicketTotalSum(int num) {
         ticketTotalSum = mTicketType.getPrice() * num;
-        if (ticketTotalSum == 0) {
+        if (ticketTotalSum == 0 && num == 0) {
             mTicketTotalSum.setVisibility(INVISIBLE);
         } else {
             mTicketTotalSum.setVisibility(VISIBLE);

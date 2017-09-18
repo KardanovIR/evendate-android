@@ -253,6 +253,7 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
         super.onStop();
         Log.i(LOG_TAG, "onStop");
         apiClient.disconnect();
+        apiClient.stopAutoManage(getActivity());
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
         if (mDisposable != null)
@@ -264,8 +265,8 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
         super.onDestroyView();
         Log.i(LOG_TAG, "onDestroyView");
         unbinder.unbind();
-        apiClient.stopAutoManage(getActivity());
     }
+
 
     @SuppressWarnings("unused")
     @OnClick({R.id.sing_in_vk_button, R.id.sing_in_fb_button, R.id.sing_in_google_button, R.id.auth_skip_button})

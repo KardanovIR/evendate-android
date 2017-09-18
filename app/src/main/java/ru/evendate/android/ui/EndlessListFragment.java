@@ -105,7 +105,9 @@ public abstract class EndlessListFragment<T extends EndlessContract.EndlessPrese
         if (active && !mSwipeRefreshLayout.isRefreshing()) {
             mLoadStateView.showProgress();
         } else {
-            mLoadStateView.hideProgress();
+            if (!isEmpty()) {
+                mLoadStateView.hideProgress();
+            }
             mSwipeRefreshLayout.setRefreshing(active);
         }
     }
@@ -130,7 +132,7 @@ public abstract class EndlessListFragment<T extends EndlessContract.EndlessPrese
     @Override
     public void showEmptyState() {
         mSwipeRefreshLayout.setRefreshing(false);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        //mRecyclerView.setVisibility(View.INVISIBLE);
         mLoadStateView.showEmptyHint();
         mEndless.loadMoreComplete();
         mEndless.setLoadMoreAvailable(false);

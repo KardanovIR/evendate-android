@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
@@ -99,6 +101,7 @@ public class RegistrationFormFragment extends FormDialogFragment
     private ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
     private float totalSum = 0;
     private float finalSum = 0;
+    private Disposable mDisposable;
 
     @Nullable private PromoCode promoCode;
 
@@ -242,6 +245,8 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void setTotalSum(float sum) {
+        if (!isAdded())
+            return;
         totalSum = sum;
         mTotalSum.setText(" " + TicketFormatter.formatTotalCost(getContext(), totalSum));
         mFinalCost.setText(" " + TicketFormatter.formatCost(getContext(), totalSum));
@@ -321,6 +326,12 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void checkPromoCode(String promoCode) {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
         setTotalSum(totalSum);
         if (promoCode.isEmpty()) {
             Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code,
@@ -336,17 +347,21 @@ public class RegistrationFormFragment extends FormDialogFragment
         Observable<ResponseObject<PromoCode>> checkPromoCodeObservable =
                 apiService.checkPromoCode(EvendateAccountManager.peekToken(getContext()),
                         mEvent.getEntryId(), promoCode);
-        checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mDisposable = checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                             if (result.isOk()) {
                                 this.promoCode = result.getData();
-                                submitPromoCode();
-                                setupButton();
                             } else {
+                                this.promoCode = null;
                                 Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code_error,
                                         Toast.LENGTH_SHORT).show();
                             }
+                    submitPromoCode();
+                    setupButton();
                         }
                 );
     }
