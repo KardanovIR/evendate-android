@@ -15,6 +15,7 @@ import ru.evendate.android.auth.AuthDialog;
 public abstract class BaseActivity extends AppCompatActivity implements AuthHandler {
     private static final String TAG_AUTH = "tag_auth";
     protected DrawerWrapper mDrawer;
+    private AuthDialog mAuthDialog;
 
     //TODO deprecated parasha
     protected void onUpPressed() {
@@ -46,12 +47,14 @@ public abstract class BaseActivity extends AppCompatActivity implements AuthHand
     @Override
     public final Observable<String> requestAuth() {
         AuthDialog authDialog = (AuthDialog)getSupportFragmentManager().findFragmentByTag(TAG_AUTH);
-        if (authDialog == null) {
-            authDialog = new AuthDialog();
-            authDialog.show(getSupportFragmentManager(), TAG_AUTH);
+        if (mAuthDialog == null && authDialog == null) {
+            mAuthDialog = new AuthDialog();
+            mAuthDialog.show(getSupportFragmentManager(), TAG_AUTH);
+        } else if (authDialog != null) {
+            mAuthDialog = authDialog;
         }
-        authDialog.getAuthObservable().subscribe((String newToken) -> onReload());
-        return authDialog.getAuthObservable();
+        mAuthDialog.getAuthObservable().subscribe((String newToken) -> onReload(), (Throwable e) -> e.printStackTrace(), () -> mAuthDialog = null);
+        return mAuthDialog.getAuthObservable();
     }
 
     @Override

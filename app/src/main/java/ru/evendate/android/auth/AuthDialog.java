@@ -44,7 +44,9 @@ import com.vk.sdk.api.VKError;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -145,7 +147,9 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
                 .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.EMAIL), new Scope(Scopes.PROFILE))
                 .build();
         apiClient = new GoogleApiClient.Builder(getContext())
-                .enableAutoManage(getActivity(), this)
+                .enableAutoManage(getActivity(),
+                        new Random(Calendar.getInstance().getTimeInMillis()).nextInt(Integer.MAX_VALUE),
+                        this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
