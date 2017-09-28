@@ -198,6 +198,7 @@ public interface ApiService {
     @GET(API_PATH + "/events/tickets")
     Observable<ResponseArray<Ticket>> getTickets(
             @Header("Authorization") String authorization,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -209,6 +210,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("checkout") boolean checkout,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -220,6 +222,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("number") String number,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -231,6 +234,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("user_name") String userName,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,

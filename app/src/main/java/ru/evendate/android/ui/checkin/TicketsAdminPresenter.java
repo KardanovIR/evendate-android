@@ -66,7 +66,7 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
     }
 
     private void startLoadList(String token, int eventId, boolean isCheckOut, boolean forceLoad, int page) {
-        mDisposable = mDataRepository.getTickets(token, eventId, isCheckOut, page, LENGTH)
+        mDisposable = mDataRepository.getTickets(token, eventId, isCheckOut, Ticket.GREEN_TYPE, page, LENGTH)
                 .subscribe(result -> {
                             List<CheckInContract.TicketAdmin> list = new ArrayList<>(result.getData());
                             boolean isLast = list.size() < LENGTH;
@@ -104,9 +104,9 @@ public class TicketsAdminPresenter implements CheckInContract.TicketAdminPresent
         String token = EvendateAccountManager.peekToken(mView.getContext());
         if (Pattern.matches("[\\d\\s]*", query)) {
             query = query.replaceAll("[\\s]", "");
-            observable = mDataRepository.getTicketsByNumber(token, eventId, query, page, LENGTH);
+            observable = mDataRepository.getTicketsByNumber(token, eventId, query, Ticket.GREEN_TYPE, page, LENGTH);
         } else {
-            observable = mDataRepository.getTicketsByName(token, eventId, query, page, LENGTH);
+            observable = mDataRepository.getTicketsByName(token, eventId, query, Ticket.GREEN_TYPE, page, LENGTH);
         }
         mView.setLoadingIndicator(forceLoad);
         mDisposable = observable.subscribe(result -> {

@@ -42,9 +42,9 @@ public class DataRepository implements DataSource {
     }
 
     @Override
-    public Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int page, int pageLength) {
+    public Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, String type, int page, int pageLength) {
         Observable<ResponseArray<Ticket>> eventsObservable =
-                mService.getTickets(token, Ticket.FIELDS_LIST,
+                mService.getTickets(token, type, Ticket.FIELDS_LIST,
                         Ticket.ORDER_BY, pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())
@@ -52,10 +52,20 @@ public class DataRepository implements DataSource {
     }
 
     @Override
-    public Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int eventId, boolean checkOut, int page, int pageLength) {
+    public Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int eventId, boolean checkOut, String type, int page, int pageLength) {
 
         Observable<ResponseArray<Ticket>> eventsObservable =
                 mService.getTickets(token, eventId, checkOut,
+                        CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, type, pageLength, pageLength * page);
+
+        return eventsObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<ResponseArray<Ticket>> getTicketsByNumber(@NonNull String token, int eventId, String query, String type, int page, int pageLength) {
+        Observable<ResponseArray<Ticket>> eventsObservable =
+                mService.getTicketsByNumber(token, eventId, query, type,
                         CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())
@@ -63,19 +73,9 @@ public class DataRepository implements DataSource {
     }
 
     @Override
-    public Observable<ResponseArray<Ticket>> getTicketsByNumber(@NonNull String token, int eventId, String query, int page, int pageLength) {
+    public Observable<ResponseArray<Ticket>> getTicketsByName(@NonNull String token, int eventId, String query, String type, int page, int pageLength) {
         Observable<ResponseArray<Ticket>> eventsObservable =
-                mService.getTicketsByNumber(token, eventId, query,
-                        CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, pageLength, pageLength * page);
-
-        return eventsObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    @Override
-    public Observable<ResponseArray<Ticket>> getTicketsByName(@NonNull String token, int eventId, String query, int page, int pageLength) {
-        Observable<ResponseArray<Ticket>> eventsObservable =
-                mService.getTicketsByName(token, eventId, query,
+                mService.getTicketsByName(token, eventId, query, type,
                         CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())

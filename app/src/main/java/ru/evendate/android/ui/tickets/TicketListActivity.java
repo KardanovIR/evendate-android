@@ -140,7 +140,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     private void loadTickets(int page) {
         //todo token
         String token = EvendateAccountManager.peekToken(this);
-        mDisposable = mDataRepository.getTickets(token, page, LENGTH).subscribe(result -> {
+        mDisposable = mDataRepository.getTickets(token, Ticket.GREEN_TYPE, page, LENGTH).subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
                         onLoaded(new ArrayList<>(result.getData()));

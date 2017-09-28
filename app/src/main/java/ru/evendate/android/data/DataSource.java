@@ -21,13 +21,13 @@ import ru.evendate.android.network.ResponseArray;
 
 public interface DataSource {
 
-    Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int page, int pageLength);
+    Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, String type, int page, int pageLength);
 
-    Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int eventId, boolean checkOut, int page, int pageLength);
+    Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int eventId, boolean checkOut, String type, int page, int pageLength);
 
-    Observable<ResponseArray<Ticket>> getTicketsByNumber(@NonNull String token, int eventId, String query, int page, int pageLength);
+    Observable<ResponseArray<Ticket>> getTicketsByNumber(@NonNull String token, int eventId, String query, String type, int page, int pageLength);
 
-    Observable<ResponseArray<Ticket>> getTicketsByName(@NonNull String token, int eventId, String query, int page, int pageLength);
+    Observable<ResponseArray<Ticket>> getTicketsByName(@NonNull String token, int eventId, String query, String type, int page, int pageLength);
 
     Observable<ResponseArray<Ticket>> getTicket(@NonNull String token, int eventId, String ticketUuid);
 
