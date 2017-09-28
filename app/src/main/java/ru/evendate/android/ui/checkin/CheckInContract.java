@@ -9,8 +9,8 @@ import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.TicketType;
 import ru.evendate.android.models.User;
 import ru.evendate.android.network.ServiceUtils;
+import ru.evendate.android.ui.BaseAuthView;
 import ru.evendate.android.ui.BasePresenter;
-import ru.evendate.android.ui.BaseView;
 
 /**
  * Created by Aedirn on 14.03.17.
@@ -49,7 +49,7 @@ public interface CheckInContract {
         void onQrReadError();
     }
 
-    interface EventAdminView extends BaseView<EventAdminPresenter> {
+    interface EventAdminView extends BaseAuthView<EventAdminPresenter> {
         void setLoadingIndicator(boolean active);
 
         void showList(List<EventRegistered> list, boolean isLast);
@@ -64,10 +64,12 @@ public interface CheckInContract {
     }
 
     interface EventAdminPresenter extends BasePresenter {
-        void loadList(boolean forceLoad, int page);
+        void reload();
+
+        void load(boolean forceLoad, int page);
     }
 
-    interface TicketsAdminView extends BaseView<TicketAdminPresenter> {
+    interface TicketsAdminView extends BaseAuthView<TicketAdminPresenter> {
         void setLoadingIndicator(boolean active);
 
         void showList(List<TicketAdmin> list, boolean isLast);
@@ -84,12 +86,17 @@ public interface CheckInContract {
     }
 
     interface TicketAdminPresenter extends BasePresenter {
-        void loadList(int eventId, boolean isCheckOut, boolean forceLoad, int page);
 
-        void loadList(int eventId, String query, boolean forceLoad, int page);
+        void reload(int eventId, boolean isCheckOut);
+
+        void load(int eventId, boolean isCheckOut, boolean forceLoad, int page);
+
+        void reload(int eventId, String query);
+
+        void load(int eventId, String query, boolean forceLoad, int page);
     }
 
-    interface TicketConfirmView extends BaseView<TicketConfirmPresenter> {
+    interface TicketConfirmView extends BaseAuthView<TicketConfirmPresenter> {
         void showConfirm();
 
         void showConfirmRevert();

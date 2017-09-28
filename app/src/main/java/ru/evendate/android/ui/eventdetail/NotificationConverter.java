@@ -13,9 +13,9 @@ import ru.evendate.android.ui.eventdetail.NotificationListAdapter.NotificationTy
  * Created by Dmitry on 10.08.2016.
  * create list of defaults notification, set their state and add other user notifications
  */
-public class NotificationConverter {
+class NotificationConverter {
 
-    public static ArrayList<Notification> convertNotificationList(List<EventNotification> eventNotifications) {
+    static ArrayList<Notification> convertNotificationList(List<EventNotification> eventNotifications) {
         ArrayList<Notification> list = new ArrayList<>();
         Set<EventNotification> set = new HashSet<>(eventNotifications);
         for (String type : getDefaultTypes()) {

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +20,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
+import io.reactivex.Observable;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.network.ServiceUtils;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.TagsRecyclerView;
@@ -36,16 +38,17 @@ import static ru.evendate.android.ui.tinder.RecommenderContract.PAGE_LENGTH;
 
 public class RecommenderFragment extends Fragment implements RecommenderContract.View, LoadStateView.OnReloadListener {
 
-    final int LOAD_OFFSET = 3;
-    @Bind(R.id.swipe_deck)
+    private final int LOAD_OFFSET = 3;
+    @BindView(R.id.swipe_deck)
     SwipeDeck swipeDeck;
-    SwipeDeckAdapter mAdapter;
-    boolean canLoadMore = true;
-    boolean loading = true;
-    @Bind(R.id.load_state)
+    private SwipeDeckAdapter mAdapter;
+    private boolean canLoadMore = true;
+    private boolean loading = true;
+    @BindView(R.id.load_state)
     LoadStateView mLoadStateView;
     private RecommenderContract.Presenter mPresenter;
-    boolean loaded = false;
+    private boolean loaded = false;
+    private Unbinder unbinder;
 
     public static RecommenderFragment newInstance() {
         RecommenderFragment fragment = new RecommenderFragment();
@@ -64,7 +67,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tinder_recommender, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         mAdapter = new SwipeDeckAdapter(getContext());
         swipeDeck.setAdapter(mAdapter);
         swipeDeck.setCallback(new SwipeDeck.SwipeDeckCallback() {
@@ -114,11 +117,6 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         if (!loaded) {
@@ -135,7 +133,12 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
+    }
+
+    @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
     }
 
     @OnClick({R.id.hide_button, R.id.revert_button, R.id.fave_button})
@@ -153,7 +156,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
     }
 
-    public void loadNext() {
+    private void loadNext() {
         if (canLoadMore && !loading) {
             loading = true;
             mPresenter.loadRecommends(false, mAdapter.getCount() / PAGE_LENGTH);
@@ -197,6 +200,11 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
     }
 
     @Override
+    public boolean isEmpty() {
+        return mAdapter.isEmpty();
+    }
+
+    @Override
     public void showEmptyState() {
         mLoadStateView.showEmptyHint();
     }
@@ -221,7 +229,7 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
             notifyDataSetChanged();
         }
 
-        public void addData(List<Event> data) {
+        void addData(List<Event> data) {
             this.data.addAll(data);
             notifyDataSetChanged();
         }
@@ -271,14 +279,10 @@ public class RecommenderFragment extends Fragment implements RecommenderContract
         }
 
         class ViewHolder {
-            @Bind(R.id.event_image)
-            ImageView eventImage;
-            @Bind(R.id.event_title)
-            TextView eventTitle;
-            @Bind(R.id.event_organizator)
-            TextView eventOrganizator;
-            @Bind(R.id.event_tags)
-            TagsRecyclerView eventTags;
+            @BindView(R.id.event_image) ImageView eventImage;
+            @BindView(R.id.event_title) TextView eventTitle;
+            @BindView(R.id.event_organizator) TextView eventOrganizator;
+            @BindView(R.id.event_tags) TagsRecyclerView eventTags;
 
             ViewHolder(View view) {
                 ButterKnife.bind(this, view);

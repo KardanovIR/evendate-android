@@ -24,30 +24,32 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.AbstractAdapter;
 import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 import ru.evendate.android.ui.utils.EventFormatter;
 import ru.evendate.android.ui.utils.FormatUtils;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 
-//TODO DRY
+//todo DRY
 public class EventRegisteredListFragment extends Fragment implements EventRegisteredContract.View,
         EventRegisteredContract.OnEventInteractionListener {
 
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    EventRegisteredRecyclerViewAdapter mAdapter;
-    EventRegisteredContract.Presenter mPresenter;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+    private EventRegisteredRecyclerViewAdapter mAdapter;
+    private EventRegisteredContract.Presenter mPresenter;
     private Endless mEndless;
+    private Unbinder unbinder;
 
     public void setPresenter(EventRegisteredContract.Presenter presenter) {
         mPresenter = presenter;
@@ -58,7 +60,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_registered_list, container, false);
 
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mAdapter = new EventRegisteredRecyclerViewAdapter(getContext(), this);
@@ -74,9 +76,9 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(false);
             mEndless.setCurrentPage(0);
-            mPresenter.loadEvents(true, 0);
+            mPresenter.reloadEvents();
         });
-        mLoadStateView.setOnReloadListener(() -> mPresenter.loadEvents(true, 0));
+        mLoadStateView.setOnReloadListener(() -> mPresenter.reloadEvents());
 
         setEmptyCap();
 
@@ -102,7 +104,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
 
@@ -185,7 +187,7 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
         builder.create().show();
     }
 
-    class EventRegisteredRecyclerViewAdapter extends AbstractEndlessAdapter<EventRegistered,
+    class EventRegisteredRecyclerViewAdapter extends AbstractAdapter<EventRegistered,
             EventRegisteredRecyclerViewAdapter.EventRegisteredViewHolder> {
 
         private final EventRegisteredContract.OnEventInteractionListener mListener;
@@ -233,11 +235,11 @@ public class EventRegisteredListFragment extends Fragment implements EventRegist
 
         class EventRegisteredViewHolder extends RecyclerView.ViewHolder {
             View holderView;
-            @Bind(R.id.hint) TextView mHint;
-            @Bind(R.id.title) TextView mTitle;
-            @Bind(R.id.datetime) TextView mDatetime;
-            @Bind(R.id.place) TextView mPlace;
-            @Bind(R.id.ticket_count) TextView mTicketCount;
+            @BindView(R.id.hint) TextView mHint;
+            @BindView(R.id.title) TextView mTitle;
+            @BindView(R.id.datetime) TextView mDatetime;
+            @BindView(R.id.place) TextView mPlace;
+            @BindView(R.id.ticket_count) TextView mTicketCount;
 
             @Nullable EventRegistered mEvent;
 

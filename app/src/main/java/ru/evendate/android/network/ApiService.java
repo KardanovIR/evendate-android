@@ -11,6 +11,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import ru.evendate.android.auth.AuthUrls;
 import ru.evendate.android.models.Action;
 import ru.evendate.android.models.City;
 import ru.evendate.android.models.DateCalendar;
@@ -18,6 +19,7 @@ import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventNotification;
 import ru.evendate.android.models.OrganizationCategory;
 import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.models.PromoCode;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.Settings;
 import ru.evendate.android.models.StatisticsEvent;
@@ -31,6 +33,9 @@ import ru.evendate.android.models.UserDetail;
 @SuppressWarnings("SameParameterValue")
 public interface ApiService {
     String API_PATH = "/api/v1";
+
+    @GET("/auth.php?action=get_urls")
+    Observable<ResponseObject<AuthUrls>> getAuthUrls();
 
     @GET(API_PATH + "/events/dates")
     Observable<ResponseArray<DateCalendar>> getCalendarDates(
@@ -54,6 +59,17 @@ public interface ApiService {
             @Query("offset") int offset
     );
 
+    @GET(API_PATH + "/events/my")
+    Observable<ResponseArray<Event>> getFeed(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("city_id") int cityId,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
     /**
      * Get concrete event
      */
@@ -71,6 +87,17 @@ public interface ApiService {
     Observable<ResponseArray<Event>> getFavorite(
             @Header("Authorization") String authorization,
             @Query("future") boolean future,
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events/favorites")
+    Observable<ResponseArray<Event>> getFavorite(
+            @Header("Authorization") String authorization,
+            @Query("future") boolean future,
+            @Query("city_id") int cityId,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -171,6 +198,7 @@ public interface ApiService {
     @GET(API_PATH + "/events/tickets")
     Observable<ResponseArray<Ticket>> getTickets(
             @Header("Authorization") String authorization,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -182,6 +210,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("checkout") boolean checkout,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -193,6 +222,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("number") String number,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -204,6 +234,7 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") int eventId,
             @Query("user_name") String userName,
+            @Query("type") String type,
             @Query("fields") String fields,
             @Query("order_by") String orderBy,
             @Query("length") int length,
@@ -281,7 +312,8 @@ public interface ApiService {
     Observable<ResponseArray<OrganizationCategory>> getCatalog(
             @Header("Authorization") String authorization,
             @Query("fields") String fields,
-            @Query("city_id") int cityId
+            @Query("city_id") int cityId,
+            @Query("new_separated") boolean newSeparated
     );
 
     @GET(API_PATH + "/organizations/cities")
@@ -330,6 +362,13 @@ public interface ApiService {
             @Body Registration registration_fields
     );
 
+    @GET(API_PATH + "/events/{id}/promocodes")
+    Observable<ResponseObject<PromoCode>> checkPromoCode(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("code") String code
+    );
+
     //statistics
     @POST(API_PATH + "/statistics/batch")
     Observable<Response> postStat(
@@ -374,7 +413,9 @@ public interface ApiService {
     @GET(API_PATH + "/users/friends")
     Observable<ResponseArray<UserDetail>> getFriends(
             @Header("Authorization") String authorization,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @GET(API_PATH + "/users/settings")
@@ -402,7 +443,10 @@ public interface ApiService {
     Observable<ResponseArray<UserDetail>> findUsers(
             @Header("Authorization") String authorization,
             @Query("name") String name,
-            @Query("fields") String fields
+            @Query("fields") String fields,
+            @Query("order_by") String orderBy,
+            @Query("length") int length,
+            @Query("offset") int offset
     );
 
     @GET(API_PATH + "/events")

@@ -4,11 +4,18 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
+import java.util.Date;
+
+import ru.evendate.android.ui.utils.DateUtils;
+
 /**
  * Created by Aedirn on 09.03.17.
  */
 @Parcel
 public class TicketType extends DataModel {
+    public static final String FIELDS_LIST = "comment,created_at,updated_at,price," +
+            "sell_start_date,sell_end_date,start_after_ticket_type_uuid,amount," +
+            "min_count_per_user,max_count_per_user,is_selling";
 
     @SerializedName("uuid")
     String uuid;
@@ -22,15 +29,15 @@ public class TicketType extends DataModel {
     @SerializedName("comment")
     String comment;
     @SerializedName("created_at")
-    long createdAt;
+    int createdAt;
     @SerializedName("updated_at")
-    long updatedAt;
+    int updatedAt;
     @SerializedName("price")
     float price;
     @SerializedName("sell_start_date")
-    long sellStartDate;
+    int sellStartDate;
     @SerializedName("sell_end_date")
-    long sellEndDate;
+    int sellEndDate;
     @SerializedName("start_after_ticket_type_uuid")
     int startAfterTicketTypeUuid;
     @SerializedName("amount")
@@ -39,10 +46,8 @@ public class TicketType extends DataModel {
     int minCountPerUser;
     @SerializedName("max_count_per_user")
     int maxCountPerUser;
-    @SerializedName("promocode")
-    int promocode;
-    @SerializedName("promocode_effort")
-    int promocodeEffort;
+    @SerializedName("is_selling")
+    boolean isSelling;
 
     @Override
     public int getEntryId() {
@@ -69,24 +74,24 @@ public class TicketType extends DataModel {
         return comment;
     }
 
-    public long getCreatedAt() {
-        return createdAt;
+    public Date getCreatedAt() {
+        return DateUtils.date(createdAt);
     }
 
-    public long getUpdatedAt() {
-        return updatedAt;
+    public Date getUpdatedAt() {
+        return DateUtils.date(updatedAt);
     }
 
     public float getPrice() {
         return price;
     }
 
-    public long getSellStartDate() {
-        return sellStartDate;
+    public Date getSellStartDate() {
+        return DateUtils.date(sellStartDate);
     }
 
-    public long getSellEndDate() {
-        return sellEndDate;
+    public Date getSellEndDate() {
+        return DateUtils.date(sellEndDate);
     }
 
     public int getStartAfterTicketTypeUuid() {
@@ -105,11 +110,7 @@ public class TicketType extends DataModel {
         return maxCountPerUser;
     }
 
-    public int getPromocode() {
-        return promocode;
-    }
-
-    public int getPromocodeEffort() {
-        return promocodeEffort;
+    public boolean isSelling() {
+        return isSelling;
     }
 }

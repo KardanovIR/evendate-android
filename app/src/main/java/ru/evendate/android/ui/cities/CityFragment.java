@@ -14,8 +14,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.models.City;
@@ -27,10 +28,11 @@ public class CityFragment extends Fragment implements CityContract.View,
         CityContract.OnCityInteractionListener {
 
     public final static String KEY_CITY = "city";
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.load_state) LoadStateView mLoadState;
-    CityRecyclerViewAdapter mAdapter;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.load_state) LoadStateView mLoadState;
+    private CityRecyclerViewAdapter mAdapter;
     private CityContract.Presenter mPresenter;
+    private Unbinder unbinder;
 
     @Override
     public void setPresenter(@NonNull CityContract.Presenter presenter) {
@@ -46,7 +48,7 @@ public class CityFragment extends Fragment implements CityContract.View,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_city, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
 
         mAdapter = new CityRecyclerViewAdapter(this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -73,7 +75,7 @@ public class CityFragment extends Fragment implements CityContract.View,
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @Override
@@ -171,7 +173,7 @@ public class CityFragment extends Fragment implements CityContract.View,
 
         class CityViewHolder extends RecyclerView.ViewHolder {
             final View mView;
-            @Bind(R.id.city_title) TextView mCityTitle;
+            @BindView(R.id.city_title) TextView mCityTitle;
             City mItem;
 
             CityViewHolder(View view) {
@@ -183,7 +185,7 @@ public class CityFragment extends Fragment implements CityContract.View,
 
         class HeaderViewHolder extends RecyclerView.ViewHolder {
             final View mView;
-            @Bind(R.id.location_button) LinearLayout mLocationButton;
+            @BindView(R.id.location_button) LinearLayout mLocationButton;
 
             HeaderViewHolder(View view) {
                 super(view);

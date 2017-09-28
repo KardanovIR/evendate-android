@@ -10,6 +10,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -62,9 +64,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-import butterknife.Bind;
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
@@ -107,57 +110,56 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         LoadStateView.OnReloadListener, RegistrationFormFragment.OnRegistrationCallbackListener {
     private static String LOG_TAG = EventDetailActivity.class.getSimpleName();
     public static final String URI_KEY = "uri";
-    @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.scroll_view) ScrollView mScrollView;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.event_image_mask) View mEventImageMask;
-    @Bind(R.id.event_title_mask) View mEventTitleMask;
-    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
-    @Bind(R.id.event_toolbar_title) TextView mToolbarTitle;
-    ObjectAnimator mTitleAppearAnimation;
-    ObjectAnimator mTitleDisappearAnimation;
-    @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.event_image) ImageView mEventImageView;
-    @Bind(R.id.event_organization_icon) ImageView mOrganizationIconView;
-    @Bind(R.id.event_organization_name) TextView mOrganizationTextView;
-    @Bind(R.id.event_description) TextView mDescriptionTextView;
-    @Bind(R.id.event_title) TextView mTitleTextView;
-    @Bind(R.id.event_place_button) View mPlaceButtonView;
-    @Bind(R.id.event_place_text) TextView mPlacePlaceTextView;
-    @Bind(R.id.event_link_card) View mLinkCard;
-    @Bind(R.id.event_title_container) View mTitleContainer;
-    @Bind(R.id.event_image_foreground) ImageView mEventForegroundImage;
-    @Bind(R.id.tag_layout) TagsRecyclerView mTagsView;
-    @Bind(R.id.event_registration_card) CardView mPriceCard;
-    @Bind(R.id.event_price) TextView mPriceTextView;
-    @Bind(R.id.event_registration) TextView mRegistrationTextView;
-    @Bind(R.id.event_registration_button) Button mRegistrationButton;
-    @Bind(R.id.event_registration_cap) TextView mRegistrationCap;
-    @Bind(R.id.event_dates) DatesView mDatesView;
-    @Bind(R.id.event_dates_light) CardView mDatesLightView;
-    @Bind(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
-    @Bind(R.id.event_time) TextView mEventTimeTextView;
-    @Bind(R.id.event_content_container) View mEventContentContainer;
-    @Bind(R.id.event_image_container) View mEventImageContainer;
-    @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+    @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.scroll_view) ScrollView mScrollView;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.event_image_mask) View mEventImageMask;
+    @BindView(R.id.event_title_mask) View mEventTitleMask;
+    @BindView(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @BindView(R.id.event_toolbar_title) TextView mToolbarTitle;
+    private ObjectAnimator mTitleAppearAnimation;
+    private ObjectAnimator mTitleDisappearAnimation;
+    @BindView(R.id.fab) FloatingActionButton mFAB;
+    @BindView(R.id.event_image) ImageView mEventImageView;
+    @BindView(R.id.event_organization_icon) ImageView mOrganizationIconView;
+    @BindView(R.id.event_organization_name) TextView mOrganizationTextView;
+    @BindView(R.id.event_description) TextView mDescriptionTextView;
+    @BindView(R.id.event_title) TextView mTitleTextView;
+    @BindView(R.id.event_place_button) View mPlaceButtonView;
+    @BindView(R.id.event_place_text) TextView mPlacePlaceTextView;
+    @BindView(R.id.event_link_card) View mLinkCard;
+    @BindView(R.id.event_title_container) View mTitleContainer;
+    @BindView(R.id.event_image_foreground) ImageView mEventForegroundImage;
+    @BindView(R.id.tag_layout) TagsRecyclerView mTagsView;
+    @BindView(R.id.event_registration_card) CardView mPriceCard;
+    @BindView(R.id.event_price) TextView mPriceTextView;
+    @BindView(R.id.event_registration) TextView mRegistrationTillTextView;
+    @BindView(R.id.event_registration_button) Button mRegistrationButton;
+    @BindView(R.id.event_registration_cap) TextView mRegistrationCap;
+    @BindView(R.id.event_dates) DatesView mDatesView;
+    @BindView(R.id.event_dates_light) CardView mDatesLightView;
+    @BindView(R.id.event_dates_intervals) TextView mEventDateIntervalsTextView;
+    @BindView(R.id.event_time) TextView mEventTimeTextView;
+    @BindView(R.id.event_content_container) View mEventContentContainer;
+    @BindView(R.id.event_image_container) View mEventImageContainer;
+    @BindView(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
     @BindString(R.string.event_free) String eventFreeLabel;
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
-    DrawerWrapper mDrawer;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    int mFabHeight;
-    boolean isFabDown = false;
-    ObjectAnimator mFabUpAnimation;
-    ObjectAnimator mFabDownAnimation;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private int mFabHeight;
+    private boolean isFabDown = false;
+    private ObjectAnimator mFabUpAnimation;
+    private ObjectAnimator mFabDownAnimation;
     private Uri mUri;
     private int eventId;
     private EventAdapter mAdapter;
     private int mPalleteColor;
     private AlertDialog notificationDialog;
 
-    boolean backgroundLoaded = false;
+    private boolean backgroundLoaded = false;
 
-    final Target eventTarget = new Target() {
+    private final Target eventTarget = new Target() {
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
@@ -181,7 +183,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             revealView(mEventImageContainer);
         }
     };
-    final Target eventMiniTarget = new Target() {
+    private final Target eventMiniTarget = new Target() {
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {}
 
@@ -196,7 +198,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {}
     };
-    final Target orgTarget = new Target() {
+    private final Target orgTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             Log.d(LOG_TAG, "onBitmapLoaded");
@@ -218,6 +220,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT > 19) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
@@ -232,7 +237,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         initInterface();
 
         loadEvent();
-        mDrawer.start();
         mLoadStateView.showProgress();
     }
 
@@ -378,8 +382,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         mEventTitleMask.setBackgroundColor(maskColor);
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
@@ -425,13 +430,26 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 onUpPressed();
                 return true;
             case R.id.action_add_notification:
-                loadNotifications();
+                String token = EvendateAccountManager.peekToken(this);
+                if (token == null) {
+                    requestAuth().subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread()).subscribe(
+                            (String newToken) -> loadNotifications());
+                } else {
+                    loadNotifications();
+                }
                 return true;
             //case R.id.action_export:
             //    exportEventToCalendar();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.start();
     }
 
     @Override
@@ -449,17 +467,13 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     @Override
     public void onReload() {
+        super.onReload();
         loadEvent();
     }
 
-    public void loadEvent() {
-        ApiService apiService = ApiFactory.getService(this);
-        Observable<ResponseArray<Event>> eventObservable =
-                apiService.getEvent(EvendateAccountManager.peekToken(this),
-                        eventId, Event.FIELDS_LIST);
-
-        eventObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+    private void loadEvent() {
+        new DataRepository(this)
+                .getEvent(EvendateAccountManager.peekToken(this), eventId)
                 .subscribe(result -> {
                             if (result.isOk())
                                 onLoaded(result.getData());
@@ -469,26 +483,37 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                         mLoadStateView::hideProgress);
     }
 
-    public void onLoaded(ArrayList<Event> events) {
+    private void onLoaded(ArrayList<Event> events) {
         Event event = events.get(0);
         mAdapter.setEvent(event);
         mAdapter.setEventInfo();
         // cause W/OpenGLRenderer﹕ Layer exceeds max. dimensions supported by the GPU (1080x5856, max=4096x4096)
-        //if (Build.VERSION.SDK_INT > 19)
-        //    TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        //TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mEventContentContainer.setVisibility(View.VISIBLE);
         mTitleContainer.setVisibility(View.VISIBLE);
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
     @Override
     public void onRegistered() {
-        Toast.makeText(this, R.string.event_registration_done, Toast.LENGTH_LONG).show();
-        mRegistrationButton.setEnabled(false);
+        Toast.makeText(this, R.string.event_registration_done, Toast.LENGTH_SHORT).show();
+        //mRegistrationButton.setEnabled(false);
+        mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+    }
+
+    @Override
+    public void onPaymentCompleted() {
+        Toast.makeText(this, R.string.event_ticketing_payment_done, Toast.LENGTH_SHORT).show();
+        mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+    }
+
+    @Override
+    public void onPaymentError() {
+        Toast.makeText(this, R.string.event_ticketing_payment_error, Toast.LENGTH_LONG).show();
     }
 
     private void setFabIcon() {
@@ -519,11 +544,24 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @SuppressWarnings("unused")
     @OnClick(R.id.event_place_card)
     public void onPlaceClick() {
-        new Statistics(this).sendEventOpenMap(eventId);
         Uri gmmIntentUri = Uri.parse("geo:" + mAdapter.getEvent().getLatitude() +
                 "," + mAdapter.getEvent().getLongitude() + "?q=" + mAdapter.mEvent.getLocation());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        startActivity(mapIntent);
+        PackageManager manager = getPackageManager();
+        List<ResolveInfo> info = manager.queryIntentActivities(mapIntent, 0);
+        if (info.size() > 0) {
+            new Statistics(this).sendEventOpenMap(eventId);
+            startActivity(mapIntent);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.alert_maps_not_available);
+            builder.setPositiveButton(R.string.alert_install_google_maps, (DialogInterface dialogInterface, int i) -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.maps"));
+                startActivity(intent);
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -547,14 +585,25 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     public void onFabClick() {
         if (mAdapter.getEvent() == null)
             return;
+
+        String token = EvendateAccountManager.peekToken(this);
+        if (token == null) {
+            requestAuth().subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(this::like);
+        } else {
+            like(token);
+        }
+    }
+
+    private void like(@NonNull String token) {
         Event event = mAdapter.getEvent();
         DataSource dataSource = new DataRepository(this);
         Observable<Response> LikeEventObservable;
 
         if (event.isFavorite()) {
-            LikeEventObservable = dataSource.unfaveEvent(event.getEntryId());
+            LikeEventObservable = dataSource.unfaveEvent(token, event.getEntryId());
         } else {
-            LikeEventObservable = dataSource.faveEvent(event.getEntryId());
+            LikeEventObservable = dataSource.faveEvent(token, event.getEntryId());
         }
         LikeEventObservable.subscribe(result -> {
             if (result.isOk())
@@ -582,21 +631,31 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @SuppressWarnings("unused")
     @OnClick(R.id.event_registration_card)
     public void onRegistrationButtonClick() {
+        String token = EvendateAccountManager.peekToken(this);
         if (!mRegistrationButton.isEnabled())
             return;
-        if (!mAdapter.mEvent.isRegistrationLocally())
+        if (!mAdapter.mEvent.isRegistrationLocally() || !mAdapter.mEvent.isTicketingLocally())
             openSite();
         else {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            RegistrationFormFragment newFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            transaction.add(R.id.main_content, newFragment).addToBackStack(null).commit();
-            mFAB.hide();
+            if (token == null) {
+                requestAuth().subscribe((String newToken) -> openRegistrationForm());
+            } else {
+                openRegistrationForm();
+            }
         }
+        new Statistics(this).sendTicketingFormOpen(eventId);
     }
 
-    void openSite() {
+    private void openRegistrationForm() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        RegistrationFormFragment newFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.main_content, newFragment).addToBackStack(null).commit();
+        mFAB.hide();
+    }
+
+    private void openSite() {
         if (mAdapter.getEvent().getDetailInfoUrl() == null)
             return;
         Intent openLink = new Intent(Intent.ACTION_VIEW);
@@ -606,8 +665,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     /**
      * Returns the URI_KEY path to the Bitmap displayed in specified ImageView
+     * https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
      */
-    public Uri getLocalBitmapUri(ImageView imageView) {
+    private Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp;
@@ -634,7 +694,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         return bmpUri;
     }
 
-    // https://github.com/codepath/android_guides/wiki/Sharing-Content-with-Intents
 
     public void palette(Bitmap bitmap) {
         if (bitmap == null)
@@ -674,19 +733,20 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     private String constructTime(Event event) {
         String dateString = "RDATE;VALUE=PERIOD:";
         boolean firstAdded = false;
+        StringBuilder builder = new StringBuilder(dateString);
         for (EventDate date : event.getDateList()) {
             if (firstAdded) {
-                dateString += ",";
+                builder.append(",");
             }
-            dateString += DateFormatter.formatExportCalendarDateTime(date.getStartDateTime(), date.getEndDateTime());
+            builder.append(DateFormatter.formatExportCalendarDateTime(date.getStartDateTime(), date.getEndDateTime()));
             firstAdded = true;
         }
-        return dateString;
+        return builder.toString();
     }
 
     //todo SOLID
     //todo user action not handle immediate on bad network condition
-    public void loadNotifications() {
+    private void loadNotifications() {
         ApiService apiService = ApiFactory.getService(this);
 
         Observable<ResponseArray<EventNotification>> eventObservable =
@@ -705,7 +765,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 });
     }
 
-    public void initNotificationDialog(ArrayList<EventNotification> notifications) {
+    private void initNotificationDialog(ArrayList<EventNotification> notifications) {
         NotificationListAdapter adapter;
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -718,7 +778,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> adapter.update());
         alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> notificationDialog.dismiss());
 
-        Button addNotificationButton = (Button)convertView.findViewById(R.id.add_notification);
+        Button addNotificationButton = convertView.findViewById(R.id.add_notification);
         addNotificationButton.setOnClickListener((View view) -> {
             DialogFragment newFragment = DatePickerFragment.getInstance(this, eventId);
             newFragment.show(getSupportFragmentManager(), "datePicker");
@@ -804,12 +864,12 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         private void setEventInfo() {
             mOrganizationTextView.setText(mEvent.getOrganizationName());
             mDescriptionTextView.setText(mEvent.getDescription());
-            setAdaptiveTitle();
+            mTitleTextView.setText(mEvent.getTitle());
             mPlacePlaceTextView.setText(mEvent.getLocation());
             mTagsView.setTags(mEvent.getTagList());
             String eventBackgroundUrl = ServiceUtils.constructEventBackgroundURL(
                     mEvent.getImageHorizontalUrl(),
-                    (int) mContext.getResources().getDimension(R.dimen.event_background_width));
+                    (int)mContext.getResources().getDimension(R.dimen.event_background_width));
             Picasso.with(mContext)
                     .load(mEvent.getImageHorizontalMediumUrl())
                     .noFade()
@@ -835,22 +895,11 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
             mPriceTextView.setText(mEvent.isFree() ? eventFreeLabel :
                     EventFormatter.formatPrice(mContext, mEvent.getMinPrice()));
-            setRegistration();
+            setTicketingOrRegistration();
 
             if (mEvent.getDetailInfoUrl() == null) {
                 mLinkCard.setVisibility(View.GONE);
             }
-        }
-
-        private void setAdaptiveTitle() {
-            String title = mEvent.getTitle();
-            if (title.length() > 24)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            if (title.length() > 64)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            if (title.length() > 84)
-                mTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            mTitleTextView.setText(mEvent.getTitle());
         }
 
         private void setDates() {
@@ -866,13 +915,66 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
         }
 
-        private void setRegistration() {
+        /**
+         * set Registration or Ticketing info cause very complex conditions
+         */
+        private void setTicketingOrRegistration() {
+            if (mEvent.isTicketingLocally()) {
+                mRegistrationButton.setText(getString(R.string.event_ticketing));
+                if (mEvent.isTicketingAvailable()) {
+                    mRegistrationButton.setEnabled(true);
+                    mRegistrationCap.setVisibility(View.GONE);
+                    setTicketsAlreadyBought();
+                } else {
+                    mRegistrationButton.setEnabled(false);
+                    mRegistrationCap.setVisibility(View.VISIBLE);
+                    mRegistrationCap.setText(getString(R.string.event_ticketing_status_not_available));
+                }
+            } else {
+                if (mEvent.isRegistrationLocally()) {
+                    if (mEvent.isRegistrationAvailable()) {
+                        mRegistrationButton.setEnabled(true);
+                        mRegistrationCap.setVisibility(View.GONE);
+                        setTicketsAlreadyBought();
+                    } else {
+                        mRegistrationButton.setEnabled(false);
+                        mRegistrationCap.setText(R.string.event_registration_status_not_available);
+                        mRegistrationCap.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (mEvent.isRegistrationRequired()) {
+                        mRegistrationButton.setEnabled(true);
+                        mRegistrationCap.setVisibility(View.GONE);
+                    } else {
+                        mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
+                        mRegistrationButton.setVisibility(View.GONE);
+                        mRegistrationCap.setVisibility(View.GONE);
+                        mRegistrationButton.setEnabled(false);
+                    }
+                }
+            }
+            //setRegistrationApproved();
+            setRegistrationTillDate();
+        }
+
+        private void setTicketsAlreadyBought() {
+            if (mEvent.getTickets() != null && !mEvent.getTickets().isEmpty()) {
+                if (mEvent.isTicketingLocally()) {
+                    mRegistrationCap.setText(R.string.event_ticketing_status_already_purchased);
+                } else {
+                    mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+                }
+                mRegistrationCap.setVisibility(View.VISIBLE);
+            }
+        }
+
+        private void setRegistrationTillDate() {
+            if (!mEvent.isRegistrationAvailable() || mEvent.isTicketingAvailable()) {
+                findViewById(R.id.event_registration_label).setVisibility(View.INVISIBLE);
+                mRegistrationTillTextView.setVisibility(View.INVISIBLE);
+            }
             if (!mEvent.isRegistrationRequired()) {
-                mRegistrationTextView.setText(eventRegistrationNotRequiredLabel);
-                mRegistrationButton.setVisibility(View.GONE);
-                mRegistrationCap.setVisibility(View.GONE);
-                mRegistrationButton.setEnabled(false);
-                return;
+                mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
             } else {
                 Date regDate;
                 if (mEvent.getRegistrationTill() != null) {
@@ -880,21 +982,13 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 } else {
                     regDate = mEvent.getFirstDateTime();
                 }
-                mRegistrationTextView.setText(eventRegistrationTillLabel + " "
+                mRegistrationTillTextView.setText(eventRegistrationTillLabel + " "
                         + DateFormatter.formatRegistrationDate(regDate));
             }
-            if (!mEvent.isRegistrationAvailable()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_not_available);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
-            if (mEvent.isRegistered()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_already_registered);
-                mRegistrationCap.setVisibility(View.VISIBLE);
-            }
+        }
+
+        private void setRegistrationApproved() {
             if (mEvent.isRegistrationApproved()) {
-                mRegistrationButton.setEnabled(false);
                 mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }

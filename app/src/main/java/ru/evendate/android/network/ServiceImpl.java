@@ -11,6 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.statistics.Statistics;
@@ -28,19 +29,16 @@ public class ServiceImpl {
      * push subscribeOrgAndChangeState/unsubscribe stat to analytics
      */
     public static void subscribeOrgAndChangeState(Context context, OrganizationDetail organization) {
-        ApiService apiService = ApiFactory.getService(context);
         Observable<Response> subOrganizationObservable;
         int organizationId = organization.getEntryId();
+        String token = EvendateAccountManager.peekToken(context);
 
         if (organization.isSubscribed()) {
-            subOrganizationObservable = apiService.orgDeleteSubscription(organizationId,
-                    EvendateAccountManager.peekToken(context));
+            subOrganizationObservable = new DataRepository(context).unSubscribeOrg(token, organizationId);
         } else {
-            subOrganizationObservable = apiService.orgPostSubscription(organizationId,
-                    EvendateAccountManager.peekToken(context));
+            subOrganizationObservable = new DataRepository(context).subscribeOrg(token, organizationId);
         }
-        subOrganizationObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+        subOrganizationObservable
                 .subscribe(result -> {
                     if (result.isOk()) {
                         Log.i(LOG_TAG, "subscription applied");

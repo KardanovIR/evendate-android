@@ -1,30 +1,30 @@
 package ru.evendate.android.ui;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ds_gordeev on 17.02.2016.
+ * Recycler view adapter with endless listing support
  */
-@Deprecated
 public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
-    protected Context mContext;
     private List<T> mList = new ArrayList<>();
 
-    public AbstractAdapter(Context context) {
-        this.mContext = context;
-    }
-
-    public void add(List<T> list) {
+    /**
+     * append items to end of the list
+     */
+    public void add(final @NonNull List<T> list) {
         for (T item : list) {
             append(item);
         }
     }
 
-    public void replace(final List<T> list) {
+    /**
+     * replace current list by new list
+     */
+    public void set(final @NonNull List<T> list) {
         int size = mList.size();
         for (int index = 0; index < list.size(); index++) {
             if (index < size) {
@@ -43,6 +43,9 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         }
     }
 
+    /**
+     * clear list
+     */
     public void reset() {
         int size = mList.size();
         mList.clear();
@@ -62,17 +65,26 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         return mList.size();
     }
 
+    /**
+     * append item to end of the list
+     */
     protected void append(T item) {
         mList.add(mList.size(), item);
         notifyItemInserted(getItemCount());
     }
 
+    /**
+     * remove concrete item from the list
+     */
     protected void remove(T item) {
         int position = mList.indexOf(item);
         mList.remove(position);
         notifyItemRemoved(position);
     }
 
+    /**
+     * update concrete item in the list
+     */
     protected void update(T item) {
         int position = mList.indexOf(item);
         notifyItemChanged(position);

@@ -14,7 +14,7 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.evendate.android.R;
@@ -26,9 +26,9 @@ import ru.evendate.android.models.EventDate;
  * contain also button to expand and collapse when dates more when more than 5
  */
 public class DatesView extends CardView {
-    @Bind(R.id.container) LinearLayout mLayout;
-    @Bind(R.id.expand_container) LinearLayout mLayoutExpand;
-    @Bind(R.id.expand_button) ToggleButton ExpandButton;
+    @BindView(R.id.container) LinearLayout mLayout;
+    @BindView(R.id.expand_container) LinearLayout mLayoutExpand;
+    @BindView(R.id.expand_button) ToggleButton ExpandButton;
     private ArrayList<EventDate> mDates;
     private int minDates = 5;
 
@@ -43,7 +43,6 @@ public class DatesView extends CardView {
         ExpandButton.setChecked(false);
         if (isInEditMode()) {
             mockup();
-            return;
         }
     }
 
@@ -87,7 +86,7 @@ public class DatesView extends CardView {
             collapse(mLayoutExpand);
     }
 
-    public void expand(final View v) {
+    private void expand(final View v) {
         v.measure(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
@@ -114,7 +113,7 @@ public class DatesView extends CardView {
         v.startAnimation(a);
     }
 
-    public void collapse(final View v) {
+    private void collapse(final View v) {
         final int initialHeight = v.getMeasuredHeight();
 
         Animation a = new Animation() {

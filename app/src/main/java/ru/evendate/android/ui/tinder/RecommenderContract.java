@@ -3,17 +3,17 @@ package ru.evendate.android.ui.tinder;
 import java.util.List;
 
 import ru.evendate.android.models.Event;
+import ru.evendate.android.ui.BaseAuthView;
 import ru.evendate.android.ui.BasePresenter;
-import ru.evendate.android.ui.BaseView;
 
 /**
  * Created by Aedirn on 31.03.17.
  */
 
-public class RecommenderContract {
-    public static final int PAGE_LENGTH = 4;
+class RecommenderContract {
+    static final int PAGE_LENGTH = 4;
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseAuthView<Presenter> {
         void setLoadingIndicator(boolean active);
 
         void showRecommends(List<Event> events, boolean isLast);
@@ -23,6 +23,8 @@ public class RecommenderContract {
         void showEmptyState();
 
         void showError();
+
+        boolean isEmpty();
     }
 
     interface Presenter extends BasePresenter {

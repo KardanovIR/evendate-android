@@ -8,7 +8,7 @@
     <bool name="ga_reportUncaughtExceptions">true</bool>
 
     <screenName name="ru.evendate.android.ui.feed.MainActivity">Main Screen</screenName>
-    <screenName name="ru.evendate.android.auth.AuthActivity">Auth Screen</screenName>
+    <screenName name="ru.evendate.android.ui.SplashActivity">Splash Screen</screenName>
     <screenName name="ru.evendate.android.auth.WebAuthActivity">Web Auth Screen</screenName>
     <screenName name="ru.evendate.android.ui.eventdetail.EventDetailActivity">Event Screen
     </screenName>
@@ -25,9 +25,13 @@
     <screenName name="ru.evendate.android.ui.search.SearchResultsActivity">Search Screen
     </screenName>
 
-    <screenName name="ru.evendate.android.ui.EventRegisteredActivity">Event Registered Screen
+    <screenName name="ru.evendate.android.ui.tickets.EventRegisteredActivity">Event Registered
+        Screen
     </screenName>
-    <screenName name="ru.evendate.android.ui.TicketListActivity">Ticket List Screen</screenName>
-    <screenName name="ru.evendate.android.ui.CheckInActivity">Check In Screen</screenName>
-    <screenName name="ru.evendate.android.ui.RecommenderActivity">Recommendation Screen</screenName>
+    <screenName name="ru.evendate.android.ui.tickets.TicketListActivity">Ticket List Screen
+    </screenName>
+    <screenName name="ru.evendate.android.ui.checkin.CheckInActivity">Check In Screen</screenName>
+    <screenName name="ru.evendate.android.ui.tinder.RecommenderActivity">Recommendation Screen
+    </screenName>
+    <screenName name="ru.evendate.android.ui.cities.CityActivity">Cities Screen</screenName>
 </resources>

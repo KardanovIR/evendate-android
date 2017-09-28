@@ -7,6 +7,7 @@ import android.support.v7.preference.PreferenceManager;
 import com.google.gson.Gson;
 
 import ru.evendate.android.models.City;
+import ru.evendate.android.models.User;
 
 /**
  * Created by Aedirn on 16.10.16.
@@ -29,8 +30,11 @@ public class EvendatePreferences {
     private static final String KEY_USER_CITY = "key_user_city";
     private static final String DEFAULT_USER_CITY_JSON =
             "{'id':1,'en_name':'Moscow','country_id':1,'local_name':'Москва'}";
+    private static final String KEY_USER = "key_user";
 
     Context mContext;
+
+    private EvendatePreferences() {}
 
     public static EvendatePreferences newInstance(Context context) {
         EvendatePreferences preferences = new EvendatePreferences();
@@ -101,5 +105,19 @@ public class EvendatePreferences {
         Gson gson = new Gson();
         String json = getPreferences(mContext).getString(KEY_USER_CITY, DEFAULT_USER_CITY_JSON);
         return gson.fromJson(json, City.class);
+    }
+
+    public void putUser(User user) {
+        SharedPreferences.Editor editor = getPreferences(mContext).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString(KEY_USER, json);
+        editor.apply();
+    }
+
+    public User getUser() {
+        Gson gson = new Gson();
+        String json = getPreferences(mContext).getString(KEY_USER, null);
+        return gson.fromJson(json, User.class);
     }
 }

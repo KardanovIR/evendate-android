@@ -27,7 +27,7 @@ public class RegistrationField extends DataModel {
     @SerializedName("error")
     String error;
 
-    public RegistrationField() {}
+    RegistrationField() {}
 
     public RegistrationField(String uuid, String value) {
         this.uuid = uuid;

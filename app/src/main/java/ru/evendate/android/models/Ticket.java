@@ -28,6 +28,8 @@ public class Ticket extends DataModel implements CheckInContract.TicketAdmin {
             TicketParams.USER
     });
     public static final String ORDER_BY = "-created_at";
+    public static final String GREEN_TYPE = "green";
+
     @SerializedName("uuid")
     String uuid;
     @SerializedName("user_id")

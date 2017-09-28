@@ -15,7 +15,7 @@ import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Tag;
@@ -28,9 +28,9 @@ import ru.evendate.android.ui.AbstractAdapter;
 public class TagsRecyclerView extends RecyclerView {
     private OnTagClickListener listener;
     private TagAdapter mAdapter;
-    ChipsLayoutManager mSpanLayoutManager;
-    boolean isTouchable = true;
-    boolean isClickable = true;
+    private ChipsLayoutManager mSpanLayoutManager;
+    private boolean isTouchable = true;
+    private boolean isClickable = true;
 
     public TagsRecyclerView(Context context) {
         this(context, null);
@@ -46,13 +46,13 @@ public class TagsRecyclerView extends RecyclerView {
                 getResources().getDimensionPixelOffset(R.dimen.item_tag_space)));
     }
 
-    public void setTags(ArrayList<Tag> tags){
+    public void setTags(ArrayList<Tag> tags) {
         setTags(tags, ChipsLayoutManager.STRATEGY_DEFAULT);
     }
 
     //todo SOLID
     public void setTags(ArrayList<Tag> tags, int strategy) {
-        mAdapter = new TagAdapter(getContext(), tags);
+        mAdapter = new TagAdapter(tags);
         mSpanLayoutManager = ChipsLayoutManager.newBuilder(getContext())
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
                 .setScrollingEnabled(false)
@@ -78,15 +78,14 @@ public class TagsRecyclerView extends RecyclerView {
         isClickable = clickable;
     }
 
-    public void setOnTagClickListener(OnTagClickListener listener){
+    public void setOnTagClickListener(OnTagClickListener listener) {
         this.listener = listener;
     }
 
     private class TagAdapter extends AbstractAdapter<Tag, TagHolder> {
 
-        TagAdapter(Context context, ArrayList<Tag> mTags) {
-            super(context);
-            replace(mTags);
+        TagAdapter(ArrayList<Tag> mTags) {
+            set(mTags);
         }
 
         @Override
@@ -105,10 +104,9 @@ public class TagsRecyclerView extends RecyclerView {
 
     }
 
-
     class TagHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.title) TextView mTitle;
+        @BindView(R.id.title) TextView mTitle;
         public int id;
 
         TagHolder(View itemView) {
@@ -121,14 +119,14 @@ public class TagsRecyclerView extends RecyclerView {
         @Override
         public void onClick(View v) {
             if (v == holderView) {
-                if(listener != null)
+                if (listener != null)
                     listener.onTagClicked((String)mTitle.getText());
             }
         }
 
     }
 
-    public interface OnTagClickListener{
+    public interface OnTagClickListener {
         void onTagClicked(String tag);
     }
 }

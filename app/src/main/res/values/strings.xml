@@ -7,6 +7,7 @@
     <string name="title_activity_city">Cities</string>
     <string name="title_activity_check_in">Check in</string>
     <string name="title_activity_recommendation">Recommendation</string>
+    <string name="title_activity_event_registered">My tickets</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -16,6 +17,7 @@
     <integer name="com_vk_sdk_AppId">5739514</integer>
 
     <!-- navigation drawer and main activity strings-->
+    <string name="drawer_login_description">To use all the features, sign in to your account</string>
     <string name="drawer_calendar">Calendar</string>
     <string name="drawer_reel">My events</string>
     <string name="drawer_friends">Friends</string>
@@ -44,6 +46,13 @@
 
     <string name="tab_tickets_future_events">Active</string>
     <string name="tab_tickets_past_events">Used</string>
+
+    <string name="tab_event_registered_future">Future</string>
+    <string name="tab_event_registered_past">Past</string>
+
+    <!-- alert strings -->
+    <string name="alert_maps_not_available">Please install Google Maps or another map app</string>
+    <string name="alert_install_google_maps">Install Google maps</string>
 
     <!-- todo -->
     <string name="download_error">Error occurred</string>
@@ -81,12 +90,19 @@
     <string name="event_price_from">From</string>
 
     <string name="event_registration">Registration</string>
+    <string name="event_ticketing">Buy tickets</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
-    <string name="event_registration_button">Register</string>
     <string name="event_registration_status_not_available">Registration no available</string>
+    <string name="event_ticketing_status_not_available">Tickets no available</string>
     <string name="event_registration_status_already_registered">You are already registered</string>
+    <string name="event_ticketing_status_already_purchased">You are already bought tickets</string>
     <string name="event_registration_status_registration_approved">Registration approved</string>
+    <string name="event_registration_done">You have successfully registered</string>
+    <string name="event_registration_enter_fields">Enter fields</string>
+
+    <string name="event_ticketing_payment_error">Payment error</string>
+    <string name="event_ticketing_payment_done">You have successfully paid</string>
 
     <string name="event_show_on_map">Show on map</string>
     <string name="event_go_to_page">Go to event page</string>
@@ -101,11 +117,21 @@
     <string name="event_share_text_i_like">I like event ‘</string>
     <string name="event_share_text_in_org">’ by organizator </string>
 
-    <string name="event_registration_title">Event registration</string>
-    <string name="event_registration_done">You have successfully registered</string>
-
     <string name="event_notification_added">Notification added</string>
     <string name="event_notification_error">Error. Notification didn\'t added</string>
+
+    <!-- ticketing form-->
+    <string name="ticketing_form_choose_tickets">Choose tickets</string>
+    <string name="ticketing_form_total_cost">Total cost:</string>
+    <string name="ticketing_form_promo_code_label">Promocode</string>
+    <string name="ticketing_form_promo_code_enter">Submit</string>
+    <string name="ticketing_form_promo_code_description">If you have a promotional code, enter it and get a discount</string>
+    <string name="ticketing_form_toast_tickets">Choose tickets to order</string>
+    <string name="ticketing_form_toast_promo_code">Enter promocode</string>
+    <string name="ticketing_form_toast_promo_code_error">This promocode does not exist or is no longer active</string>
+    <string name="ticketing_form_final_cost">To pay:</string>
+    <string name="ticketing_form_register_button">Register</string>
+    <string name="ticketing_form_order_button">Pay</string>
 
     <!-- dates view -->
     <string name="dates_view_date_label">Date</string>
@@ -183,6 +209,8 @@
     <string name="stat_action_unsubscribe" translatable="false">Unsubscribe</string>
     <string name="stat_action_click_on_link" translatable="false">Click on link</string>
     <string name="stat_action_open_map" translatable="false">Open map</string>
+    <string name="stat_action_open_ticketing_form" translatable="false">Open ticketing form</string>
+    <string name="stat_action_submit_ticketing_form" translatable="false">Submit ticketing form</string>
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
@@ -216,6 +244,7 @@
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
     <string name="auth_error">Error occurred. Please retry</string>
+    <string name="auth_skip">Skip</string>
 
     <!-- notification strings -->
     <string name="notification_before_three_hours">Before 3 hours</string>
@@ -259,9 +288,6 @@
     <string name="action_search">Search</string>
 
     <!-- event registered strings -->
-    <string name="title_activity_event_registered">My tickets</string>
-    <string name="tab_event_registered_future">Future</string>
-    <string name="tab_event_registered_past">Past</string>
     <string name="event_registered_empty_cap">No tickets</string>
     <string name="event_registered_open_detail">Go to event</string>
 
@@ -307,4 +333,5 @@
     <!-- recommender strings -->
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recommender_empty_description">No more events. Take a look later.</string>
+    <string name="drawer_login">Sign in</string>
 </resources>

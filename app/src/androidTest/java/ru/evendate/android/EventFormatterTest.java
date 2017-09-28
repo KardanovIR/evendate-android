@@ -10,6 +10,7 @@ import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventDate;
 import ru.evendate.android.ui.utils.DateUtils;
 import ru.evendate.android.ui.utils.EventFormatter;
+import ru.evendate.android.utils.Utilities;
 
 import static org.mockito.Mockito.when;
 
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
  * Created by Dmitry on 13.02.2016.
  */
 public class EventFormatterTest extends AndroidTestCase {
-    public static Event getEventDetail(int num) {
+    private static Event getEventDetail(int num) {
         Event event = Mockito.mock(Event.class);
         ArrayList<EventDate> dates = getDates(num);
         when(event.getDateList()).thenReturn(dates);
@@ -115,8 +116,8 @@ public class EventFormatterTest extends AndroidTestCase {
         }
     }
 
-    //TODO Work only on ru device
     public void testFormatDate() {
+        Utilities.newInstance(getContext()).setRuLocale();
         //Log.d("EventFormatter", EventFormatter.formatDateInterval(getEventDetail(0)));
         assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 ноября; 1 декабря", EventFormatter.formatDateInterval(getEventDetail(0)));
         assertEquals("1 декабря", EventFormatter.formatDateInterval(getEventDetail(1)));
@@ -125,5 +126,8 @@ public class EventFormatterTest extends AndroidTestCase {
         assertEquals("1-10 марта", EventFormatter.formatDateInterval(getEventDetail(4)));
         assertEquals("3 ноября; 1-3 декабря", EventFormatter.formatDateInterval(getEventDetail(5)));
         assertEquals("13, 14 февраля", EventFormatter.formatDateInterval(getEventDetail(6)));
+
+        Utilities.newInstance(getContext()).setEnLocale();
+        assertEquals("3, 5, 6, 8, 11-13, 17, 18, 27 November; 1 December", EventFormatter.formatDateInterval(getEventDetail(0)));
     }
 }

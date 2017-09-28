@@ -30,7 +30,14 @@ public abstract class EndlessAdapter<LVH extends RecyclerView.ViewHolder> extend
         //noinspection StatementWithEmptyBody
         if (loading && getItemViewType(position) == TYPE_LOAD_MORE) {
         } else {
-            onBindHolder((LVH) holder, position);
+            onBindHolder((LVH)holder, position);
+        }
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        if (!(holder instanceof LoadMoreHolder)) {
+            onRecycled((LVH)holder);
         }
     }
 
@@ -78,9 +85,11 @@ public abstract class EndlessAdapter<LVH extends RecyclerView.ViewHolder> extend
 
     public abstract void onBindHolder(LVH holder, int position);
 
+    public abstract void onRecycled(LVH holder);
+
     public static EndlessAdapter wrap(final RecyclerView.Adapter adapter, View loadMoreView) {
         if (adapter instanceof EndlessAdapter) {
-            return (EndlessAdapter) adapter;
+            return (EndlessAdapter)adapter;
         }
         return new WrapEndlessAdapter(adapter, loadMoreView);
     }
@@ -116,6 +125,11 @@ public abstract class EndlessAdapter<LVH extends RecyclerView.ViewHolder> extend
         }
 
         @Override
+        public void onRecycled(RecyclerView.ViewHolder holder) {
+            adapter.onViewRecycled(holder);
+        }
+
+        @Override
         public long getId(int position) {
             return adapter.getItemId(position);
         }
@@ -141,12 +155,6 @@ public abstract class EndlessAdapter<LVH extends RecyclerView.ViewHolder> extend
         public void setHasStableIds(boolean hasStableIds) {
             super.setHasStableIds(hasStableIds);
             adapter.setHasStableIds(hasStableIds);
-        }
-
-        @Override
-        public void onViewRecycled(RecyclerView.ViewHolder holder) {
-            super.onViewRecycled(holder);
-            adapter.onViewRecycled(holder);
         }
 
         @Override

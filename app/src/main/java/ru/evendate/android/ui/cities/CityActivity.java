@@ -3,24 +3,24 @@ package ru.evendate.android.ui.cities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
-import ru.evendate.android.ui.BaseActivity;
 
-public class CityActivity extends BaseActivity implements CityPromptDialog.PromptInteractionListener {
+public class CityActivity extends AppCompatActivity implements CityPromptDialog.PromptInteractionListener {
 
     public final static String KEY_PROMPT = "force_prompt";
-    public final static String TAG_LOCATION = "location";
+    private final static String TAG_LOCATION = "location";
     private final static String TAG_PROMPT = "tag_prompt";
     private final static String TAG_CITIES = "tag_cities";
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    boolean shouldShowPrompt = false;
-    CityPresenter mCityPresenter;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    private boolean shouldShowPrompt = false;
+    private CityPresenter mCityPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class CityActivity extends BaseActivity implements CityPromptDialog.Promp
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
-        mToolbar.setNavigationOnClickListener((View v) -> onUpPressed());
+        mToolbar.setNavigationOnClickListener((View v) -> onBackPressed());
     }
 
     @Override

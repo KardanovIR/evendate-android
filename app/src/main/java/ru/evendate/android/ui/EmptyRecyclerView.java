@@ -12,7 +12,7 @@ import android.view.View;
  */
 
 public class EmptyRecyclerView extends RecyclerView {
-    @Nullable View emptyView;
+    @Nullable private View emptyView;
 
     public EmptyRecyclerView(Context context) {
         super(context);
@@ -26,13 +26,13 @@ public class EmptyRecyclerView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
-    void checkIfEmpty() {
+    private void checkIfEmpty() {
         if (emptyView != null) {
             emptyView.setVisibility(getAdapter().getItemCount() > 0 ? GONE : VISIBLE);
         }
     }
 
-    final @NonNull AdapterDataObserver observer = new AdapterDataObserver() {
+    private final @NonNull AdapterDataObserver observer = new AdapterDataObserver() {
         @Override
         public void onChanged() {
             super.onChanged();

@@ -1,5 +1,13 @@
 package com.github.dkharrat.nexusdialog.validations;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import com.github.dkharrat.nexusdialog.FormController;
+import com.github.dkharrat.nexusdialog.FormElementController;
+import com.github.dkharrat.nexusdialog.R;
+import com.github.dkharrat.nexusdialog.utils.MessageUtil;
+
 import java.util.List;
 
 /**

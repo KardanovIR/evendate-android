@@ -26,12 +26,14 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
             "registration_required,registration_approvement_required,registration_limit_count," +
             "registration_locally,registration_till,registration_approved,registration_available," +
-            "registered_count,registration_fields,is_registered,orders,tickets,my_tickets_count," +
+            "registered_count,registration_fields,ticketing_locally,ticketing_available," +
+            "orders,tickets,ticket_types" + ServiceUtils.encloseFields(TicketType.FIELDS_LIST) + "," +
+            "my_tickets_count," +
 
             "is_free,min_price,is_same_time,created_at," +
 
             "dates" + ServiceUtils.encloseFields(EventDate.FIELDS_LIST) + ",tags," +
-            "favored{fields:\'" + User.FIELDS_LIST + "\'}";
+            "favored{fields:\'" + User.FIELDS_LIST + "\'},";
 
     @SerializedName("id")
     int eventId;
@@ -99,8 +101,10 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     boolean registrationAvailable;
     @SerializedName("registered_count")
     int registeredCount;
-    @SerializedName("is_registered")
-    boolean registered;
+    @SerializedName("ticketing_locally")
+    boolean ticketingLocally;
+    @SerializedName("ticketing_available")
+    boolean ticketingAvailable;
     @SerializedName("orders")
     ArrayList<Order> orders;
     @SerializedName("my_tickets_count")
@@ -109,6 +113,8 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     int ticketsCount;
     @SerializedName("tickets")
     ArrayList<Ticket> tickets;
+    @SerializedName("ticket_types")
+    ArrayList<TicketType> ticketTypes;
 
     @SerializedName("is_free")
     boolean isFree;
@@ -292,8 +298,12 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
         return registeredCount;
     }
 
-    public boolean isRegistered() {
-        return registered;
+    public boolean isTicketingLocally() {
+        return ticketingLocally;
+    }
+
+    public boolean isTicketingAvailable() {
+        return ticketingAvailable;
     }
 
     public ArrayList<RegistrationField> getRegistrationFields() {
@@ -314,6 +324,10 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
     public ArrayList<Ticket> getTickets() {
         return tickets;
+    }
+
+    public ArrayList<TicketType> getTicketTypes() {
+        return ticketTypes;
     }
 
     public boolean isFree() {

@@ -5,14 +5,12 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_reel_background"
-    android:fitsSystemWindows="true">
+    android:background="@color/window_reel_background">
 
     <com.nirhart.parallaxscroll.views.ParallaxScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:parallax_factor="1.9">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,6 +60,7 @@
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="4sp"
                     android:textColor="#fff"
+                    app:autoSizeTextType="uniform"
                     android:textIsSelectable="false"
                     android:textSize="24sp"
                     tools:text="Drake Moscow 2016" />
@@ -81,8 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:clickable="true" />
+        android:layout_margin="16dp"/>
 
     <ru.evendate.android.views.LoadStateView
         android:id="@+id/load_state"

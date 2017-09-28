@@ -167,7 +167,7 @@ public abstract class LabeledFieldController extends FormElementController {
     @Override
     public void setError(String message) {
         if (message == null) {
-            errorView.setVisibility(View.INVISIBLE);
+            errorView.setVisibility(View.GONE);
         } else {
             errorView.setText(message);
             errorView.setVisibility(View.VISIBLE);

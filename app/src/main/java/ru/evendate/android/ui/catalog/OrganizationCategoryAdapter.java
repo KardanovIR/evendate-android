@@ -1,6 +1,7 @@
 package ru.evendate.android.ui.catalog;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,16 +21,20 @@ import ru.evendate.android.ui.WrapLinearLayoutManager;
  */
 public class OrganizationCategoryAdapter extends AbstractAdapter<OrganizationCategory, OrganizationCategoryAdapter.CategoryHolder> {
 
+    private Context mContext;
     private RecyclerView.RecycledViewPool mRecycledViewPool;
+    private OrganizationCatalogAdapter.OrganizationInteractionListener mOrganizationInteractionListener;
 
-    public OrganizationCategoryAdapter(Context context) {
-        super(context);
+    OrganizationCategoryAdapter(@NonNull Context context,
+                                @NonNull OrganizationCatalogAdapter.OrganizationInteractionListener listener) {
+        mContext = context;
         mRecycledViewPool = new RecyclerView.RecycledViewPool();
         mRecycledViewPool.setMaxRecycledViews(R.layout.item_organization_category, 80);
+        mOrganizationInteractionListener = listener;
     }
 
-    public void setCategoryList(ArrayList<OrganizationCategory> categoryList) {
-        super.replace(categoryList);
+    void setCategoryList(ArrayList<OrganizationCategory> categoryList) {
+        super.set(categoryList);
     }
 
     @Override
@@ -62,9 +67,9 @@ public class OrganizationCategoryAdapter extends AbstractAdapter<OrganizationCat
 
         CategoryHolder(View itemView) {
             super(itemView);
-            mCategoryTextView = (TextView)itemView.findViewById(R.id.organization_category);
-            mContainer = (RecyclerView)itemView.findViewById(R.id.container);
-            mAdapter = new OrganizationCatalogAdapter(mContext);
+            mCategoryTextView = itemView.findViewById(R.id.organization_category);
+            mContainer = itemView.findViewById(R.id.container);
+            mAdapter = new OrganizationCatalogAdapter(mContext, mOrganizationInteractionListener);
             mContainer.setAdapter(mAdapter);
             mContainer.setRecycledViewPool(mRecycledViewPool);
             WrapLinearLayoutManager manager =

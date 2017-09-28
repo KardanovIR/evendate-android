@@ -27,24 +27,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Observable;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
-import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.AbstractAdapter;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 public class TicketsAdminFragment extends Fragment {
 
-    int eventId;
-    @Bind(R.id.view_pager) ViewPager mViewPager;
-    CheckInContract.SearchClickListener mListener;
-    TicketsAdminListFragment fragment;
-    TicketsAdminListFragment fragment2;
+    private int eventId;
+    @BindView(R.id.view_pager) ViewPager mViewPager;
+    private CheckInContract.SearchClickListener mListener;
+    private TicketsAdminListFragment fragment;
+    private TicketsAdminListFragment fragment2;
+    private Unbinder unbinder;
 
     public static TicketsAdminFragment newInstance(int eventId) {
         TicketsAdminFragment fragment = new TicketsAdminFragment();
@@ -56,7 +60,7 @@ public class TicketsAdminFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tickets_admin, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
 
         mViewPager.setAdapter(new FragmentStatePagerAdapter(getChildFragmentManager()) {
@@ -122,7 +126,7 @@ public class TicketsAdminFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        TabLayout tabLayout = (TabLayout)getActivity().findViewById(R.id.tabs);
+        TabLayout tabLayout = getActivity().findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 
@@ -147,7 +151,7 @@ public class TicketsAdminFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
 
@@ -157,14 +161,15 @@ public class TicketsAdminFragment extends Fragment {
         public static final String KEY_IS_SEARCH = "key_is_search";
         public static final String KEY_IS_CHECKOUT = "key_is_checkout";
         public static final String KEY_EVENT_ID = "key_event_id";
-        @Bind(R.id.load_state) LoadStateView mLoadStateView;
-        @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-        @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+        @BindView(R.id.load_state) LoadStateView mLoadStateView;
+        @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+        @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
         TicketAdminRecyclerViewAdapter mAdapter;
         CheckInContract.TicketAdminPresenter mPresenter;
         TicketsAdminFragment mParent;
         CheckInContract.TicketInteractionListener mListener;
         private Endless mEndless;
+        private Unbinder unbinder;
 
         public static TicketsAdminListFragment newInstance(int eventId, boolean isCheckOut) {
             TicketsAdminListFragment fragment = new TicketsAdminListFragment();
@@ -201,7 +206,7 @@ public class TicketsAdminFragment extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_tickets_admin_list, container, false);
-            ButterKnife.bind(this, view);
+            unbinder = ButterKnife.bind(this, view);
             setHasOptionsMenu(getArguments().getBoolean(KEY_IS_SEARCH, false));
 
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -216,9 +221,9 @@ public class TicketsAdminFragment extends Fragment {
             mEndless = Endless.applyTo(mRecyclerView, loadingView);
             mEndless.setLoadMoreListener((int page) -> {
                 if (getArguments().getBoolean(KEY_IS_SEARCH)) {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), false, page);
+                    mPresenter.load(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), false, page);
                 } else {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), false, page);
+                    mPresenter.load(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), false, page);
                 }
             });
 
@@ -227,16 +232,16 @@ public class TicketsAdminFragment extends Fragment {
                 mEndless.setCurrentPage(0);
                 mParent.updateData();
                 if (getArguments().getBoolean(KEY_IS_SEARCH)) {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), true, 0);
+                    mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY));
                 } else {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), true, 0);
+                    mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT));
                 }
             });
             mLoadStateView.setOnReloadListener(() -> {
                 if (getArguments().getBoolean(KEY_IS_SEARCH)) {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), true, 0);
+                    mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY));
                 } else {
-                    mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), true, 0);
+                    mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT));
                 }
             });
 
@@ -249,6 +254,11 @@ public class TicketsAdminFragment extends Fragment {
                 mLoadStateView.setEmptyDescription(getString(R.string.check_in_tickets_empty_description));
             }
             return view;
+        }
+
+        @Override
+        public Observable<String> requestAuth() {
+            return ((BaseActivity)getActivity()).requestAuth();
         }
 
         @Override
@@ -303,19 +313,19 @@ public class TicketsAdminFragment extends Fragment {
             if (getArguments() != null && getArguments().getString(KEY_QUERY) != null)
                 search(getArguments().getString(KEY_QUERY));
             if (!getArguments().getBoolean(KEY_IS_SEARCH)) {
-                mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), true, 0);
+                mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT));
             }
         }
 
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-            ButterKnife.unbind(this);
+            unbinder.unbind();
         }
 
         public void search(String query) {
             getArguments().putString(KEY_QUERY, query);
-            mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), query, true, 1);
+            mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), query);
         }
 
         //todo may be inconsistent
@@ -324,9 +334,9 @@ public class TicketsAdminFragment extends Fragment {
                 return;
             }
             if (getArguments().getBoolean(KEY_IS_SEARCH)) {
-                mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY), true, 0);
+                mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getString(KEY_QUERY));
             } else {
-                mPresenter.loadList(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT), true, 0);
+                mPresenter.reload(getArguments().getInt(KEY_EVENT_ID), getArguments().getBoolean(KEY_IS_CHECKOUT));
             }
         }
 
@@ -385,7 +395,7 @@ public class TicketsAdminFragment extends Fragment {
             mRecyclerView.setVisibility(View.INVISIBLE);
         }
 
-        class TicketAdminRecyclerViewAdapter extends AbstractEndlessAdapter<CheckInContract.TicketAdmin,
+        class TicketAdminRecyclerViewAdapter extends AbstractAdapter<CheckInContract.TicketAdmin,
                 RecyclerView.ViewHolder> {
 
             private final CheckInContract.TicketInteractionListener mListener;
@@ -428,9 +438,9 @@ public class TicketsAdminFragment extends Fragment {
             class TicketAdminViewHolder extends RecyclerView.ViewHolder {
                 View holderView;
 
-                @Bind(R.id.name) TextView mName;
-                @Bind(R.id.ticket_number) TextView mTicketNumber;
-                @Bind(R.id.avatar) CircleImageView mAvatar;
+                @BindView(R.id.name) TextView mName;
+                @BindView(R.id.ticket_number) TextView mTicketNumber;
+                @BindView(R.id.avatar) CircleImageView mAvatar;
                 @Nullable CheckInContract.TicketAdmin mTicket;
 
                 TicketAdminViewHolder(View view) {
