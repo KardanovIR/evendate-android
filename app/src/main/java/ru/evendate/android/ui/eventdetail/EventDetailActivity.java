@@ -634,7 +634,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         String token = EvendateAccountManager.peekToken(this);
         if (!mRegistrationButton.isEnabled())
             return;
-        if (!mAdapter.mEvent.isRegistrationLocally())
+        if (!mAdapter.mEvent.isRegistrationLocally() || !mAdapter.mEvent.isTicketingLocally())
             openSite();
         else {
             if (token == null) {
@@ -643,6 +643,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 openRegistrationForm();
             }
         }
+        new Statistics(this).sendTicketingFormOpen(eventId);
     }
 
     private void openRegistrationForm() {
@@ -918,16 +919,51 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
          * set Registration or Ticketing info cause very complex conditions
          */
         private void setTicketingOrRegistration() {
-            setTicketingAvailability();
+            if (mEvent.isTicketingLocally()) {
+                mRegistrationButton.setText(getString(R.string.event_ticketing));
+                if (mEvent.isTicketingAvailable()) {
+                    mRegistrationButton.setEnabled(true);
+                    mRegistrationCap.setVisibility(View.GONE);
+                    setTicketsAlreadyBought();
+                } else {
+                    mRegistrationButton.setEnabled(false);
+                    mRegistrationCap.setVisibility(View.VISIBLE);
+                    mRegistrationCap.setText(getString(R.string.event_ticketing_status_not_available));
+                }
+            } else {
+                if (mEvent.isRegistrationLocally()) {
+                    if (mEvent.isRegistrationAvailable()) {
+                        mRegistrationButton.setEnabled(true);
+                        mRegistrationCap.setVisibility(View.GONE);
+                        setTicketsAlreadyBought();
+                    } else {
+                        mRegistrationButton.setEnabled(false);
+                        mRegistrationCap.setText(R.string.event_registration_status_not_available);
+                        mRegistrationCap.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (mEvent.isRegistrationRequired()) {
+                        mRegistrationButton.setEnabled(true);
+                        mRegistrationCap.setVisibility(View.GONE);
+                    } else {
+                        mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
+                        mRegistrationButton.setVisibility(View.GONE);
+                        mRegistrationCap.setVisibility(View.GONE);
+                        mRegistrationButton.setEnabled(false);
+                    }
+                }
+            }
+            //setRegistrationApproved();
             setRegistrationTillDate();
-            setTicketsAlreadyBought();
-            setRegistrationApproved();
         }
 
-        private void setTicketingAvailability() {
-            if (!mEvent.isRegistrationAvailable() && !mEvent.isTicketingAvailable() && mEvent.isRegistrationRequired()) {
-                mRegistrationButton.setEnabled(false);
-                mRegistrationCap.setText(R.string.event_registration_status_not_available);
+        private void setTicketsAlreadyBought() {
+            if (mEvent.getTickets() != null && !mEvent.getTickets().isEmpty()) {
+                if (mEvent.isTicketingLocally()) {
+                    mRegistrationCap.setText(R.string.event_ticketing_status_already_purchased);
+                } else {
+                    mRegistrationCap.setText(R.string.event_registration_status_already_registered);
+                }
                 mRegistrationCap.setVisibility(View.VISIBLE);
             }
         }
@@ -939,10 +975,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             }
             if (!mEvent.isRegistrationRequired()) {
                 mRegistrationTillTextView.setText(eventRegistrationNotRequiredLabel);
-                mRegistrationButton.setVisibility(View.GONE);
-                mRegistrationCap.setVisibility(View.GONE);
-                mRegistrationButton.setEnabled(false);
-                return;
             } else {
                 Date regDate;
                 if (mEvent.getRegistrationTill() != null) {
@@ -952,17 +984,6 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 }
                 mRegistrationTillTextView.setText(eventRegistrationTillLabel + " "
                         + DateFormatter.formatRegistrationDate(regDate));
-            }
-        }
-
-        private void setTicketsAlreadyBought() {
-            if (mEvent.getTickets() != null && !mEvent.getTickets().isEmpty()) {
-                if (mEvent.isTicketingAvailable()) {
-                    mRegistrationCap.setText(R.string.event_ticketing_status_already_purchased);
-                } else {
-                    mRegistrationCap.setText(R.string.event_registration_status_already_registered);
-                }
-                mRegistrationCap.setVisibility(View.VISIBLE);
             }
         }
 

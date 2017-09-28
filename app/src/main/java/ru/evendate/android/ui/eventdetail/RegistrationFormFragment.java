@@ -63,6 +63,7 @@ import ru.evendate.android.models.User;
 import ru.evendate.android.network.ApiFactory;
 import ru.evendate.android.network.ApiService;
 import ru.evendate.android.network.ResponseObject;
+import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.OrderTicketView;
@@ -141,7 +142,7 @@ public class RegistrationFormFragment extends FormDialogFragment
         mLoadStateView.setOnReloadListener(this);
         setHasOptionsMenu(true);
 
-        if (mEvent.isTicketingAvailable()) {
+        if (mEvent.isTicketingLocally()) {
             ButterKnife.apply(mTicketViews, VISIBLE);
             for (TicketType type : mEvent.getTicketTypes()) {
                 if (type.isSelling()) {
@@ -367,6 +368,9 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     private void submitPromoCode() {
+        if (!isAdded())
+            return;
+
         TransitionManager.beginDelayedTransition(mCostContainer);
         finalSum = totalSum;
         if (promoCode == null || !promoCode.isEnabled()) {
@@ -468,6 +472,7 @@ public class RegistrationFormFragment extends FormDialogFragment
         if (requestCode == PAYMENT_REQUEST_CODE && resultCode == RESULT_OK) {
             getActivity().onBackPressed();
             mListener.onPaymentCompleted();
+            new Statistics(getContext()).sendTicketingFormSubmit(mEvent.getEntryId());
         } else {
             getActivity().onBackPressed();
             mListener.onPaymentError();

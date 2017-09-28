@@ -15,6 +15,7 @@ import ru.evendate.android.ui.feed.MainActivity;
  * Created by Aedirn on 01.07.16.
  */
 public class SplashActivity extends AppCompatActivity {
+    private static final String TAG_AUTH = "tag_auth";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,5 +50,14 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        AuthDialog authDialog = (AuthDialog)getSupportFragmentManager().findFragmentByTag(TAG_AUTH);
+        if (authDialog != null) {
+            authDialog.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

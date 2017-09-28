@@ -75,6 +75,9 @@ public class OrderTicketView extends FrameLayout {
             }
         });
 
+        mNumberPicker.setLimitExceededListener(
+                (int limit, int exceededValue) -> mNumberPicker.setValue(limit));
+
         setTicketTotalSum(mTicketType.getMinCountPerUser());
     }
 

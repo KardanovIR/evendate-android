@@ -220,4 +220,5 @@
     <string name="ticketing_form_toast_promo_code_error">Указанный промокод не существует или более не активен</string>
     <string name="ticketing_form_toast_promo_code">Введите промокод</string>
     <string name="ticketing_form_toast_tickets">Выберите билеты для покупки</string>
+    <string name="event_ticketing">Купить билеты</string>
 </resources>

@@ -39,6 +39,10 @@ interface GoogleStatistics {
 
     void sendEventOpenMap(int eventId);
 
+    void sendTicketingFormOpen(int eventId);
+
+    void sendTicketingFormSubmit(int eventId);
+
 
     // Org actions
     void sendOrganizationSubAction(int orgId);

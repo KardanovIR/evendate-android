@@ -106,6 +106,16 @@ public class Statistics implements GoogleStatistics, EvendateStatistics {
         evendateStatistics.sendEventOpenMap(eventId);
     }
 
+    @Override
+    public void sendTicketingFormOpen(int eventId) {
+        googleStatistics.sendTicketingFormOpen(eventId);
+    }
+
+    @Override
+    public void sendTicketingFormSubmit(int eventId) {
+        googleStatistics.sendTicketingFormSubmit(eventId);
+    }
+
     /*
         Org actions
      */
