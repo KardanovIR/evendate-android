@@ -40,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
                     startMain();
                 }
             });
-            authDialog.show(getSupportFragmentManager(), "auth");
+            authDialog.show(getSupportFragmentManager(), TAG_AUTH);
         } else {
             startMain();
         }
