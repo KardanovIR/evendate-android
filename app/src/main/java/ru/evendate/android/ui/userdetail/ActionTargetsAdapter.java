@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,10 @@ import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
  * Created by Dmitry on 20.02.2016.
  */
 class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTargetsAdapter.ActionTargetHolder> {
+    private Context mContext;
 
-    ActionTargetsAdapter(Context context) {
-        super(context);
+    ActionTargetsAdapter(@NonNull Context context) {
+        mContext = context;
     }
 
     @Override
@@ -67,8 +69,8 @@ class ActionTargetsAdapter extends AbstractAdapter<ActionTarget, ActionTargetsAd
         ActionTargetHolder(View itemView) {
             super(itemView);
             holderView = itemView;
-            mNameTextView = (TextView)itemView.findViewById(R.id.action_target_text_view);
-            mImageView = (ImageView)itemView.findViewById(R.id.action_target_image);
+            mNameTextView = itemView.findViewById(R.id.action_target_text_view);
+            mImageView = itemView.findViewById(R.id.action_target_image);
             holderView.setOnClickListener(this);
         }
 

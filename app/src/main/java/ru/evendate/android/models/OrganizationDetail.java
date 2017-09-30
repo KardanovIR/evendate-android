@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public interface OrganizationDetail extends OrganizationSubscription {
     String FIELDS_LIST = "description,site_url,img_small_url,img_medium_url,subscribed_count,is_subscribed,default_address," +
-            "background_medium_img_url,subscribed";
+            "background_medium_img_url,subscribed,brand_color,brand_color_accent";
 
 
     String getLogoMediumUrl();
@@ -25,4 +25,8 @@ public interface OrganizationDetail extends OrganizationSubscription {
     void changeSubscriptionState();
 
     String getDefaultAddress();
+
+    String getBrandColor();
+
+    String getBrandColorAccent();
 }

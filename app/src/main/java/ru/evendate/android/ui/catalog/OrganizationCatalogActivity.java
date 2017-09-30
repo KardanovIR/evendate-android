@@ -1,11 +1,12 @@
 package ru.evendate.android.ui.catalog;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,17 +27,22 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.City;
 import ru.evendate.android.models.OrganizationCategory;
+import ru.evendate.android.models.OrganizationSubscription;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 import ru.evendate.android.ui.cities.CityActivity;
+import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
 import ru.evendate.android.ui.search.SearchResultsActivity;
 import ru.evendate.android.views.LoadStateView;
 
@@ -45,22 +51,22 @@ import static ru.evendate.android.ui.cities.CityFragment.KEY_CITY;
 /**
  * Created by Dmitry on 28.01.2016.
  */
-public class OrganizationCatalogActivity extends AppCompatActivity
-        implements OrganizationFilterDialog.OnCategorySelectListener, LoadStateView.OnReloadListener {
+public class OrganizationCatalogActivity extends BaseActivity
+        implements OrganizationFilterDialog.OnCategorySelectListener, LoadStateView.OnReloadListener,
+        OrganizationCatalogAdapter.OrganizationInteractionListener {
     public final static int SELECT_CITY_REQUEST = 0;
     private final String LOG_TAG = OrganizationCatalogActivity.class.getSimpleName();
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.city_title) TextView mCityTitle;
-    @Bind(R.id.popup_city_down) ImageButton mPopupCityDown;
-    @Bind(R.id.fab) FloatingActionButton mFAB;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    City mSelectedCity;
-    Disposable mDisposable;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.city_title) TextView mCityTitle;
+    @BindView(R.id.popup_city_down) ImageButton mPopupCityDown;
+    @BindView(R.id.fab) FloatingActionButton mFAB;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private City mSelectedCity;
+    private Disposable mDisposable;
     private OrganizationCategoryAdapter mAdapter;
     private boolean[] mSelectedItems;
     private ArrayList<OrganizationCategory> mCategoryList;
-    private DrawerWrapper mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +82,6 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mFAB.setVisibility(View.INVISIBLE);
         mLoadStateView.setOnReloadListener(this);
 
-        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
-        mDrawer.start();
 
         mSelectedCity = EvendatePreferences.newInstance(this).getUserCity();
 
@@ -95,9 +99,11 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     private void initRecyclerView() {
-        mAdapter = new OrganizationCategoryAdapter(this);
+        mAdapter = new OrganizationCategoryAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setNestedScrollingEnabled(false);
+        mRecyclerView.setPreserveFocusAfterLayout(false);
     }
 
     private void initFAB() {
@@ -105,8 +111,9 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         mFAB.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filter_list_white));
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CatalogNavigationItemClickListener(this, mDrawer.getDrawer()));
     }
@@ -131,6 +138,12 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.getDrawer().setSelection(DrawerWrapper.CATALOG_IDENTIFIER);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if (mDisposable != null)
@@ -142,7 +155,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
         startActivityForResult(cityIntent, SELECT_CITY_REQUEST);
     }
 
-    public void onCityChanged(City city) {
+    private void onCityChanged(City city) {
         mSelectedCity = city;
         mCityTitle.setText(city.getNameLocally());
         loadCatalog();
@@ -160,7 +173,8 @@ public class OrganizationCatalogActivity extends AppCompatActivity
     private void loadCatalog() {
         mLoadStateView.showProgress();
         DataRepository dataRepository = new DataRepository(this);
-        mDisposable = dataRepository.getCatalog(mSelectedCity.getEntryId()).subscribe(
+        String token = EvendateAccountManager.peekToken(this);
+        mDisposable = dataRepository.getCatalog(token, mSelectedCity.getEntryId()).subscribe(
                 result -> onLoaded(result.getData()),
                 this::onError,
                 mLoadStateView::hideProgress
@@ -169,18 +183,30 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
     @Override
     public void onReload() {
+        super.onReload();
         loadCatalog();
     }
 
-    public void onLoaded(ArrayList<OrganizationCategory> subList) {
+    private void onLoaded(ArrayList<OrganizationCategory> subList) {
         mCategoryList = subList;
         mAdapter.setCategoryList(subList);
         mFAB.show();
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
+    }
+
+    @Override
+    public void openOrg(OrganizationSubscription organization) {
+        Intent intent = new Intent(this, OrganizationDetailActivity.class);
+        intent.setData(EvendateContract.OrganizationEntry.getContentUri(organization.getEntryId()));
+        if (Build.VERSION.SDK_INT > 21)
+            startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        else
+            startActivity(intent);
     }
 
     @SuppressWarnings("unused")
@@ -228,7 +254,7 @@ public class OrganizationCatalogActivity extends AppCompatActivity
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.CATALOG_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;

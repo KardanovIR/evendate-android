@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -34,11 +35,12 @@ import ru.evendate.android.views.LoadStateView;
 public class UserActionsFragment extends Fragment implements LoadStateView.OnReloadListener {
     private static String LOG_TAG = UserActionsFragment.class.getSimpleName();
 
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
     private DatesAdapter mAdapter;
     private static final String USER_ID_KEY = "user_id";
     private int userId;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private Unbinder unbinder;
 
     public static UserActionsFragment newInstance(int userId) {
         UserActionsFragment fragment = new UserActionsFragment();
@@ -50,7 +52,7 @@ public class UserActionsFragment extends Fragment implements LoadStateView.OnRel
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_actions, container, false);
-        ButterKnife.bind(this, rootView);
+        unbinder = ButterKnife.bind(this, rootView);
 
         if (savedInstanceState != null)
             userId = savedInstanceState.getInt(USER_ID_KEY);
@@ -80,7 +82,13 @@ public class UserActionsFragment extends Fragment implements LoadStateView.OnRel
         loadActions();
     }
 
-    public void loadActions() {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    private void loadActions() {
         ApiService service = ApiFactory.getService(getActivity());
         Observable<ResponseArray<Action>> actionObservable =
                 service.getActions(EvendateAccountManager.peekToken(getActivity()),
@@ -104,12 +112,12 @@ public class UserActionsFragment extends Fragment implements LoadStateView.OnRel
         loadActions();
     }
 
-    public void onLoaded(ArrayList<Action> list) {
+    private void onLoaded(ArrayList<Action> list) {
         ArrayList<AggregateDate<ActionType>> convertedList = ActionConverter.convertActions(list);
-        mAdapter.replace(convertedList);
+        mAdapter.set(convertedList);
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         if (!isAdded())
             mLoadStateView.showErrorHint();

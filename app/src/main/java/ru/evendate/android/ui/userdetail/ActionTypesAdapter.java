@@ -1,6 +1,7 @@
 package ru.evendate.android.ui.userdetail;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ru.evendate.android.R;
@@ -23,9 +24,10 @@ import ru.evendate.android.ui.WrapLinearLayoutManager;
  */
 class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.ActionHolder> {
     private RecyclerView.RecycledViewPool actionItemsPool;
+    private Context mContext;
 
-    ActionTypesAdapter(Context context, RecyclerView.RecycledViewPool actionItemsPool) {
-        super(context);
+    ActionTypesAdapter(@NonNull Context context, RecyclerView.RecycledViewPool actionItemsPool) {
+        mContext = context;
         this.actionItemsPool = actionItemsPool;
     }
 
@@ -45,15 +47,15 @@ class ActionTypesAdapter extends AbstractAdapter<ActionType, ActionTypesAdapter.
                 .load(type.getUser().getAvatarUrl())
                 .error(R.mipmap.ic_launcher)
                 .into(holder.mAvatarView);
-        holder.mActionTargetsAdapter.replace(type.getTargetList());
+        holder.mActionTargetsAdapter.set(type.getTargetList());
     }
 
     class ActionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.action_description) TextView mActionTextView;
-        @Bind(R.id.user_name) TextView mUserNameTextView;
-        @Bind(R.id.user_avatar) CircleImageView mAvatarView;
-        @Bind(R.id.recycler_view) RecyclerView recyclerView;
+        @BindView(R.id.action_description) TextView mActionTextView;
+        @BindView(R.id.user_name) TextView mUserNameTextView;
+        @BindView(R.id.user_avatar) CircleImageView mAvatarView;
+        @BindView(R.id.recycler_view) RecyclerView recyclerView;
         ActionTargetsAdapter mActionTargetsAdapter;
 
         ActionHolder(View itemView) {

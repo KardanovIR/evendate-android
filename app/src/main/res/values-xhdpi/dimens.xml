@@ -7,5 +7,5 @@
     <dimen name="recommender_card_height">320dp</dimen>
     <dimen name="recommender_bottom_bar_width">320dp</dimen>
 
-    <dimen name="auth_button_left_padding">0dp</dimen>
+    <dimen name="auth_button_left_padding">24dp</dimen>
 </resources>

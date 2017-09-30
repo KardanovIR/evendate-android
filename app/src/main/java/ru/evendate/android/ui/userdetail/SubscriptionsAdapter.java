@@ -5,6 +5,7 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.OrganizationFull;
 import ru.evendate.android.models.OrganizationSubscription;
 import ru.evendate.android.ui.AbstractAdapter;
 import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
@@ -28,14 +30,14 @@ import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
  * Created by ds_gordeev on 15.02.2016.
  */
 public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscription, SubscriptionsAdapter.SubscriptionHolder> {
+    private Context mContext;
 
-
-    public SubscriptionsAdapter(Context context) {
-        super(context);
+    SubscriptionsAdapter(@NonNull Context context) {
+        mContext = context;
     }
 
-    public void setSubscriptionList(ArrayList<OrganizationSubscription> subscriptionList) {
-        replace(subscriptionList);
+    void setSubscriptionList(ArrayList<OrganizationFull> subscriptionList) {
+        set(new ArrayList<>(subscriptionList));
     }
 
     @Override
@@ -57,8 +59,8 @@ public class SubscriptionsAdapter extends AbstractAdapter<OrganizationSubscripti
 
     class SubscriptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         View holderView;
-        @Bind(R.id.item_user_sub_organization_name) TextView mOrganizationNameTextView;
-        @Bind(R.id.item_user_sub_organization_icon) ImageView mOrganizationLogoImageView;
+        @BindView(R.id.item_user_sub_organization_name) TextView mOrganizationNameTextView;
+        @BindView(R.id.item_user_sub_organization_icon) ImageView mOrganizationLogoImageView;
         public int id;
 
         SubscriptionHolder(View itemView) {

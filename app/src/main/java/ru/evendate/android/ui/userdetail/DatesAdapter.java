@@ -1,6 +1,7 @@
 package ru.evendate.android.ui.userdetail;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.ActionType;
@@ -22,9 +23,10 @@ import ru.evendate.android.ui.utils.EventFormatter;
 public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, DatesAdapter.DateHolder> {
     private RecyclerView.RecycledViewPool dateItemsPool = new RecyclerView.RecycledViewPool();
     private RecyclerView.RecycledViewPool actionItemsPool = new RecyclerView.RecycledViewPool();
+    private Context mContext;
 
-    public DatesAdapter(Context context) {
-        super(context);
+    DatesAdapter(@NonNull Context context) {
+        mContext = context;
     }
 
     @Override
@@ -51,8 +53,8 @@ public class DatesAdapter extends AbstractAdapter<AggregateDate<ActionType>, Dat
 
     class DateHolder extends RecyclerView.ViewHolder {
         View holderView;
-        @Bind(R.id.recycler_view) RecyclerView actionsListView;
-        @Bind(R.id.date_text_view) TextView mDateTextView;
+        @BindView(R.id.recycler_view) RecyclerView actionsListView;
+        @BindView(R.id.date_text_view) TextView mDateTextView;
         ActionTypesAdapter mActionsAdapter;
 
         DateHolder(View itemView) {

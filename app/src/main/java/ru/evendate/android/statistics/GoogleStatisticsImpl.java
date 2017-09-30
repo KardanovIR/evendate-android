@@ -121,6 +121,20 @@ class GoogleStatisticsImpl implements GoogleStatistics {
     }
 
     @Override
+    public void sendTicketingFormOpen(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_open_ticketing_form));
+    }
+
+    @Override
+    public void sendTicketingFormSubmit(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_submit_ticketing_form));
+    }
+
+    @Override
     public void sendOrganizationSubAction(int orgId) {
         sendActionToStat(orgId,
                 mContext.getString(R.string.stat_category_organization),

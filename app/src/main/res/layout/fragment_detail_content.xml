@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/event_content_container"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@color/window_reel_background"
-              android:orientation="vertical"
-              android:paddingBottom="72dp"
-              android:paddingTop="32dp">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/event_content_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/window_reel_background"
+    android:orientation="vertical"
+    android:paddingBottom="72dp"
+    android:paddingTop="32dp"
+    android:focusable="false">
 
     <android.support.v7.widget.CardView
         android:id="@+id/event_org_card"
@@ -224,7 +226,7 @@
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp"
                 android:paddingTop="8dp"
-                android:text="@string/event_registration_button"
+                android:text="@string/ticketing_form_register_button"
                 android:textAllCaps="true"
                 android:textColor="@drawable/button_event_reg"
                 android:textSize="14sp"/>

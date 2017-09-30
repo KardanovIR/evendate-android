@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,7 +29,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -48,9 +50,10 @@ import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,25 +62,25 @@ import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.data.EvendateContract;
 import ru.evendate.android.models.OrganizationDetail;
 import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.network.ApiFactory;
-import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.ResponseArray;
-import ru.evendate.android.network.ServiceImpl;
+import ru.evendate.android.network.Response;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
-import ru.evendate.android.ui.ReelFragment;
+import ru.evendate.android.ui.feed.ReelFragment;
+import ru.evendate.android.ui.feed.ReelPresenter;
 import ru.evendate.android.ui.users.UserListActivity;
 import ru.evendate.android.ui.users.UserListFragment;
 import ru.evendate.android.ui.utils.UsersFormatter;
 import ru.evendate.android.views.LoadStateView;
 import ru.evendate.android.views.UserFavoritedCard;
 
-import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION;
-import static ru.evendate.android.ui.ReelFragment.ReelType.ORGANIZATION_PAST;
+import static ru.evendate.android.ui.feed.ReelFragment.ReelType.ORGANIZATION;
+import static ru.evendate.android.ui.feed.ReelFragment.ReelType.ORGANIZATION_PAST;
 import static ru.evendate.android.ui.utils.UiUtils.revealView;
 
 public class OrganizationDetailActivity extends BaseActivity implements LoadStateView.OnReloadListener {
@@ -85,42 +88,26 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     public static final String URI_KEY = "uri";
     final int TITLE_SHIFTED_BY_BUTTON = 2;
     private final String LOG_TAG = "OrganizationFragment";
-    @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
-    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.org_toolbar_title) TextView mToolbarTitle;
-    @Bind(R.id.org_title) TextView mOrgTitle;
-    @Bind(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
-    @Bind(R.id.organization_image_container) View mImageContainer;
-    @Bind(R.id.organization_image) ImageView mBackgroundView;
-    @Bind(R.id.organization_image_foreground) ImageView mForegroundView;
-    @Bind(R.id.organization_icon) CircleImageView mIconView;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.tabs) TabLayout mTabs;
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    final Target backgroundTarget = new Target() {
+    @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.org_toolbar_title) TextView mToolbarTitle;
+    @BindView(R.id.org_title) TextView mOrgTitle;
+    @BindView(R.id.organization_subscribe_button) ToggleButton mSubscribeButton;
+    @BindView(R.id.organization_image_container) View mImageContainer;
+    @BindView(R.id.organization_image) ImageView mBackgroundView;
+    @BindView(R.id.organization_image_foreground) ImageView mForegroundView;
+    @BindView(R.id.organization_icon) CircleImageView mIconView;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private final Target backgroundTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             mLoadStateView.hideProgress();
             mBackgroundView.setImageBitmap(bitmap);
-
-            int color = ContextCompat.getColor(getBaseContext(), R.color.primary);
-
-            int red = Color.red(color);
-            int blue = Color.blue(color);
-            int green = Color.green(color);
-
-            int colorShadow = Color.argb(255, red, green, blue);
-            int colorShadow2 = Color.argb(150, red, green, blue);
-            int colorShadowEnd = Color.argb(0, red, green, blue);
-            GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[]{colorShadow, colorShadow2, colorShadowEnd});
-            mForegroundView.setImageDrawable(shadow);
-            revealView(mAppBarLayout);
-            if (Build.VERSION.SDK_INT > 19)
-                TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-            mViewPager.setVisibility(View.VISIBLE);
+            tintImageShadow();
         }
 
         @Override
@@ -133,20 +120,19 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
     };
-    ObjectAnimator mTitleAppearAnimation;
-    ObjectAnimator mTitleDisappearAnimation;
-    boolean loaded = false;
+    private ObjectAnimator mTitleAppearAnimation;
+    private ObjectAnimator mTitleDisappearAnimation;
+    private boolean loaded = false;
     private int organizationId = -1;
     private Uri mUri;
     private OrganizationPagerAdapter mPagerAdapter;
-    private DrawerWrapper mDrawer;
     private OrganizationDetail mOrganization;
     private Disposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_organization);
+        setContentView(R.layout.activity_organization);
 
         Intent intent = getIntent();
         if (intent == null)
@@ -193,7 +179,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
 
         final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
                 new int[]{android.R.attr.actionBarSize});
-        int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        int actionBarHeight = (int)styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
         mCollapsingToolbar.setScrimVisibleHeightTrigger(actionBarHeight * TITLE_SHIFTED_BY_BUTTON);
         mCollapsingToolbar.setScrimAnimationDuration(200);
@@ -216,8 +202,9 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         }
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
@@ -290,7 +277,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
                 onUpPressed();
                 return true;
             case R.id.action_info:
-                OrganizationInfo fragment = new OrganizationInfo();
+                OrganizationInfo fragment = OrganizationInfo.newInstance(
+                        mOrganization.getBrandColor(), mOrganization.getBrandColorAccent());
                 fragment.setOrganization(mOrganization);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.main_content, fragment)
@@ -318,18 +306,13 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     }
 
     private void loadOrg() {
-        ApiService apiService = ApiFactory.getService(this);
-        Observable<ResponseArray<OrganizationFull>> organizationObservable =
-                apiService.getOrganization(EvendateAccountManager.peekToken(this),
-                        organizationId, OrganizationDetail.FIELDS_LIST);
-        mDisposable = organizationObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> onLoaded(new ArrayList<>(result.getData())),
-                        this::onError);
+        mDisposable = new DataRepository(this)
+                .getOrg(EvendateAccountManager.peekToken(this), organizationId)
+                .subscribe(result -> onLoaded(new ArrayList<>(result.getData())), this::onError);
     }
 
 
-    public void onLoaded(ArrayList<OrganizationFull> organizations) {
+    private void onLoaded(ArrayList<OrganizationFull> organizations) {
         loaded = true;
         mOrganization = organizations.get(0);
         Picasso.with(this)
@@ -344,22 +327,111 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         mSubscribeButton.setChecked(mOrganization.isSubscribed());
         mOrgTitle.setText(mOrganization.getName());
         mToolbarTitle.setText(mOrganization.getShortName());
+        tintByBrandColor();
     }
 
-    public void onError(Throwable error) {
+    private void tintByBrandColor() {
+        //todo handle illegal argument (bad color string)
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        if (mOrganization.getBrandColor() != null || mOrganization.getBrandColor().isEmpty()) {
+            int brandColor = Color.parseColor(mOrganization.getBrandColor());
+            mAppBarLayout.setBackgroundColor(brandColor);
+            mCollapsingToolbar.setContentScrimColor(brandColor);
+            tintStatusBar(brandColor);
+        }
+        if (mOrganization.getBrandColorAccent() != null || mOrganization.getBrandColorAccent().isEmpty()) {
+            int brandColorAccent = Color.parseColor(mOrganization.getBrandColorAccent());
+            StateListDrawable stateListDrawable = new StateListDrawable();
+            stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
+            stateListDrawable.addState(new int[]{android.R.attr.state_checked}, new ColorDrawable(Color.WHITE));
+            mSubscribeButton.setBackgroundDrawable(stateListDrawable);
+            mTabs.setSelectedTabIndicatorColor(brandColorAccent);
+        }
+    }
+
+    private void tintStatusBar(int color) {
+
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        int colorDark = Color.argb(150, red, green, blue);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(colorDark);
+        }
+    }
+
+    private void tintImageShadow() {
+        int color;
+        if (mOrganization.getBrandColor() != null) {
+            color = Color.parseColor(mOrganization.getBrandColor());
+        } else {
+            color = ContextCompat.getColor(getBaseContext(), R.color.primary);
+        }
+
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        int colorShadow = Color.argb(255, red, green, blue);
+        int colorShadow2 = Color.argb(150, red, green, blue);
+        int colorShadowEnd = Color.argb(0, red, green, blue);
+        GradientDrawable shadow = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                new int[]{colorShadow, colorShadow2, colorShadowEnd});
+        mForegroundView.setImageDrawable(shadow);
+        revealView(mAppBarLayout);
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mViewPager.setVisibility(View.VISIBLE);
+    }
+
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
     @Override
     public void onReload() {
+        super.onReload();
         loadOrg();
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.organization_subscribe_button)
     public void onSubscribeClick(View v) {
-        ServiceImpl.subscribeOrgAndChangeState(this, mOrganization);
+        int organizationId = mOrganization.getEntryId();
+        String token = EvendateAccountManager.peekToken(this);
+
+        if (token == null) {
+            requestAuth().subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(this::subscribe);
+        } else {
+            subscribe(token);
+        }
+    }
+
+    private void subscribe(String token) {
+        Observable<Response> subOrganizationObservable;
+        if (mOrganization.isSubscribed()) {
+            subOrganizationObservable = new DataRepository(this).unSubscribeOrg(token, organizationId);
+        } else {
+            subOrganizationObservable = new DataRepository(this).subscribeOrg(token, organizationId);
+        }
+        subOrganizationObservable
+                .subscribe(result -> {
+                    if (result.isOk()) {
+                        Log.i(LOG_TAG, "subscription applied");
+                        Statistics googleStatistics = new Statistics(getBaseContext());
+                        if (mOrganization.isSubscribed()) {
+                            googleStatistics.sendOrganizationSubAction(organizationId);
+                        } else {
+                            googleStatistics.sendOrganizationUnsubAction(organizationId);
+                        }
+                    } else
+                        Log.e(LOG_TAG, "Error with response with organization sub");
+                }, error -> Log.e(LOG_TAG, "" + error.getMessage()));
+
+        mOrganization.changeSubscriptionState();
 
         if (mOrganization.isSubscribed()) {
             Snackbar.make(mCoordinatorLayout, R.string.organization_subscription_confirm, Snackbar.LENGTH_LONG).show();
@@ -370,13 +442,27 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
 
     public static class OrganizationInfo extends Fragment {
         private static final String ORG_OBJ_KEY = "organization";
+        private static final String BRAND_COLOR_KEY = "brand_color";
+        private static final String BRAND_COLOR_ACCENT_KEY = "brand_color_accent";
         OrganizationDetail mOrganization;
 
-        @Bind(R.id.toolbar) Toolbar mToolbar;
-        @Bind(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
-        @Bind(R.id.organization_name) TextView mOrganizationTextView;
-        @Bind(R.id.organization_description) TextView mDescriptionTextView;
-        @Bind(R.id.organization_place_text) TextView mPlacePlaceTextView;
+        @BindView(R.id.toolbar) Toolbar mToolbar;
+        @BindView(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+        @BindView(R.id.organization_name) TextView mOrganizationTextView;
+        @BindView(R.id.organization_description) TextView mDescriptionTextView;
+        @BindView(R.id.organization_place_text) TextView mPlacePlaceTextView;
+        @BindView(R.id.org_place_button) TextView mOrgPlaceButton;
+        @BindView(R.id.org_link_button) TextView mOrgLinkButton;
+        private Unbinder unbinder;
+        int brandColor;
+        int brandColorAccent;
+
+        public static OrganizationInfo newInstance(@Nullable String brandColor, @Nullable String brandColorAccent) {
+            OrganizationInfo fragment = new OrganizationInfo();
+            fragment.brandColor = brandColor == null || brandColor.isEmpty() ? 0 : Color.parseColor(brandColor);
+            fragment.brandColorAccent = brandColorAccent == null || brandColorAccent.isEmpty() ? 0 : Color.parseColor(brandColorAccent);
+            return fragment;
+        }
 
         public void setOrganization(OrganizationDetail organization) {
             mOrganization = organization;
@@ -385,19 +471,25 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            if (savedInstanceState != null)
+            if (savedInstanceState != null) {
                 mOrganization = new Gson().fromJson(savedInstanceState.getString(ORG_OBJ_KEY),
                         OrganizationFull.class);
+                brandColor = savedInstanceState.getInt(BRAND_COLOR_KEY);
+                brandColorAccent = savedInstanceState.getInt(BRAND_COLOR_ACCENT_KEY);
+            }
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_organization_info, container, false);
-            ButterKnife.bind(this, rootView);
+            unbinder = ButterKnife.bind(this, rootView);
 
             mToolbar.setNavigationIcon(R.drawable.ic_clear_white);
             mToolbar.setNavigationOnClickListener((View v) -> getActivity().onBackPressed());
             mToolbar.setTitle(mOrganization.getShortName());
+            if (brandColor != 0) {
+                mToolbar.setBackgroundColor(brandColor);
+            }
             initUserFavoriteCard();
             setOrg();
             return rootView;
@@ -407,6 +499,8 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putString(ORG_OBJ_KEY, new Gson().toJson(mOrganization));
+            outState.putInt(BRAND_COLOR_KEY, brandColor);
+            outState.putInt(BRAND_COLOR_ACCENT_KEY, brandColorAccent);
         }
 
         private void initUserFavoriteCard() {
@@ -422,6 +516,15 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
             }
             mUserFavoritedCard.setUsers(mOrganization.getSubscribedUsersList());
             mPlacePlaceTextView.setText(mOrganization.getDefaultAddress());
+            tintBrandColor();
+        }
+
+        private void tintBrandColor() {
+            if (brandColor == 0)
+                return;
+            mUserFavoritedCard.tintAllButton(brandColorAccent);
+            mOrgPlaceButton.setTextColor(brandColorAccent);
+            mOrgLinkButton.setTextColor(brandColorAccent);
         }
 
         /**
@@ -463,6 +566,11 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
                 getActivity().startActivity(intent);
         }
 
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            unbinder.unbind();
+        }
     }
 
     private class OrganizationPagerAdapter extends FragmentPagerAdapter {
@@ -476,8 +584,11 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
         OrganizationPagerAdapter(FragmentManager fragmentManager, Context context) {
             super(fragmentManager);
             mContext = context;
+            DataSource dataSource = new DataRepository(mContext);
             mFutureReelFragment = ReelFragment.newInstance(ORGANIZATION, organizationId, false);
+            ReelPresenter.newInstance(dataSource, mFutureReelFragment, ORGANIZATION, organizationId);
             mPastReelFragment = ReelFragment.newInstance(ORGANIZATION_PAST, organizationId, false);
+            ReelPresenter.newInstance(dataSource, mPastReelFragment, ORGANIZATION_PAST, organizationId);
         }
 
         @Override

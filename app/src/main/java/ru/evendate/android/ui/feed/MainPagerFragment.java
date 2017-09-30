@@ -13,19 +13,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
+import ru.evendate.android.data.DataSource;
 import ru.evendate.android.statistics.Statistics;
-import ru.evendate.android.ui.ReelFragment;
+
+import static ru.evendate.android.ui.feed.ReelFragment.ReelType.FAVORITES;
+import static ru.evendate.android.ui.feed.ReelFragment.ReelType.FEED;
 
 /**
  * Created by Dmitry on 23.01.2016.
  * contain logic of switching main fragments in main activity
  */
 public class MainPagerFragment extends Fragment {
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
     private MainPagerAdapter mMainPagerAdapter;
     private ReelFragment.OnRefreshListener mRefreshListener;
 
@@ -50,7 +54,7 @@ public class MainPagerFragment extends Fragment {
     }
 
     /**
-     * translate refresh message from child fragment to parent main activity
+     * translate reload message from child fragment to parent main activity
      */
     public void setOnRefreshListener(ReelFragment.OnRefreshListener refreshListener) {
         mRefreshListener = refreshListener;
@@ -79,18 +83,28 @@ public class MainPagerFragment extends Fragment {
         });
     }
 
-    public void refresh() {
-        mMainPagerAdapter.refresh();
+    @Override
+    public void onStop() {
+        super.onStop();
+        // todo refactor cause getItem may not be called like in first into then user goes to city activity
+        if (mMainPagerAdapter.reelPresenter != null)
+            mMainPagerAdapter.reelPresenter.stop();
+        if (mMainPagerAdapter.favePresenter != null)
+            mMainPagerAdapter.favePresenter.stop();
+    }
+
+    public void reload() {
+        mMainPagerAdapter.reload();
     }
 
     private class MainPagerAdapter extends FragmentPagerAdapter implements ReelFragment.OnRefreshListener {
         private final int TAB_COUNT = 2;
         private final int REEL_TAB = 0;
         private final int FAVE_TAB = 1;
-        private final int RECOMMEND_TAB = 2;
         ReelFragment reelFragment;
+        ReelPresenter reelPresenter;
         ReelFragment faveFragment;
-        ReelFragment recommendFragment;
+        ReelPresenter favePresenter;
         private Context mContext;
         private ReelFragment.OnRefreshListener listener;
 
@@ -106,21 +120,19 @@ public class MainPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
+            DataSource dataSource = new DataRepository(getContext());
             switch (position) {
                 case REEL_TAB: {
-                    reelFragment = ReelFragment.newInstance(ReelFragment.ReelType.FEED.type(), true);
+                    reelFragment = ReelFragment.newInstance(FEED.type(), true);
+                    reelPresenter = ReelPresenter.newInstance(dataSource, reelFragment, FEED);
                     reelFragment.setOnRefreshListener(this);
                     return reelFragment;
                 }
                 case FAVE_TAB: {
-                    faveFragment = ReelFragment.newInstance(ReelFragment.ReelType.FAVORITES.type(), true);
+                    faveFragment = ReelFragment.newInstance(FAVORITES.type(), true);
+                    favePresenter = ReelPresenter.newInstance(dataSource, faveFragment, FAVORITES);
                     faveFragment.setOnRefreshListener(this);
                     return faveFragment;
-                }
-                case RECOMMEND_TAB: {
-                    recommendFragment = ReelFragment.newInstance(ReelFragment.ReelType.RECOMMENDATION.type(), true);
-                    recommendFragment.setOnRefreshListener(this);
-                    return recommendFragment;
                 }
                 default:
                     throw new IllegalArgumentException("invalid page number");
@@ -139,8 +151,6 @@ public class MainPagerFragment extends Fragment {
                     return mContext.getString(R.string.tab_main_feed);
                 case FAVE_TAB:
                     return mContext.getString(R.string.tab_main_favorite);
-                case RECOMMEND_TAB:
-                    return mContext.getString(R.string.tab_main_recommendation);
                 default:
                     return null;
             }
@@ -155,8 +165,6 @@ public class MainPagerFragment extends Fragment {
                     return mContext.getString(R.string.stat_page_feed);
                 case FAVE_TAB:
                     return mContext.getString(R.string.stat_page_favorite);
-                case RECOMMEND_TAB:
-                    return mContext.getString(R.string.stat_page_recommendations);
                 default:
                     return null;
             }
@@ -168,10 +176,9 @@ public class MainPagerFragment extends Fragment {
                 listener.onRefresh();
         }
 
-        void refresh() {
-            reelFragment.reloadEvents();
-            faveFragment.reloadEvents();
-            recommendFragment.reloadEvents();
+        void reload() {
+            reelPresenter.reload();
+            favePresenter.reload();
         }
     }
 }

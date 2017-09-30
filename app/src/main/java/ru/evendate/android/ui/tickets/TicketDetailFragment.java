@@ -15,9 +15,10 @@ import org.parceler.Parcels;
 
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
@@ -32,20 +33,21 @@ public class TicketDetailFragment extends Fragment {
     private static final String EVENT_KEY = "event";
     private static final String TICKET_KEY = "ticket";
 
-    @Bind(R.id.ticket_number) TextView mTicketNumber;
-    @Bind(R.id.ticket_status) TextView mTicketStatus;
-    @Bind(R.id.qr_code) ImageView mQrCode;
-    @Bind(R.id.ticket_type) TextView mTicketType;
-    @Bind(R.id.event_title) TextView mEventTitle;
-    @Bind(R.id.datetime) TextView mDatetime;
-    @Bind(R.id.place) TextView mPlace;
-    @Bind(R.id.order_datetime) TextView mOrderDatetime;
-    @Bind(R.id.check_out_image) ImageView checkOutImage;
+    @BindView(R.id.ticket_number) TextView mTicketNumber;
+    @BindView(R.id.ticket_status) TextView mTicketStatus;
+    @BindView(R.id.qr_code) ImageView mQrCode;
+    @BindView(R.id.ticket_type) TextView mTicketType;
+    @BindView(R.id.event_title) TextView mEventTitle;
+    @BindView(R.id.datetime) TextView mDatetime;
+    @BindView(R.id.place) TextView mPlace;
+    @BindView(R.id.order_datetime) TextView mOrderDatetime;
+    @BindView(R.id.check_out_image) ImageView checkOutImage;
 
     private EventRegistered mEvent;
     private Ticket mTicket;
 
     private OnTicketInteractionListener mListener;
+    private Unbinder unbinder;
 
     public static TicketDetailFragment newInstance(EventRegistered event, Ticket ticket) {
         TicketDetailFragment fragment = new TicketDetailFragment();
@@ -75,7 +77,7 @@ public class TicketDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ticket_detail, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
 
         mEventTitle.setText(mEvent.getTitle());
         String QrLink = ServiceUtils.constructQrLink(ApiFactory.getHostName(getContext()),
@@ -129,7 +131,7 @@ public class TicketDetailFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
 
@@ -174,7 +173,6 @@ public class EditTextController extends LabeledFieldController {
     @Override
     protected View createFieldView() {
         final EditText editText = new EditText(getContext());
-        editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         editText.setId(editTextId);
 
         editText.setSingleLine(!isMultiLine());

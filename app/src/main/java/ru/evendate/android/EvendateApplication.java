@@ -25,10 +25,10 @@ import ru.evendate.android.network.ServiceImpl;
  */
 public class EvendateApplication extends MultiDexApplication {
 
-    public static GoogleAnalytics analytics;
-    public static Tracker tracker;
+    private static GoogleAnalytics analytics;
+    private static Tracker tracker;
 
-    VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+    private VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
             if (newToken == null) {
@@ -47,6 +47,7 @@ public class EvendateApplication extends MultiDexApplication {
 
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+        //AppEventsLogger.activateApp(this);
 
         initImageLoader();
         initOneSignal();

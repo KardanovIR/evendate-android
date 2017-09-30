@@ -12,7 +12,7 @@ import android.view.ViewAnimationUtils;
 public class UiUtils {
 
     public static void revealView(View view) {
-        if (view.getVisibility() == View.VISIBLE)
+        if (view.getVisibility() == View.VISIBLE && view.isAttachedToWindow())
             return;
         view.setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT < 21)

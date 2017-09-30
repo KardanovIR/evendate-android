@@ -28,18 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import butterknife.Unbinder;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationFull;
-import ru.evendate.android.network.ApiFactory;
-import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceImpl;
 import ru.evendate.android.views.LoadStateView;
 
@@ -47,8 +42,9 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
     private static final String LOG_TAG = OnboardingDialog.class.getSimpleName();
 
     private OnboardingAdapter mAdapter;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    OnOrgSelectedListener listener;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    private OnOrgSelectedListener listener;
+    private Unbinder unbinder;
 
     interface OnOrgSelectedListener {
         void onOrgSelected();
@@ -59,7 +55,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         View customTitle = getActivity().getLayoutInflater()
-                .inflate(R.layout.dialog_title, null);
+                .inflate(R.layout.dialog_onboarding_title, null);
 
         mAdapter = (new OnboardingAdapter(getActivity()));
 
@@ -67,16 +63,14 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
         builder.setCustomTitle(customTitle)
                 .setAdapter(mAdapter, null)
                 .setPositiveButton(R.string.dialog_ok,
-                        (DialogInterface dialog, int which) -> {
-                            onOrgsSelected(mAdapter.getChecked());
-                        })
+                        (DialogInterface dialog, int which) -> onOrgsSelected(mAdapter.getChecked()))
                 .setNeutralButton(R.string.dialog_skip, null);
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener((DialogInterface d) -> {
             Button NeutralButton = ((AlertDialog)d).getButton(DialogInterface.BUTTON_NEUTRAL);
             NeutralButton.setTextColor(Color.parseColor("#FFB1B1B1"));
         });
-        ButterKnife.bind(this, customTitle);
+        unbinder = ButterKnife.bind(this, customTitle);
         mLoadStateView.setOnReloadListener(this);
         return dialog;
     }
@@ -93,13 +87,13 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
     }
 
     private void loadOrgs() {
-        ApiService apiService = ApiFactory.getService(getContext());
-        Observable<ResponseArray<OrganizationFull>> observable =
-                apiService.getOrgRecommendations(EvendateAccountManager.peekToken(getContext()),
-                        OrganizationDetail.FIELDS_LIST, 10, 0);
-
-        observable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+        String token = EvendateAccountManager.peekToken(getContext());
+        if (token == null) {
+            dismiss();
+            return;
+        }
+        new DataRepository(getContext())
+                .getOrgRecommendations(token, 0, 10)
                 .subscribe(
                         result -> onLoaded(new ArrayList<>(result.getData())),
                         this::onError,
@@ -107,7 +101,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
                 );
     }
 
-    public void onLoaded(ArrayList<OrganizationDetail> subList) {
+    private void onLoaded(ArrayList<OrganizationDetail> subList) {
         if (!isAdded())
             return;
         Log.i(LOG_TAG, "loaded");
@@ -119,7 +113,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
         loadOrgs();
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         if (!isAdded())
             return;
         Log.e("" + LOG_TAG, error.getMessage());
@@ -147,7 +141,7 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
             return mList;
         }
 
-        public boolean[] getChecked() {
+        boolean[] getChecked() {
             return checked;
         }
 
@@ -184,9 +178,9 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
                 LayoutInflater inflater = context.getLayoutInflater();
                 rowView = inflater.inflate(R.layout.item_onboarding, parent, false);
                 holder = new ViewHolder();
-                holder.textView = (TextView)rowView.findViewById(R.id.label);
-                holder.iconView = (ImageView)rowView.findViewById(R.id.icon);
-                holder.checkBox = (CheckBox)rowView.findViewById(R.id.checkbox);
+                holder.textView = rowView.findViewById(R.id.label);
+                holder.iconView = rowView.findViewById(R.id.icon);
+                holder.checkBox = rowView.findViewById(R.id.checkbox);
                 holder.checkBox.setOnCheckedChangeListener(
                         (CompoundButton buttonView, boolean isChecked) ->
                                 checked[position] = isChecked
@@ -208,14 +202,19 @@ public class OnboardingDialog extends DialogFragment implements LoadStateView.On
 
     }
 
-    public void onOrgsSelected(boolean[] selectedItems) {
+    private void onOrgsSelected(boolean[] selectedItems) {
         List<OrganizationDetail> list = mAdapter.getList();
         for (int i = 0; i < list.size(); i++) {
             if (selectedItems[i])
                 ServiceImpl.subscribeOrgAndChangeState(getActivity(), list.get(i));
         }
-        //todo fix, cause refresh take place before subscribing done
+        //todo fix, cause reload take place before subscribing done
         listener.onOrgSelected();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }

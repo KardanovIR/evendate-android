@@ -10,6 +10,7 @@ import org.parceler.Parcel;
 @Parcel
 public class User extends DataModel {
     public static final String FIELDS_LIST = "is_friend,name,link";
+    public static String SEARCH_ORDER_BY = "-search_score";
 
     @SerializedName("id")
     int userId;

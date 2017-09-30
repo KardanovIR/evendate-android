@@ -12,8 +12,8 @@ import android.text.TextUtils;
 /**
  * Created by Dmitry on 07.09.2015.
  */
-public class Authenticator extends AbstractAccountAuthenticator {
-    Context mContext;
+class Authenticator extends AbstractAccountAuthenticator {
+    private Context mContext;
 
     // Simple constructor
     public Authenticator(Context context) {

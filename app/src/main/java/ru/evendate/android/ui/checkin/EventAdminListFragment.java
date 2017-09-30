@@ -18,13 +18,16 @@ import com.github.ybq.endless.Endless;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import io.reactivex.Observable;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
 import ru.evendate.android.models.EventRegistered;
-import ru.evendate.android.ui.AbstractEndlessAdapter;
+import ru.evendate.android.ui.AbstractAdapter;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.utils.EventFormatter;
 import ru.evendate.android.ui.utils.FormatUtils;
 import ru.evendate.android.ui.utils.TicketFormatter;
@@ -33,13 +36,14 @@ import ru.evendate.android.views.LoadStateView;
 //TODO DRY
 public class EventAdminListFragment extends Fragment implements CheckInContract.EventAdminView {
 
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
-    EventAdminListFragment.EventAdminRecyclerViewAdapter mAdapter;
-    CheckInContract.EventAdminPresenter mPresenter;
-    CheckInContract.EventInteractionListener mListener;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+    private EventAdminListFragment.EventAdminRecyclerViewAdapter mAdapter;
+    private CheckInContract.EventAdminPresenter mPresenter;
+    private CheckInContract.EventInteractionListener mListener;
     private Endless mEndless;
+    private Unbinder unbinder;
 
     @Override
     public void setPresenter(CheckInContract.EventAdminPresenter presenter) {
@@ -58,12 +62,17 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     }
 
     @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_event_admin_list, container, false);
 
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mAdapter = new EventAdminRecyclerViewAdapter(getContext(), mListener);
@@ -74,14 +83,14 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
 
         View loadingView = inflater.inflate(R.layout.item_progress, container, false);
         mEndless = Endless.applyTo(mRecyclerView, loadingView);
-        mEndless.setLoadMoreListener((int page) -> mPresenter.loadList(false, page));
+        mEndless.setLoadMoreListener((int page) -> mPresenter.load(false, page));
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mEndless.setLoadMoreAvailable(true);
             mEndless.setCurrentPage(0);
-            mPresenter.loadList(true, 0);
+            mPresenter.reload();
         });
-        mLoadStateView.setOnReloadListener(() -> mPresenter.loadList(true, 0));
+        mLoadStateView.setOnReloadListener(() -> mPresenter.reload());
 
         setEmptyCap();
 
@@ -105,7 +114,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
 
@@ -162,7 +171,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         mRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    class EventAdminRecyclerViewAdapter extends AbstractEndlessAdapter<EventRegistered,
+    class EventAdminRecyclerViewAdapter extends AbstractAdapter<EventRegistered,
             EventAdminRecyclerViewAdapter.EventAdminViewHolder> {
 
         private final CheckInContract.EventInteractionListener mListener;
@@ -184,7 +193,7 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
         public void onBindViewHolder(final EventAdminViewHolder holder, int position) {
             EventRegistered event = getItem(position);
             holder.mTitle.setText(event.getTitle());
-            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event) event)));
+            holder.mDatetime.setText(EventFormatter.formatDate(EventFormatter.getNearestDateTime((Event)event)));
             holder.mPlace.setText(event.getLocation());
             holder.mEvent = event;
             holder.mTicketCount.setText(
@@ -197,11 +206,11 @@ public class EventAdminListFragment extends Fragment implements CheckInContract.
 
         class EventAdminViewHolder extends RecyclerView.ViewHolder {
             View holderView;
-            @Bind(R.id.hint) TextView mHint;
-            @Bind(R.id.title) TextView mTitle;
-            @Bind(R.id.datetime) TextView mDatetime;
-            @Bind(R.id.place) TextView mPlace;
-            @Bind(R.id.ticket_count) TextView mTicketCount;
+            @BindView(R.id.hint) TextView mHint;
+            @BindView(R.id.title) TextView mTitle;
+            @BindView(R.id.datetime) TextView mDatetime;
+            @BindView(R.id.place) TextView mPlace;
+            @BindView(R.id.ticket_count) TextView mTicketCount;
 
             @Nullable EventRegistered mEvent;
 

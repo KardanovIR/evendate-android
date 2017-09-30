@@ -30,18 +30,13 @@ import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendateApplication;
 import ru.evendate.android.R;
+import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.UserDetail;
-import ru.evendate.android.network.ApiFactory;
-import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
@@ -56,13 +51,12 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
     private final static String LOG_TAG = UserProfileActivity.class.getSimpleName();
     public static final String URI = "uri";
     public static final String USER_ID = "user_id";
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
-    @Bind(R.id.user_avatar) ImageView mUserImageView;
-    @Bind(R.id.avatar_container) View mUserImageContainer;
-    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
-    DrawerWrapper mDrawer;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.user_avatar) ImageView mUserImageView;
+    @BindView(R.id.avatar_container) View mUserImageContainer;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Uri mUri;
     private int userId;
     private UserAdapter mUserAdapter;
@@ -91,7 +85,7 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
         initTransitions();
 
         Intent intent = getIntent();
-        if (intent != null) {
+        if (intent != null && intent.getData() != null) {
             userId = Integer.parseInt(intent.getData().getLastPathSegment());
             new Statistics(this).sendUserView(userId);
         }
@@ -102,13 +96,12 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
         mLoadStateView.setOnReloadListener(this);
 
         loadUser();
-        mDrawer.start();
         mLoadStateView.showProgress();
     }
 
     @SuppressWarnings("ConstantConditions")
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -122,9 +115,9 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
         }
     }
 
-
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
@@ -133,7 +126,12 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.user_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mDrawer.start();
     }
 
     @Override
@@ -157,13 +155,7 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
     }
 
     public void loadUser() {
-        ApiService apiService = ApiFactory.getService(this);
-        Observable<ResponseArray<UserDetail>> organizationObservable =
-                apiService.getUser(EvendateAccountManager.peekToken(this),
-                        userId, UserDetail.FIELDS_LIST);
-
-        organizationObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+        new DataRepository(this).getUser(EvendateAccountManager.peekToken(this), userId)
                 .subscribe(result -> {
                             if (!result.isOk())
                                 mLoadStateView.showErrorHint();
@@ -173,20 +165,21 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
                         mLoadStateView::hideProgress);
     }
 
-    public void onLoaded(ArrayList<UserDetail> users) {
+    private void onLoaded(ArrayList<UserDetail> users) {
         mUserAdapter.setUser(users.get(0));
         mUserPagerAdapter = new UserPagerAdapter(getSupportFragmentManager(), this, mUserAdapter.getUser());
         mViewPager.setAdapter(mUserPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         mLoadStateView.showErrorHint();
     }
 
     @Override
     public void onReload() {
+        super.onReload();
         loadUser();
     }
 
@@ -296,7 +289,7 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
          * @param position int
          * @return String
          */
-        public String getPageLabel(int position) {
+        String getPageLabel(int position) {
             switch (position) {
                 case 0:
                     return mContext.getString(R.string.stat_page_subscriptions);

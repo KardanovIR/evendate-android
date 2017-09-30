@@ -32,6 +32,8 @@ public class Order extends DataModel {
     String statusName;
     @SerializedName("payed_at") @Nullable
     Integer payedAt;
+    @SerializedName("final_sum")
+    float finalSum;
 
     @SerializedName("is_canceled")
     boolean isCanceled;
@@ -103,5 +105,9 @@ public class Order extends DataModel {
 
     public User getUser() {
         return user;
+    }
+
+    public float getFinalSum() {
+        return finalSum;
     }
 }

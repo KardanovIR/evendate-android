@@ -3,6 +3,7 @@ package ru.evendate.android.ui.utils;
 import android.content.Context;
 
 import java.text.ChoiceFormat;
+import java.text.NumberFormat;
 import java.util.Locale;
 
 import ru.evendate.android.R;
@@ -35,5 +36,18 @@ public class TicketFormatter {
         if (locale.getLanguage().equals("ru"))
             return "№";
         return "#";
+    }
+
+    public static String formatCost(Context context, float cost) {
+        String formattedCost = NumberFormat.getNumberInstance(FormatUtils.getCurrentLocale(context))
+                .format(cost);
+        if (FormatUtils.getCurrentLocale(context).getLanguage().equals("ru"))
+            return formattedCost + " \u20BD";
+        return formattedCost;
+    }
+
+    public static String formatTotalCost(Context context, float cost) {
+        return context.getString(R.string.ticketing_form_total_cost)
+                + " " + formatCost(context, cost);
     }
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="300dp"
     android:id="@+id/cardView"
@@ -32,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
                 android:id="@+id/item_title"
-                android:text="title"
+                tools:text="title"
                 android:textColor="#FFFFFFFF"
                 android:textSize="16sp"
                 android:textIsSelectable="false">
@@ -46,7 +48,7 @@
             android:id="@+id/item_subtitle"
             android:textColor="#FF222222"
             android:gravity="center_vertical"
-            android:text="subtitle">
+            tools:text="subtitle">
         </TextView>
     </LinearLayout>
 </android.support.v7.widget.CardView>

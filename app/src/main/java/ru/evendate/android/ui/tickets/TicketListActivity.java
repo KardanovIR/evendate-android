@@ -16,9 +16,10 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
+import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.data.EvendateContract;
@@ -31,18 +32,17 @@ import ru.evendate.android.ui.eventdetail.EventDetailActivity;
 public class TicketListActivity extends BaseActivity implements TicketDetailFragment.OnTicketInteractionListener {
     public static final String EVENT_KEY = "event";
     private static final String TICKETS_KEY = "tickets";
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.pager) ViewPager mViewPager;
-    PagerAdapter mAdapter;
-    Disposable mDisposable;
-    DataRepository mDataRepository;
-    EventRegistered mEvent;
-    List<Ticket> mTickets;
-    DrawerWrapper mDrawer;
-    boolean isLoading = false;
-    boolean loadMoreAvailable = true;
-    int PAGE_LOAD_OFFSET = 2;
-    int LENGTH = 10;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    private PagerAdapter mAdapter;
+    private Disposable mDisposable;
+    private DataRepository mDataRepository;
+    private EventRegistered mEvent;
+    private List<Ticket> mTickets;
+    private boolean isLoading = false;
+    private boolean loadMoreAvailable = true;
+    private int PAGE_LOAD_OFFSET = 2;
+    private int LENGTH = 10;
     private String LOG_TAG = TicketListActivity.class.getSimpleName();
 
     @Override
@@ -83,7 +83,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
         });
     }
 
-    void handleIntent(Intent intent) {
+    private void handleIntent(Intent intent) {
         if (intent == null) {
             return;
         }
@@ -105,8 +105,9 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new DrawerWrapper.NavigationItemSelectedListener(this, mDrawer.getDrawer()));
     }
@@ -136,15 +137,10 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mDrawer.start();
-    }
-
-    public void loadTickets(int page) {
-
-        mDisposable = mDataRepository.getTickets(page, LENGTH).subscribe(result -> {
+    private void loadTickets(int page) {
+        //todo token
+        String token = EvendateAccountManager.peekToken(this);
+        mDisposable = mDataRepository.getTickets(token, Ticket.GREEN_TYPE, page, LENGTH).subscribe(result -> {
                     Log.i(LOG_TAG, "loaded");
                     if (result.isOk()) {
                         onLoaded(new ArrayList<>(result.getData()));
@@ -168,7 +164,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
         isLoading = false;
     }
 
-    public void onLoaded(List<Ticket> list) {
+    private void onLoaded(List<Ticket> list) {
         if (list.size() < LENGTH)
             loadMoreAvailable = false;
         mTickets.addAll(list);
@@ -177,7 +173,7 @@ public class TicketListActivity extends BaseActivity implements TicketDetailFrag
     }
 
 
-    public void onError(Throwable error) {
+    private void onError(Throwable error) {
         Log.e(LOG_TAG, "" + error.getMessage());
         //todo not implemented edge case
     }

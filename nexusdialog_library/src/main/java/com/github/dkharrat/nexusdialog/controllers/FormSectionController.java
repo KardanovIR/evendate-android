@@ -1,20 +1,20 @@
 package com.github.dkharrat.nexusdialog.controllers;
 
-import android.content.Context;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
-
-import com.github.dkharrat.nexusdialog.FormElementController;
-import com.github.dkharrat.nexusdialog.R;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import com.github.dkharrat.nexusdialog.R;
+import com.github.dkharrat.nexusdialog.FormElementController;
 
 /**
  * Represents a section in a form. A form section represents a grouping of {@code FormElementController}s that are

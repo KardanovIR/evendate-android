@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.models.EventDate;
@@ -23,8 +23,8 @@ import ru.evendate.android.ui.utils.EventFormatter;
  * contain one date for event (month + day)
  */
 public class DatetimeView extends LinearLayout {
-    @Bind(R.id.date) TextView mDateView;
-    @Bind(R.id.time) TextView mTimeView;
+    @BindView(R.id.date) TextView mDateView;
+    @BindView(R.id.time) TextView mTimeView;
     private EventDate mDate;
 
     public DatetimeView(Context context) {

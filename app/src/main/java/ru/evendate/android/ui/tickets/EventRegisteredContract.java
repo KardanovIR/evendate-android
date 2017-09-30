@@ -28,6 +28,8 @@ interface EventRegisteredContract {
 
     interface Presenter extends BasePresenter {
         void loadEvents(boolean forceLoad, int page);
+
+        void reloadEvents();
     }
 
     interface OnEventInteractionListener {

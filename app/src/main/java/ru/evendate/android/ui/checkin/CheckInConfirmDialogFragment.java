@@ -16,37 +16,41 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
+import io.reactivex.Observable;
 import ru.evendate.android.R;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.utils.TicketFormatter;
 import ru.evendate.android.ui.utils.UserFormatter;
 import ru.evendate.android.views.LoadStateView;
 
 public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment implements CheckInContract.TicketConfirmView {
 
-    static final ButterKnife.Action<View> VISIBLE = (View view, int index) -> {
-        view.setVisibility(View.VISIBLE);
-    };
-    static final ButterKnife.Action<View> INVISIBLE = (View view, int index) -> {
-        view.setVisibility(View.INVISIBLE);
-    };
+    private Unbinder unbinder;
+
+    private static final ButterKnife.Action<View> VISIBLE =
+            (View view, int index) -> view.setVisibility(View.VISIBLE);
+    private static final ButterKnife.Action<View> INVISIBLE =
+            (View view, int index) -> view.setVisibility(View.INVISIBLE);
     private static final String KEY_TICKET_UUID = "key_ticket";
     private static final String KEY_EVENT_ID = "key_event_id";
-    @Bind(R.id.ticket_type) TextView mTicketType;
-    @Bind(R.id.cancel) Button mCancel;
-    @Bind(R.id.confirm) Button mConfirm;
-    @Bind(R.id.confirm_progress) ProgressBar mConfirmProgress;
-    @Bind(R.id.avatar) ImageView mAvatar;
-    @Bind(R.id.ticket_number) TextView mTicketNumber;
-    @Bind(R.id.user_name) TextView UserName;
-    @Bind(R.id.revert_check_out) Button mTicketCheckOut;
-    @Bind(R.id.load_state) LoadStateView mLoadState;
-    @Bind({R.id.ticket_type, R.id.avatar,
+    @BindView(R.id.ticket_type) TextView mTicketType;
+    @BindView(R.id.cancel) Button mCancel;
+    @BindView(R.id.confirm) Button mConfirm;
+    @BindView(R.id.confirm_progress) ProgressBar mConfirmProgress;
+    @BindView(R.id.avatar) ImageView mAvatar;
+    @BindView(R.id.ticket_number) TextView mTicketNumber;
+    @BindView(R.id.user_name) TextView UserName;
+    @BindView(R.id.revert_check_out) Button mTicketCheckOut;
+    @BindView(R.id.load_state) LoadStateView mLoadState;
+    @BindViews({R.id.ticket_type, R.id.avatar,
             R.id.ticket_number, R.id.user_name, R.id.icon_ticket})
     List<View> mTicketViews;
-    CheckInContract.TicketConfirmPresenter mPresenter;
+    private CheckInContract.TicketConfirmPresenter mPresenter;
     private CheckInContract.ConfirmInteractionListener mListener;
 
     public static CheckInConfirmDialogFragment newInstance(int eventId, String ticketUuid) {
@@ -68,7 +72,7 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_check_in_confirm_dialog, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         mLoadState.setOnReloadListener(() ->
                 mPresenter.loadTicket(getArguments().getString(KEY_TICKET_UUID),
                         getArguments().getInt(KEY_EVENT_ID)));
@@ -97,7 +101,12 @@ public class CheckInConfirmDialogFragment extends BottomSheetDialogFragment impl
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
+    }
+
+    @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
     }
 
     @Override

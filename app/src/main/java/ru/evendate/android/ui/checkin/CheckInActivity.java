@@ -11,7 +11,6 @@ import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -20,15 +19,16 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.evendate.android.R;
 import ru.evendate.android.data.DataRepository;
 import ru.evendate.android.models.EventRegistered;
+import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
 
 //todo on confirm update pages tickets
-public class CheckInActivity extends AppCompatActivity implements CheckInContract.ConfirmInteractionListener,
+public class CheckInActivity extends BaseActivity implements CheckInContract.ConfirmInteractionListener,
         CheckInContract.EventInteractionListener, CheckInContract.TicketInteractionListener,
         CheckInContract.QRReadListener, CheckInContract.TicketPagerTabInitializator, CheckInContract.SearchClickListener {
 
@@ -38,20 +38,18 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
     private static final String TAG_SEARCH_TICKETS = "search_tickets";
     private static final String TAG_QR_SCANNER = "qr_scanner";
     private static final String TAG_CONFIRM = "confirm";
-    @Bind(R.id.fab) FloatingActionButton mFab;
-    @Bind(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
-    @Bind(R.id.tabs) TabLayout mTabs;
-    Toolbar toolbar;
-    int selectedEventId;
-    int lastBackStackCount = 0;
-    private DrawerWrapper mDrawer;
+    @BindView(R.id.fab) FloatingActionButton mFab;
+    @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.tabs) TabLayout mTabs;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    private int selectedEventId;
+    private int lastBackStackCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
         ButterKnife.bind(this);
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         toolbar.setNavigationOnClickListener((View v) -> {
@@ -158,23 +156,16 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
             new TicketsAdminPresenter(new DataRepository(this), (CheckInContract.TicketsAdminView)fragmentSearchTickets);
         }
         if (getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM) != null) {
-            new CheckInConfirmPresenter(new DataRepository(this), (CheckInContract.TicketConfirmView)getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM));
+            new CheckInConfirmPresenter(this, new DataRepository(this), (CheckInContract.TicketConfirmView)getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM));
         }
     }
 
-    private void initDrawer() {
-        mDrawer = DrawerWrapper.newInstance(this);
+    @Override
+    protected void initDrawer() {
+        mDrawer = DrawerWrapper.newInstance(this, this);
         mDrawer.getDrawer().setOnDrawerItemClickListener(
                 new CheckInNavigationItemClickListener(this, mDrawer.getDrawer()));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //todo cause menu item not view at start but only after loading user
-        //mDrawer.getDrawer().setSelection(DrawerWrapper.ADMINISTRATION_IDENTIFIER);
-        mDrawer.start();
-
+        mDrawer.setListener(() -> mDrawer.getDrawer().setSelection(DrawerWrapper.ADMINISTRATION_IDENTIFIER));
     }
 
     @Override
@@ -201,6 +192,8 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack("")
                 .commit();
+        TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+        mTabs.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -208,7 +201,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
         if (getSupportFragmentManager().findFragmentByTag(TAG_CONFIRM) != null)
             return;
         CheckInConfirmDialogFragment fragment = CheckInConfirmDialogFragment.newInstance(eventId, ticketUuid);
-        new CheckInConfirmPresenter(new DataRepository(this), fragment);
+        new CheckInConfirmPresenter(this, new DataRepository(this), fragment);
         fragment.show(getSupportFragmentManager(), TAG_CONFIRM);
     }
 
@@ -255,7 +248,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
     @Override
     public void onQrRead(int eventId, String ticketUuid) {
         CheckInConfirmDialogFragment fragment = CheckInConfirmDialogFragment.newInstance(eventId, ticketUuid);
-        new CheckInConfirmPresenter(new DataRepository(this), fragment);
+        new CheckInConfirmPresenter(this, new DataRepository(this), fragment);
         fragment.show(getSupportFragmentManager(), TAG_CONFIRM);
     }
 
@@ -281,7 +274,7 @@ public class CheckInActivity extends AppCompatActivity implements CheckInContrac
 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            switch ((int)drawerItem.getIdentifier()) {
                 case DrawerWrapper.ADMINISTRATION_IDENTIFIER:
                     mDrawer.closeDrawer();
                     break;

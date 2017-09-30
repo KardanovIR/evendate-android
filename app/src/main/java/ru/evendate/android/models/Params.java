@@ -6,13 +6,13 @@ package ru.evendate.android.models;
 
 public abstract class Params {
     static public String get(String[] paramList) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (String param : paramList) {
-            if (!result.isEmpty())
-                result += ",";
-            result += param;
+            if (!result.toString().isEmpty())
+                result.append(",");
+            result.append(param);
         }
-        return result;
+        return result.toString();
     }
 
 }

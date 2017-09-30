@@ -1,47 +1,30 @@
 package ru.evendate.android.ui.users;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.R;
-import ru.evendate.android.models.Event;
-import ru.evendate.android.models.OrganizationDetail;
-import ru.evendate.android.models.OrganizationFull;
+import ru.evendate.android.data.EvendateContract;
+import ru.evendate.android.models.User;
 import ru.evendate.android.models.UserDetail;
-import ru.evendate.android.network.ApiFactory;
-import ru.evendate.android.network.ApiService;
-import ru.evendate.android.network.ResponseArray;
-import ru.evendate.android.ui.NpaLinearLayoutManager;
-import ru.evendate.android.views.LoadStateView;
+import ru.evendate.android.ui.AbstractAdapter;
+import ru.evendate.android.ui.BaseActivity;
+import ru.evendate.android.ui.EndlessListFragment;
+import ru.evendate.android.ui.userdetail.UserProfileActivity;
 
-public class UserListFragment extends Fragment implements LoadStateView.OnReloadListener {
+public class UserListFragment extends EndlessListFragment<UserListPresenter, UserDetail, UsersAdapter.UserHolder>
+        implements UserListContract.UserListView, UsersAdapter.UsersInteractionListener {
     private String LOG_TAG = UserListFragment.class.getSimpleName();
-
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    private UsersAdapter mAdapter;
     public static final String TYPE = "type";
     public static final String EVENT_ID = "event_id";
     public static final String ORGANIZATION_ID = "organization_id";
     private int type = 0;
     private int organizationId;
     private int eventId;
-    @Bind(R.id.load_state) LoadStateView mLoadStateView;
 
     public enum TypeFormat {
         EVENT(0),
@@ -94,152 +77,62 @@ public class UserListFragment extends Fragment implements LoadStateView.OnReload
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_user_list, container, false);
-        ButterKnife.bind(this, rootView);
-
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             type = savedInstanceState.getInt(TYPE);
-        }
-        initTransitions();
-        mAdapter = new UsersAdapter(getActivity());
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new NpaLinearLayoutManager(getActivity()));
-        mLoadStateView.setOnReloadListener(this);
-        setEmptyCap();
-
-        return rootView;
-    }
-
-    private void initTransitions() {
-        if (Build.VERSION.SDK_INT >= 21) {
-            getActivity().getWindow().setEnterTransition(new Explode());
-            getActivity().getWindow().setExitTransition(new Explode());
+            eventId = savedInstanceState.getInt(EVENT_ID);
+            organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
         }
     }
 
-    private void setEmptyCap() {
-        mLoadStateView.setEmptyHeader(getString(R.string.list_users_empty_text));
-    }
-
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState == null)
-            return;
-        type = savedInstanceState.getInt(TYPE);
-        eventId = savedInstanceState.getInt(EVENT_ID);
-        organizationId = savedInstanceState.getInt(ORGANIZATION_ID);
+    protected AbstractAdapter<UserDetail, UsersAdapter.UserHolder> getAdapter() {
+        return new UsersAdapter(getActivity(), this);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadData();
-        mLoadStateView.showProgress();
-    }
-
-    private void loadData() {
-        switch (UserListFragment.TypeFormat.getType(type)) {
-            case EVENT:
-                loadEvent();
-                break;
-            case ORGANIZATION:
-                loadOrganization();
-                break;
-            case FRIENDS:
-                loadFriends();
-                break;
-        }
-    }
-
-    private void loadOrganization() {
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<OrganizationFull>> eventObservable =
-                apiService.getOrganization(EvendateAccountManager.peekToken(getActivity()),
-                        organizationId, OrganizationDetail.FIELDS_LIST);
-
-        eventObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                            if (!result.isOk())
-                                mLoadStateView.showErrorHint();
-                            else
-                                onLoadedOrgs(result.getData());
-                        }, this::onError,
-                        mLoadStateView::hideProgress);
-    }
-
-    private void loadEvent() {
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<Event>> eventObservable =
-                apiService.getEvent(EvendateAccountManager.peekToken(getActivity()),
-                        eventId, Event.FIELDS_LIST);
-
-        eventObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                            if (!result.isOk())
-                                mLoadStateView.showErrorHint();
-                            else
-                                onLoadedEvents(result.getData());
-                        }, this::onError,
-                        mLoadStateView::hideProgress);
-    }
-
-    private void loadFriends() {
-        ApiService apiService = ApiFactory.getService(getActivity());
-        Observable<ResponseArray<UserDetail>> friendsObservable =
-                apiService.getFriends(EvendateAccountManager.peekToken(getActivity()), UserDetail.FIELDS_LIST);
-
-        friendsObservable.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                            if (!result.isOk())
-                                mLoadStateView.showErrorHint();
-                            else
-                                onLoaded(result.getData());
-                        }, this::onError,
-                        mLoadStateView::hideProgress);
-    }
-
-
-    public void onLoadedEvents(ArrayList<Event> events) {
-        if (!isAdded())
-            return;
-        Event event = events.get(0);
-        onLoaded(event.getUserList());
-    }
-
-    public void onLoadedOrgs(ArrayList<OrganizationFull> orgs) {
-        if (!isAdded())
-            return;
-        OrganizationFull organization = orgs.get(0);
-        onLoaded(organization.getSubscribedUsersList());
-    }
-
-    public void onLoaded(ArrayList<UserDetail> friends) {
-        if (!isAdded())
-            return;
-        mAdapter.replace(friends);
-        checkListAndShowHint();
-    }
-
-    private void onError(Throwable error) {
-        if (!isAdded())
-            return;
-        Log.e(LOG_TAG, "" + error.getMessage());
-        mLoadStateView.showErrorHint();
-    }
-
-    @Override
     public void onReload() {
-        loadData();
+        onRefresh();
     }
 
-    protected void checkListAndShowHint() {
-        if (mAdapter.isEmpty())
-            mLoadStateView.showEmptyHint();
+    @Override
+    protected String getEmptyHeader() {
+        return getString(R.string.list_users_empty_text);
+    }
+
+    @Override
+    protected String getEmptyDescription() {
+        return null;
+    }
+
+    @Override
+    public Observable<String> requestAuth() {
+        return ((BaseActivity)getActivity()).requestAuth();
+    }
+
+    @Override
+    public int getEventId() {
+        return eventId;
+    }
+
+    @Override
+    public int getOrgId() {
+        return organizationId;
+    }
+
+    @Override
+    public TypeFormat getType() {
+        return TypeFormat.getType(type);
+    }
+
+    @Override
+    public void openUser(User user) {
+        Intent intent = new Intent(getContext(), UserProfileActivity.class);
+        intent.setData(EvendateContract.UserEntry.getContentUri(user.getEntryId()));
+        if (Build.VERSION.SDK_INT >= 21) {
+            getContext().startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        } else
+            getContext().startActivity(intent);
     }
 }
