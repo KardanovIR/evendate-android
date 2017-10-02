@@ -634,7 +634,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         String token = EvendateAccountManager.peekToken(this);
         if (!mRegistrationButton.isEnabled())
             return;
-        if (!mAdapter.mEvent.isRegistrationLocally() || !mAdapter.mEvent.isTicketingLocally())
+        if (!mAdapter.mEvent.isRegistrationLocally() && !mAdapter.mEvent.isTicketingLocally() && mAdapter.mEvent.isRegistrationRequired())
             openSite();
         else {
             if (token == null) {
