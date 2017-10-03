@@ -37,6 +37,7 @@ public class WebAuthActivity extends AppCompatActivity {
     public final static String EMAIL = "email";
     public final static String TOKEN = "token";
     public final static String BACK_PRESSED = "back_pressed";
+    public final static String ERROR_CODE = "error_code";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,9 @@ public class WebAuthActivity extends AppCompatActivity {
                 currentURL = new URL(url);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                setResult(RESULT_CANCELED);
+                Intent intent = new Intent();
+                intent.putExtra(ERROR_CODE, AuthDialog.INVALID_URL_ERROR_CODE);
+                setResult(RESULT_CANCELED, intent);
                 finish();
                 return;
             }
@@ -112,7 +115,9 @@ public class WebAuthActivity extends AppCompatActivity {
                 Runnable run = () -> {
                     if (timeout) {
                         Log.e(LOG_TAG, "auth connection timeout");
-                        setResult(RESULT_CANCELED);
+                        Intent intent = new Intent();
+                        intent.putExtra(ERROR_CODE, AuthDialog.TIME_OUT_ERROR_CODE);
+                        setResult(RESULT_CANCELED, intent);
                         finish();
                     }
                 };
@@ -130,7 +135,9 @@ public class WebAuthActivity extends AppCompatActivity {
                     query = URLDecoder.decode(query, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                    setResult(RESULT_CANCELED);
+                    Intent intent = new Intent();
+                    intent.putExtra(ERROR_CODE, AuthDialog.INVALID_REDIRECT_URL_ERROR_CODE);
+                    setResult(RESULT_CANCELED, intent);
                     finish();
                     return;
                 }
