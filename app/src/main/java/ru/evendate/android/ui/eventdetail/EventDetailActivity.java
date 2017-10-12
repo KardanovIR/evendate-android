@@ -455,8 +455,8 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @Override
     protected void onStop() {
         super.onStop();
-        Picasso.with(this)
-                .cancelRequest(mEventImageView);
+        Picasso.with(this).cancelRequest(mEventImageView);
+        Picasso.with(this).cancelRequest(mOrganizationIconView);
     }
 
     @Override
