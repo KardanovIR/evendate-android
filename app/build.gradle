@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '25.0.3'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "ru.evendate.android"
         minSdkVersion 16
@@ -125,6 +125,12 @@ dependencies {
     annotationProcessor 'org.parceler:parceler:1.1.6'
     compile 'com.yandex.money.api:yandex-money-sdk-android:4.1.0'
     compile 'com.facebook.android:facebook-android-sdk:4.26.0'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

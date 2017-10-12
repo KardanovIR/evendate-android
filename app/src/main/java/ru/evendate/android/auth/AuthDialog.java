@@ -91,16 +91,16 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
     private static final int GOOGLE_INIT_ERROR_CODE = 101;
 
     private static final int VK_RESULT_ERROR_CODE = 201;
-    private static final int GOOGLE_RESULT_ERROR_CODE = 203;
+    private static final int GOOGLE_RESULT_ERROR_CODE = 202;
     private static final int GOOGLE_INTERRUPTED_ERROR_CODE = 203;
 
     public final static int INVALID_URL_ERROR_CODE = 300;
     public final static int TIME_OUT_ERROR_CODE = 301;
     public final static int INVALID_REDIRECT_URL_ERROR_CODE = 302;
 
-    private final static int I_DO_NOT_KNOW_ERROR_CODE = 404;
     private final static int ADD_ACCOUNT_ERROR_CODE = 400;
     private final static int EMPTY_INFO_RECEIVED_ERROR_CODE = 401;
+    private final static int I_DO_NOT_KNOW_ERROR_CODE = 404;
 
     public static String getGoogleUrl(Context context) {
         //if(mAuthUrls != null)
@@ -264,7 +264,9 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.e(LOG_TAG, "onConnectionFailed:" + connectionResult);
-        onErrorOccurred(GOOGLE_INIT_ERROR_CODE);
+        if (connectionResult.getErrorCode() != ConnectionResult.CANCELED) {
+            onErrorOccurred(GOOGLE_INIT_ERROR_CODE);
+        }
     }
 
     @Override
@@ -387,20 +389,20 @@ public class AuthDialog extends DialogFragment implements GoogleApiClient.OnConn
     }
 
     private void onGoogleTokenReceived(String token) {
-        String url = ApiFactory.getHostName(getContext()) + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
+        String url = ApiFactory.getHttpsHostName(getContext()) + "/oAuthDone.php?mobile=true&type=google&token_type=Bearer&expires_in=3600&" +
                 "authuser=0&session_state=49f4dc4624058e6cd300e7ec1c42331c52f1a97b..fb18&prompt=none&access_token=";
         url += token;
         startWebAuth(url);
     }
 
     private void onVkTokenReceived(VKAccessToken res) {
-        String url = ApiFactory.getHostName(getContext()) + "/oAuthDone.php?mobile=true&type=vk&expires_in=" + res.expiresIn + "&user_id=" + res.userId +
+        String url = ApiFactory.getHttpsHostName(getContext()) + "/oAuthDone.php?mobile=true&type=vk&expires_in=" + res.expiresIn + "&user_id=" + res.userId +
                 "&access_token=" + res.accessToken + "&email=" + res.email + "&secret=" + res.secret;
         startWebAuth(url);
     }
 
     private void onFbTokenReceived(AccessToken accessToken) {
-        String url = ApiFactory.getHostName(getContext()) +
+        String url = ApiFactory.getHttpsHostName(getContext()) +
                 "/oAuthDone.php?mobile=true&type=facebook&access_token=" + accessToken.getToken() +
                 "&expires_in=" + accessToken.getExpires().getTime() / 1000;
         startWebAuth(url);

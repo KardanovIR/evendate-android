@@ -318,6 +318,12 @@ public class TicketsAdminFragment extends Fragment {
         }
 
         @Override
+        public void onStop() {
+            super.onStop();
+            mPresenter.stop();
+        }
+
+        @Override
         public void onDestroyView() {
             super.onDestroyView();
             unbinder.unbind();

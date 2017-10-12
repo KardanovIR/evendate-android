@@ -17,6 +17,10 @@ public class Statistics implements GoogleStatistics, EvendateStatistics {
         evendateStatistics = new EvendateStatisticsImpl(context);
     }
 
+    public static Statistics getInstance(Context context) {
+        return new Statistics(context);
+    }
+
     /*
         View actions
     */
@@ -107,13 +111,38 @@ public class Statistics implements GoogleStatistics, EvendateStatistics {
     }
 
     @Override
-    public void sendTicketingFormOpen(int eventId) {
-        googleStatistics.sendTicketingFormOpen(eventId);
+    public void sendRegistrationStarted(int eventId) {
+        googleStatistics.sendRegistrationStarted(eventId);
     }
 
     @Override
-    public void sendTicketingFormSubmit(int eventId) {
-        googleStatistics.sendTicketingFormSubmit(eventId);
+    public void sendRegistrationCompleted(int eventId) {
+        googleStatistics.sendRegistrationCompleted(eventId);
+    }
+
+    @Override
+    public void sendRegistrationCanceled(int eventId) {
+        googleStatistics.sendRegistrationCanceled(eventId);
+    }
+
+    @Override
+    public void sendTicketingStarted(int eventId) {
+        googleStatistics.sendTicketingStarted(eventId);
+    }
+
+    @Override
+    public void sendTicketingCompleted(int eventId) {
+        googleStatistics.sendTicketingCompleted(eventId);
+    }
+
+    @Override
+    public void sendTicketingCanceled(int eventId) {
+        googleStatistics.sendTicketingCanceled(eventId);
+    }
+
+    @Override
+    public void sendTicketingAborted(int eventId) {
+        googleStatistics.sendTicketingAborted(eventId);
     }
 
     /*

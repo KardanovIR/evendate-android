@@ -121,7 +121,8 @@ public class WebAuthActivity extends AppCompatActivity {
                         finish();
                     }
                 };
-                new Handler(Looper.getMainLooper()).postDelayed(run, 30000);
+                Log.d(LOG_TAG, "start timeout");
+                new Handler(Looper.getMainLooper()).postDelayed(run, 60000);
             }
 
 
@@ -170,6 +171,15 @@ public class WebAuthActivity extends AppCompatActivity {
             Pattern emailPattern = Pattern.compile(pattern);
             Matcher match = emailPattern.matcher(query);
             return match.find() ? match.group(0) : null;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // Here put your code
+            Log.d(LOG_TAG, "redirect to " + url);
+
+            // return true; //Indicates WebView to NOT load the url;
+            return false; //Allow WebView to load url
         }
     }
 }

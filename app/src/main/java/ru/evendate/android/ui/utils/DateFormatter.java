@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -19,8 +20,9 @@ public class DateFormatter {
     private static DateFormat exportCalendarDatetimeFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault());
 
 
-
+    //from GMT to local timezone
     public static String formatNotification(Date date) {
+        notificationDatetimeFormat.setTimeZone(Calendar.getInstance().getTimeZone());
         String formatted_date = notificationDatetimeFormat.format(date);
         logDate("formatNotification", formatted_date);
         return formatted_date;

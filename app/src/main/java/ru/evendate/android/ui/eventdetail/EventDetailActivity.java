@@ -39,7 +39,6 @@ import android.transition.Slide;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -156,6 +155,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     private EventAdapter mAdapter;
     private int mPalleteColor;
     private AlertDialog notificationDialog;
+    private RegistrationFormFragment mTicketingFragment;
 
     private boolean backgroundLoaded = false;
 
@@ -461,6 +461,9 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     @Override
     public void onBackPressed() {
+        if (mTicketingFragment != null && mTicketingFragment.isResumed()) {
+            mTicketingFragment.onBackPressed();
+        }
         super.onBackPressed();
         mFAB.show();
     }
@@ -643,15 +646,14 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
                 openRegistrationForm();
             }
         }
-        new Statistics(this).sendTicketingFormOpen(eventId);
     }
 
     private void openRegistrationForm() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        RegistrationFormFragment newFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
+        mTicketingFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(R.id.main_content, newFragment).addToBackStack(null).commit();
+        transaction.add(R.id.main_content, mTicketingFragment).addToBackStack(null).commit();
         mFAB.hide();
     }
 
@@ -767,19 +769,14 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
 
     private void initNotificationDialog(ArrayList<EventNotification> notifications) {
         NotificationListAdapter adapter;
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogCustom);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.dialog_add_notification_button, null);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(getString(R.string.action_add_notification));
         adapter = new NotificationListAdapter(this,
                 NotificationConverter.convertNotificationList(notifications), mAdapter.getEvent());
         alertDialog.setAdapter(adapter, null);
-        alertDialog.setView(convertView);
         alertDialog.setPositiveButton(R.string.dialog_ok, (DialogInterface d, int which) -> adapter.update());
         alertDialog.setNegativeButton(R.string.dialog_cancel, (DialogInterface d, int which) -> notificationDialog.dismiss());
-
-        Button addNotificationButton = convertView.findViewById(R.id.add_notification);
-        addNotificationButton.setOnClickListener((View view) -> {
+        alertDialog.setNeutralButton(R.string.notification_add_custom, (DialogInterface d, int which) -> {
             DialogFragment newFragment = DatePickerFragment.getInstance(this, eventId);
             newFragment.show(getSupportFragmentManager(), "datePicker");
             adapter.update();

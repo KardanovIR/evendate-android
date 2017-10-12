@@ -70,6 +70,7 @@ public class ServiceImpl {
                 .subscribe(result -> {
                     if (result.isOk()) {
                         Log.i(LOG_TAG, "registered device userId");
+                        Log.i(LOG_TAG, "pushToken " + userId);
                         EvendatePreferences.setDeviceTokenSynced(context, true);
                     } else {
                         Log.e(LOG_TAG, "not registered device userId");
