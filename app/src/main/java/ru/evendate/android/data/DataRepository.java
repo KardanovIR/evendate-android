@@ -55,8 +55,8 @@ public class DataRepository implements DataSource {
     public Observable<ResponseArray<Ticket>> getTickets(@NonNull String token, int eventId, boolean checkOut, String type, int page, int pageLength) {
 
         Observable<ResponseArray<Ticket>> eventsObservable =
-                mService.getTickets(token, eventId, checkOut,
-                        CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, type, pageLength, pageLength * page);
+                mService.getTickets(token, eventId, checkOut, type,
+                        CheckInContract.TicketAdmin.params, Ticket.ORDER_BY, pageLength, pageLength * page);
 
         return eventsObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());

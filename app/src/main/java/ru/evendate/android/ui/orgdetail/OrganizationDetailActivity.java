@@ -303,6 +303,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     protected void onStop() {
         super.onStop();
         mDisposable.dispose();
+        Picasso.with(this).cancelRequest(mBackgroundView);
     }
 
     private void loadOrg() {

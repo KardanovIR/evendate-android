@@ -1,6 +1,7 @@
 package ru.evendate.android.statistics;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -121,17 +122,52 @@ class GoogleStatisticsImpl implements GoogleStatistics {
     }
 
     @Override
-    public void sendTicketingFormOpen(int eventId) {
+    public void sendRegistrationStarted(int eventId) {
         sendActionToStat(eventId,
                 mContext.getString(R.string.stat_category_event),
-                mContext.getString(R.string.stat_action_open_ticketing_form));
+                mContext.getString(R.string.stat_action_start_registration));
     }
 
     @Override
-    public void sendTicketingFormSubmit(int eventId) {
+    public void sendRegistrationCompleted(int eventId) {
         sendActionToStat(eventId,
                 mContext.getString(R.string.stat_category_event),
-                mContext.getString(R.string.stat_action_submit_ticketing_form));
+                mContext.getString(R.string.stat_action_complete_registration));
+    }
+
+    @Override
+    public void sendRegistrationCanceled(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_cancel_registration));
+    }
+
+    @Override
+    public void sendTicketingStarted(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_start_ticketing));
+    }
+
+    @Override
+    public void sendTicketingCompleted(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_complete_ticketing));
+    }
+
+    @Override
+    public void sendTicketingCanceled(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_cancel_ticketing));
+    }
+
+    @Override
+    public void sendTicketingAborted(int eventId) {
+        sendActionToStat(eventId,
+                mContext.getString(R.string.stat_category_event),
+                mContext.getString(R.string.stat_action_abort_ticketing));
     }
 
     @Override
@@ -176,6 +212,7 @@ class GoogleStatisticsImpl implements GoogleStatistics {
                 .setAction(action)
                 .setLabel(Integer.toString(id));
         EvendateApplication.getTracker().send(event.build());
+        Log.i(LOG_TAG, "Sent action to GA: category=" + category + ", action=" + action + ", label=" + Integer.toString(id));
     }
 
     @Override

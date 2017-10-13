@@ -64,7 +64,7 @@ public class EvendatePreferences {
         editor.apply();
     }
 
-    public static boolean getDeviceTokenSynced(Context context) {
+    public static boolean isDeviceTokenSynced(Context context) {
         return getPreferences(context).getBoolean(KEY_DEVICE_TOKEN_SYNCED, KEY_DEVICE_TOKEN_SYNCED_DEFAULT);
     }
 

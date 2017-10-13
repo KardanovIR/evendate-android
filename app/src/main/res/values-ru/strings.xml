@@ -101,7 +101,7 @@
     <string name="notification_before_three_days">За 3 дня</string>
     <string name="notification_before_three_hours">За 3 часа</string>
     <string name="notification_before_week">За неделю</string>
-    <string name="notification_add_custom">Добавить свое время</string>
+    <string name="notification_add_custom">Cвоё время</string>
     <string name="action_user_link">Профиль в социальной сети</string>
     <string name="title_activity_friends">Друзья</string>
     <string name="drawer_friends">Друзья</string>

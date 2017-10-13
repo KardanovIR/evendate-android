@@ -155,8 +155,10 @@ public class RegistrationFormFragment extends FormDialogFragment
                 }
             }
             totalSumChanged();
+            Statistics.getInstance(getContext()).sendTicketingStarted(mEvent.getEntryId());
         } else {
             ButterKnife.apply(mTicketViews, GONE);
+            Statistics.getInstance(getContext()).sendRegistrationStarted(mEvent.getEntryId());
         }
         mCrossedCost.setPaintFlags(mFinalCost.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         return rootView;
@@ -434,6 +436,7 @@ public class RegistrationFormFragment extends FormDialogFragment
         } else if (mEvent.isRegistrationAvailable()) {
             getActivity().onBackPressed();
             mListener.onRegistered();
+            new Statistics(getContext()).sendRegistrationCompleted(mEvent.getEntryId());
         }
     }
 
@@ -472,10 +475,19 @@ public class RegistrationFormFragment extends FormDialogFragment
         if (requestCode == PAYMENT_REQUEST_CODE && resultCode == RESULT_OK) {
             getActivity().onBackPressed();
             mListener.onPaymentCompleted();
-            new Statistics(getContext()).sendTicketingFormSubmit(mEvent.getEntryId());
+            Statistics.getInstance(getContext()).sendTicketingCompleted(mEvent.getEntryId());
         } else {
             getActivity().onBackPressed();
             mListener.onPaymentError();
+            Statistics.getInstance(getContext()).sendTicketingAborted(mEvent.getEntryId());
+        }
+    }
+
+    public void onBackPressed() {
+        if (mEvent.isTicketingLocally()) {
+            Statistics.getInstance(getContext()).sendTicketingCanceled(mEvent.getEntryId());
+        } else {
+            Statistics.getInstance(getContext()).sendRegistrationCanceled(mEvent.getEntryId());
         }
     }
 
