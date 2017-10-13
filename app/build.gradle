@@ -90,7 +90,7 @@ dependencies {
     compile "com.google.android.gms:play-services-gcm:$playservices_ver"
     compile "com.google.android.gms:play-services-location:$playservices_ver"
     compile "com.google.android.gms:play-services-auth:$playservices_ver"
-    compile 'com.onesignal:OneSignal:3.4.3'
+    compile 'com.onesignal:OneSignal:3.6.3'
     compile 'com.mikepenz:materialdrawer:5.9.5'
     compile 'com.prolificinteractive:material-calendarview:0.7.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'

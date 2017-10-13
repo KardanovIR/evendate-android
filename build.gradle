@@ -1,8 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.suplib_ver = '26.0.2'
-    ext.playservices_ver = '11.4.0'
+    ext.suplib_ver = '26.1.0'
+    ext.playservices_ver = '11.4.2'
     repositories {
         jcenter()
         google()
