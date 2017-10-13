@@ -37,6 +37,7 @@ public class WebAuthActivity extends AppCompatActivity {
     public final static String EMAIL = "email";
     public final static String TOKEN = "token";
     public final static String BACK_PRESSED = "back_pressed";
+    public final static String ERROR_CODE = "error_code";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,9 @@ public class WebAuthActivity extends AppCompatActivity {
                 currentURL = new URL(url);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                setResult(RESULT_CANCELED);
+                Intent intent = new Intent();
+                intent.putExtra(ERROR_CODE, AuthDialog.INVALID_URL_ERROR_CODE);
+                setResult(RESULT_CANCELED, intent);
                 finish();
                 return;
             }
@@ -112,11 +115,14 @@ public class WebAuthActivity extends AppCompatActivity {
                 Runnable run = () -> {
                     if (timeout) {
                         Log.e(LOG_TAG, "auth connection timeout");
-                        setResult(RESULT_CANCELED);
+                        Intent intent = new Intent();
+                        intent.putExtra(ERROR_CODE, AuthDialog.TIME_OUT_ERROR_CODE);
+                        setResult(RESULT_CANCELED, intent);
                         finish();
                     }
                 };
-                new Handler(Looper.getMainLooper()).postDelayed(run, 30000);
+                Log.d(LOG_TAG, "start timeout");
+                new Handler(Looper.getMainLooper()).postDelayed(run, 60000);
             }
 
 
@@ -130,7 +136,9 @@ public class WebAuthActivity extends AppCompatActivity {
                     query = URLDecoder.decode(query, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                    setResult(RESULT_CANCELED);
+                    Intent intent = new Intent();
+                    intent.putExtra(ERROR_CODE, AuthDialog.INVALID_REDIRECT_URL_ERROR_CODE);
+                    setResult(RESULT_CANCELED, intent);
                     finish();
                     return;
                 }
@@ -163,6 +171,15 @@ public class WebAuthActivity extends AppCompatActivity {
             Pattern emailPattern = Pattern.compile(pattern);
             Matcher match = emailPattern.matcher(query);
             return match.find() ? match.group(0) : null;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // Here put your code
+            Log.d(LOG_TAG, "redirect to " + url);
+
+            // return true; //Indicates WebView to NOT load the url;
+            return false; //Allow WebView to load url
         }
     }
 }

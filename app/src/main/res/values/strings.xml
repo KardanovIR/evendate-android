@@ -209,8 +209,13 @@
     <string name="stat_action_unsubscribe" translatable="false">Unsubscribe</string>
     <string name="stat_action_click_on_link" translatable="false">Click on link</string>
     <string name="stat_action_open_map" translatable="false">Open map</string>
-    <string name="stat_action_open_ticketing_form" translatable="false">Open ticketing form</string>
-    <string name="stat_action_submit_ticketing_form" translatable="false">Submit ticketing form</string>
+    <string name="stat_action_start_registration" translatable="false">Start registration</string>
+    <string name="stat_action_cancel_registration" translatable="false">Cancel registration</string>
+    <string name="stat_action_complete_registration" translatable="false">Complete registration</string>
+    <string name="stat_action_start_ticketing" translatable="false">Start ticketing</string>
+    <string name="stat_action_complete_ticketing" translatable="false">Complete ticketing</string>
+    <string name="stat_action_cancel_ticketing" translatable="false">Cancel ticketing</string>
+    <string name="stat_action_abort_ticketing" translatable="false">Abort ticketing</string>
 
     <string name="stat_page_feed" translatable="false">Feed</string>
     <string name="stat_page_favorite" translatable="false">Favorite</string>
@@ -252,7 +257,7 @@
     <string name="notification_before_day">Before a day</string>
     <string name="notification_before_three_days">Before 3 days</string>
     <string name="notification_before_week">Before a week</string>
-    <string name="notification_add_custom">Add custom time</string>
+    <string name="notification_add_custom">Custom time</string>
 
     <string name="toast_notification_event_started">The event has already started</string>
 

@@ -153,7 +153,7 @@ public class MainActivity extends BaseActivity implements ReelFragment.OnRefresh
     private void checkDeviceTokenSynced() {
         String token = EvendatePreferences.getDeviceToken(this);
         Log.d(MainActivity.class.getSimpleName(), "checking device token synced for: " + token);
-        if (!EvendatePreferences.getDeviceTokenSynced(this)) {
+        if (!EvendatePreferences.isDeviceTokenSynced(this)) {
             ServiceImpl.sendRegistrationToServer(this, token);
         }
     }

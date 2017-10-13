@@ -90,7 +90,7 @@ public class EvendateApplication extends MultiDexApplication {
         OneSignal.enableSound(true);
         OneSignal.idsAvailable((String userId, String registrationId) -> {
             EvendatePreferences.setDeviceToken(this, userId);
-            if (registrationId != null)
+            if (registrationId != null && EvendatePreferences.isDeviceTokenSynced(this))
                 ServiceImpl.sendRegistrationToServer(getApplicationContext(), userId);
 
         });

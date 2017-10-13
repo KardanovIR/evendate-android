@@ -68,6 +68,9 @@ public class CheckInActivity extends BaseActivity implements CheckInContract.Con
                     .hide(getSupportFragmentManager().findFragmentByTag(TAG_TICKETS))
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack("").commit();
+            TransitionManager.beginDelayedTransition(mCoordinatorLayout);
+            mFab.hide();
+            mTabs.setVisibility(View.GONE);
         });
 
         mTabs.setVisibility(View.GONE);
@@ -194,6 +197,7 @@ public class CheckInActivity extends BaseActivity implements CheckInContract.Con
                 .commit();
         TransitionManager.beginDelayedTransition(mCoordinatorLayout);
         mTabs.setVisibility(View.VISIBLE);
+        mFab.show();
     }
 
     @Override
