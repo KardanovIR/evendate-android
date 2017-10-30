@@ -53,6 +53,7 @@ import ru.evendate.android.EvendateAccountManager;
 import ru.evendate.android.EvendatePreferences;
 import ru.evendate.android.R;
 import ru.evendate.android.models.Event;
+import ru.evendate.android.models.Price;
 import ru.evendate.android.models.PromoCode;
 import ru.evendate.android.models.Registration;
 import ru.evendate.android.models.RegistrationField;
@@ -81,7 +82,7 @@ public class RegistrationFormFragment extends FormDialogFragment
     @BindView(R.id.registration_total_sum) TextView mTotalSum;
     @BindView(R.id.registration_submit_button) Button mSubmitButton;
 
-    @BindView(R.id.promocode) EditText mPromoCode;
+    @BindView(R.id.promocode) EditText mPromoCodeEditView;
 
     @BindView(R.id.load_state) LoadStateView mLoadStateView;
     private Unbinder unbinder;
@@ -95,16 +96,16 @@ public class RegistrationFormFragment extends FormDialogFragment
             R.id.promocode_description,
             R.id.registration_final_cost_container})
     List<View> mTicketViews;
+    private ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
 
     private Event mEvent;
     private Registration mRegistration;
     private OnRegistrationCallbackListener mListener;
-    private ArrayList<OrderTicketView> ticketViews = new ArrayList<>();
     private float totalSum = 0;
     private float finalSum = 0;
-    private Disposable mDisposable;
-
-    @Nullable private PromoCode promoCode;
+    @Nullable private PromoCode mPromoCode;
+    private Disposable mPromoCodeDisposable;
+    private Disposable mPreOrderDisposable;
 
     private static final String EVENT_KEY = "event";
     private static final String REGISTRATION_KEY = "registration";
@@ -142,18 +143,10 @@ public class RegistrationFormFragment extends FormDialogFragment
         mLoadStateView.setOnReloadListener(this);
         setHasOptionsMenu(true);
 
+        // check it's registration or ticketing
         if (mEvent.isTicketingLocally()) {
             ButterKnife.apply(mTicketViews, VISIBLE);
-            for (TicketType type : mEvent.getTicketTypes()) {
-                if (type.isSelling()) {
-                    OrderTicketView view = new OrderTicketView(getContext());
-                    view.setFormatter((float cost) -> TicketFormatter.formatCost(getContext(), cost));
-                    view.setTicketType(type);
-                    view.setOnTicketTotalSumChangedListener(this);
-                    ticketViews.add(view);
-                    mTicketList.addView(view);
-                }
-            }
+            constructTicketForm();
             totalSumChanged();
             Statistics.getInstance(getContext()).sendTicketingStarted(mEvent.getEntryId());
         } else {
@@ -162,6 +155,19 @@ public class RegistrationFormFragment extends FormDialogFragment
         }
         mCrossedCost.setPaintFlags(mFinalCost.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         return rootView;
+    }
+
+    private void constructTicketForm() {
+        for (TicketType type : mEvent.getTicketTypes()) {
+            if (type.isSelling()) {
+                OrderTicketView view = new OrderTicketView(getContext());
+                view.setFormatter((float cost) -> TicketFormatter.formatCost(getContext(), cost));
+                view.setTicketType(type);
+                view.setOnTicketTotalSumChangedListener(this);
+                ticketViews.add(view);
+                mTicketList.addView(view);
+            }
+        }
     }
 
     @Override
@@ -237,17 +243,24 @@ public class RegistrationFormFragment extends FormDialogFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        preOrder();
+    }
+
+
+    @Override
     public void totalSumChanged() {
         float sum = 0;
         for (OrderTicketView view : ticketViews) {
             sum += view.getTicketTotalSum();
         }
-        setTotalSum(sum);
-        submitPromoCode();
+        setInitSum(sum);
+        preOrder();
         setupButton();
     }
 
-    private void setTotalSum(float sum) {
+    private void setInitSum(float sum) {
         if (!isAdded())
             return;
         totalSum = sum;
@@ -259,132 +272,86 @@ public class RegistrationFormFragment extends FormDialogFragment
     @SuppressWarnings("unused")
     @OnClick(R.id.promocode_submit_button)
     void onPromoCodeEntered() {
-        checkPromoCode(mPromoCode.getText().toString());
-    }
-
-    @SuppressWarnings("unused")
-    @OnClick(R.id.registration_submit_button)
-    void onSubmitClick() {
-        getFormController().resetValidationErrors();
-        if (getFormController().isValidInput()) {
-
-            mRegistration = new Registration();
-            setupRegistration(mRegistration);
-            if (checkTicketsEmpty(mRegistration)) {
-                Toast.makeText(getActivity(), R.string.ticketing_form_choose_tickets,
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            postRegistrationInput(mEvent.getEntryId(), mRegistration);
-            mLoadStateView.showProgress();
-        } else {
-            getFormController().showValidationErrors();
-        }
-    }
-
-    private void setupRegistration(Registration registration) {
-        registration.setTickets(getTickets());
-        registration.setRegistrationFieldsList(getRegistrationFields());
-        if (promoCode != null) {
-            registration.setPromocode(promoCode.getCode());
-        }
-    }
-
-    private boolean checkTicketsEmpty(Registration registration) {
-        for (Ticket ticket : registration.getTickets()) {
-            if (((TicketOrder)ticket).getCount() != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private ArrayList<RegistrationField> getRegistrationFields() {
-        ArrayList<RegistrationField> input = new ArrayList<>();
-        for (RegistrationField field : mEvent.getRegistrationFields()) {
-            if (field.getType().equals("select") || field.getType().equals("select_multi")) {
-
-                HashSet<RegistrationField> set = (HashSet<RegistrationField>)getModel().getValue(field.getUuid());
-                ArrayList<RegistrationField> values = new ArrayList<>(set);
-                input.add(new RegistrationField(field.getUuid(), values));
-
-            } else {
-                input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
-            }
-        }
-        return input;
-    }
-
-    private ArrayList<Ticket> getTickets() {
-        ArrayList<Ticket> list = new ArrayList<>();
-        if (mEvent.isTicketingAvailable()) {
-            for (OrderTicketView view : ticketViews) {
-                list.add(new TicketOrder(view.getTicket().getUuid(), view.getNumber()));
-            }
-        } else if (mEvent.isRegistrationAvailable()) {
-            // registration without uuid
-            list.add(new TicketOrder("", 1));
-        }
-        return list;
+        checkPromoCode(mPromoCodeEditView.getText().toString());
     }
 
     private void checkPromoCode(String promoCode) {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            view.clearFocus();
-            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        setTotalSum(totalSum);
+        hideKeyboard();
+
         if (promoCode.isEmpty()) {
             Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code,
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        if (this.promoCode != null && this.promoCode.getCode().equals(promoCode)) {
-            submitPromoCode();
-            setupButton();
+        if (this.mPromoCode != null && this.mPromoCode.getCode().equals(promoCode)) {
             return;
         }
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseObject<PromoCode>> checkPromoCodeObservable =
                 apiService.checkPromoCode(EvendateAccountManager.peekToken(getContext()),
                         mEvent.getEntryId(), promoCode);
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
+        if (mPromoCodeDisposable != null && !mPromoCodeDisposable.isDisposed()) {
+            mPromoCodeDisposable.dispose();
         }
-        mDisposable = checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
+        mPromoCodeDisposable = checkPromoCodeObservable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                             if (result.isOk()) {
-                                this.promoCode = result.getData();
+                                this.mPromoCode = result.getData();
                             } else {
-                                this.promoCode = null;
+                                this.mPromoCode = null;
                                 Toast.makeText(getActivity(), R.string.ticketing_form_toast_promo_code_error,
                                         Toast.LENGTH_SHORT).show();
                             }
-                    submitPromoCode();
-                    setupButton();
+                            preOrder();
                         }
                 );
     }
 
-    private void submitPromoCode() {
-        if (!isAdded())
-            return;
+    private void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
+    private void preOrder() {
+        if (mPreOrderDisposable != null && !mPreOrderDisposable.isDisposed()) {
+            mPreOrderDisposable.dispose();
+        }
+        mSubmitButton.setEnabled(false);
+        Registration input = setupRegistration();
+        ApiService apiService = ApiFactory.getService(getContext());
+        Observable<ResponseObject<Registration>> preOrderObservable =
+                apiService.preorder(EvendateAccountManager.peekToken(getContext()), mEvent.getEntryId(), input);
+        mPreOrderDisposable = preOrderObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                            if (result.isOk()) {
+                                onPreOrderResult(result.getData());
+                            }
+                            mSubmitButton.setEnabled(true);
+                        }, this::onError,
+                        mLoadStateView::hideProgress
+                );
+    }
+
+    private void onPreOrderResult(Registration registration) {
+        setupDiscountedCost(registration.getPrice());
+        setupButton();
+    }
+
+    private void setupDiscountedCost(Price price) {
         TransitionManager.beginDelayedTransition(mCostContainer);
         finalSum = totalSum;
-        if (promoCode == null || !promoCode.isEnabled()) {
+        if (price.getDynamicDiscount() == 0 || price.getPromoCodeDiscount() == 0) {
             mCrossedCost.setVisibility(View.GONE);
-            return;
         }
-        if (promoCode.isFixed()) {
-            finalSum = Math.max(finalSum - promoCode.getEffort(), 0);
-        } else if (promoCode.isPercentage()) {
-            finalSum = finalSum * (1 - promoCode.getEffort() / 100);
-        }
+        finalSum = price.getFinalSum();
         mFinalCost.setText(" " + TicketFormatter.formatCost(getContext(), finalSum));
+
         if (totalSum != 0f) {
             mCrossedCost.setVisibility(View.VISIBLE);
         } else {
@@ -398,6 +365,73 @@ public class RegistrationFormFragment extends FormDialogFragment
         } else {
             mSubmitButton.setText(R.string.ticketing_form_order_button);
         }
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.registration_submit_button)
+    void onSubmitClick() {
+        getFormController().resetValidationErrors();
+        if (getFormController().isValidInput()) {
+
+            mRegistration = setupRegistration();
+            if (checkTicketsEmpty(mRegistration)) {
+                Toast.makeText(getActivity(), R.string.ticketing_form_choose_tickets,
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            postRegistrationInput(mEvent.getEntryId(), mRegistration);
+            mLoadStateView.showProgress();
+        } else {
+            getFormController().showValidationErrors();
+        }
+    }
+
+    private Registration setupRegistration() {
+        Registration registration = new Registration();
+        registration.setTickets(prepareTickets());
+        registration.setRegistrationFieldsList(prepareRegistrationFields());
+        if (mPromoCode != null) {
+            registration.setPromocode(mPromoCode.getCode());
+        }
+        return registration;
+    }
+
+    private boolean checkTicketsEmpty(Registration registration) {
+        for (Ticket ticket : registration.getTickets()) {
+            if (((TicketOrder)ticket).getCount() != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private ArrayList<Ticket> prepareTickets() {
+        ArrayList<Ticket> list = new ArrayList<>();
+        if (mEvent.isTicketingAvailable()) {
+            for (OrderTicketView view : ticketViews) {
+                list.add(new TicketOrder(view.getTicket().getUuid(), view.getNumber()));
+            }
+        } else if (mEvent.isRegistrationAvailable()) {
+            // registration without uuid
+            list.add(new TicketOrder("", 1));
+        }
+        return list;
+    }
+
+    private ArrayList<RegistrationField> prepareRegistrationFields() {
+        ArrayList<RegistrationField> input = new ArrayList<>();
+        for (RegistrationField field : mEvent.getRegistrationFields()) {
+            if (field.getType().equals("select") || field.getType().equals("select_multi")) {
+
+                HashSet<RegistrationField> set = (HashSet<RegistrationField>)getModel().getValue(field.getUuid());
+                ArrayList<RegistrationField> values = new ArrayList<>(set);
+                input.add(new RegistrationField(field.getUuid(), values));
+
+            } else {
+                input.add(new RegistrationField(field.getUuid(), (String)getModel().getValue(field.getUuid())));
+            }
+        }
+        return input;
     }
 
     private void postRegistrationInput(int eventId, Registration input) {
@@ -508,6 +542,17 @@ public class RegistrationFormFragment extends FormDialogFragment
         for (RegistrationField field : registration.getRegistrationFieldsList()) {
             FormElementController controller = getFormController().getElement(field.getUuid());
             controller.setError(field.getError());
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mPromoCodeDisposable != null && !mPromoCodeDisposable.isDisposed()) {
+            mPromoCodeDisposable.dispose();
+        }
+        if (mPreOrderDisposable != null && !mPreOrderDisposable.isDisposed()) {
+            mPreOrderDisposable.dispose();
         }
     }
 
