@@ -87,7 +87,7 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
 
     public static final String URI_KEY = "uri";
     final int TITLE_SHIFTED_BY_BUTTON = 2;
-    private final String LOG_TAG = "OrganizationFragment";
+    private final String LOG_TAG = "OrganizationActivity";
     @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.app_bar_layout) AppBarLayout mAppBarLayout;
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
@@ -334,13 +334,13 @@ public class OrganizationDetailActivity extends BaseActivity implements LoadStat
     private void tintByBrandColor() {
         //todo handle illegal argument (bad color string)
         TransitionManager.beginDelayedTransition(mCoordinatorLayout);
-        if (mOrganization.getBrandColor() != null || mOrganization.getBrandColor().isEmpty()) {
+        if (mOrganization.getBrandColor() != null && !mOrganization.getBrandColor().isEmpty()) {
             int brandColor = Color.parseColor(mOrganization.getBrandColor());
             mAppBarLayout.setBackgroundColor(brandColor);
             mCollapsingToolbar.setContentScrimColor(brandColor);
             tintStatusBar(brandColor);
         }
-        if (mOrganization.getBrandColorAccent() != null || mOrganization.getBrandColorAccent().isEmpty()) {
+        if (mOrganization.getBrandColorAccent() != null && !mOrganization.getBrandColorAccent().isEmpty()) {
             int brandColorAccent = Color.parseColor(mOrganization.getBrandColorAccent());
             StateListDrawable stateListDrawable = new StateListDrawable();
             stateListDrawable.addState(new int[]{-android.R.attr.state_checked}, new ColorDrawable(brandColorAccent));
