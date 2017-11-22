@@ -369,6 +369,13 @@ public interface ApiService {
             @Query("code") String code
     );
 
+    @POST(API_PATH + "/events/{id}/preorder")
+    Observable<ResponseObject<Registration>> preorder(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Body Registration registration_fields
+    );
+
     //statistics
     @POST(API_PATH + "/statistics/batch")
     Observable<Response> postStat(

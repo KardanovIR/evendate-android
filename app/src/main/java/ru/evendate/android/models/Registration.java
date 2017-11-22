@@ -20,6 +20,8 @@ public class Registration extends DataModel {
     Order order;
     @SerializedName("promocode")
     String promoCode;
+    @SerializedName("price")
+    Price price;
 
     @Override
     public int getEntryId() {
@@ -48,5 +50,9 @@ public class Registration extends DataModel {
 
     public Order getOrder() {
         return order;
+    }
+
+    public Price getPrice() {
+        return price;
     }
 }
