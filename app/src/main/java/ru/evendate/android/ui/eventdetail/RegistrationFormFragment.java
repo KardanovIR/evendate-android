@@ -352,7 +352,7 @@ public class RegistrationFormFragment extends FormDialogFragment
         finalSum = price.getFinalSum();
         mFinalCost.setText(" " + TicketFormatter.formatCost(getContext(), finalSum));
 
-        if (totalSum != 0f) {
+        if (totalSum != 0f && totalSum != finalSum) {
             mCrossedCost.setVisibility(View.VISIBLE);
         } else {
             mCrossedCost.setVisibility(View.GONE);
