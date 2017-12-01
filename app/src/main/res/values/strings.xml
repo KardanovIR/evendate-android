@@ -339,4 +339,10 @@
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recommender_empty_description">No more events. Take a look later.</string>
     <string name="drawer_login">Sign in</string>
+    <string name="title_activity_network">NetworkActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_network_intro">NetworkIntroActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

@@ -61,6 +61,7 @@ static def getDate() {
 }
 
 dependencies {
+    implementation 'com.android.support:support-v4:26.1.0'
     repositories {
         mavenCentral()
         jcenter()
@@ -107,7 +108,7 @@ dependencies {
     implementation 'com.github.nirhart:parallaxscroll:1.0'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.2'
     implementation 'jp.wasabeef:recyclerview-animators:2.2.3'
     implementation 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
     implementation 'org.parceler:parceler-api:1.1.6'
@@ -132,5 +133,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
 }
+
+
 
 apply plugin: 'com.google.gms.google-services'

@@ -44,6 +44,7 @@ import ru.evendate.android.ui.calendar.CalendarActivity;
 import ru.evendate.android.ui.catalog.OrganizationCatalogActivity;
 import ru.evendate.android.ui.checkin.CheckInActivity;
 import ru.evendate.android.ui.feed.MainActivity;
+import ru.evendate.android.ui.networking.NetworkActivity;
 import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
 import ru.evendate.android.ui.settings.SettingsActivity;
 import ru.evendate.android.ui.tickets.EventRegisteredActivity;
@@ -57,15 +58,16 @@ import ru.evendate.android.ui.users.UserListFragment;
  * Created by Dmitry on 11.02.2016.
  */
 public class DrawerWrapper {
-    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     public final static int REEL_IDENTIFIER = 1;
     public final static int CALENDAR_IDENTIFIER = 2;
     public final static int CATALOG_IDENTIFIER = 3;
-    private final static int FRIENDS_IDENTIFIER = 4;
     public final static int SETTINGS_IDENTIFIER = 5;
     public final static int TICKETS_IDENTIFIER = 6;
     public final static int ADMINISTRATION_IDENTIFIER = 7;
     public final static int RECOMMENDER_IDENTIFIER = 8;
+    //todo
+    public final static int NETWORK_IDENTIFIER = 9;
+    private final static int FRIENDS_IDENTIFIER = 4;
     private static UserDetail mUser;
 
     // enable vector drawables support
@@ -73,6 +75,7 @@ public class DrawerWrapper {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
+    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private ArrayList<OrganizationSubscription> mSubscriptions;
@@ -103,6 +106,8 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_event_note_black).withIdentifier(ADMINISTRATION_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem recommenderItem = new PrimaryDrawerItem().withName(R.string.drawer_recommendations)
             .withIcon(R.drawable.ic_whatshot).withIdentifier(RECOMMENDER_IDENTIFIER).withSelectable(true);
+    private PrimaryDrawerItem networkItem = new PrimaryDrawerItem().withName("Network")
+            .withIcon(R.drawable.ic_whatshot).withIdentifier(NETWORK_IDENTIFIER).withSelectable(true);
 
     private DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -174,6 +179,7 @@ public class DrawerWrapper {
                     friendsItem,
                     organizationsItem,
                     settingsItem,
+                    networkItem,
                     new SectionDrawerItem().withName(R.string.drawer_subscriptions)
             );
         } else {
@@ -181,7 +187,8 @@ public class DrawerWrapper {
                     recommenderItem,
                     calendarItem,
                     organizationsItem,
-                    settingsItem
+                    settingsItem,
+                    networkItem
             );
         }
     }
@@ -387,6 +394,9 @@ public class DrawerWrapper {
                 case DrawerWrapper.RECOMMENDER_IDENTIFIER:
                     openRecommenderActivity();
                     break;
+                case DrawerWrapper.NETWORK_IDENTIFIER:
+                    openNetworkActivity();
+                    break;
                 default:
                     openOrganizationFromSub(drawerItem);
             }
@@ -442,6 +452,12 @@ public class DrawerWrapper {
             openActivity(intent);
         }
 
+        private void openNetworkActivity() {
+            Intent intent = new Intent(mContext, NetworkActivity.class);
+            intent = addFlags(intent);
+            openActivity(intent);
+        }
+
         private void openOrganizationFromSub(IDrawerItem drawerItem) {
             int id = getOrgIdFromDrawerItem(drawerItem);
             Intent detailIntent = new Intent(mContext, OrganizationDetailActivity.class);
@@ -458,6 +474,7 @@ public class DrawerWrapper {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return intent;
         }
+
 
         private void openActivity(Intent intent) {
             if (Build.VERSION.SDK_INT >= 21) {
