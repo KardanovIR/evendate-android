@@ -245,7 +245,9 @@ public class RegistrationFormFragment extends FormDialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        preOrder();
+        if (mEvent.isTicketingLocally()) {
+            preOrder();
+        }
     }
 
 
@@ -322,7 +324,7 @@ public class RegistrationFormFragment extends FormDialogFragment
             mPreOrderDisposable.dispose();
         }
         mSubmitButton.setEnabled(false);
-        Registration input = setupRegistration();
+        Registration input = setupRegistrationWithoutFields();
         ApiService apiService = ApiFactory.getService(getContext());
         Observable<ResponseObject<Registration>> preOrderObservable =
                 apiService.preorder(EvendateAccountManager.peekToken(getContext()), mEvent.getEntryId(), input);
@@ -384,6 +386,15 @@ public class RegistrationFormFragment extends FormDialogFragment
         } else {
             getFormController().showValidationErrors();
         }
+    }
+
+    private Registration setupRegistrationWithoutFields() {
+        Registration registration = new Registration();
+        registration.setTickets(prepareTickets());
+        if (mPromoCode != null) {
+            registration.setPromocode(mPromoCode.getCode());
+        }
+        return registration;
     }
 
     private Registration setupRegistration() {
