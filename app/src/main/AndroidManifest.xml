@@ -241,7 +241,6 @@
         </activity>
         <activity
             android:name=".ui.networking.NetworkIntroActivity"
-            android:label="@string/title_activity_network_intro"
             android:theme="@style/AppTheme">
         </activity>
     </application>

@@ -44,7 +44,6 @@ import ru.evendate.android.ui.calendar.CalendarActivity;
 import ru.evendate.android.ui.catalog.OrganizationCatalogActivity;
 import ru.evendate.android.ui.checkin.CheckInActivity;
 import ru.evendate.android.ui.feed.MainActivity;
-import ru.evendate.android.ui.networking.NetworkActivity;
 import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
 import ru.evendate.android.ui.settings.SettingsActivity;
 import ru.evendate.android.ui.tickets.EventRegisteredActivity;
@@ -65,8 +64,6 @@ public class DrawerWrapper {
     public final static int TICKETS_IDENTIFIER = 6;
     public final static int ADMINISTRATION_IDENTIFIER = 7;
     public final static int RECOMMENDER_IDENTIFIER = 8;
-    //todo
-    public final static int NETWORK_IDENTIFIER = 9;
     private final static int FRIENDS_IDENTIFIER = 4;
     private static UserDetail mUser;
 
@@ -106,8 +103,6 @@ public class DrawerWrapper {
             .withIcon(R.drawable.ic_event_note_black).withIdentifier(ADMINISTRATION_IDENTIFIER).withSelectable(true);
     private PrimaryDrawerItem recommenderItem = new PrimaryDrawerItem().withName(R.string.drawer_recommendations)
             .withIcon(R.drawable.ic_whatshot).withIdentifier(RECOMMENDER_IDENTIFIER).withSelectable(true);
-    private PrimaryDrawerItem networkItem = new PrimaryDrawerItem().withName("Network")
-            .withIcon(R.drawable.ic_whatshot).withIdentifier(NETWORK_IDENTIFIER).withSelectable(true);
 
     private DrawerWrapper(Drawer drawer, AccountHeader accountHeader, final Context context) {
         mContext = context;
@@ -179,7 +174,6 @@ public class DrawerWrapper {
                     friendsItem,
                     organizationsItem,
                     settingsItem,
-                    networkItem,
                     new SectionDrawerItem().withName(R.string.drawer_subscriptions)
             );
         } else {
@@ -187,8 +181,7 @@ public class DrawerWrapper {
                     recommenderItem,
                     calendarItem,
                     organizationsItem,
-                    settingsItem,
-                    networkItem
+                    settingsItem
             );
         }
     }
@@ -394,9 +387,6 @@ public class DrawerWrapper {
                 case DrawerWrapper.RECOMMENDER_IDENTIFIER:
                     openRecommenderActivity();
                     break;
-                case DrawerWrapper.NETWORK_IDENTIFIER:
-                    openNetworkActivity();
-                    break;
                 default:
                     openOrganizationFromSub(drawerItem);
             }
@@ -448,12 +438,6 @@ public class DrawerWrapper {
 
         private void openRecommenderActivity() {
             Intent intent = new Intent(mContext, RecommenderActivity.class);
-            intent = addFlags(intent);
-            openActivity(intent);
-        }
-
-        private void openNetworkActivity() {
-            Intent intent = new Intent(mContext, NetworkActivity.class);
             intent = addFlags(intent);
             openActivity(intent);
         }

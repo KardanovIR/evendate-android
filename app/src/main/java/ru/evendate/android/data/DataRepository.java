@@ -27,6 +27,7 @@ import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
 import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.ui.checkin.CheckInContract;
+import ru.evendate.android.ui.networking.NetworkingProfile;
 
 /**
  * Created by Aedirn on 07.03.17.
@@ -310,4 +311,23 @@ public class DataRepository implements DataSource {
         return mService.findEventsByTags(token, query, true, EventFeed.FIELDS_LIST, EventFeed.ORDER_BY_FAVORITE_AND_FIRST_TIME, pageLength, pageLength * page).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    @Override
+    public Observable<ResponseArray<NetworkingProfile>> getNetworkingProfiles(@Nullable String token, int eventId, int page, int pageLength) {
+        return mService.getNetworkingProfiles(token, eventId, NetworkingProfile.FIELDS_LIST, pageLength, pageLength * page).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<ResponseArray<NetworkingProfile>> getNetworkingRequests(@Nullable String token, int eventId, int page, int pageLength) {
+        return mService.getNetworkingRequests(token, eventId, true, NetworkingProfile.FIELDS_LIST, pageLength, pageLength * page).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<ResponseArray<NetworkingProfile>> getNetworkingContacts(@Nullable String token, int eventId, int page, int pageLength) {
+        return mService.getNetworkingContacts(token, eventId, NetworkingProfile.FIELDS_LIST, pageLength, pageLength * page).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

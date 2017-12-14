@@ -8,6 +8,7 @@
     <string name="title_activity_check_in">Check in</string>
     <string name="title_activity_recommendation">Recommendation</string>
     <string name="title_activity_event_registered">My tickets</string>
+    <string name="title_activity_network">Networking</string>
 
     <!-- sync strings -->
     <string name="content_authority" translatable="false">ru.evendate.android</string>
@@ -103,6 +104,10 @@
 
     <string name="event_ticketing_payment_error">Payment error</string>
     <string name="event_ticketing_payment_done">You have successfully paid</string>
+
+    <string name="event_networking_started">Event started</string>
+    <string name="event_networking_started_description">If you are attending an event, start looking for participants</string>
+    <string name="event_networking_button">Network</string>
 
     <string name="event_show_on_map">Show on map</string>
     <string name="event_go_to_page">Go to event page</string>
@@ -230,7 +235,7 @@
     <string name="stat_page_organization_events" translatable="false">Events</string>
     <string name="stat_page_organization_past_events" translatable="false">Past events</string>
 
-    <!-- user profile strings -->
+    <!-- unetworkingProfilefile strings -->
     <string name="action_user_link">Profile in social net</string>
 
     <string name="action_subscribe">Subscribe to organizations</string>
@@ -339,10 +344,24 @@
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recommender_empty_description">No more events. Take a look later.</string>
     <string name="drawer_login">Sign in</string>
-    <string name="title_activity_network">NetworkActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_network_intro">NetworkIntroActivity</string>
-    <string name="action_settings">Settings</string>
+    <!-- networking strings -->
+    <string name="networking_snack_apply_accepted">Apply accepted</string>
+    <string name="networking_snack_apply_hide">Apply hided</string>
+    <string name="networking_snack_retry">Retry</string>
+    <string name="networking_snack_error">Error occurred</string>
+
+    <string name="networking_tab_participants">Participants</string>
+    <string name="networking_tab_applies">Applies</string>
+    <string name="networking_tab_contacts">Contacts</string>
+    <string name="networking_info_label">Useful</string>
+    <string name="networking_looking_for_label">Looking for</string>
+    <string name="networking_contact_data">Contact data</string>
+    <string name="networking_card_hide_button">Hide</string>
+    <string name="networking_card_apply_button">Apply</string>
+
+    <string name="networking_intro_enter_code">Enter participant\'s code</string>
+    <string name="networking_intro_code_hint" translatable="false">0000</string>
+    <string name="networking_intro_code_description">Event code can be obtained from the organizers</string>
+
 </resources>

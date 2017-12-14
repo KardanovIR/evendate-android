@@ -31,6 +31,7 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
             "my_tickets_count," +
 
             "is_free,min_price,is_same_time,created_at," +
+            "networking_enabled," +
 
             "dates" + ServiceUtils.encloseFields(EventDate.FIELDS_LIST) + ",tags," +
             "favored{fields:\'" + User.FIELDS_LIST + "\'},";
@@ -122,6 +123,9 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
     int minPrice;
     @SerializedName("is_same_time")
     boolean isSameTime;
+
+    @SerializedName("networking_enabled")
+    boolean isNetworkingEnabled;
 
     @SerializedName("registration_fields")
     ArrayList<RegistrationField> registrationFields;
@@ -341,5 +345,9 @@ public class Event extends DataModel implements EventFeed, EventRegistered {
 
     public boolean isSameTime() {
         return isSameTime;
+    }
+
+    public boolean isNetworkingEnabled() {
+        return isNetworkingEnabled;
     }
 }

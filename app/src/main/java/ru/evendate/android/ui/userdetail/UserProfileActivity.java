@@ -192,7 +192,7 @@ public class UserProfileActivity extends BaseActivity implements LoadStateView.O
             @Override
             public void onPageSelected(int position) {
                 Tracker tracker = EvendateApplication.getTracker();
-                tracker.setScreenName("User Profile Screen ~" +
+                tracker.setScreenName("User NetworkingProfile Screen ~" +
                         mUserPagerAdapter.getPageLabel(position));
                 tracker.send(new HitBuilders.ScreenViewBuilder().build());
             }
