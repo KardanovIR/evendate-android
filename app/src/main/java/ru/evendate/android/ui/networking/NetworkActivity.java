@@ -90,6 +90,7 @@ public class NetworkActivity extends BaseActivity implements NetworkContract.OnP
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+        toolbar.setNavigationOnClickListener((View v) -> onBackPressed());
         mMainLayout = findViewById(R.id.main_content);
         mLoadStateView = findViewById(R.id.load_state);
         mLoadStateView.setOnReloadListener(this::getNetworkingProfile);
@@ -153,9 +154,8 @@ public class NetworkActivity extends BaseActivity implements NetworkContract.OnP
             Bundle bundle = new Bundle();
             bundle.putParcelable(NetworkIntroActivity.PROFILE_KEY, Parcels.wrap(profile));
             intent.putExtra(NetworkIntroActivity.EVENT_ID_KEY, eventId);
+            intent.putExtra(NetworkIntroActivity.SKIP_CODE_KEY, true);
             startActivityForResult(intent, INTRO_CODE);
-        } else {
-            mViewPager.setVisibility(View.VISIBLE);
         }
     }
 

@@ -229,8 +229,8 @@
     <string name="networking_tab_participants">Участники</string>
     <string name="networking_tab_applies">Заявки</string>
     <string name="networking_tab_contacts">Контакты</string>
-    <string name="networking_card_info_label">Полезен</string>
-    <string name="networking_card_looking_for_label">Ищет</string>
+    <string name="networking_info_label">Полезен</string>
+    <string name="networking_looking_for_label">Ищет</string>
     <string name="networking_card_hide_button">Скрыть</string>
     <string name="networking_card_apply_button">Принять</string>
     <string name="event_networking_started_description">Если вы присутствуете на событии, начните поиск участников</string>

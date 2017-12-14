@@ -176,6 +176,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="email"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -190,6 +191,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="vkontakte"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -204,6 +206,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="facebook"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -218,6 +221,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="twitter"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -232,6 +236,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="linkedin"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -246,6 +251,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="telegram"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -260,6 +266,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="instagram"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -274,6 +281,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="github"
+                android:lines="1"
                 android:textSize="16sp"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

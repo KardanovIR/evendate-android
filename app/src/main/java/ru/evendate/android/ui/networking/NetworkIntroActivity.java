@@ -202,7 +202,6 @@ public class NetworkIntroActivity extends AppCompatActivity {
                                     }
                                 }, throwable -> ((NetworkIntroActivity)getActivity()).onProfilePostError()
                         );
-                ((NetworkIntroActivity)getActivity()).onProfilePosted();
             }
         }
 
