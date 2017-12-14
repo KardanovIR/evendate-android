@@ -90,6 +90,7 @@ public class NetworkActivity extends BaseActivity implements NetworkContract.OnP
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+        toolbar.setNavigationOnClickListener((View v) -> onBackPressed());
         mMainLayout = findViewById(R.id.main_content);
         mLoadStateView = findViewById(R.id.load_state);
         mLoadStateView.setOnReloadListener(this::getNetworkingProfile);
