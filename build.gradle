@@ -2,7 +2,7 @@
 
 buildscript {
     ext.suplib_ver = '26.1.0'
-    ext.playservices_ver = '11.6.0'
+    ext.playservices_ver = '11.6.2'
     repositories {
         jcenter()
         google()
