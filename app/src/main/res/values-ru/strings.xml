@@ -221,4 +221,21 @@
     <string name="ticketing_form_toast_promo_code">Введите промокод</string>
     <string name="ticketing_form_toast_tickets">Выберите билеты для покупки</string>
     <string name="event_ticketing">Купить билеты</string>
+    <string name="title_activity_network">Нетворкинг</string>
+    <string name="networking_snack_apply_accepted">Заявка принята</string>
+    <string name="networking_snack_apply_hide">Заявка скрыта</string>
+    <string name="networking_snack_retry">Повторить</string>
+    <string name="networking_snack_error">Произошла ошибка</string>
+    <string name="networking_tab_participants">Участники</string>
+    <string name="networking_tab_applies">Заявки</string>
+    <string name="networking_tab_contacts">Контакты</string>
+    <string name="networking_card_info_label">Полезен</string>
+    <string name="networking_card_looking_for_label">Ищет</string>
+    <string name="networking_card_hide_button">Скрыть</string>
+    <string name="networking_card_apply_button">Принять</string>
+    <string name="event_networking_started_description">Если вы присутствуете на событии, начните поиск участников</string>
+    <string name="event_networking_started">Событие началось</string>
+    <string name="event_networking_button">Общаться с участниками</string>
+    <string name="networking_intro_code_description">Код события можно получить у организаторов</string>
+    <string name="networking_intro_enter_code">Введите код участника</string>
 </resources>

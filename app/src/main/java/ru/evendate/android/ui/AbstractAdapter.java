@@ -68,7 +68,7 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
     /**
      * append item to end of the list
      */
-    protected void append(T item) {
+    public void append(T item) {
         mList.add(mList.size(), item);
         notifyItemInserted(getItemCount());
     }
@@ -76,7 +76,7 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
     /**
      * remove concrete item from the list
      */
-    protected void remove(T item) {
+    public void remove(T item) {
         int position = mList.indexOf(item);
         mList.remove(position);
         notifyItemRemoved(position);

@@ -57,15 +57,14 @@ import ru.evendate.android.ui.users.UserListFragment;
  * Created by Dmitry on 11.02.2016.
  */
 public class DrawerWrapper {
-    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     public final static int REEL_IDENTIFIER = 1;
     public final static int CALENDAR_IDENTIFIER = 2;
     public final static int CATALOG_IDENTIFIER = 3;
-    private final static int FRIENDS_IDENTIFIER = 4;
     public final static int SETTINGS_IDENTIFIER = 5;
     public final static int TICKETS_IDENTIFIER = 6;
     public final static int ADMINISTRATION_IDENTIFIER = 7;
     public final static int RECOMMENDER_IDENTIFIER = 8;
+    private final static int FRIENDS_IDENTIFIER = 4;
     private static UserDetail mUser;
 
     // enable vector drawables support
@@ -73,6 +72,7 @@ public class DrawerWrapper {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
+    private final String LOG_TAG = DrawerWrapper.class.getSimpleName();
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private ArrayList<OrganizationSubscription> mSubscriptions;
@@ -458,6 +458,7 @@ public class DrawerWrapper {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return intent;
         }
+
 
         private void openActivity(Intent intent) {
             if (Build.VERSION.SDK_INT >= 21) {

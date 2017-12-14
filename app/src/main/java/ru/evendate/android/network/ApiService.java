@@ -26,6 +26,8 @@ import ru.evendate.android.models.StatisticsEvent;
 import ru.evendate.android.models.Tag;
 import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.UserDetail;
+import ru.evendate.android.ui.networking.NetworkingProfile;
+import ru.evendate.android.ui.networking.NetworkingRequest;
 
 /**
  * Created by Dmitry on 18.10.2015.
@@ -483,5 +485,101 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Query("used_since") String usedSince,
             @Query("length") int length
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/profiles/me")
+    Observable<ResponseObject<NetworkingProfile>> getMyNetworkingProfile(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/profiles/me")
+    Observable<ResponseObject<NetworkingProfile>> getMyNetworkingProfile(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("code") String code
+    );
+
+    @POST(API_PATH + "/events/{id}/networking/profiles/me")
+    Observable<Response> postMyNetworkingProfile(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("first_name") String firstName,
+            @Query("last_name") String lastName,
+            @Query("company_name") String companyName,
+            @Query("info") String info,
+            @Query("looking_for") String lookingFor,
+            @Query("email") String email,
+            @Query("vk_url") String vkUrl,
+            @Query("facebook_url") String facebookUrl,
+            @Query("twitter_url") String twitterUrl,
+            @Query("linkedin_url") String linkedinUrl,
+            @Query("telegram_url") String telegramUrl,
+            @Query("instagram_url") String instagramUrl,
+            @Query("github_url") String githubUrl
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/profiles")
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingProfiles(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/profiles")
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingRequests(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("request_pending") boolean pending,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/contacts")
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingContacts(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("fields") String fields,
+            @Query("length") int length,
+            @Query("offset") int offset
+    );
+
+    @POST(API_PATH + "/events/{id}/networking/requests")
+    Observable<Response> postNetworkingRequest(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Query("recipient_user_id") int userId,
+            @Body String message
+    );
+
+    @GET(API_PATH + "/events/{id}/networking/requests/{uuid}")
+    Observable<ResponseArray<NetworkingRequest>> getNetworkingRequest(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String responseUuid
+    );
+
+    @PUT(API_PATH + "/events/{id}/networking/requests/{uuid}")
+    Observable<Response> acceptNetworkingRequest(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String responseUuid,
+            @Query("accept_status") boolean accept
+    );
+
+    @PUT(API_PATH + "/events/{id}/networking/requests/{uuid}")
+    Observable<Response> revertNetworkingRequest(
+            @Header("Authorization") String authorization,
+            @Path("id") int eventId,
+            @Path("uuid") String responseUuid,
+            @Query("status") boolean status
+    );
+
+    @GET(API_PATH + "/users/me/contacts")
+    Observable<ResponseArray<NetworkingProfile>> getMyContacts(
+            @Header("Authorization") String authorization
     );
 }

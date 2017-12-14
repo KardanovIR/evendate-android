@@ -88,6 +88,7 @@ import ru.evendate.android.network.ServiceUtils;
 import ru.evendate.android.statistics.Statistics;
 import ru.evendate.android.ui.BaseActivity;
 import ru.evendate.android.ui.DrawerWrapper;
+import ru.evendate.android.ui.networking.NetworkActivity;
 import ru.evendate.android.ui.orgdetail.OrganizationDetailActivity;
 import ru.evendate.android.ui.search.SearchResultsActivity;
 import ru.evendate.android.ui.users.UserListActivity;
@@ -142,6 +143,10 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
     @BindView(R.id.event_content_container) View mEventContentContainer;
     @BindView(R.id.event_image_container) View mEventImageContainer;
     @BindView(R.id.user_card) UserFavoritedCard mUserFavoritedCard;
+
+    @BindView(R.id.event_networking_card) CardView mNetworkingCard;
+    @BindView(R.id.event_networking_button) Button mNetworkingButton;
+
     @BindString(R.string.event_free) String eventFreeLabel;
     @BindString(R.string.event_registration_not_required) String eventRegistrationNotRequiredLabel;
     @BindString(R.string.event_registration_till) String eventRegistrationTillLabel;
@@ -648,6 +653,15 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
         }
     }
 
+    @OnClick(R.id.event_networking_button)
+    public void onNetworkingClicked() {
+        if (mAdapter.getEvent().isNetworkingEnabled()) {
+            Intent intent = new Intent(this, NetworkActivity.class);
+            intent.putExtra(NetworkActivity.EVENT_ID_KEY, eventId);
+            startActivity(intent);
+        }
+    }
+
     private void openRegistrationForm() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         mTicketingFragment = RegistrationFormFragment.newInstance(mAdapter.getEvent());
@@ -897,6 +911,7 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             if (mEvent.getDetailInfoUrl() == null) {
                 mLinkCard.setVisibility(View.GONE);
             }
+            setNetworking();
         }
 
         private void setDates() {
@@ -988,6 +1003,12 @@ public class EventDetailActivity extends BaseActivity implements TagsRecyclerVie
             if (mEvent.isRegistrationApproved()) {
                 mRegistrationCap.setText(R.string.event_registration_status_registration_approved);
                 mRegistrationCap.setVisibility(View.VISIBLE);
+            }
+        }
+
+        private void setNetworking() {
+            if (mEvent.isNetworkingEnabled()) {
+                mNetworkingCard.setVisibility(View.VISIBLE);
             }
         }
     }

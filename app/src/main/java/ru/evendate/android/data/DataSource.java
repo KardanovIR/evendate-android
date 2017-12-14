@@ -14,6 +14,7 @@ import ru.evendate.android.models.Ticket;
 import ru.evendate.android.models.UserDetail;
 import ru.evendate.android.network.Response;
 import ru.evendate.android.network.ResponseArray;
+import ru.evendate.android.ui.networking.NetworkingProfile;
 
 /**
  * Created by Aedirn on 31.03.17.
@@ -88,4 +89,10 @@ public interface DataSource {
     Observable<ResponseArray<Event>> searchEvents(@Nullable String token, String query, int page, int pageLength);
 
     Observable<ResponseArray<Event>> searchByTagEvents(@Nullable String token, String query, int page, int pageLength);
+
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingProfiles(@Nullable String token, int eventId, int page, int pageLength);
+
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingRequests(@Nullable String token, int eventId, int page, int pageLength);
+
+    Observable<ResponseArray<NetworkingProfile>> getNetworkingContacts(@Nullable String token, int eventId, int page, int pageLength);
 }
