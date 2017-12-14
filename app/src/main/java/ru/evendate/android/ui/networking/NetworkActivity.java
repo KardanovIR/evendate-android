@@ -153,9 +153,8 @@ public class NetworkActivity extends BaseActivity implements NetworkContract.OnP
             Bundle bundle = new Bundle();
             bundle.putParcelable(NetworkIntroActivity.PROFILE_KEY, Parcels.wrap(profile));
             intent.putExtra(NetworkIntroActivity.EVENT_ID_KEY, eventId);
+            intent.putExtra(NetworkIntroActivity.SKIP_CODE_KEY, true);
             startActivityForResult(intent, INTRO_CODE);
-        } else {
-            mViewPager.setVisibility(View.VISIBLE);
         }
     }
 
