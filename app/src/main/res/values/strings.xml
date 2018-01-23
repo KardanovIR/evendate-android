@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">Evendate</string>
     <string name="title_activity_detail">Event</string>
-    <string name="title_activity_organization">Organizer catalog</string>
+    <string name="title_activity_organization">Organizers list</string>
     <string name="title_activity_friends">Friends</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_city">Cities</string>
     <string name="title_activity_check_in">Check in</string>
-    <string name="title_activity_recommendation">Recommendation</string>
+    <string name="title_activity_recommendation">Recommendations</string>
     <string name="title_activity_event_registered">My tickets</string>
     <string name="title_activity_network">Networking</string>
 
@@ -18,12 +18,12 @@
     <integer name="com_vk_sdk_AppId">5739514</integer>
 
     <!-- navigation drawer and main activity strings-->
-    <string name="drawer_login_description">To use all the features, sign in to your account</string>
+    <string name="drawer_login_description">To use all features, sign in into your account</string>
     <string name="drawer_calendar">Calendar</string>
     <string name="drawer_reel">My events</string>
     <string name="drawer_friends">Friends</string>
     <string name="drawer_settings">Settings</string>
-    <string name="drawer_organizations">Organizator catalog</string>
+    <string name="drawer_organizations">Organizers list</string>
     <string name="drawer_subscriptions">Subscriptions</string>
     <string name="drawer_log_out">Log out</string>
     <string name="drawer_tickets">My tickets</string>
@@ -32,14 +32,14 @@
 
     <!-- tabs strings -->
     <string name="tab_main_feed">Feed</string>
-    <string name="tab_main_favorite">Favorite</string>
+    <string name="tab_main_favorite">Favorites</string>
     <string name="tab_main_recommendation">For you</string>
 
     <string name="tab_user_subscriptions">Subscriptions</string>
     <string name="tab_user_actions">Activity</string>
 
     <string name="tab_search_events">Events</string>
-    <string name="tab_search_organizations">Organizators</string>
+    <string name="tab_search_organizations">Organizers</string>
     <string name="tab_search_users">Users</string>
 
     <string name="tab_organization_future_events">Events</string>
@@ -52,24 +52,24 @@
     <string name="tab_event_registered_past">Past</string>
 
     <!-- alert strings -->
-    <string name="alert_maps_not_available">Please install Google Maps or another map app</string>
+    <string name="alert_maps_not_available">Please install Google Maps or another map application</string>
     <string name="alert_install_google_maps">Install Google maps</string>
 
     <!-- todo -->
-    <string name="download_error">Error occurred</string>
+    <string name="download_error">An error occurred</string>
     <string name="loading_error">Error</string>
-    <string name="loading_error_description">Problem with loading data. Сheck internet connection</string>
+    <string name="loading_error_description">Problem with loading data. Check your Internet connection</string>
     <string name="loading_retry">Retry</string>
 
     <!-- lists strings -->
-    <string name="list_feed_empty_header">No nearest events</string>
-    <string name="list_feed_empty_text">You can view other events when subscribing to other organizers or open the recommended events</string>
-    <string name="list_favourites_empty_header">No favorites events</string>
-    <string name="list_favourites_empty_text">Add event to favorites and it\'ll appear here</string>
-    <string name="list_recommendation_empty_header">No recommendation for you</string>
-    <string name="list_organization_empty_header">No events</string>
-    <string name="list_organization_empty_text">Try view other organizators</string>
-    <string name="list_users_empty_text">No users</string>
+    <string name="list_feed_empty_header">No nearest events yet</string>
+    <string name="list_feed_empty_text">Subscribe to organizers or open the recommended events to see more events</string>
+    <string name="list_favourites_empty_header">No favorite events yet</string>
+    <string name="list_favourites_empty_text">Add event to favorites and they will appear here</string>
+    <string name="list_recommendation_empty_header">No recommendations for you yet</string>
+    <string name="list_organization_empty_header">No events yet</string>
+    <string name="list_organization_empty_text">Try to open other organizers</string>
+    <string name="list_users_empty_text">No users yet</string>
 
     <!-- detail event -->
     <string name="event_participants">participants</string>
@@ -94,11 +94,11 @@
     <string name="event_ticketing">Buy tickets</string>
     <string name="event_registration_till">Till</string>
     <string name="event_registration_not_required">Not required</string>
-    <string name="event_registration_status_not_available">Registration no available</string>
-    <string name="event_ticketing_status_not_available">Tickets no available</string>
-    <string name="event_registration_status_already_registered">You are already registered</string>
-    <string name="event_ticketing_status_already_purchased">You are already bought tickets</string>
-    <string name="event_registration_status_registration_approved">Registration approved</string>
+    <string name="event_registration_status_not_available">Registration is not available</string>
+    <string name="event_ticketing_status_not_available">Tickets are not available</string>
+    <string name="event_registration_status_already_registered">You\'re already registered</string>
+    <string name="event_ticketing_status_already_purchased">You\'re already bought tickets</string>
+    <string name="event_registration_status_registration_approved">Registration was approved</string>
     <string name="event_registration_done">You have successfully registered</string>
     <string name="event_registration_enter_fields">Enter fields</string>
 
@@ -114,26 +114,26 @@
 
     <string name="action_share">Share</string>
     <string name="action_export_to_calendar">Export to calendar</string>
-    <string name="action_add_notification">Notify about event</string>
+    <string name="action_add_notification">Notify about the event</string>
 
-    <string name="event_favorite_confirm">Event added to favorite</string>
-    <string name="event_favorite_remove_confirm">Event removed from favorite</string>
+    <string name="event_favorite_confirm">Event successfully added to favorites</string>
+    <string name="event_favorite_remove_confirm">Event removed from favorites</string>
 
     <string name="event_share_text_i_like">I like event ‘</string>
-    <string name="event_share_text_in_org">’ by organizator </string>
+    <string name="event_share_text_in_org">’ by organizer </string>
 
-    <string name="event_notification_added">Notification added</string>
-    <string name="event_notification_error">Error. Notification didn\'t added</string>
+    <string name="event_notification_added">Notification successfully added</string>
+    <string name="event_notification_error">An error occurred</string>
 
     <!-- ticketing form-->
-    <string name="ticketing_form_choose_tickets">Choose tickets</string>
+    <string name="ticketing_form_choose_tickets">Select tickets</string>
     <string name="ticketing_form_total_cost">Total cost:</string>
-    <string name="ticketing_form_promo_code_label">Promocode</string>
+    <string name="ticketing_form_promo_code_label">Promo code</string>
     <string name="ticketing_form_promo_code_enter">Submit</string>
-    <string name="ticketing_form_promo_code_description">If you have a promotional code, enter it and get a discount</string>
-    <string name="ticketing_form_toast_tickets">Choose tickets to order</string>
-    <string name="ticketing_form_toast_promo_code">Enter promocode</string>
-    <string name="ticketing_form_toast_promo_code_error">This promocode does not exist or is no longer active</string>
+    <string name="ticketing_form_promo_code_description">If you have a promo code, enter it and get a discount</string>
+    <string name="ticketing_form_toast_tickets">Select tickets to order</string>
+    <string name="ticketing_form_toast_promo_code">Enter promo code</string>
+    <string name="ticketing_form_toast_promo_code_error">This promo code does not exist or is no longer active</string>
     <string name="ticketing_form_final_cost">To pay:</string>
     <string name="ticketing_form_register_button">Register</string>
     <string name="ticketing_form_order_button">Pay</string>
@@ -157,38 +157,38 @@
     <string name="organization_unsubscribe">UNSUBDCRIBE</string>
     <string name="organization_subscribers">ALL SUBSCRIBERS</string>
     <string name="organization_more">MORE</string>
-    <string name="organization_go_to_page">GO TO ORGANIZATOR PAGE</string>
+    <string name="organization_go_to_page">GO TO ORGANIZER\'S PAGE</string>
     <string name="organization_description">Description</string>
-    <string name="organization_name_label">Organizator</string>
-    <string name="organization_page">Organization page</string>
-    <string name="organization_address">Organization address</string>
-    <string name="organization_background_description">Organization background image</string>
-    <string name="organization_dialog_info_title">About Organizator</string>
+    <string name="organization_name_label">Organizer</string>
+    <string name="organization_page">Organizer page</string>
+    <string name="organization_address">Organizer address</string>
+    <string name="organization_background_description">Organizer background image</string>
+    <string name="organization_dialog_info_title">About Organizer</string>
 
-    <string name="organization_subscription_confirm">Subscription confirmed</string>
-    <string name="organization_subscription_remove_confirm">Subscription removed</string>
+    <string name="organization_subscription_confirm">Subscription was confirmed</string>
+    <string name="organization_subscription_remove_confirm">Subscription was removed</string>
 
-    <string name="action_info">Organizator info</string>
+    <string name="action_info">Organizer info</string>
 
     <!-- intro strings -->
-    <string name="intro_miss">Don\'t miss important event</string>
+    <string name="intro_miss">Don\'t miss an important event</string>
     <string name="intro_interests">Find out friends interests</string>
     <string name="intro_share">Share events with friends</string>
     <string name="intro_manage">Manage notifications</string>
     <string name="intro_sync">Sync all devices</string>
-    <string name="intro_done">Begin</string>
+    <string name="intro_done">Start now</string>
     <string name="intro_skip">Skip</string>
 
     <!-- dialogs strings -->
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_skip">Skip</string>
-    <string name="dialog_check_organizations">Choose organization</string>
-    <string name="dialog_onboadring_title">You\'ll like it</string>
-    <string name="dialog_onboarding_subtitle">We picked a places that suits you</string>
+    <string name="dialog_check_organizations">Choose organizer</string>
+    <string name="dialog_onboadring_title">You may like it</string>
+    <string name="dialog_onboarding_subtitle">We picked some places that suits your interests</string>
 
 
-    <string name="dialog_event_hide">Hide event</string>
+    <string name="dialog_event_hide">Hide the event</string>
     <string name="dialog_event_unhide">Remove from hidden</string>
     <string name="dialog_event_fave">Add to favorites</string>
     <string name="dialog_event_unfave">Remove from favorites</string>
@@ -238,8 +238,8 @@
     <!-- unetworkingProfilefile strings -->
     <string name="action_user_link">Profile in social net</string>
 
-    <string name="action_subscribe">Subscribe to organizations</string>
-    <string name="action_unsubscribe">Unsubscribe from organizations</string>
+    <string name="action_subscribe">Subscribe to organizers</string>
+    <string name="action_unsubscribe">Unsubscribe from organizers</string>
     <string name="action_like">Added events to favorites</string>
     <string name="action_dislike">Remove events from favorites</string>
 
@@ -249,11 +249,11 @@
     <string name="auth_account_already_exists">Evendate account already exist</string>
 
     <string name="auth_welcome">Welcome to Evendate!</string>
-    <string name="auth_vk">Sign in via Vkontakte</string>
+    <string name="auth_vk">Sign in via Vk.com</string>
     <string name="auth_google">Sign in via G+</string>
     <string name="auth_fb">Sign in via Facebook</string>
     <string name="auth_description">Evendate is a service that allows you to stay on top of upcoming events in your favorite places.</string>
-    <string name="auth_error">Error occurred. Please retry</string>
+    <string name="auth_error">An error occurred. Please retry</string>
     <string name="auth_skip">Skip</string>
 
     <!-- notification strings -->
@@ -268,7 +268,7 @@
 
     <!-- settings strings -->
     <string name="settings_dialog_led_color">Indicator color</string>
-    <string name="settings_dialog_about">About program</string>
+    <string name="settings_dialog_about">About app</string>
     <string name="settings_dialog_about_version">Version</string>
 
     <string name="settings_category_notification">Notifications</string>
@@ -280,25 +280,25 @@
     <string name="settings_led_color">Indicator color</string>
     <string name="settings_https">Security connection</string>
     <string name="settings_https_description">Use HTTPS protocol</string>
-    <string name="settings_about">About program</string>
+    <string name="settings_about">About app</string>
     <string name="settings_feed_privacy">Privacy</string>
     <string name="settings_feed_privacy_description">Show my favorite events to friends</string>
 
     <!-- search strings -->
     <string name="search_hint">Search</string>
-    <string name="search_cap_hint">Begin your search by typing a query into the search box</string>
-    <string name="search_empty_org_header">Organizators not found</string>
-    <string name="search_empty_event_header">Events not found</string>
+    <string name="search_cap_hint">Start typing a query into the search box</string>
+    <string name="search_empty_org_header">Organizers were not found</string>
+    <string name="search_empty_event_header">Events were not found</string>
     <string name="search_tags_hint">Popular tags</string>
     <string name="search_hint_tag">Find by tags</string>
 
-    <string name="search_empty_description">Try searching for something else</string>
-    <string name="search_empty_header">Nothing found</string>
+    <string name="search_empty_description">Try to search for something else</string>
+    <string name="search_empty_header">Nothing was found</string>
 
     <string name="action_search">Search</string>
 
     <!-- event registered strings -->
-    <string name="event_registered_empty_cap">No tickets</string>
+    <string name="event_registered_empty_cap">No available tickets</string>
     <string name="event_registered_open_detail">Go to event</string>
 
     <!-- ticket detail -->
@@ -308,25 +308,25 @@
 
     <!-- cities -->
     <string name="city_prompt_where_user">Where are you?</string>
-    <string name="city_prompt_where_user_description">To start using Evendate, enter your city</string>
-    <string name="city_prompt_button">Enter your city</string>
+    <string name="city_prompt_where_user_description">To start using Evendate, select your city</string>
+    <string name="city_prompt_button">Select your city</string>
 
     <string name="city_location_button">Use my location</string>
     <string name="city_available_list">Available cities</string>
 
     <!-- load state view strings -->
     <string name="state_no_connection">No internet connection</string>
-    <string name="state_no_connection_description">Сheck internet connection</string>
+    <string name="state_no_connection_description">Check the internet connection</string>
     <string name="state_error">Problem with loading data</string>
-    <string name="state_error_description">Сheck internet connection</string>
+    <string name="state_error_description">Check the internet connection</string>
 
     <!-- check in strings -->
     <string name="action_torch">Flash on</string>
     <string name="check_in_confirm">Confirmed</string>
     <string name="check_in_confirm_error">No connection. Try again</string>
-    <string name="check_in_confirm_revert">Confirm canceled</string>
+    <string name="check_in_confirm_revert">Confirmation was canceled</string>
     <string name="check_in_qr_error">Invalid QR code</string>
-    <string name="check_in_event_empty_description">You have no organized events</string>
+    <string name="check_in_event_empty_description">You don\'t have organized events</string>
     <string name="check_in_tickets_waiting">Waiting</string>
     <string name="check_in_tickets_confirmed">Confirmed</string>
     <string name="check_in_search_tickets_hint_description">Enter search query</string>
@@ -342,14 +342,14 @@
 
     <!-- recommender strings -->
     <string name="recommender_empty_header" translatable="false">¯\\_(ツ)_/¯</string>
-    <string name="recommender_empty_description">No more events. Take a look later.</string>
+    <string name="recommender_empty_description">No more events. Come back later.</string>
     <string name="drawer_login">Sign in</string>
 
     <!-- networking strings -->
     <string name="networking_snack_apply_accepted">Apply accepted</string>
     <string name="networking_snack_apply_hide">Apply hided</string>
     <string name="networking_snack_retry">Retry</string>
-    <string name="networking_snack_error">Error occurred</string>
+    <string name="networking_snack_error">An error occurred</string>
 
     <string name="networking_tab_participants">Participants</string>
     <string name="networking_tab_applies">Applies</string>
@@ -362,6 +362,6 @@
 
     <string name="networking_intro_enter_code">Enter participant\'s code</string>
     <string name="networking_intro_code_hint" translatable="false">0000</string>
-    <string name="networking_intro_code_description">Event code can be obtained from the organizers</string>
+    <string name="networking_intro_code_description">Event code can be obtained from the organizer</string>
 
 </resources>
