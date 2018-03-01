@@ -191,6 +191,14 @@ public class ReelFragment extends EndlessListFragment<ReelPresenter, Event, Even
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!refreshTurnOn)
+            getSwipeRefreshLayout().setEnabled(false);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(TYPE_KEY, type);
